@@ -280,7 +280,7 @@ describe("ChatInput widget", () => {
     const chatInput = screen.getByTestId("stChatInputTextArea")
     expect(chatInput).toBeDisabled()
 
-    const button = screen.getByRole("button")
+    const button = screen.getByTestId("stChatInputSubmitButton")
     expect(button).toBeDisabled()
   })
 
@@ -291,7 +291,7 @@ describe("ChatInput widget", () => {
     const chatInput = screen.getByTestId("stChatInputTextArea")
     expect(chatInput).not.toBeDisabled()
 
-    const button = screen.getByRole("button")
+    const button = screen.getByTestId("stChatInputSubmitButton")
     expect(button).toBeDisabled()
   })
 
@@ -299,7 +299,7 @@ describe("ChatInput widget", () => {
     const props = getProps()
     render(<ChatInput {...props} />)
 
-    const button = screen.getByRole("button")
+    const button = screen.getByTestId("stChatInputSubmitButton")
     expect(button).toBeDisabled()
   })
 
@@ -311,7 +311,7 @@ describe("ChatInput widget", () => {
     const chatInput = screen.getByTestId("stChatInputTextArea")
     await user.type(chatInput, "Sample text")
 
-    const button = screen.getByRole("button")
+    const button = screen.getByTestId("stChatInputSubmitButton")
     expect(button).not.toBeDisabled()
 
     await user.clear(chatInput)
