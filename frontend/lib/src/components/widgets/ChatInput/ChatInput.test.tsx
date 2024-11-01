@@ -23,10 +23,12 @@ import { render } from "@streamlit/lib/src/test_util"
 import {
   ChatInput as ChatInputProto,
   FileURLs as FileURLsProto,
+  IChatInputValue,
 } from "@streamlit/lib/src/proto"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 
 import ChatInput, { Props } from "./ChatInput"
+import { UploadFileInfo } from "../FileUploader/UploadFileInfo"
 
 const getProps = (
   elementProps: Partial<ChatInputProto> = {},
@@ -37,6 +39,7 @@ const getProps = (
     placeholder: "Enter Text Here",
     disabled: false,
     default: "",
+    acceptFile: "false",
     ...elementProps,
   }),
   width: 300,
@@ -65,6 +68,18 @@ const getProps = (
   },
   ...widgetProps,
 })
+
+const mockChatInputValue = (
+  text: string,
+  _: UploadFileInfo[] = [] // TODO (sfc-gh-pchiu): implement mock for files
+): IChatInputValue => {
+  return {
+    data: text,
+    fileUploaderState: {
+      uploadedFileInfo: [],
+    },
+  }
+}
 
 describe("ChatInput widget", () => {
   afterEach(() => {
@@ -128,14 +143,14 @@ describe("ChatInput widget", () => {
   it("sends and resets the value on enter", async () => {
     const user = userEvent.setup()
     const props = getProps()
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
     await user.type(chatInput, "1234567890{enter}")
     expect(spy).toHaveBeenCalledWith(
       props.element,
-      "1234567890",
+      mockChatInputValue("1234567890"),
       {
         fromUi: true,
       },
@@ -169,14 +184,14 @@ describe("ChatInput widget", () => {
   it("can set fragmentId when sending value", async () => {
     const user = userEvent.setup()
     const props = getProps(undefined, { fragmentId: "myFragmentId" })
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
     await user.type(chatInput, "1234567890{enter}")
     expect(spy).toHaveBeenCalledWith(
       props.element,
-      "1234567890",
+      mockChatInputValue("1234567890"),
       {
         fromUi: true,
       },
@@ -187,7 +202,7 @@ describe("ChatInput widget", () => {
   it("will not send an empty value on enter if empty", async () => {
     const user = userEvent.setup()
     const props = getProps()
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
@@ -214,7 +229,7 @@ describe("ChatInput widget", () => {
   it("does not send/clear on shift + enter", async () => {
     const user = userEvent.setup()
     const props = getProps()
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
     const chatInput = screen.getByTestId("stChatInputTextArea")
 
@@ -228,7 +243,7 @@ describe("ChatInput widget", () => {
   it("does not send/clear on ctrl + enter", async () => {
     const user = userEvent.setup()
     const props = getProps()
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
@@ -246,7 +261,7 @@ describe("ChatInput widget", () => {
   it("does not send/clear on meta + enter", async () => {
     const user = userEvent.setup()
     const props = getProps()
-    const spy = vi.spyOn(props.widgetMgr, "setStringTriggerValue")
+    const spy = vi.spyOn(props.widgetMgr, "setChatInputValue")
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
