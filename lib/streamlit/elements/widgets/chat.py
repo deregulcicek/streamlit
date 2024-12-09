@@ -142,7 +142,7 @@ def _process_avatar_input(
             ) from ex
 
 
-def _get_upload_files(
+def _pop_upload_files(
     files_value: FileUploaderStateProto | None,
 ) -> list[UploadedFile]:
     if files_value is None:
@@ -196,7 +196,7 @@ class ChatInputSerde:
         else:
             return ChatInputValue(
                 text=ui_value.data,
-                files=_get_upload_files(ui_value.file_uploader_state),
+                files=_pop_upload_files(ui_value.file_uploader_state),
             )
 
     def serialize(self, v: str | None) -> ChatInputValueProto:
@@ -318,6 +318,36 @@ class ChatMixin:
 
         return self.dg._block(block_proto=block_proto)
 
+    @overload
+    def chat_input(
+        self,
+        placeholder: str = "Your message",
+        *,
+        accept_file: Literal[False] = False,
+        key: Key | None = None,
+        max_chars: int | None = None,
+        disabled: bool = False,
+        file_type: str | Sequence[str] | None = None,
+        on_submit: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+    ) -> str | None: ...
+
+    @overload
+    def chat_input(
+        self,
+        placeholder: str = "Your message",
+        *,
+        accept_file: Literal[True, "multiple"],
+        key: Key | None = None,
+        max_chars: int | None = None,
+        disabled: bool = False,
+        file_type: str | Sequence[str] | None = None,
+        on_submit: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+    ) -> ChatInputValue | None: ...
+
     @gather_metrics("chat_input")
     def chat_input(
         self,
@@ -328,7 +358,6 @@ class ChatMixin:
         accept_file: bool | Literal["multiple"] = False,
         disabled: bool = False,
         file_type: str | Sequence[str] | None = None,
-        # TODO [kajarenc] https://github.com/python/mypy/issues/4020#issuecomment-737600893 check does it relevant here
         on_submit: WidgetCallback | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
