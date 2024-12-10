@@ -26,6 +26,7 @@ from streamlit.elements.lib.policies import check_widget_policies
 from streamlit.elements.lib.utils import (
     Key,
     compute_and_register_element_id,
+    get_chat_input_accept_file_proto_value,
     save_for_app_testing,
     to_key,
 )
@@ -519,7 +520,9 @@ class ChatMixin:
 
         chat_input_proto.default = default
 
-        chat_input_proto.accept_file = str(accept_file).lower()
+        chat_input_proto.accept_file = get_chat_input_accept_file_proto_value(
+            accept_file
+        )
 
         chat_input_proto.file_type[:] = file_type if file_type is not None else []
 

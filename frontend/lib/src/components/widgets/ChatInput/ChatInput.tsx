@@ -30,7 +30,11 @@ import { AttachFile } from "@emotion-icons/material-outlined"
 import { FileRejection, useDropzone } from "react-dropzone"
 import zip from "lodash/zip"
 
-import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import {
+  AcceptFileValue,
+  chatInputAcceptFileProtoValueToEnum,
+  isNullOrUndefined,
+} from "@streamlit/lib/src/util/utils"
 import {
   ChatInput as ChatInputProto,
   FileUploaderState as FileUploaderStateProto,
@@ -233,6 +237,8 @@ function ChatInput({
 }: Props): React.ReactElement {
   const theme = useTheme()
 
+  const acceptFile = chatInputAcceptFileProtoValueToEnum(element.acceptFile)
+
   // True if the user-specified state.value has not yet been synced to the WidgetStateManager.
   const [dirty, setDirty] = useState(false)
   // The value specified by the user via the UI. If the user didn't touch this widget's UI, the default value is used.
@@ -317,7 +323,7 @@ function ChatInput({
   }
 
   const dropHandler = createDropHandler({
-    acceptMultipleFiles: element.acceptFile === "multiple",
+    acceptMultipleFiles: acceptFile === AcceptFileValue.Multiple,
     uploadClient: uploadClient,
     uploadFile: createUploadFileHandler({
       getNextLocalFileId,
@@ -395,7 +401,7 @@ function ChatInput({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: dropHandler,
-    multiple: element.acceptFile === "multiple",
+    multiple: acceptFile === AcceptFileValue.Multiple,
     accept: element.fileType.length > 0 ? element.fileType : undefined,
   })
 
@@ -415,7 +421,7 @@ function ChatInput({
   }
 
   const getTextAreaBorderStyle = (): React.CSSProperties =>
-    element.acceptFile
+    acceptFile !== AcceptFileValue.None
       ? { border: "none" }
       : {
           borderRadius: theme.radii.xxxl,
@@ -532,7 +538,7 @@ function ChatInput({
         width={width}
       >
         <StyledChatInput>
-          {element.acceptFile !== "false" ? (
+          {acceptFile !== AcceptFileValue.None ? (
             <>
               <div {...getRootProps()}>
                 <input {...getInputProps()} />
