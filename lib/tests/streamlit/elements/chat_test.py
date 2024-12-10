@@ -26,6 +26,7 @@ from streamlit.errors import (
     StreamlitValueAssignmentNotAllowedError,
 )
 from streamlit.proto.Block_pb2 import Block as BlockProto
+from streamlit.proto.ChatInput_pb2 import ChatInput
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.proto.RootContainer_pb2 import RootContainer as RootContainerProto
 from streamlit.runtime.uploaded_file_manager import (
@@ -192,7 +193,7 @@ class ChatTest(DeltaGeneratorTestCase):
         self.assertEqual(c.value, "")
         self.assertEqual(c.set_value, False)
         self.assertEqual(c.max_chars, 100)
-        self.assertEqual(c.accept_file, "false")
+        self.assertEqual(c.accept_file, ChatInput.AcceptFile.NONE)
         self.assertEqual(c.disabled, False)
         self.assertEqual(c.file_type, [])
 
@@ -258,15 +259,15 @@ class ChatTest(DeltaGeneratorTestCase):
     def test_chat_input_accept_file(self):
         st.chat_input("Placeholder", accept_file=False)
         c = self.get_delta_from_queue().new_element.chat_input
-        self.assertEqual(c.accept_file, "false")
+        self.assertEqual(c.accept_file, ChatInput.AcceptFile.NONE)
 
         st.chat_input("Placeholder", accept_file=True)
         c = self.get_delta_from_queue().new_element.chat_input
-        self.assertEqual(c.accept_file, "true")
+        self.assertEqual(c.accept_file, ChatInput.AcceptFile.SINGLE)
 
         st.chat_input("Placeholder", accept_file="multiple")
         c = self.get_delta_from_queue().new_element.chat_input
-        self.assertEqual(c.accept_file, "multiple")
+        self.assertEqual(c.accept_file, ChatInput.AcceptFile.MULTIPLE)
 
     def test_chat_input_invalid_accept_file(self):
         with self.assertRaises(StreamlitAPIException) as ex:
