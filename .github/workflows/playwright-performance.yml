@@ -34,6 +34,8 @@ jobs:
           persist-credentials: false
           submodules: "recursive"
           fetch-depth: 2
+      - name: Get last 50 commits from develop branch
+        run: git fetch --depth=50 origin develop
       - name: Set Python version vars
         uses: ./.github/actions/build_info
       - name: Set up Python ${{ env.PYTHON_MAX_VERSION }}
@@ -48,6 +50,10 @@ jobs:
         run: make frontend-build-with-profiler
       - name: Run make playwright-performance
         run: make playwright-performance
+      - name: Run make performance-regression-check
+        run: make performance-regression-check
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Upload failed test results
         uses: actions/upload-artifact@v4
         if: always()

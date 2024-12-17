@@ -12,6 +12,7 @@ wheel
 pytz
 # Used for updating emojis via: scripts/update_emojis.py
 emoji
+requests>=2.32.3
 
 # mypy types
 types-click

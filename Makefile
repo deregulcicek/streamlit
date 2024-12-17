@@ -365,6 +365,10 @@ playwright-custom-components:
 	fi; \
 	pytest ${custom_components_test_folder} --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v
 
+.PHONY: performance-regression-check
+performance-regression-check:
+	python -m scripts.performance.ci_check;
+
 .PHONY: update-snapshots
 # Update e2e playwright snapshots based on the latest completed CI run.
 update-snapshots:
