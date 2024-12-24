@@ -55,8 +55,8 @@ def send_page_not_found(ctx: ScriptRunContext):
 
 @gather_metrics("navigation")
 def navigation(
-    pages: list[StreamlitPage | str | callable]
-    | dict[SectionHeader, list[StreamlitPage | str | callable]],
+    pages: list[StreamlitPage | str | Path | callable]
+    | dict[SectionHeader, list[StreamlitPage | str | Path | callable]],
     *,
     position: Literal["sidebar", "hidden"] = "sidebar",
     expanded: bool = False,
@@ -84,7 +84,7 @@ def navigation(
 
     Parameters
     ----------
-    pages : list[StreamlitPage | str | callable] or dict[str, list[StreamlitPage | str | callable]]
+    pages : list[StreamlitPage | str | Path | callable] or dict[str, list[StreamlitPage | str | Path | callable]]
         The available pages for the app. Can be:
         - StreamlitPage objects created with st.Page()
         - Strings representing paths to Python files
