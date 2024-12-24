@@ -78,7 +78,8 @@ const Selectbox: FC<Props> = ({
   width,
   fragmentId,
 }) => {
-  const { options, help, label, labelVisibility, placeholder } = element
+  const { options, help, label, labelVisibility, placeholder, filter } =
+    element
 
   const [value, setValueWithSource] = useBasicWidgetState<
     SelectboxValue,
@@ -114,6 +115,7 @@ const Selectbox: FC<Props> = ({
       help={help}
       placeholder={placeholder}
       clearable={clearable}
+      filter={filter}
     />
   )
 }

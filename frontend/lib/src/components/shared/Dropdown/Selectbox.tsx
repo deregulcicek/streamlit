@@ -49,6 +49,8 @@ export interface Props {
   help?: string
   placeholder?: string
   clearable?: boolean
+  // TODO: Should probably only accept "fuzzy" or "strict" here but need to change the proto accordingly for that.
+  filter?: string
 }
 
 interface SelectOption {
@@ -77,6 +79,41 @@ export function fuzzyFilterSelectOptions(
   ).reverse()
 }
 
+// Add strict filtering function
+function strictFilterSelectOptions(
+  options: SelectOption[],
+  pattern: string
+): readonly SelectOption[] {
+  if (!pattern) {
+    return options
+  }
+  return options.filter((opt: SelectOption) =>
+    opt.label.toLowerCase().includes(pattern.toLowerCase())
+  )
+}
+
+function startFilterSelectOptions(
+  options: SelectOption[],
+  pattern: string
+): readonly SelectOption[] {
+  if (!pattern) {
+    return options
+  }
+  return options.filter((opt: SelectOption) =>
+    opt.label.toLowerCase().startsWith(pattern.toLowerCase())
+  )
+}
+
+function caseSensitiveFilterSelectOptions(
+  options: SelectOption[],
+  pattern: string
+): readonly SelectOption[] {
+  if (!pattern) {
+    return options
+  }
+  return options.filter((opt: SelectOption) => opt.label.includes(pattern))
+}
+
 const Selectbox: React.FC<Props> = ({
   disabled,
   width,
@@ -88,6 +125,7 @@ const Selectbox: React.FC<Props> = ({
   help,
   placeholder,
   clearable,
+  filter,
 }) => {
   const theme: EmotionTheme = useTheme()
   const [value, setValue] = useState<number | null>(propValue)
@@ -115,9 +153,36 @@ const Selectbox: React.FC<Props> = ({
   )
 
   const filterOptions = useCallback(
-    (options: readonly Option[], filterValue: string): readonly Option[] =>
-      fuzzyFilterSelectOptions(options as SelectOption[], filterValue),
-    []
+    (options: readonly Option[], filterValue: string): readonly Option[] => {
+      switch (filter) {
+        case "fuzzy":
+          return fuzzyFilterSelectOptions(
+            options as SelectOption[],
+            filterValue
+          )
+        case "strict":
+          return strictFilterSelectOptions(
+            options as SelectOption[],
+            filterValue
+          )
+        case "start":
+          return startFilterSelectOptions(
+            options as SelectOption[],
+            filterValue
+          )
+        case "case":
+          return caseSensitiveFilterSelectOptions(
+            options as SelectOption[],
+            filterValue
+          )
+        default:
+          return fuzzyFilterSelectOptions(
+            options as SelectOption[],
+            filterValue
+          )
+      }
+    },
+    [filter]
   )
 
   let selectDisabled = disabled
