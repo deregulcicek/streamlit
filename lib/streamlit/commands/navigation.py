@@ -86,8 +86,9 @@ def navigation(
     ----------
     pages : list of `st.Page`, str, Path, callable, or a dict mapping str to such lists
         The pages to show in the navigation element. This can be one of the following:
-        - A list of `st.Page` objects, strings or `pathlib.Path` objects pointing to
-          the page files, or callable functions that define a page.
+        - A list of pages, represented by `st.Page` objects, strings or
+          `pathlib.Path` objects pointing to the page files, or callable functions
+          that define a page.
         - A dictionary with section headers as keys and lists of pages as values
           (same types as above).
 
