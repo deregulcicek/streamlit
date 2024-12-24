@@ -84,11 +84,12 @@ def navigation(
 
     Parameters
     ----------
-    pages : list[StreamlitPage | str | Path | callable] or dict[str, list[StreamlitPage | str | Path | callable]]
-        The available pages for the app. Can be:
-        - StreamlitPage objects created with st.Page()
-        - Strings representing paths to Python files
-        - Callable functions that define a page
+    pages : list of `st.Page`, str, Path, callable, or a dict mapping str to such lists
+        The pages to show in the navigation element. This can be one of the following:
+        - A list of `st.Page` objects, strings or `pathlib.Path` objects pointing to
+          the page files, or callable functions that define a page.
+        - A dictionary with section headers as keys and lists of pages as values
+          (same types as above).
 
     position : "sidebar" or "hidden"
         The position of the navigation menu. If ``position`` is ``"sidebar"``
