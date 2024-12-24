@@ -21,6 +21,7 @@ from typing_extensions import TypeAlias
 
 from streamlit import config
 from streamlit.errors import StreamlitAPIException
+from streamlit.navigation.page import StreamlitPage
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.proto.Navigation_pb2 import Navigation as NavigationProto
 from streamlit.runtime.metrics_util import gather_metrics
@@ -30,7 +31,6 @@ from streamlit.runtime.scriptrunner_utils.script_run_context import (
 )
 
 if TYPE_CHECKING:
-    from streamlit.navigation.page import StreamlitPage
     from streamlit.source_util import PageHash, PageInfo
 
 SectionHeader: TypeAlias = str
@@ -55,7 +55,8 @@ def send_page_not_found(ctx: ScriptRunContext):
 
 @gather_metrics("navigation")
 def navigation(
-    pages: list[StreamlitPage] | dict[SectionHeader, list[StreamlitPage]],
+    pages: list[StreamlitPage | str | callable]
+    | dict[SectionHeader, list[StreamlitPage | str | callable]],
     *,
     position: Literal["sidebar", "hidden"] = "sidebar",
     expanded: bool = False,
@@ -83,18 +84,11 @@ def navigation(
 
     Parameters
     ----------
-    pages : list[StreamlitPage] or dict[str, list[StreamlitPage]]
-        The available pages for the app.
-
-        To create labeled sections or page groupings within the navigation
-        menu, ``pages`` must be a dictionary. Each key is the label of a
-        section and each value is the list of ``StreamlitPage`` objects for
-        that section.
-
-        To create a navigation menu with no sections or page groupings,
-        ``pages`` must be a list of ``StreamlitPage`` objects.
-
-        Use ``st.Page`` to create ``StreamlitPage`` objects.
+    pages : list[StreamlitPage | str | callable] or dict[str, list[StreamlitPage | str | callable]]
+        The available pages for the app. Can be:
+        - StreamlitPage objects created with st.Page()
+        - Strings representing paths to Python files
+        - Callable functions that define a page
 
     position : "sidebar" or "hidden"
         The position of the navigation menu. If ``position`` is ``"sidebar"``
@@ -217,7 +211,19 @@ def navigation(
     .. _st.Page: https://docs.streamlit.io/develop/api-reference/navigation/st.page
 
     """
-    nav_sections = {"": pages} if isinstance(pages, list) else pages
+    # Convert simple types to StreamlitPage objects
+    if isinstance(pages, list):
+        pages = [p if isinstance(p, StreamlitPage) else StreamlitPage(p) for p in pages]
+        nav_sections = {"": pages}
+    else:
+        nav_sections = {
+            section: [
+                p if isinstance(p, StreamlitPage) else StreamlitPage(p)
+                for p in section_pages
+            ]
+            for section, section_pages in pages.items()
+        }
+
     page_list = pages_from_nav_sections(nav_sections)
 
     if not page_list:
