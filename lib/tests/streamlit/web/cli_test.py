@@ -462,7 +462,10 @@ class CliTest(unittest.TestCase):
 
                 # Check file contents
                 assert "streamlit" in Path(tmpdir, "requirements.txt").read_text()
-                assert "import streamlit as st" in Path(tmpdir, "streamlit_app.py").read_text()
+                assert (
+                    "import streamlit as st"
+                    in Path(tmpdir, "streamlit_app.py").read_text()
+                )
             finally:
                 os.chdir(orig_dir)
 
