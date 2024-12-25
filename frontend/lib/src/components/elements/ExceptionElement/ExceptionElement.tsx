@@ -26,12 +26,12 @@ import { StyledCode } from "@streamlit/lib/src/components/elements/CodeBlock/sty
 import { StyledStackTrace } from "@streamlit/lib/src/components/shared/ErrorElement/styled-components"
 
 import {
+  StyledExceptionLinks,
   StyledExceptionMessage,
   StyledMessageType,
   StyledStackTraceContent,
   StyledStackTraceRow,
   StyledStackTraceTitle,
-  StyledExceptionLinks,
 } from "./styled-components"
 
 export interface ExceptionElementProps {
