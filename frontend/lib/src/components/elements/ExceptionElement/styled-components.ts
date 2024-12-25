@@ -52,11 +52,4 @@ export const StyledExceptionLinks = styled.div(({ theme }) => ({
   display: "flex",
   gap: theme.spacing.md,
   justifyContent: "flex-end",
-
-  a: {
-    // textDecoration: "none",
-    // "&:hover": {
-    //   textDecoration: "underline",
-    // },
-  },
 }))
