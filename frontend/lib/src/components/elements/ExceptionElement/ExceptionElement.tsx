@@ -31,6 +31,7 @@ import {
   StyledStackTraceContent,
   StyledStackTraceRow,
   StyledStackTraceTitle,
+  StyledExceptionLinks,
 } from "./styled-components"
 
 export interface ExceptionElementProps {
@@ -111,6 +112,13 @@ export default function ExceptionElement({
   element,
   width,
 }: Readonly<ExceptionElementProps>): ReactElement {
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
+    `${element.type}: ${element.message}`
+  )}`
+  const chatGptUrl = `https://chatgpt.com/?q=${encodeURIComponent(
+    `${element.type}: ${element.message}\n\n${element.stackTrace?.join("\n")}`
+  )}`
+
   return (
     <div className="stException" data-testid="stException">
       <AlertContainer
@@ -127,6 +135,14 @@ export default function ExceptionElement({
         {element.stackTrace && element.stackTrace.length > 0 ? (
           <StackTrace stackTrace={element.stackTrace} />
         ) : null}
+        <StyledExceptionLinks>
+          <a href={searchUrl} target="_blank" rel="noopener noreferrer">
+            Ask Google
+          </a>
+          <a href={chatGptUrl} target="_blank" rel="noopener noreferrer">
+            Ask ChatGPT
+          </a>
+        </StyledExceptionLinks>
       </AlertContainer>
     </div>
   )
