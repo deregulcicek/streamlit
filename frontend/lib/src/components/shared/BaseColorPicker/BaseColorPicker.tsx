@@ -16,9 +16,9 @@
 
 import React from "react"
 
-import { withTheme } from "@emotion/react"
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
+import { useTheme } from "@emotion/react"
 
 import {
   StyledWidgetLabelHelpInline,
@@ -47,141 +47,123 @@ export interface BaseColorPickerProps {
   labelVisibility?: LabelVisibilityOptions
   onChange: (value: string) => any
   help?: string
-  theme: EmotionTheme
 }
 
-interface State {
-  /**
-   * The value specified by the user via the UI. If the user didn't touch this
-   * widget's UI, the default value is used.
-   */
-  value: string
-}
+const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
+  const {
+    width,
+    showValue,
+    label,
+    labelVisibility,
+    help,
+    disabled,
+    value: propValue,
+  } = props
+  const [value, setValue] = React.useState(propValue)
+  const [popoverKey, setPopoverKey] = React.useState(0)
+  const theme: EmotionTheme = useTheme()
 
-class BaseColorPicker extends React.PureComponent<
-  BaseColorPickerProps,
-  State
-> {
-  public state: State = {
-    value: this.props.value,
-  }
-
-  public componentDidUpdate(prevProps: BaseColorPickerProps): void {
-    if (
-      prevProps.value !== this.props.value &&
-      this.props.value !== this.state.value
-    ) {
-      this.setState((_, prevProps) => {
-        return { value: prevProps.value }
-      })
+  React.useEffect(() => {
+    // 2021.06.30 - on Streamlit Sharing, ColorPicker throws a cross-origin
+    // error when its popover window is closed. There's an issue open in the
+    // react-color repo https://github.com/casesandberg/react-color/issues/806 -
+    // but it's months old and hasn't had a developer response.
+    const handleError = (error: ErrorEvent): void => {
+      if (error.error?.name === "SecurityError") {
+        logWarning(
+          `Swallowing ColorPicker SecurityError '${error.error.name}: ${error.error.message}'`
+        )
+        // We force an update by changing the key of the popover after this error,
+        // to re-mount the UIPopover - because the error sometimes cause it to be
+        // unmounted. This is an unfortunate hack.
+        setPopoverKey(prev => prev + 1)
+      }
     }
-  }
+
+    window.addEventListener("error", handleError)
+    return () => window.removeEventListener("error", handleError)
+  }, [])
 
   // Note: This is a "local" onChange handler used to update the color preview
   // (allowing the user to click and drag). this.props.onChange is only called
   // when the ColorPicker popover is closed.
-  private onColorChange = (color: ColorResult): void => {
-    this.setState({ value: color.hex })
+  const onColorChange = (color: ColorResult): void => {
+    setValue(color.hex)
   }
 
-  private onColorClose = (): void => {
-    this.props.onChange(this.state.value)
+  const onColorClose = (): void => {
+    props.onChange(value)
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public componentDidCatch(error: Error): void {
-    if (error?.name === "SecurityError") {
-      // 2021.06.30 - on Streamlit Sharing, ColorPicker throws a cross-origin
-      // error when its popover window is closed. There's an issue open in the
-      // react-color repo https://github.com/casesandberg/react-color/issues/806 -
-      // but it's months old and hasn't had a developer response.
-      logWarning(
-        `Swallowing ColorPicker SecurityError '${error.name}: ${error.message}'`
-      )
-
-      // We force an update after this error, to re-mount the UIPopover -
-      // because the error sometimes cause it to be unmounted. This is an
-      // unfortunate hack.
-      this.forceUpdate()
-    } else {
-      throw error
-    }
-  }
-
-  public render(): React.ReactNode {
-    const { width, showValue, label, labelVisibility, help, disabled } =
-      this.props
-    const { value } = this.state
-
-    const customChromePickerStyles = {
-      default: {
-        picker: {
-          borderRadius: `${this.props.theme.radii.default}`,
-          // Remove the box shadow from the color picker component since we're already
-          // applying a shadow to the popover that contains the color picker.
-          boxShadow: "none",
-        },
-        saturation: {
-          borderRadius: `${this.props.theme.radii.default} ${this.props.theme.radii.default} 0 0`,
-          // Prevent text selection while the mouse is clicked to select a color. This
-          // can be annoying if you select a color and then move the mouse outside the
-          // color picker.
-          // We need the `as const` here to prevent a typing error (even though it
-          // also works correctly without it).
-          userSelect: "none" as const,
-        },
-        body: {
-          padding: this.props.theme.spacing.xl,
-        },
+  const customChromePickerStyles = {
+    default: {
+      picker: {
+        borderRadius: `${theme.radii.default}`,
+        // Remove the box shadow from the color picker component since we're already
+        // applying a shadow to the popover that contains the color picker.
+        boxShadow: "none",
       },
-    }
-
-    return (
-      <StyledColorPicker
-        className="stColorPicker"
-        data-testid="stColorPicker"
-        width={width}
-        disabled={disabled}
-      >
-        <WidgetLabel
-          label={label}
-          disabled={disabled}
-          labelVisibility={labelVisibility}
-        >
-          {help && (
-            <StyledWidgetLabelHelpInline>
-              <TooltipIcon content={help} placement={Placement.TOP_RIGHT} />
-            </StyledWidgetLabelHelpInline>
-          )}
-        </WidgetLabel>
-        <UIPopover
-          onClose={this.onColorClose}
-          placement="bottomLeft"
-          content={() => (
-            <StyledChromePicker data-testid="stColorPickerPopover">
-              <ChromePicker
-                color={value}
-                onChange={this.onColorChange}
-                disableAlpha={true}
-                styles={customChromePickerStyles}
-              />
-            </StyledChromePicker>
-          )}
-        >
-          <StyledColorPreview disabled={disabled}>
-            <StyledColorBlock
-              data-testid="stColorPickerBlock"
-              backgroundColor={value}
-              disabled={disabled}
-            />
-            {showValue && (
-              <StyledColorValue>{value.toUpperCase()}</StyledColorValue>
-            )}
-          </StyledColorPreview>
-        </UIPopover>
-      </StyledColorPicker>
-    )
+      saturation: {
+        borderRadius: `${theme.radii.default} ${theme.radii.default} 0 0`,
+        // Prevent text selection while the mouse is clicked to select a color. This
+        // can be annoying if you select a color and then move the mouse outside the
+        // color picker.
+        // We need the `as const` here to prevent a typing error (even though it
+        // also works correctly without it).
+        userSelect: "none" as const,
+      },
+      body: {
+        padding: theme.spacing.xl,
+      },
+    },
   }
+
+  return (
+    <StyledColorPicker
+      className="stColorPicker"
+      data-testid="stColorPicker"
+      width={width}
+      disabled={disabled}
+    >
+      <WidgetLabel
+        label={label}
+        disabled={disabled}
+        labelVisibility={labelVisibility}
+      >
+        {help && (
+          <StyledWidgetLabelHelpInline>
+            <TooltipIcon content={help} placement={Placement.TOP_RIGHT} />
+          </StyledWidgetLabelHelpInline>
+        )}
+      </WidgetLabel>
+      <UIPopover
+        key={popoverKey}
+        onClose={onColorClose}
+        placement="bottomLeft"
+        content={() => (
+          <StyledChromePicker data-testid="stColorPickerPopover">
+            <ChromePicker
+              color={value}
+              onChange={onColorChange}
+              disableAlpha={true}
+              styles={customChromePickerStyles}
+            />
+          </StyledChromePicker>
+        )}
+      >
+        <StyledColorPreview disabled={disabled}>
+          <StyledColorBlock
+            data-testid="stColorPickerBlock"
+            backgroundColor={value}
+            disabled={disabled}
+          />
+          {showValue && (
+            <StyledColorValue>{value.toUpperCase()}</StyledColorValue>
+          )}
+        </StyledColorPreview>
+      </UIPopover>
+    </StyledColorPicker>
+  )
 }
 
-export default withTheme(BaseColorPicker)
+export default BaseColorPicker
