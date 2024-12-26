@@ -38,6 +38,12 @@ export const StyledChromePicker = styled.div(({ theme }) => ({
   div: {
     fontFamily: `${theme.genericFonts.bodyFont} !important`,
   },
+  label: {
+    fontSize: `${theme.fontSizes.sm} !important`,
+  },
+  input: {
+    fontSize: `${theme.fontSizes.sm} !important`,
+  },
 }))
 
 export interface StyledColorPreviewProps {
