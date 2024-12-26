@@ -140,6 +140,8 @@ def generate_chart(
     height: int | None = None,
     # Bar & Area charts only:
     stack: bool | ChartStackType | None = None,
+    sort_by: str | None = None,
+    order: Literal["ascending", "descending"] = "ascending",
 ) -> tuple[alt.Chart | alt.LayerChart, AddRowsMetadata]:
     """Function to use the chart's type, data columns and indices to figure out the chart's spec."""
     import altair as alt
@@ -194,6 +196,8 @@ def generate_chart(
         x_axis_label,
         y_axis_label,
         stack,
+        sort_by,
+        order,
     )
 
     # Create a Chart with x and y encodings.
@@ -792,6 +796,8 @@ def _get_axis_encodings(
     x_axis_label: str | None,
     y_axis_label: str | None,
     stack: bool | ChartStackType | None,
+    sort_by: str | None = None,
+    order: Literal["ascending", "descending"] = "ascending",
 ) -> tuple[alt.X, alt.Y]:
     stack_encoding: alt.X | alt.Y
     if chart_type == ChartType.HORIZONTAL_BAR:
@@ -800,12 +806,12 @@ def _get_axis_encodings(
             df, y_column, y_from_user, x_axis_label, chart_type
         )
         y_encoding = _get_y_encoding(
-            df, x_column, x_from_user, y_axis_label, chart_type
+            df, x_column, x_from_user, y_axis_label, chart_type, sort_by, order
         )
         stack_encoding = x_encoding
     else:
         x_encoding = _get_x_encoding(
-            df, x_column, x_from_user, x_axis_label, chart_type
+            df, x_column, x_from_user, x_axis_label, chart_type, sort_by, order
         )
         y_encoding = _get_y_encoding(
             df, y_column, y_from_user, y_axis_label, chart_type
@@ -824,6 +830,8 @@ def _get_x_encoding(
     x_from_user: str | Sequence[str] | None,
     x_axis_label: str | None,
     chart_type: ChartType,
+    sort_by: str | None = None,
+    order: Literal["ascending", "descending"] = "ascending",
 ) -> alt.X:
     import altair as alt
 
@@ -857,12 +865,22 @@ def _get_x_encoding(
     # grid lines on x axis for horizontal bar charts only
     grid = True if chart_type == ChartType.HORIZONTAL_BAR else False
 
+    # Add sort parameter if specified and valid
+    sort = None
+    if sort_by is not None:
+        if sort_by not in df.columns:
+            raise StreamlitColumnNotFoundError(df, sort_by)
+        # For bar charts, we want to sort the x-axis based on the y values
+        # The minus sign makes it sort in descending order
+        sort = alt.EncodingSortField(field=sort_by, order=order)
+
     return alt.X(
         x_field,
         title=x_title,
         type=_get_x_encoding_type(df, chart_type, x_column),
         scale=alt.Scale(),
         axis=_get_axis_config(df, x_column, grid=grid),
+        sort=sort,
     )
 
 
@@ -872,6 +890,8 @@ def _get_y_encoding(
     y_from_user: str | Sequence[str] | None,
     y_axis_label: str | None,
     chart_type: ChartType,
+    sort_by: str | None = None,
+    order: Literal["ascending", "descending"] = "ascending",
 ) -> alt.Y:
     import altair as alt
 
@@ -905,12 +925,20 @@ def _get_y_encoding(
     # grid lines on y axis for all charts except horizontal bar charts
     grid = False if chart_type == ChartType.HORIZONTAL_BAR else True
 
+    # Add sort parameter if specified and valid - for horizontal bar charts
+    sort = None
+    if sort_by is not None and chart_type == ChartType.HORIZONTAL_BAR:
+        if sort_by not in df.columns:
+            raise StreamlitColumnNotFoundError(df, sort_by)
+        sort = alt.EncodingSortField(field=sort_by, order=order)
+
     return alt.Y(
         field=y_field,
         title=y_title,
         type=_get_y_encoding_type(df, chart_type, y_column),
         scale=alt.Scale(),
         axis=_get_axis_config(df, y_column, grid=grid),
+        sort=sort,
     )
 
 

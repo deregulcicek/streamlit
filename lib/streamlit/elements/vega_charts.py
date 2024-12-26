@@ -998,6 +998,8 @@ class VegaChartsMixin:
         color: str | Color | list[Color] | None = None,
         horizontal: bool = False,
         stack: bool | ChartStackType | None = None,
+        sort_by: str | None = None,
+        order: Literal["ascending", "descending"] = "ascending",
         width: int | None = None,
         height: int | None = None,
         use_container_width: bool = True,
@@ -1097,6 +1099,15 @@ class VegaChartsMixin:
               normalized to 100% of the height of the chart.
             - ``"center"``: The bars are stacked and shifted to center the
               total height around an axis.
+
+        sort_by : str or None
+            Column name to sort the bars by. If provided, bars will be sorted based on
+            the values in this column. If None (default), bars keep their original order.
+            This does not work for multiple y columns.
+
+        order : "ascending" or "descending"
+            The order to sort the bars when `sort_by` is specified. Defaults to
+            `"ascending"`.
 
         width : int or None
             Desired width of the chart expressed in pixels. If ``width`` is
@@ -1241,6 +1252,8 @@ class VegaChartsMixin:
             width=width,
             height=height,
             stack=stack,
+            sort_by=sort_by,
+            order=order,
         )
         return cast(
             "DeltaGenerator",
