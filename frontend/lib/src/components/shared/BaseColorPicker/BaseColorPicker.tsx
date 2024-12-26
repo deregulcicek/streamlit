@@ -47,7 +47,7 @@ export interface BaseColorPickerProps {
   labelVisibility?: LabelVisibilityOptions
   onChange: (value: string) => any
   help?: string
-  theme: EmotionTheme
+  theme?: EmotionTheme
 }
 
 interface State {
