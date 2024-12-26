@@ -16,6 +16,7 @@
 
 import React from "react"
 
+import { withTheme } from "@emotion/react"
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
 
@@ -27,6 +28,7 @@ import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
 import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
 import { LabelVisibilityOptions } from "@streamlit/lib/src/util/utils"
 import { logWarning } from "@streamlit/lib/src/util/log"
+import { EmotionTheme } from "@streamlit/lib/src/theme"
 
 import {
   StyledChromePicker,
@@ -45,6 +47,7 @@ export interface BaseColorPickerProps {
   labelVisibility?: LabelVisibilityOptions
   onChange: (value: string) => any
   help?: string
+  theme: EmotionTheme
 }
 
 interface State {
@@ -110,6 +113,21 @@ class BaseColorPicker extends React.PureComponent<
       this.props
     const { value } = this.state
 
+    const customChromePickerStyles = {
+      default: {
+        picker: {
+          borderRadius: `${this.props.theme.radii.default}`,
+          boxShadow: "none",
+        },
+        saturation: {
+          borderRadius: `${this.props.theme.radii.default} ${this.props.theme.radii.default} 0 0`,
+        },
+        body: {
+          padding: this.props.theme.spacing.xl,
+        },
+      },
+    }
+
     return (
       <StyledColorPicker
         className="stColorPicker"
@@ -136,6 +154,7 @@ class BaseColorPicker extends React.PureComponent<
                 color={value}
                 onChange={this.onColorChange}
                 disableAlpha={true}
+                styles={customChromePickerStyles}
               />
             </StyledChromePicker>
           )}
@@ -156,4 +175,4 @@ class BaseColorPicker extends React.PureComponent<
   }
 }
 
-export default BaseColorPicker
+export default withTheme(BaseColorPicker)
