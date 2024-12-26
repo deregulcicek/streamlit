@@ -63,6 +63,11 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
   const [popoverKey, setPopoverKey] = React.useState(0)
   const theme: EmotionTheme = useTheme()
 
+  // Reset the value when the prop value changes
+  React.useEffect(() => {
+    setValue(propValue)
+  }, [propValue])
+
   React.useEffect(() => {
     // 2021.06.30 - on Streamlit Sharing, ColorPicker throws a cross-origin
     // error when its popover window is closed. There's an issue open in the
