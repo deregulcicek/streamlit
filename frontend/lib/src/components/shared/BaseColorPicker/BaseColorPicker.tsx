@@ -117,6 +117,8 @@ class BaseColorPicker extends React.PureComponent<
       default: {
         picker: {
           borderRadius: `${this.props.theme.radii.default}`,
+          // Remove the box shadow from the color picker component since we're already
+          // applying a shadow to the popover that contains the color picker.
           boxShadow: "none",
         },
         saturation: {
