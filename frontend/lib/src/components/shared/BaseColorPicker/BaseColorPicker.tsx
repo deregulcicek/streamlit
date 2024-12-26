@@ -126,7 +126,7 @@ class BaseColorPicker extends React.PureComponent<
           // Prevent text selection while the mouse is clicked to select a color. This
           // can be annoying if you select a color and then move the mouse outside the
           // color picker.
-          userSelect: "none",
+          userSelect: "none" as const,
         },
         body: {
           padding: this.props.theme.spacing.xl,
