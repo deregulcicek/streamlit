@@ -28,6 +28,7 @@ import { StyledStackTrace } from "@streamlit/lib/src/components/shared/ErrorElem
 import {
   StyledExceptionLinks,
   StyledExceptionMessage,
+  StyledExceptionWrapper,
   StyledMessageType,
   StyledStackTraceContent,
   StyledStackTraceRow,
@@ -85,7 +86,7 @@ function ExceptionMessage({
 function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
   // Build the stack trace display, if we got a stack trace.
   return (
-    <>
+    <div>
       <StyledStackTraceTitle>Traceback:</StyledStackTraceTitle>
       <StyledStackTrace>
         <StyledStackTraceContent>
@@ -101,7 +102,7 @@ function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
           </StyledCode>
         </StyledStackTraceContent>
       </StyledStackTrace>
-    </>
+    </div>
   )
 }
 
@@ -125,24 +126,26 @@ export default function ExceptionElement({
         kind={element.isWarning ? Kind.WARNING : Kind.ERROR}
         width={width}
       >
-        <StyledExceptionMessage data-testid="stExceptionMessage">
-          <ExceptionMessage
-            type={element.type}
-            message={element.message}
-            messageIsMarkdown={element.messageIsMarkdown}
-          />
-        </StyledExceptionMessage>
-        {element.stackTrace && element.stackTrace.length > 0 ? (
-          <StackTrace stackTrace={element.stackTrace} />
-        ) : null}
-        <StyledExceptionLinks>
-          <a href={searchUrl} target="_blank" rel="noopener noreferrer">
-            Ask Google
-          </a>
-          <a href={chatGptUrl} target="_blank" rel="noopener noreferrer">
-            Ask ChatGPT
-          </a>
-        </StyledExceptionLinks>
+        <StyledExceptionWrapper>
+          <StyledExceptionMessage data-testid="stExceptionMessage">
+            <ExceptionMessage
+              type={element.type}
+              message={element.message}
+              messageIsMarkdown={element.messageIsMarkdown}
+            />
+          </StyledExceptionMessage>
+          {element.stackTrace && element.stackTrace.length > 0 ? (
+            <StackTrace stackTrace={element.stackTrace} />
+          ) : null}
+          <StyledExceptionLinks>
+            <a href={searchUrl} target="_blank" rel="noopener noreferrer">
+              Ask Google
+            </a>
+            <a href={chatGptUrl} target="_blank" rel="noopener noreferrer">
+              Ask ChatGPT
+            </a>
+          </StyledExceptionLinks>
+        </StyledExceptionWrapper>
       </AlertContainer>
     </div>
   )
