@@ -64,7 +64,7 @@ describe("VirtualDropdown element", () => {
   it("renders a FixedSizeList when it has children", () => {
     render(
       <VirtualDropdown>
-        <Option item={{ value: "abc" }} />
+        <Option item={{ value: "abc", label: "abc" }} />
       </VirtualDropdown>
     )
 
@@ -74,5 +74,14 @@ describe("VirtualDropdown element", () => {
 
     // each option will have a tooltip attached to it
     expect(screen.getAllByTestId("stTooltipHoverTarget")).toHaveLength(1)
+  })
+
+  it("renders markdown in dropdown options", () => {
+    render(
+      <VirtualDropdown>
+        <Option item={{ value: "bold", label: "**Bold** text" }} />
+      </VirtualDropdown>
+    )
+    expect(screen.getByText("Bold")).toHaveProperty("tagName", "STRONG")
   })
 })

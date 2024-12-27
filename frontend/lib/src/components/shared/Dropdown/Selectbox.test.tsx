@@ -211,6 +211,12 @@ describe("Selectbox widget", () => {
     rerender(<Selectbox {...props} />)
     expect(screen.getByText(props.options[1])).toBeInTheDocument()
   })
+
+  it("renders markdown in selectbox value", () => {
+    const props = getProps({ value: 0, options: ["**Bold** text"] })
+    render(<Selectbox {...props} />)
+    expect(screen.getByText("Bold")).toHaveProperty("tagName", "STRONG")
+  })
 })
 
 describe("Selectbox widget with optional props", () => {
