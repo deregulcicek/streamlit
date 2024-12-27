@@ -25,6 +25,7 @@ import {
   Placement,
 } from "@streamlit/lib/src/components/shared/Tooltip"
 import { convertRemToPx } from "@streamlit/lib/src/theme/utils"
+import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown"
 
 import { ThemedStyledDropdownListItem } from "./styled-components"
 
@@ -50,7 +51,13 @@ function FixedSizeListItem(props: FixedSizeListItemProps): ReactElement {
       {...restChildProps}
     >
       <OverflowTooltip content={item.label} placement={Placement.AUTO}>
-        {item.label}
+        <StreamlitMarkdown
+          source={item.label}
+          allowHTML={false}
+          isLabel
+          largerLabel
+          disableLinks
+        />
       </OverflowTooltip>
     </ThemedStyledDropdownListItem>
   )

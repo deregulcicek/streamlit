@@ -44,6 +44,7 @@ import {
   useBasicWidgetState,
   ValueWithSource,
 } from "@streamlit/lib/src/hooks/useBasicWidgetState"
+import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown"
 
 export interface Props {
   disabled: boolean
@@ -328,6 +329,17 @@ const Multiselect: FC<Props> = props => {
                       height: `calc(${theme.sizes.minElementHeight} - 2 * ${theme.spacing.xs})`,
                       maxWidth: `calc(100% - ${theme.spacing.lg})`,
                     },
+                  },
+                  Text: {
+                    component: ({ children }: { children: string }) => (
+                      <StreamlitMarkdown
+                        source={children}
+                        allowHTML={false}
+                        isLabel
+                        largerLabel
+                        disableLinks
+                      />
+                    ),
                   },
                   Action: {
                     style: {
