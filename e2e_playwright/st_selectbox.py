@@ -101,8 +101,12 @@ v12 = st.selectbox(
 )
 st.write("value 12:", v12)
 
+multiple_cols = st.columns(5)
+i13 = multiple_cols[0].selectbox("selectbox 13", ["A long option"], index=0)
+st.text(f"value 13: {i13}")
+
 st.selectbox(
-    "selectbox 13 (markdown support)",
+    "selectbox 14 (markdown support)",
     options=[
         "**Bold** text",
         "_Italic_, ~~struck through~~, and `code`",
