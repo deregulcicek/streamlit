@@ -154,6 +154,11 @@ const Selectbox: React.FC<Props> = ({
 
   const filterOptions = useCallback(
     (options: readonly Option[], filterValue: string): readonly Option[] => {
+      // If filter is None/null, return all options without filtering
+      if (filter === null || filter === undefined) {
+        return options
+      }
+
       switch (filter) {
         case "fuzzy":
           return fuzzyFilterSelectOptions(
@@ -291,8 +296,15 @@ const Selectbox: React.FC<Props> = ({
           },
           Input: {
             props: {
-              // Change the 'readonly' prop to hide the mobile keyboard if options < 10
-              readOnly: isMobile && !showKeyboardOnMobile ? "readonly" : null,
+              // Make input readonly when filter is None/null or when on mobile with <10
+              // options (on mobile this is especially annoying because it opens the
+              // keyboard as soon as you click on the selectbox).
+              readOnly:
+                filter === null ||
+                filter === undefined ||
+                (isMobile && !showKeyboardOnMobile)
+                  ? "readonly"
+                  : null,
             },
             style: () => ({
               lineHeight: theme.lineHeights.inputWidget,

@@ -115,7 +115,7 @@ const Selectbox: FC<Props> = ({
       help={help}
       placeholder={placeholder}
       clearable={clearable}
-      filter={filter}
+      filter={filter ?? undefined}
     />
   )
 }
