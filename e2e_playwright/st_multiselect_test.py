@@ -202,9 +202,12 @@ def test_multiselect_no_valid_options(app: Page):
 def test_multiselect_single_selection(app: Page, assert_snapshot: ImageCompareFunction):
     """Should allow selections."""
     select_for_kth_multiselect(app, "Female", 1, True)
-    expect(app.get_by_test_id("stMultiSelect").locator("span").nth(1)).to_have_text(
-        "Female", use_inner_text=True
-    )
+    expect(
+        app.get_by_test_id("stMultiSelect")
+        .nth(1)
+        .get_by_test_id("stMarkdownContainer")
+        .nth(1)
+    ).to_have_text("Female")
     assert_snapshot(
         app.get_by_test_id("stMultiSelect").nth(1), name="st_multiselect-selection"
     )
