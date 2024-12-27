@@ -70,7 +70,6 @@ export function fuzzyFilterSelectOptions(
   if (!pattern) {
     return options
   }
-
   const filteredOptions = options.filter((opt: SelectOption) =>
     hasMatch(pattern, opt.label)
   )
@@ -79,7 +78,6 @@ export function fuzzyFilterSelectOptions(
   ).reverse()
 }
 
-// Add strict filtering function
 function strictFilterSelectOptions(
   options: SelectOption[],
   pattern: string
