@@ -25,7 +25,7 @@ import { mockConvertRemToPx } from "@streamlit/lib/src/mocks/mocks"
 import VirtualDropdown from "./VirtualDropdown"
 
 interface OptionProps {
-  item?: { value: string }
+  item?: { value: string; label: string }
 }
 
 function Option(props: OptionProps): ReactElement {
