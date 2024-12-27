@@ -153,6 +153,9 @@ class MultiSelectMixin:
             ``options`` is dataframe-like, the first column will be used. Each
             label will be cast to ``str`` internally by default.
 
+            The options can also be markdown-formatted, see description for ``label``
+            above. Links are not allowed in the options.
+
         default: Iterable of V, V, or None
             List of default values. Can also be a single value.
 

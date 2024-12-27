@@ -159,6 +159,9 @@ class SelectboxMixin:
             ``options`` is dataframe-like, the first column will be used. Each
             label will be cast to ``str`` internally by default.
 
+            The options can also be markdown-formatted, see description for ``label``
+            above. Links are not allowed in the options.
+
         index : int
             The index of the preselected option on first render. If ``None``,
             will initialize empty and return ``None`` until the user selects an option.
