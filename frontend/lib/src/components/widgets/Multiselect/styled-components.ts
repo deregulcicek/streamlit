@@ -21,3 +21,8 @@ export const StyledUISelect = styled.div(({ theme }) => ({
     background: theme.colors.fadedText05,
   },
 }))
+
+export const StyledValueText = styled.div({
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+})

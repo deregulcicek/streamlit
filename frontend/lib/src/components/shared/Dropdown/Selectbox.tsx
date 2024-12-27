@@ -37,6 +37,8 @@ import {
 import { EmotionTheme } from "@streamlit/lib/src/theme"
 import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown"
 
+import { StyledValueText } from "./styled-components"
+
 const NO_OPTIONS_MSG = "No options to select."
 
 export interface Props {
@@ -261,13 +263,15 @@ const Selectbox: React.FC<Props> = ({
           },
           SingleValue: {
             component: ({ children }: { children: string }) => (
-              <StreamlitMarkdown
-                source={children}
-                allowHTML={false}
-                isLabel
-                largerLabel
-                disableLinks
-              />
+              <StyledValueText>
+                <StreamlitMarkdown
+                  source={children}
+                  allowHTML={false}
+                  isLabel
+                  largerLabel
+                  disableLinks
+                />
+              </StyledValueText>
             ),
           },
         }}

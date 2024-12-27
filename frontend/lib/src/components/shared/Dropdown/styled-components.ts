@@ -44,3 +44,8 @@ export const ThemedStyledDropdownListItem = styled(StyledDropdownListItem, {
     },
   }
 })
+
+export const StyledValueText = styled.div({
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+})
