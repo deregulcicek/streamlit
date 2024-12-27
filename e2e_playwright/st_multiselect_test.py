@@ -69,7 +69,7 @@ def del_from_kth_multiselect(page: Page, option_text: str, k: int):
 def test_multiselect_on_load(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Should show widgets correctly when loaded."""
     multiselect_elements = themed_app.get_by_test_id("stMultiSelect")
-    expect(multiselect_elements).to_have_count(12)
+    expect(multiselect_elements).to_have_count(13)
     for idx, el in enumerate(multiselect_elements.all()):
         assert_snapshot(el, name="st_multiselect-" + str(idx))
 
@@ -246,3 +246,13 @@ def test_check_top_level_class(app: Page):
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "multiselect 9")).to_be_visible()
+
+
+def test_markdown_support_dropdown(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that markdown is supported in the dropdown of st.multiselect."""
+    # Click to open dropdown
+    app.get_by_test_id("stMultiSelect").nth(12).locator("input").click()
+
+    # Take snapshot of dropdown
+    selection_dropdown = app.locator('[data-baseweb="popover"]').first
+    assert_snapshot(selection_dropdown, name="st_multiselect-markdown_support_dropdown")

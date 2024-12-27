@@ -87,3 +87,17 @@ i12 = multiple_cols[0].multiselect(
     "multiselect 12", ["A long option"], default="A long option"
 )
 st.text(f"value 12: {i12}")
+
+st.multiselect(
+    "multiselect 13 (markdown support)",
+    options=[
+        "**Bold** text",
+        "_Italic_, ~~struck through~~, and `code`",
+        ":red[Red text], arrows -> <-, and icons :sunglasses: :streamlit: :material/check_circle:",
+        "# Heading",
+        "> Blockquote",
+        "[Link](https://streamlit.io)",
+        "| Column 1 | Column 2 |\n|----------|----------|\n| Table | Content |",
+    ],
+    default=["**Bold** text"],
+)
