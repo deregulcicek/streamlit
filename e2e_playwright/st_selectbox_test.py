@@ -41,6 +41,7 @@ def test_selectbox_widget_rendering(
     assert_snapshot(selectbox_widgets.nth(11), name="st_selectbox-value_from_state")
     assert_snapshot(selectbox_widgets.nth(12), name="st_selectbox-markdown_support")
 
+
 def test_selectbox_has_correct_initial_values(app: Page):
     """Test that st.selectbox returns the correct initial values."""
     markdown_elements = app.get_by_test_id("stMarkdown")
@@ -202,6 +203,7 @@ def test_check_top_level_class(app: Page):
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "selectbox8")).to_be_visible()
+
 
 def test_markdown_support_dropdown(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that markdown is supported in the dropdown of st.selectbox."""
