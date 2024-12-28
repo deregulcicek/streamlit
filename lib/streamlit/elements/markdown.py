@@ -293,6 +293,64 @@ class MarkdownMixin:
         divider_proto.element_type = MarkdownProto.Type.DIVIDER
         return self.dg._enqueue("markdown", divider_proto)
 
+    @gather_metrics("badge")
+    def badge(
+        self,
+        label: str | list[str],
+        icon: str | list[str],
+        color: str | list[str],
+    ) -> DeltaGenerator:
+        """Display one or multiple colored badges with an icon and label.
+
+        Parameters
+        ----------
+        label : str or list of str
+            The text to display in the badge(s).
+        icon : str or list of str
+            The icon name(s) to display, in the format ":material/icon_name:".
+        color : str or list of str
+            The color(s) to use for the badge(s). Supported colors are: blue, green,
+            orange, red, violet, gray/grey, rainbow, primary.
+
+        Examples
+        --------
+        >>> import streamlit as st
+        >>>
+        >>> # Single badge
+        >>> st.badge("Home", ":material/home:", "blue")
+        >>>
+        >>> # Multiple badges
+        >>> st.badge(
+        ...     ["Home", "Success", "Warning"],
+        ...     [":material/home:", ":material/check:", ":material/warning:"],
+        ...     ["blue", "green", "red"],
+        ... )
+        """
+        badge_proto = MarkdownProto()
+
+        # Convert inputs to lists if they're single values
+        labels = [label] if isinstance(label, str) else label
+        icons = [icon] if isinstance(icon, str) else icon
+        colors = (
+            [color]
+            if isinstance(color, str)
+            else [color] * len(labels)
+            if isinstance(color, str)
+            else list(color)
+        )
+
+        # Validate inputs
+        if not (len(labels) == len(icons) == len(colors)):
+            raise ValueError("All inputs must have the same length")
+
+        # Generate badge markdown
+        badges = [
+            f":{c}-background[:{c}[{i} {l}]]" for l, i, c in zip(labels, icons, colors)
+        ]
+        badge_proto.body = " &nbsp; ".join(badges)
+        badge_proto.element_type = MarkdownProto.Type.NATIVE
+        return self.dg._enqueue("markdown", badge_proto)
+
     @property
     def dg(self) -> DeltaGenerator:
         """Get our DeltaGenerator."""
