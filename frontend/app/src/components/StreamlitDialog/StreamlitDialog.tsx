@@ -45,6 +45,7 @@ export type PlainEventHandler = () => void
 
 interface SettingsProps extends SettingsDialogProps {
   type: DialogType.SETTINGS
+  sessionInfo: SessionInfo
 }
 
 interface ThemeCreatorProps extends ThemeCreatorDialogProps {
@@ -100,8 +101,6 @@ export function StreamlitDialog(dialogProps: DialogProps): ReactNode {
 interface AboutProps {
   type: DialogType.ABOUT
 
-  sessionInfo: SessionInfo
-
   /** Callback to close the dialog */
   onClose: PlainEventHandler
 
@@ -110,58 +109,25 @@ interface AboutProps {
 
 /** About Dialog */
 function aboutDialog(props: AboutProps): ReactElement {
-  if (props.aboutSectionMd) {
-    const markdownStyle: CSSProperties = {
-      overflowY: "auto",
-      overflowX: "hidden",
-      maxHeight: "35vh",
-    }
+  const markdownStyle: CSSProperties = {
+    overflowY: "auto",
+    overflowX: "hidden",
+    maxHeight: "35vh",
+  }
 
-    // Markdown New line is 2 spaces + \n
-    const newLineMarkdown = "  \n"
-    const StreamlitInfo = [
-      `Made with Streamlit v${props.sessionInfo.current.streamlitVersion}`,
-      STREAMLIT_HOME_URL,
-      `Copyright ${new Date().getFullYear()} Snowflake Inc. All rights reserved.`,
-    ].join(newLineMarkdown)
-
-    const source = `${props.aboutSectionMd} ${newLineMarkdown} ${newLineMarkdown} ${StreamlitInfo}`
-
-    return (
-      <Modal isOpen onClose={props.onClose}>
-        <ModalHeader>About</ModalHeader>
-        <ModalBody>
-          <StyledAboutInfo>
+  return (
+    <Modal isOpen onClose={props.onClose}>
+      <ModalHeader>About</ModalHeader>
+      <ModalBody>
+        <StyledAboutInfo>
+          {props.aboutSectionMd && (
             <StreamlitMarkdown
-              source={source}
+              source={props.aboutSectionMd}
               allowHTML={false}
               style={markdownStyle}
             />
-          </StyledAboutInfo>
-        </ModalBody>
-      </Modal>
-    )
-  }
-  return (
-    <Modal isOpen onClose={props.onClose}>
-      <ModalHeader>Made with</ModalHeader>
-      <ModalBody>
-        <div>
-          {/* Show our version string only if SessionInfo has been created. If Streamlit
-          hasn't yet connected to the server, the SessionInfo singleton will be null. */}
-          {props.sessionInfo.isSet && (
-            <>
-              Streamlit v{props.sessionInfo.current.streamlitVersion}
-              <br />
-            </>
           )}
-          <StyledAboutLink href={STREAMLIT_HOME_URL}>
-            {STREAMLIT_HOME_URL}
-          </StyledAboutLink>
-          <br />
-          Copyright {new Date().getFullYear()} Snowflake Inc. All rights
-          reserved.
-        </div>
+        </StyledAboutInfo>
       </ModalBody>
     </Modal>
   )

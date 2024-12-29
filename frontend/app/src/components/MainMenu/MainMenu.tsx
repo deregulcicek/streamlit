@@ -336,11 +336,6 @@ function MainMenu(props: Readonly<Props>): ReactElement {
 
   const isServerDisconnected = !props.isServerConnected
 
-  const showAboutMenu =
-    props.toolbarMode != Config.ToolbarMode.MINIMAL ||
-    (props.toolbarMode == Config.ToolbarMode.MINIMAL &&
-      props.menuItems?.aboutSectionMd)
-
   const coreMenuItems = {
     DIVIDER: { isDivider: true },
     rerun: {
@@ -375,7 +370,7 @@ function MainMenu(props: Readonly<Props>): ReactElement {
         },
       }),
     settings: { onClick: props.settingsCallback, label: "Settings" },
-    ...(showAboutMenu && {
+    ...(props.menuItems?.aboutSectionMd && {
       about: { onClick: props.aboutCallback, label: "About" },
     }),
   }

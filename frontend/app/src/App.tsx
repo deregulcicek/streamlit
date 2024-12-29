@@ -1657,6 +1657,7 @@ export class App extends PureComponent<Props, State> {
   settingsCallback = (animateModal = true): void => {
     const newDialog: DialogProps = {
       type: DialogType.SETTINGS,
+      sessionInfo: this.sessionInfo,
       isServerConnected: this.isServerConnected(),
       settings: this.state.userSettings,
       allowRunOnSave: this.state.allowRunOnSave,
@@ -1677,7 +1678,6 @@ export class App extends PureComponent<Props, State> {
     const { menuItems } = this.state
     const newDialog: DialogProps = {
       type: DialogType.ABOUT,
-      sessionInfo: this.sessionInfo,
       onClose: this.closeDialog,
       aboutSectionMd: menuItems?.aboutSectionMd,
     }
