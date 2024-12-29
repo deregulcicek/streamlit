@@ -124,16 +124,3 @@ export const StyledDeployErrorContent = styled.div(({ theme }) => ({
     paddingLeft: theme.spacing.twoXL,
   },
 }))
-
-export const StyledAboutInfo = styled.div(({ theme }) => ({
-  padding: `0 0 ${theme.spacing.lg} 0`,
-  overflowY: "scroll",
-}))
-
-export const StyledAboutLink = styled.a(({ theme }) => ({
-  color: `${theme.colors.linkText} !important`,
-
-  "&:hover": {
-    color: `${darken(theme.colors.linkText, 0.15)} !important`,
-  },
-}))

@@ -28,18 +28,13 @@ import {
   StreamlitMarkdown,
   StreamlitSyntaxHighlighter,
 } from "@streamlit/lib"
-import { STREAMLIT_HOME_URL } from "@streamlit/app/src/urls"
 
 import { SettingsDialog, Props as SettingsDialogProps } from "./SettingsDialog"
 import ThemeCreatorDialog, {
   Props as ThemeCreatorDialogProps,
 } from "./ThemeCreatorDialog"
 import { DeployDialog, DeployDialogProps } from "./DeployDialog"
-import {
-  StyledAboutInfo,
-  StyledAboutLink,
-  StyledDeployErrorContent,
-} from "./styled-components"
+import { StyledDeployErrorContent } from "./styled-components"
 
 export type PlainEventHandler = () => void
 
@@ -109,25 +104,13 @@ interface AboutProps {
 
 /** About Dialog */
 function aboutDialog(props: AboutProps): ReactElement {
-  const markdownStyle: CSSProperties = {
-    overflowY: "auto",
-    overflowX: "hidden",
-    maxHeight: "35vh",
-  }
-
   return (
     <Modal isOpen onClose={props.onClose}>
       <ModalHeader>About</ModalHeader>
       <ModalBody>
-        <StyledAboutInfo>
-          {props.aboutSectionMd && (
-            <StreamlitMarkdown
-              source={props.aboutSectionMd}
-              allowHTML={false}
-              style={markdownStyle}
-            />
-          )}
-        </StyledAboutInfo>
+        {props.aboutSectionMd && (
+          <StreamlitMarkdown source={props.aboutSectionMd} allowHTML={false} />
+        )}
       </ModalBody>
     </Modal>
   )
