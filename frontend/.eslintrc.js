@@ -68,6 +68,7 @@ module.exports = {
     "streamlit-custom",
     "vitest",
     "react-compiler",
+    "react-refresh",
   ],
   // Place to specify ESLint rules.
   // Can be used to overwrite rules specified from the extended configs
@@ -230,6 +231,10 @@ module.exports = {
           },
         ],
       },
+    ],
+    "react-refresh/only-export-components": [
+        "error",
+        { allowConstantExport: true },
     ],
   },
   overrides: [
