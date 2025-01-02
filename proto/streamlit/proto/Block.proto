@@ -31,6 +31,7 @@ message Block {
     ChatMessage chat_message = 9;
     Popover popover = 10;
     Dialog dialog = 11;
+    Grid grid = 13;
   }
 
   bool allow_empty = 8;
@@ -56,6 +57,17 @@ message Block {
       BOTTOM = 2;
     }
     VerticalAlignment vertical_alignment = 3;
+    bool show_border = 4;
+  }
+
+  message Grid {
+    // Relative weights for each column
+    repeated double weights = 1;
+    // Gap size between cells ("small", "medium", "large")
+    string gap = 2;
+    // Vertical alignment within cells
+    Column.VerticalAlignment vertical_alignment = 3;
+    // Whether to show borders around cells
     bool show_border = 4;
   }
 
@@ -99,7 +111,6 @@ message Block {
     string icon = 5;
   }
 
-
   message ChatMessage {
     enum AvatarType {
       IMAGE = 0;
@@ -112,5 +123,5 @@ message Block {
     AvatarType avatar_type = 3;
   }
 
-  // Next ID: 13
+  // Next ID: 14
 }

@@ -52,6 +52,7 @@ import {
 import ElementNodeRenderer from "./ElementNodeRenderer"
 import {
   StyledColumn,
+  StyledGrid,
   StyledHorizontalBlock,
   StyledVerticalBlock,
   StyledVerticalBlockBorderWrapper,
@@ -197,6 +198,47 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return <Tabs {...tabsProps} />
   }
 
+  if (node.deltaBlock.grid) {
+    const renderCell = (
+      mappedChildProps: JSX.IntrinsicAttributes & BlockPropsWithoutWidth
+    ): ReactElement => {
+      // avoid circular dependency where Tab uses VerticalBlock but VerticalBlock uses tabs
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return <VerticalBlock {...mappedChildProps}></VerticalBlock>
+    }
+
+    const grid = node.deltaBlock.grid
+    const weights = grid.weights ?? []
+    const gap = grid.gap ?? "small"
+    const verticalAlignment =
+      grid.verticalAlignment ?? BlockProto.Column.VerticalAlignment.TOP
+    const showBorder = grid.showBorder ?? false
+
+    return (
+      <StyledGrid
+        gap={gap}
+        weights={weights}
+        verticalAlignment={verticalAlignment}
+        showBorder={showBorder}
+        className="stGrid"
+        data-testid="stGrid"
+      >
+        {node.children.map((childNode: AppNode, index: number) => {
+          // Ensure stale tab's elements are also marked stale/disabled
+          const childProps = {
+            ...props,
+            widgetsDisabled: false,
+            node: childNode as BlockNode,
+          }
+
+          {
+            renderCell(childProps)
+          }
+        })}
+      </StyledGrid>
+    )
+  }
+
   return child
 }
 
@@ -311,8 +353,8 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     [setWidth]
   )
 
-  const border = props.node.deltaBlock.vertical?.border ?? false
-  const height = props.node.deltaBlock.vertical?.height || undefined
+  const border = props.node.deltaBlock?.vertical?.border ?? false
+  const height = props.node.deltaBlock?.vertical?.height || undefined
 
   const activateScrollToBottom =
     height &&
@@ -348,7 +390,7 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     ...{ width },
   }
   // Extract the user-specified key from the block ID (if provided):
-  const userKey = getKeyFromId(props.node.deltaBlock.id)
+  const userKey = getKeyFromId(props.node.deltaBlock?.id)
 
   // Widths of children autosizes to container width (and therefore window width).
   // StyledVerticalBlocks are the only things that calculate their own widths. They should never use

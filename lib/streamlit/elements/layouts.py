@@ -24,6 +24,9 @@ from streamlit.errors import (
     StreamlitAPIException,
     StreamlitInvalidColumnGapError,
     StreamlitInvalidColumnSpecError,
+    StreamlitInvalidGridGapError,
+    StreamlitInvalidGridSpecError,
+    StreamlitInvalidGridVerticalAlignmentError,
     StreamlitInvalidVerticalAlignmentError,
 )
 from streamlit.proto.Block_pb2 import Block as BlockProto
@@ -33,6 +36,7 @@ from streamlit.string_util import validate_icon_or_emoji
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
     from streamlit.elements.lib.dialog import Dialog
+    from streamlit.elements.lib.grid_container import GridContainer
     from streamlit.elements.lib.mutable_status_container import StatusContainer
 
 SpecType: TypeAlias = Union[int, Sequence[Union[int, float]]]
@@ -872,3 +876,121 @@ class LayoutsMixin:
     def dg(self) -> DeltaGenerator:
         """Get our DeltaGenerator."""
         return cast("DeltaGenerator", self)
+
+    @gather_metrics("grid")
+    def grid(
+        self,
+        spec: SpecType,
+        *,
+        gap: Literal["small", "medium", "large"] = "small",
+        vertical_alignment: Literal["top", "center", "bottom"] = "top",
+        border: bool = False,
+        key: str | None = None,
+    ) -> GridContainer:
+        """Create a grid layout with the specified number of columns and properties.
+
+        Parameters
+        ----------
+        spec : int or Sequence[int or float]
+            If an int, creates a grid with that many equal-width columns.
+            If a sequence, creates a grid with len(spec) columns where each number
+            represents the relative width of that column.
+        gap : "small" | "medium" | "large", optional
+            The gap size between grid cells. Defaults to "small".
+        vertical_alignment : "top" | "center" | "bottom", optional
+            Vertical alignment of elements within each grid cell. Defaults to "top".
+        border : bool, optional
+            Whether to show borders around grid cells. Defaults to False.
+        key : str or None
+            A unique key for the grid. If None, a key will be generated.
+
+        Returns
+        -------
+        GridContainer
+            A container object that can be used as a context manager to add
+            elements to the grid. Elements are added to cells in row-major order
+            (left-to-right, then top-to-bottom).
+
+        Examples
+        --------
+        >>> grid = st.grid(3)  # 3 equal columns
+        >>> with grid:
+        ...     st.text_input("Name")  # Goes to first cell
+        ...     st.number_input("Age")  # Goes to second cell
+        ...     st.selectbox("City", ["NY", "SF"])  # Goes to third cell
+        ...     st.button("Submit")  # Goes to first cell of second row
+
+        >>> grid = st.grid([2, 1, 2])  # 3 columns with relative widths
+        >>> grid.text("First")  # Goes to first cell
+        >>> with grid:
+        ...     st.dataframe(df)  # Goes to second cell
+        ...     st.line_chart(data)  # Goes to third cell
+
+        Notes
+        -----
+        - The grid automatically wraps to a new row when elements exceed columns
+        - Grid cells have a minimum width of 150px
+        - Grid responsively adjusts columns based on viewport width:
+          * Full spec when viewport width allows
+          * Reduces columns as viewport narrows
+          * Single column on mobile
+        """
+        # Validate spec
+        weights = self._get_column_weights(spec)
+        if not weights:
+            raise StreamlitInvalidGridSpecError()
+
+        # Validate gap
+        gap = gap.lower()
+        if gap not in ("small", "medium", "large"):
+            raise StreamlitInvalidGridGapError(gap)
+
+        # Validate vertical_alignment
+        vertical_alignment = vertical_alignment.lower()
+        if vertical_alignment not in ("top", "center", "bottom"):
+            raise StreamlitInvalidGridVerticalAlignmentError(vertical_alignment)
+
+        # Create grid block
+        block_proto = BlockProto()
+        block_proto.allow_empty = True
+        block_proto.grid.weights.extend(weights)
+        block_proto.grid.gap = gap
+        block_proto.grid.vertical_alignment = getattr(
+            BlockProto.Column.VerticalAlignment,
+            vertical_alignment.upper(),
+        )
+        block_proto.grid.show_border = border
+
+        if key is not None:
+            block_proto.id = compute_and_register_element_id(
+                "grid", user_key=key, form_id=None
+            )
+
+        return get_dg_singleton_instance().grid_container_cls._create(
+            self.dg, spec, gap=gap, vertical_alignment=vertical_alignment, border=border
+        )
+
+    def _get_column_weights(self, spec: SpecType) -> list[float]:
+        """Convert column spec to list of normalized weights.
+
+        Parameters
+        ----------
+        spec : int or Sequence[int or float]
+            The column specification to convert.
+
+        Returns
+        -------
+        list[float]
+            A list of normalized weights that sum to 1.0.
+        """
+        if isinstance(spec, (int, float)):
+            if spec <= 0:
+                return []
+            return [1.0 / spec] * int(spec)
+        elif isinstance(spec, (list, tuple)):
+            if not spec or any(w <= 0 for w in spec):
+                return []
+            weights = [float(w) for w in spec]
+            total = sum(weights)
+            return [w / total for w in weights]
+        return []

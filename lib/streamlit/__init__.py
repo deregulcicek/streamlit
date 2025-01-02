@@ -79,12 +79,14 @@ from streamlit.elements.lib.mutable_status_container import (
     StatusContainer as _StatusContainer,
 )
 from streamlit.elements.lib.dialog import Dialog as _Dialog
+from streamlit.elements.lib.grid_container import GridContainer
 
 # instantiate the DeltaGeneratorSingleton
 _dg_singleton = _DeltaGeneratorSingleton(
     delta_generator_cls=_DeltaGenerator,
     status_container_cls=_StatusContainer,
     dialog_container_cls=_Dialog,
+    grid_container_cls=GridContainer,
 )
 _main = _dg_singleton._main_dg
 sidebar = _dg_singleton._sidebar_dg
@@ -190,6 +192,7 @@ file_uploader = _main.file_uploader
 form = _main.form
 form_submit_button = _main.form_submit_button
 graphviz_chart = _main.graphviz_chart
+grid = _main.grid
 header = _main.header
 help = _main.help
 html = _main.html

@@ -445,3 +445,38 @@ class StreamlitBadTimeStringError(LocalizableStreamlitException):
             "`'1d2h34m'` or `2 days`, for example. Got: {time_string}",
             time_string=time_string,
         )
+
+
+# st.grid
+class StreamlitInvalidGridSpecError(LocalizableStreamlitException):
+    """Exception raised when an invalid grid specification is provided."""
+
+    def __init__(self):
+        super().__init__(
+            "The `spec` argument to `st.grid` must be either a "
+            "positive integer (number of columns) or a list of positive numbers (width ratios of the columns). "
+            "See [documentation](https://docs.streamlit.io/develop/api-reference/layout/st.grid) "
+            "for more information."
+        )
+
+
+class StreamlitInvalidGridGapError(LocalizableStreamlitException):
+    """Exception raised when an invalid value is specified for grid gap."""
+
+    def __init__(self, gap: str):
+        super().__init__(
+            'The `gap` argument to `st.grid` must be `"small"`, `"medium"`, or `"large"`. \n'
+            "The argument passed was {gap}.",
+            gap=gap,
+        )
+
+
+class StreamlitInvalidGridVerticalAlignmentError(LocalizableStreamlitException):
+    """Exception raised when an invalid value is specified for grid vertical_alignment."""
+
+    def __init__(self, vertical_alignment: str):
+        super().__init__(
+            'The `vertical_alignment` argument to `st.grid` must be `"top"`, `"center"`, or `"bottom"`. \n'
+            "The argument passed was {vertical_alignment}.",
+            vertical_alignment=vertical_alignment,
+        )

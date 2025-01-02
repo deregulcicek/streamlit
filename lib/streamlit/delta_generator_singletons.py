@@ -27,13 +27,14 @@ from streamlit.proto.RootContainer_pb2 import RootContainer as _RootContainer
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
     from streamlit.elements.lib.dialog import Dialog
+    from streamlit.elements.lib.grid_container import GridContainer
     from streamlit.elements.lib.mutable_status_container import StatusContainer
 
 
 class DeltaGeneratorSingleton:
     """Used to initialize the DeltaGenerator classes and store them as singletons.
     This module allows us to avoid circular imports between DeltaGenerator and elements,
-    because elemens can import this singleton module instead of DeltaGenerator directly.
+    because elements can import this singleton module instead of DeltaGenerator directly.
     """
 
     _instance: DeltaGeneratorSingleton | None = None
@@ -52,6 +53,7 @@ class DeltaGeneratorSingleton:
         delta_generator_cls: type[DeltaGenerator],
         status_container_cls: type[StatusContainer],
         dialog_container_cls: type[Dialog],
+        grid_container_cls: type[GridContainer],
     ):
         """Registers and initializes all delta-generator classes.
 
@@ -64,6 +66,8 @@ class DeltaGeneratorSingleton:
             The delta-generator class that is used as return value for `st.status`.
         dialog_container_cls : type[Dialog]
             The delta-generator class used is used as return value for `st.dialog`.
+        grid_container_cls : type[GridContainer]
+            The delta-generator class used for grid layouts.
 
         Raises
         ------
@@ -86,6 +90,7 @@ class DeltaGeneratorSingleton:
         )
         self._status_container_cls = status_container_cls
         self._dialog_container_cls = dialog_container_cls
+        self._grid_container_cls = grid_container_cls
 
     @property
     def main_dg(self) -> DeltaGenerator:
@@ -119,6 +124,13 @@ class DeltaGeneratorSingleton:
         """
         return self._dialog_container_cls
 
+    @property
+    def grid_container_cls(self) -> type[GridContainer]:
+        """Stub for GridContainer. Since GridContainer inherits from DeltaGenerator,
+        this is used to avoid circular imports.
+        """
+        return self._grid_container_cls
+
 
 def get_dg_singleton_instance() -> DeltaGeneratorSingleton:
     """Return the DeltaGeneratorSingleton instance. Raise an Error if the
@@ -145,7 +157,7 @@ class ContextVarWithLazyDefault(Generic[_T]):
         self._context_var: ContextVar[_T] | None = None
 
     def _init_context_var(self) -> None:
-        self._context_var = ContextVar(self._name, default=self._default())  # noqa: B039
+        self._context_var = ContextVar(self._name, default=self._default())
 
     def get(self) -> _T:
         if self._context_var is None:

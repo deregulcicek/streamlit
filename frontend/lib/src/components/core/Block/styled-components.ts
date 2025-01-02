@@ -205,3 +205,67 @@ export const StyledVerticalBlockBorderWrapper =
       }),
     })
   )
+
+interface StyledGridProps {
+  gap: string
+  weights: number[]
+  verticalAlignment?: BlockProto.Column.VerticalAlignment
+  showBorder: boolean
+}
+
+export const StyledGrid = styled.div<StyledGridProps>(
+  ({ theme, gap, weights, verticalAlignment, showBorder }) => {
+    const gapWidth = translateGapWidth(gap, theme)
+    const MIN_COL_WIDTH = 150 // Minimum column width in pixels
+
+    // Calculate relative widths as percentages
+    const total = weights.reduce((sum, w) => sum + w, 0)
+    const columnTemplate = weights
+      .map(w => `minmax(${MIN_COL_WIDTH}px, ${(w / total) * 100}fr)`)
+      .join(" ")
+
+    const { VerticalAlignment } = BlockProto.Column
+
+    return {
+      display: "grid",
+      gap: gapWidth,
+      width: "100%",
+      // Create a responsive grid that:
+      // 1. Uses relative column widths based on weights
+      // 2. Maintains minimum width of 150px per column
+      // 3. Automatically wraps to fewer columns when needed
+      gridTemplateColumns: columnTemplate,
+      gridAutoFlow: "row", // Stack items in rows
+      gridAutoRows: "auto",
+      alignItems: "stretch",
+
+      // Apply vertical alignment to grid items
+      "& > *": {
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        minWidth: 0,
+        gap: gapWidth,
+
+        ...(verticalAlignment === VerticalAlignment.BOTTOM && {
+          justifyContent: "flex-end",
+        }),
+        ...(verticalAlignment === VerticalAlignment.TOP && {
+          justifyContent: "flex-start",
+        }),
+        ...(verticalAlignment === VerticalAlignment.CENTER && {
+          justifyContent: "center",
+        }),
+      },
+
+      // Apply border to grid items if enabled
+      ...(showBorder && {
+        "& > *": {
+          border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+          borderRadius: theme.radii.default,
+          padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
+        },
+      }),
+    }
+  }
+)
