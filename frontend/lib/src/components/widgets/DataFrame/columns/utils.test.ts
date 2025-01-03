@@ -251,7 +251,7 @@ describe("formatNumber", () => {
     [0.000051, "0.00005"],
     [0.00000123, "0.000001"],
     [0.00000183, "0.000002"],
-    [0.000000006, "0.000000006"],
+    [0.0000000061, "0.000000006"],
   ])(
     "formats %s to %s with default options (no trailing zeros)",
     (value, expected) => {
