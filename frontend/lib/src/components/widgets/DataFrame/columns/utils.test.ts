@@ -247,9 +247,10 @@ describe("formatNumber", () => {
     [10.12346, "10.1235"],
     [0.00016, "0.0002"],
     // If number is smaller than 0.0001, shows the next decimal number
-    // to avoid showing 0 for small numbers.
+    // (without rounding) to avoid showing 0 for small numbers.
     [0.0000051, "0.000005"],
     [0.000000123, "0.0000001"],
+    [0.000000163, "0.0000001"],
   ])(
     "formats %s to %s with default options (no trailing zeros)",
     (value, expected) => {
