@@ -20,8 +20,8 @@ exceptiongroup==1.2.2
 execnet==2.1.1
 filelock==3.16.1
 fonttools==4.55.3
-gitdb==4.0.11
-GitPython==3.1.43
+gitdb==4.0.12
+GitPython==3.1.44
 graphviz==0.20.3
 greenlet==3.1.1
 hypothesis==6.123.2
@@ -54,7 +54,7 @@ numpy==1.26.4
 packaging==24.2
 pandas==2.2.3
 parameterized==0.9.0
-pillow==11.0.0
+pillow==11.1.0
 pixelmatch==0.3.0
 pkginfo==1.12.0
 platformdirs==4.3.6
@@ -88,12 +88,12 @@ requests-toolbelt==1.0.0
 rfc3986==2.0.0
 rich==13.9.4
 rpds-py==0.22.3
-ruff==0.8.4
+ruff==0.8.5
 seaborn==0.13.2
 SecretStorage==3.3.3
 semver==3.0.2
 six==1.17.0
-smmap==5.0.1
+smmap==5.0.2
 sortedcontainers==2.4.0
 tenacity==9.0.0
 testfixtures==8.3.0
@@ -113,7 +113,7 @@ types-typed-ast==1.5.8.7
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.3.0
-uv==0.5.13
+uv==0.5.14
 vega-datasets==0.9.0
 virtualenv==20.28.0
 watchdog==6.0.0
