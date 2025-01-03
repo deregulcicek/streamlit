@@ -232,6 +232,11 @@ export type AppConfig = {
    * Enables custom string messages to be sent to the host
    */
   enableCustomParentMessages?: boolean
+
+  /**
+   * Whether to send client errors to be handled by the host (blocks error dialog from appearing)
+   */
+  hostClientErrorHandling?: boolean
 }
 
 export type MetricsConfig = {

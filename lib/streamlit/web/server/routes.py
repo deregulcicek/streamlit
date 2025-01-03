@@ -232,6 +232,7 @@ class HostConfigHandler(_SpecialRequestHandler):
                 # Default host configuration settings.
                 "enableCustomParentMessages": False,
                 "enforceDownloadInNewTab": False,
+                "hostClientErrorHandling": False,
                 "metricsUrl": "",
             }
         )

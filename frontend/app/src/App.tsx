@@ -421,6 +421,7 @@ export class App extends PureComponent<Props, State> {
           enableCustomParentMessages,
           mapboxToken,
           enforceDownloadInNewTab,
+          hostClientErrorHandling,
           metricsUrl,
         } = response
 
@@ -428,6 +429,7 @@ export class App extends PureComponent<Props, State> {
           allowedOrigins,
           useExternalAuthToken,
           enableCustomParentMessages,
+          hostClientErrorHandling,
         }
         const libConfig: LibConfig = {
           mapboxToken,
