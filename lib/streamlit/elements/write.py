@@ -39,7 +39,6 @@ from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.string_util import (
     is_mem_address_str,
     max_char_sequence,
-    probably_contains_html_tags,
 )
 
 if TYPE_CHECKING:
@@ -82,6 +81,9 @@ class WriteMixin:
         ----------
         stream : Callable, Generator, Iterable, OpenAI Stream, or LangChain Stream
             The generator or iterable to stream.
+
+            If you pass an async generator, Streamlit will internally convert
+            it to a sync generator.
 
             .. note::
                 To use additional LLM libraries, you can create a wrapper to
@@ -274,8 +276,9 @@ class WriteMixin:
             - write(list)           : Displays list-like in an interactive viewer.
             - write(error)          : Prints an exception specially.
             - write(func)           : Displays information about a function.
-            - write(module)         : Displays information about the module.
+            - write(module)         : Displays information about a module.
             - write(class)          : Displays information about a class.
+            - write(DeltaGenerator) : Displays information about a DeltaGenerator.
             - write(mpl_fig)        : Displays a Matplotlib figure.
             - write(generator)      : Streams the output of a generator.
             - write(openai.Stream)  : Streams the output of an OpenAI stream.
@@ -510,13 +513,8 @@ class WriteMixin:
                 # We cast arg to type here to appease mypy, due to bug in mypy:
                 # https://github.com/python/mypy/issues/12933
                 self.dg.help(cast(type, arg))
-            elif (
-                type_util.has_callable_attr(arg, "_repr_html_")
-                and (repr_html := arg._repr_html_())
-                and (unsafe_allow_html or not probably_contains_html_tags(repr_html))
-            ):
-                # We either explicitly allow HTML or infer it's not HTML
-                self.dg.markdown(repr_html, unsafe_allow_html=unsafe_allow_html)
+            elif unsafe_allow_html and type_util.has_callable_attr(arg, "_repr_html_"):
+                self.dg.html(arg._repr_html_())
             elif type_util.has_callable_attr(
                 arg, "to_pandas"
             ) or type_util.has_callable_attr(arg, "__dataframe__"):
