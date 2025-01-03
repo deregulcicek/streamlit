@@ -197,7 +197,7 @@ class FormMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
-        type: Literal["primary", "secondary"] = "secondary",
+        type: Literal["primary", "secondary", "tertiary"] = "secondary",
         icon: str | None = None,
         disabled: bool = False,
         use_container_width: bool = False,
@@ -227,10 +227,17 @@ class FormMixin:
             An optional tuple of args to pass to the callback.
         kwargs : dict
             An optional dict of kwargs to pass to the callback.
-        type : "secondary" or "primary"
-            An optional string that specifies the button type. Can be "primary" for a
-            button with additional emphasis or "secondary" for a normal button. Defaults
-            to "secondary".
+        type : "primary", "secondary", or "tertiary"
+            An optional string that specifies the button type. This can be one
+            of the following:
+
+            - ``"primary"``: The button's background is the app's primary color
+              for additional emphasis.
+            - ``"secondary"`` (default): The button's background coordinates
+              with the app's background color for normal emphasis.
+            - ``"tertiary"``: The button is plain text without a border or
+              background for subtly.
+
         icon : str or None
             An optional emoji or icon to display next to the button label. If ``icon``
             is ``None`` (default), no icon is displayed. If ``icon`` is a
@@ -272,11 +279,10 @@ class FormMixin:
         """
         ctx = get_script_run_ctx()
 
-        # Checks whether the entered button type is one of the allowed options - either
-        # "primary" or "secondary"
-        if type not in ["primary", "secondary"]:
+        # Checks whether the entered button type is one of the allowed options
+        if type not in ["primary", "secondary", "tertiary"]:
             raise StreamlitAPIException(
-                'The type argument to st.button must be "primary" or "secondary". \n'
+                'The type argument to st.form_submit_button must be "primary", "secondary", or "tertiary". \n'
                 f'The argument passed was "{type}".'
             )
 
@@ -301,7 +307,7 @@ class FormMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
-        type: Literal["primary", "secondary"] = "secondary",
+        type: Literal["primary", "secondary", "tertiary"] = "secondary",
         icon: str | None = None,
         disabled: bool = False,
         use_container_width: bool = False,

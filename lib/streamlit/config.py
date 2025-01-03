@@ -21,6 +21,7 @@ import os
 import secrets
 import threading
 from collections import OrderedDict
+from enum import Enum
 from typing import Any, Callable
 
 from blinker import Signal
@@ -62,6 +63,27 @@ _DEFINED_BY_FLAG = "command-line argument or environment variable"
 
 # Indicates that a config option was defined in an environment variable
 _DEFINED_BY_ENV_VAR = "environment variable"
+
+
+class ShowErrorDetailsConfigOptions(str, Enum):
+    """Valid options for the "client.showErrorDetails" config."""
+
+    FULL = "full"
+    STACKTRACE = "stacktrace"
+    TYPE = "type"
+    NONE = "none"
+
+    @staticmethod
+    def is_true_variation(val: str | bool):
+        return val in ["true", "True", True]
+
+    @staticmethod
+    def is_false_variation(val: str | bool):
+        return val in ["false", "False", False]
+
+        # Config options can be set from several places including the command-line and
+        # the user's script. Legacy config options (true/false) will have type string when set via
+        # command-line and bool when set via user script (e.g. st.set_option("client.showErrorDetails", False)).
 
 
 def set_option(key: str, value: Any, where_defined: str = _USER_DEFINED) -> None:
@@ -458,18 +480,31 @@ _create_option(
     "client.showErrorDetails",
     description="""
         Controls whether uncaught app exceptions and deprecation warnings
-        are displayed in the browser. By default, this is set to True and
-        Streamlit displays app exceptions and associated tracebacks, and
-        deprecation warnings, in the browser.
+        are displayed in the browser. This can be one of the following:
 
-        If set to False, deprecation warnings and full exception messages
-        will print to the console only. Exceptions will still display in the
-        browser with a generic error message. For now, the exception type and
-        traceback show in the browser also, but they will be removed in the
-        future.
+        - "full"       : In the browser, Streamlit displays app deprecation
+                         warnings and exceptions, including exception types,
+                         exception messages, and associated tracebacks.
+        - "stacktrace" : In the browser, Streamlit displays exceptions,
+                         including exception types, generic exception messages,
+                         and associated tracebacks. Deprecation warnings and
+                         full exception messages will only print to the
+                         console.
+        - "type"       : In the browser, Streamlit displays exception types and
+                         generic exception messages. Deprecation warnings, full
+                         exception messages, and associated tracebacks only
+                         print to the console.
+        - "none"       : In the browser, Streamlit displays generic exception
+                         messages. Deprecation warnings, full exception
+                         messages, associated tracebacks, and exception types
+                         will only print to the console.
+        - True         : This is deprecated. Streamlit displays "full"
+                         error details.
+        - False        : This is deprecated. Streamlit displays "stacktrace"
+                         error details.
     """,
-    default_val=True,
-    type_=bool,
+    default_val=ShowErrorDetailsConfigOptions.FULL,
+    type_=str,
     scriptable=True,
 )
 
@@ -643,10 +678,6 @@ def _server_headless() -> bool:
         # We're running in Linux and DISPLAY is unset
         return True
 
-    if os.getenv("IS_RUNNING_IN_STREAMLIT_EDITOR_PLUGIN") is not None:
-        # We're running within the Streamlit Atom plugin
-        return True
-
     return False
 
 
@@ -721,12 +752,11 @@ _create_option(
 _create_option(
     "server.enableCORS",
     description="""
-        Enables support for Cross-Origin Resource Sharing (CORS) protection, for
-        added security.
+        Enables support for Cross-Origin Resource Sharing (CORS) protection,
+        for added security.
 
-        Due to conflicts between CORS and XSRF, if `server.enableXsrfProtection` is
-        on and `server.enableCORS` is off at the same time, we will prioritize
-        `server.enableXsrfProtection`.
+        If XSRF protection is enabled and CORS protection is disabled at the
+        same time, Streamlit will enable them both instead.
     """,
     default_val=True,
     type_=bool,
@@ -739,9 +769,8 @@ _create_option(
         Enables support for Cross-Site Request Forgery (XSRF) protection, for
         added security.
 
-        Due to conflicts between CORS and XSRF, if `server.enableXsrfProtection` is
-        on and `server.enableCORS` is off at the same time, we will prioritize
-        `server.enableXsrfProtection`.
+        If XSRF protection is enabled and CORS protection is disabled at the
+        same time, Streamlit will enable them both instead.
     """,
     default_val=True,
     type_=bool,

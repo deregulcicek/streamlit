@@ -67,9 +67,6 @@ export const StyledElementContainer = styled.div<StyledElementContainerProps>(
     position: "relative",
 
     "@media print": {
-      "@-moz-document url-prefix()": {
-        display: "block",
-      },
       overflow: "visible",
     },
 
@@ -117,11 +114,12 @@ export const StyledElementContainer = styled.div<StyledElementContainerProps>(
 interface StyledColumnProps {
   weight: number
   gap: string
+  showBorder: boolean
   verticalAlignment?: BlockProto.Column.VerticalAlignment
 }
 
 export const StyledColumn = styled.div<StyledColumnProps>(
-  ({ weight, gap, theme, verticalAlignment }) => {
+  ({ theme, weight, gap, showBorder, verticalAlignment }) => {
     const { VerticalAlignment } = BlockProto.Column
     const percentage = weight * 100
     const gapWidth = translateGapWidth(gap, theme)
@@ -154,6 +152,11 @@ export const StyledColumn = styled.div<StyledColumnProps>(
       ...(verticalAlignment === VerticalAlignment.CENTER && {
         marginTop: "auto",
         marginBottom: "auto",
+      }),
+      ...(showBorder && {
+        border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+        borderRadius: theme.radii.default,
+        padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
       }),
     }
   }

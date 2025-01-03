@@ -45,6 +45,7 @@ import {
   isLightThemeInQueryParams,
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
+import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
@@ -63,6 +64,16 @@ declare global {
       LIGHT_THEME: ICustomThemeConfig
       DARK_THEME: ICustomThemeConfig
     }
+    __streamlit_profiles__?: Record<
+      string,
+      CircularBuffer<{
+        phase: "mount" | "update" | "nested-update"
+        actualDuration: number
+        baseDuration: number
+        startTime: number
+        commitTime: number
+      }>
+    >
   }
 }
 
