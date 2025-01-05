@@ -552,7 +552,7 @@ export class App extends PureComponent<Props, State> {
       msg: errorNode,
       onClose: () => {},
     }
-    this.openDialog(newDialog)
+    this.maybeShowErrorDialog(newDialog)
   }
 
   showDeployError = (
@@ -560,7 +560,7 @@ export class App extends PureComponent<Props, State> {
     errorNode: ReactNode,
     onContinue?: () => void
   ): void => {
-    this.openDialog({
+    this.maybeShowErrorDialog({
       type: DialogType.DEPLOY_ERROR,
       title,
       msg: errorNode,
@@ -930,7 +930,7 @@ export class App extends PureComponent<Props, State> {
         exception: sessionEvent.scriptCompilationException,
         onClose: () => {},
       }
-      this.openDialog(newDialog)
+      this.maybeShowErrorDialog(newDialog)
     }
   }
 
@@ -1274,6 +1274,41 @@ export class App extends PureComponent<Props, State> {
         this.widgetMgr.removeInactive(activeWidgetIds)
       }
     )
+  }
+
+  /**
+   * Checks whether to show error dialog or send error info
+   * to be handled by the host.
+   */
+  maybeShowErrorDialog(dialogProps: DialogProps): void {
+    const { hostClientErrorHandling } = this.state.appConfig
+
+    if (!hostClientErrorHandling) {
+      this.openDialog(dialogProps)
+    } else {
+      let error = ""
+      let message: string = ""
+      if (dialogProps.type === DialogType.SCRIPT_COMPILE_ERROR) {
+        error = "Script compile error"
+        message = dialogProps.exception?.message ?? ""
+      } else if (dialogProps.type === DialogType.DEPLOY_ERROR) {
+        error = "Deploy error"
+        // Deploy errors pass nodes instead of a string
+        message = ""
+      } else if (dialogProps.type === DialogType.WARNING) {
+        error = dialogProps.title
+        // Connection error passes nodes instead of a string
+        if (dialogProps.title !== "Connection error") {
+          message = dialogProps.msg as string
+        }
+      }
+
+      this.hostCommunicationMgr.sendMessageToHost({
+        type: "CLIENT_ERROR",
+        error,
+        message,
+      })
+    }
   }
 
   /**

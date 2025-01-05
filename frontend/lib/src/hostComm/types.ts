@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React from "react"
+
 import {
   IAppPage,
   ICustomThemeConfig,
@@ -200,6 +202,11 @@ export type IGuestToHostMessage =
       type: "METRICS_EVENT"
       eventName: string
       data: MetricsEvent
+    }
+  | {
+      type: "CLIENT_ERROR"
+      error: string
+      message: string
     }
 
 export type VersionedMessage<Message> = {
