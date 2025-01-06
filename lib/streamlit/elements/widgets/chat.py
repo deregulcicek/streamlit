@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Literal, Sequence, cast, overload
 
 from streamlit import runtime
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
+from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
 from streamlit.elements.lib.form_utils import is_in_form
 from streamlit.elements.lib.image_utils import AtomicImage, WidthBehavior, image_to_url
 from streamlit.elements.lib.policies import check_widget_policies
@@ -470,23 +471,7 @@ class ChatMixin:
         )
 
         if file_type:
-            if isinstance(file_type, str):
-                file_type = [file_type]
-
-            # May need a regex or a library to validate file types are valid
-            # extensions.
-            file_type = [
-                file_type_entry if file_type_entry[0] == "." else f".{file_type_entry}"
-                for file_type_entry in file_type
-            ]
-
-            file_type = [t.lower() for t in file_type]
-
-            for x, y in TYPE_PAIRS:
-                if x in file_type and y not in file_type:
-                    file_type.append(y)
-                if y in file_type and x not in file_type:
-                    file_type.append(x)
+            file_type = normalize_upload_file_type(file_type)
 
         # It doesn't make sense to create a chat input inside a form.
         # We throw an error to warn the user about this.
