@@ -27,7 +27,11 @@ import { useTheme } from "@emotion/react"
 import { Send } from "@emotion-icons/material-rounded"
 import { Textarea as UITextArea } from "baseui/textarea"
 import { AttachFile } from "@emotion-icons/material-outlined"
-import { FileRejection, useDropzone } from "react-dropzone"
+import {
+  ErrorCode as FileErrorCode,
+  FileRejection,
+  useDropzone,
+} from "react-dropzone"
 import zip from "lodash/zip"
 
 import {
@@ -99,8 +103,8 @@ const createDropHandler =
     onUploadComplete,
   }: CreateDropHandlerParams) =>
   (acceptedFiles: File[], rejectedFiles: FileRejection[]): void => {
-    // If this is a single-file uploader and multiple files were dropped,
-    // all the files will be rejected. In this case, we pull out the first
+    // If only single file upload is allowed but multiple were dropped/selected,
+    // all files will be rejected by default. In this case, we take the first
     // valid file into acceptedFiles, and reject the rest.
     if (
       !acceptMultipleFiles &&
@@ -108,8 +112,7 @@ const createDropHandler =
       rejectedFiles.length > 1
     ) {
       const firstFileIndex = rejectedFiles.findIndex(
-        file =>
-          file.errors.length === 1 && file.errors[0].code === "too-many-files"
+        file => file.errors?.[0].code === FileErrorCode.TooManyFiles
       )
 
       if (firstFileIndex >= 0) {
@@ -149,7 +152,10 @@ const createDropHandler =
         const { file } = rejected
         return new UploadFileInfo(file.name, file.size, getNextLocalFileId(), {
           type: "error",
-          errorMessage: "VAY VAY VAY, MAMA JAN!",
+          errorMessage: rejected.errors
+            .map(err => err.message)
+            .filter(err => err !== "")
+            .join(", "),
         })
       })
       addFiles(rejectedInfos)
@@ -167,6 +173,7 @@ interface CreateUploadFileParams {
   onUploadProgress: (e: ProgressEvent, id: number) => void
   onUploadComplete: (id: number, fileURLs: IFileURLs) => void
 }
+
 const createUploadFileHandler =
   ({
     getNextLocalFileId,
@@ -205,8 +212,6 @@ const createUploadFileHandler =
       )
       .then(() => onUploadComplete(uploadingFileInfo.id, fileURLs))
       .catch(err => {
-        console.log("ERROR!!!")
-        console.error(err)
         // If this was a cancel error, we don't show the user an error -
         // the cancellation was in response to an action they took.
         if (!axios.isCancel(err)) {
@@ -237,7 +242,9 @@ function ChatInput({
 }: Props): React.ReactElement {
   const theme = useTheme()
 
-  const acceptFile = chatInputAcceptFileProtoValueToEnum(element.acceptFile)
+  const chatInputRef = useRef<HTMLTextAreaElement>(null)
+  const counterRef = useRef(0)
+  const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
 
   // True if the user-specified state.value has not yet been synced to the WidgetStateManager.
   const [dirty, setDirty] = useState(false)
@@ -245,14 +252,11 @@ function ChatInput({
   const [value, setValue] = useState(element.default)
   // The value of the height of the textarea. It depends on a variety of factors including the default height, and autogrowing
   const [scrollHeight, setScrollHeight] = useState(0)
-  const chatInputRef = useRef<HTMLTextAreaElement>(null)
-  const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
-
-  // const filesRef = useRef<UploadFileInfo[]>([]) // TODO [kajarnec] refactor this to use only state
   const [files, setFiles] = useState<UploadFileInfo[]>([])
+
+  const acceptFile = chatInputAcceptFileProtoValueToEnum(element.acceptFile)
   const addFiles = (filesToAdd: UploadFileInfo[]): void => {
     setFiles(currentFiles => [...currentFiles, ...filesToAdd])
-    // filesRef.current = [...filesRef.current, ...filesToAdd]
   }
 
   const isDirty = (value: string, files: UploadFileInfo[]): boolean => {
@@ -267,16 +271,12 @@ function ChatInput({
     id: number,
     fileInfo: UploadFileInfo,
     currentFiles: UploadFileInfo[]
-  ): UploadFileInfo[] => {
-    return currentFiles.map(f => (f.id === id ? fileInfo : f))
-  }
+  ): UploadFileInfo[] => currentFiles.map(f => (f.id === id ? fileInfo : f))
 
   const getFile = (
     localFileId: number,
     currentFiles: UploadFileInfo[]
-  ): UploadFileInfo | undefined => {
-    return currentFiles.find(f => f.id === localFileId)
-  }
+  ): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
 
   const deleteFile = (fileId: number): void => {
     setFiles(files => {
@@ -286,9 +286,9 @@ function ChatInput({
       }
 
       if (file.status.type === "uploading") {
-        // The file hasn't been uploaded. Let's cancel the request.
-        // However, it may have been received by the server so we'll still
-        // send out a request to delete.
+        // Cancel request as the file hasn't been uploaded.
+        // However, it may have been received by the server so we'd still
+        // send out a request to delete it.
         file.status.cancelToken.cancel()
       }
 
@@ -317,7 +317,6 @@ function ChatInput({
     return new FileUploaderStateProto({ uploadedFileInfo })
   }
 
-  const counterRef = useRef(0)
   const getNextLocalFileId = (): number => {
     return counterRef.current++
   }
@@ -335,13 +334,11 @@ function ChatInput({
       element,
       onUploadProgress: (e, fileId) => {
         setFiles(files => {
-          console.log("PROGRESSSS....")
           const file = getFile(fileId, files)
-          console.log("THE FILE: ", file)
-
           if (isNullOrUndefined(file) || file.status.type !== "uploading") {
             return files
           }
+
           const newProgress = Math.round((e.loaded * 100) / e.total)
           if (file.status.progress === newProgress) {
             return files
@@ -360,10 +357,6 @@ function ChatInput({
       },
       onUploadComplete: (id, fileUrls) => {
         setFiles(files => {
-          console.log("IN ON UPLOAD COMPLETE....")
-          console.log("ID: ", id)
-          console.log("FILE URL: ", fileUrls)
-
           const curFile = getFile(id, files)
           if (
             isNullOrUndefined(curFile) ||
@@ -371,7 +364,6 @@ function ChatInput({
           ) {
             // The file may have been canceled right before the upload
             // completed. In this case, we just bail.
-            console.log("JUST BEFORE BAD RETURN :( ")
             return files
           }
 
@@ -389,9 +381,7 @@ function ChatInput({
     }),
     addFiles,
     getNextLocalFileId,
-    deleteExistingFiles: () => {
-      files.forEach(f => deleteFile(f.id))
-    },
+    deleteExistingFiles: () => files.forEach(f => deleteFile(f.id)),
     onUploadComplete: () => {
       if (chatInputRef.current) {
         chatInputRef.current.focus()
