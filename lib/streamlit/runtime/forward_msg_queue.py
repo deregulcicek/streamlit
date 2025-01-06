@@ -56,25 +56,22 @@ class ForwardMsgQueue:
         return len(self._queue) == 0
 
     def enqueue(self, msg: ForwardMsg) -> None:
-        streamlit_proto_path = os.environ.get("STREAMLIT_PROTO_PATH", False)
+        streamlit_proto_path = os.getenv("STREAMLIT_PROTO_PATH")
+
         if streamlit_proto_path:
-            if msg.delta:
-                if msg.delta.new_element:
-                    new_element = msg.delta.new_element
-                    element_type = new_element.WhichOneof("type")
-                    if element_type is not None:
-                        if (
-                            "disabled"
-                            in getattr(
-                                new_element, element_type
-                            ).DESCRIPTOR.fields_by_name
-                        ):
-                            getattr(msg.delta.new_element, element_type).disabled = True
+            if msg.delta and msg.delta.new_element:
+                new_element = msg.delta.new_element
+                element_type = new_element.WhichOneof("type")
+
+                if element_type:
+                    element = getattr(new_element, element_type, None)
+                    if element and "disabled" in element.DESCRIPTOR.fields_by_name:
+                        element.disabled = True
 
             with open(streamlit_proto_path, "a") as f:
                 serialized_message = msg.SerializeToString()
                 b64_message = base64.b64encode(serialized_message).decode("utf-8")
-                f.write(b64_message + "\n")
+                f.write(f"{b64_message}\n")
 
         """Add message into queue, possibly composing it with another message."""
         if not _is_composable_message(msg):
@@ -91,7 +88,7 @@ class ForwardMsgQueue:
             index = self._delta_index_map[delta_key]
             old_msg = self._queue[index]
             composed_delta = _maybe_compose_deltas(old_msg.delta, msg.delta)
-            if composed_delta is not None:
+            if composed_delta:
                 new_msg = ForwardMsg()
                 new_msg.delta.CopyFrom(composed_delta)
                 new_msg.metadata.CopyFrom(msg.metadata)
