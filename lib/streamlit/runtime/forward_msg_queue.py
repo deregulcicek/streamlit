@@ -14,8 +14,6 @@
 
 from __future__ import annotations
 
-import base64
-import os
 from typing import TYPE_CHECKING, Any
 
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
@@ -43,6 +41,10 @@ class ForwardMsgQueue:
         # an older Delta, with the same delta_path, that's still in the
         # queue).
         self._delta_index_map: dict[tuple[int, ...], int] = {}
+        self._before_enqueue_msg = None
+
+    def on_before_enqueue_msg(self, before_enqueue_msg: callable) -> None:
+        self._before_enqueue_msg = before_enqueue_msg
 
     def get_debug(self) -> dict[str, Any]:
         from google.protobuf.json_format import MessageToDict
@@ -56,22 +58,8 @@ class ForwardMsgQueue:
         return len(self._queue) == 0
 
     def enqueue(self, msg: ForwardMsg) -> None:
-        streamlit_proto_path = os.getenv("STREAMLIT_PROTO_PATH")
-
-        if streamlit_proto_path:
-            if msg.delta and msg.delta.new_element:
-                new_element = msg.delta.new_element
-                element_type = new_element.WhichOneof("type")
-
-                if element_type:
-                    element = getattr(new_element, element_type, None)
-                    if element and "disabled" in element.DESCRIPTOR.fields_by_name:
-                        element.disabled = True
-
-            with open(streamlit_proto_path, "a") as f:
-                serialized_message = msg.SerializeToString()
-                b64_message = base64.b64encode(serialized_message).decode("utf-8")
-                f.write(f"{b64_message}\n")
+        if self._before_enqueue_msg:
+            self._before_enqueue_msg(msg)
 
         """Add message into queue, possibly composing it with another message."""
         if not _is_composable_message(msg):
