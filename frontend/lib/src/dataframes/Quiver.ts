@@ -28,7 +28,7 @@ import {
 
 import { concat } from "./arrowConcatUtils"
 import {
-  Columns,
+  ColumnNames,
   Data,
   Index,
   parseArrowIpcBytes,
@@ -150,7 +150,7 @@ export class Quiver {
   private _index: Index
 
   /** DataFrame's column labels (matrix of column names). */
-  private _columns: Columns
+  private _columns: ColumnNames
 
   /** DataFrame's index names. */
   private _indexNames: string[]
@@ -171,6 +171,7 @@ export class Quiver {
     const { index, columns, data, types, fields, indexNames } =
       parseArrowIpcBytes(element.data)
 
+    // Load styler data (if provided):
     const styler = element.styler
       ? parseStyler(element.styler as StylerProto)
       : undefined
@@ -224,7 +225,7 @@ export class Quiver {
   }
 
   /** DataFrame's column labels (matrix of column names). */
-  public get columns(): Columns {
+  public get columns(): ColumnNames {
     return this._columns
   }
 

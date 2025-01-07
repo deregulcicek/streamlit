@@ -39,12 +39,12 @@ import {
 } from "./arrowTypeUtils"
 
 /**
- * A row-major grid of DataFrame index header values.
+ * Index data value.
  */
 type IndexValue = Vector | number[]
 
 /**
- * A row-major grid of DataFrame index header values.
+ * A row-major grid of DataFrame index data values.
  */
 export type Index = IndexValue[]
 
@@ -52,7 +52,7 @@ export type Index = IndexValue[]
  * A row-major grid of DataFrame column header values.
  * NOTE: ArrowJS automatically formats the columns in schema, i.e. we always get strings.
  */
-export type Columns = string[][]
+export type ColumnNames = string[][]
 
 /**
  * A row-major grid of DataFrame data.
@@ -74,7 +74,7 @@ export interface Types {
  * Metadata for a single column in an Arrow table.
  * (This can describe an index *or* a data column.)
  */
-interface ColumnSchema {
+interface ColumnMetadata {
   /**
    * The fieldName of the column.
    * For a single-index column, this is just the name of the column (e.g. "foo").
@@ -127,13 +127,13 @@ interface PandasSchema {
   /**
    * Schemas for each column (index *and* data columns) in the DataFrame.
    */
-  columns: ColumnSchema[]
+  columns: ColumnMetadata[]
 
   /**
    * DataFrame column headers.
    * The length represents the dimensions of the DataFrame's columns grid.
    */
-  column_indexes: ColumnSchema[]
+  column_indexes: ColumnMetadata[]
 }
 
 /**
@@ -160,7 +160,7 @@ function getRawColumns(schema: PandasSchema): string[] {
   )
 }
 
-/** Parse DataFrame's index header values. */
+/** Parse DataFrame's index data values. */
 function parseIndex(table: Table, schema: PandasSchema): Index {
   return schema.index_columns
     .map(indexName => {
@@ -200,8 +200,8 @@ function parseIndexNames(schema: PandasSchema): string[] {
   })
 }
 
-/** Parse DataFrame's column header values. */
-function parseColumns(schema: PandasSchema): Columns {
+/** Parse DataFrame's column header names. */
+function parseColumns(schema: PandasSchema): ColumnNames {
   // If DataFrame `columns` has multi-level indexing, the length of
   // `column_indexes` will show how many levels there are.
   const isMultiIndex = schema.column_indexes.length > 1
@@ -229,7 +229,7 @@ function parseColumns(schema: PandasSchema): Columns {
 /** Parse DataFrame's data. */
 function parseData(
   table: Table,
-  columns: Columns,
+  columns: ColumnNames,
   rawColumns: string[]
 ): Data {
   const numDataRows = table.numRows
@@ -305,7 +305,7 @@ function parseFields(schema: ArrowSchema): Record<string, Field> {
 }
 
 interface ParsedTable {
-  columns: Columns
+  columns: ColumnNames
   fields: Record<string, Field>
   index: Index
   indexNames: string[]
@@ -323,16 +323,32 @@ interface ParsedTable {
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
 ): ParsedTable {
+  // Load arrow table object from IPC data
   const table = tableFromIPC(ipcBytes)
-  const schema = parsePandasSchema(table)
-  const rawColumns = getRawColumns(schema)
+  // Load field information for all columns:
   const fields = parseFields(table.schema)
 
-  const index = parseIndex(table, schema)
-  const columns = parseColumns(schema)
-  const indexNames = parseIndexNames(schema)
+  // Load pandas schema from metadata (if it exists):
+  const pandasSchema = parsePandasSchema(table)
+
+  // Load all column names from table schema:
+  const columns = parseColumns(pandasSchema)
+
+  // Load the display names of the index columns:
+  const indexNames = parseIndexNames(pandasSchema)
+
+  // Extract unprocessed column names from pandas schema
+  // (needed for parsing the data cells below):
+  const rawColumns = getRawColumns(pandasSchema)
+
+  // Load all non-index data cells:
   const data = parseData(table, columns, rawColumns)
-  const types = parseTypes(table, schema)
+
+  // Load all index data cells:
+  const index = parseIndex(table, pandasSchema)
+
+  // Load types for index and data columns:
+  const types = parseTypes(table, pandasSchema)
 
   return {
     columns,
