@@ -25,7 +25,7 @@ from streamlit.cursor import make_delta_path
 from streamlit.elements import arrow
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.proto.RootContainer_pb2 import RootContainer
-from streamlit.runtime.forward_msg_queue import ForwardMsgQueue
+from streamlit.runtime.forward_msg_queue import ForwardMsgQueue, on_before_enqueue_msg
 
 # For the messages below, we don't really care about their contents so much as
 # their general type.
@@ -323,8 +323,8 @@ class ForwardMsgQueueTest(unittest.TestCase):
             nonlocal count
             count += 1
 
+        on_before_enqueue_msg(increase_counter)
         fmq = ForwardMsgQueue()
-        fmq.on_before_enqueue_msg(increase_counter)
 
         assert count == 0
 

@@ -21,6 +21,13 @@ from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 if TYPE_CHECKING:
     from streamlit.proto.Delta_pb2 import Delta
 
+_before_enqueue_msg = None
+
+
+def on_before_enqueue_msg(self, before_enqueue_msg: Callable | None) -> None:
+    global _before_enqueue_msg
+    _before_enqueue_msg = before_enqueue_msg
+
 
 class ForwardMsgQueue:
     """Accumulates a session's outgoing ForwardMsgs.
@@ -43,9 +50,6 @@ class ForwardMsgQueue:
         self._delta_index_map: dict[tuple[int, ...], int] = {}
         self._before_enqueue_msg = None
 
-    def on_before_enqueue_msg(self, before_enqueue_msg: Callable | None) -> None:
-        self._before_enqueue_msg = before_enqueue_msg
-
     def get_debug(self) -> dict[str, Any]:
         from google.protobuf.json_format import MessageToDict
 
@@ -58,8 +62,8 @@ class ForwardMsgQueue:
         return len(self._queue) == 0
 
     def enqueue(self, msg: ForwardMsg) -> None:
-        if self._before_enqueue_msg:
-            self._before_enqueue_msg(msg)
+        if _before_enqueue_msg:
+            _before_enqueue_msg(msg)
 
         """Add message into queue, possibly composing it with another message."""
         if not _is_composable_message(msg):
