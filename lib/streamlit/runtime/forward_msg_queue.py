@@ -81,7 +81,7 @@ class ForwardMsgQueue:
             index = self._delta_index_map[delta_key]
             old_msg = self._queue[index]
             composed_delta = _maybe_compose_deltas(old_msg.delta, msg.delta)
-            if composed_delta:
+            if composed_delta is not None:
                 new_msg = ForwardMsg()
                 new_msg.delta.CopyFrom(composed_delta)
                 new_msg.metadata.CopyFrom(msg.metadata)
