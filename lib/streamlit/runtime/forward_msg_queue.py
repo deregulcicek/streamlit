@@ -43,7 +43,7 @@ class ForwardMsgQueue:
         self._delta_index_map: dict[tuple[int, ...], int] = {}
         self._before_enqueue_msg = None
 
-    def on_before_enqueue_msg(self, before_enqueue_msg: callable) -> None:
+    def on_before_enqueue_msg(self, before_enqueue_msg: callable | None) -> None:
         self._before_enqueue_msg = before_enqueue_msg
 
     def get_debug(self) -> dict[str, Any]:
