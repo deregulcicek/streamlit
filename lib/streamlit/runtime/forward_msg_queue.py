@@ -24,7 +24,9 @@ if TYPE_CHECKING:
 _before_enqueue_msg = None
 
 
-def on_before_enqueue_msg(before_enqueue_msg: Callable | None) -> None:
+def on_before_enqueue_msg(
+    before_enqueue_msg: Callable[[ForwardMsg], None] | None,
+) -> None:
     global _before_enqueue_msg
     _before_enqueue_msg = before_enqueue_msg
 

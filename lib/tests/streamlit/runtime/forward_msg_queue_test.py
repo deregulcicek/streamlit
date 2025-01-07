@@ -344,8 +344,8 @@ class ForwardMsgQueueTest(unittest.TestCase):
 
         count = 0
 
+        on_before_enqueue_msg(None)
         fmq.clear()
-        fmq.on_before_enqueue_msg(None)
 
         fmq.enqueue(NEW_SESSION_MSG)
 
