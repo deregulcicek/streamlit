@@ -27,13 +27,15 @@ import Plot, { Figure as PlotlyFigureType } from "react-plotly.js"
 
 import { EmotionTheme } from "@streamlit/lib/src/theme"
 import { PlotlyChart as PlotlyChartProto } from "@streamlit/lib/src/proto"
-import { withFullScreenWrapper } from "@streamlit/lib/src/components/shared/FullScreenWrapper"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import {
   keysToSnakeCase,
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
 import { FormClearHelper } from "@streamlit/lib/src/components/widgets/Form/FormClearHelper"
+import { ElementFullscreenContext } from "@streamlit/lib/src/components/shared/ElementFullscreen/ElementFullscreenContext"
+import { useRequiredContext } from "@streamlit/lib/src/hooks/useRequiredContext"
+import { withFullScreenWrapper } from "@streamlit/lib/src/components/shared/FullScreenWrapper"
 
 import {
   applyStreamlitTheme,
@@ -358,31 +360,29 @@ export function sendEmptySelection(
 }
 
 export interface PlotlyChartProps {
-  width: number
   element: PlotlyChartProto
-  height?: number
   widgetMgr: WidgetStateManager
   disabled: boolean
   fragmentId?: string
-  isFullScreen: boolean
-  expand?: () => void
-  collapse?: () => void
   disableFullscreenMode?: boolean
+  width: number
 }
 
 export function PlotlyChart({
   element,
-  width,
-  height,
   widgetMgr,
   disabled,
   fragmentId,
-  isFullScreen,
-  expand,
-  collapse,
   disableFullscreenMode,
 }: Readonly<PlotlyChartProps>): ReactElement {
   const theme: EmotionTheme = useTheme()
+  const {
+    expanded: isFullScreen,
+    width,
+    height,
+    expand,
+    collapse,
+  } = useRequiredContext(ElementFullscreenContext)
 
   // Load the initial figure spec from the element message
   const initialFigureSpec = useMemo<PlotlyFigureType>(() => {
@@ -396,6 +396,8 @@ export function PlotlyChart({
 
     return JSON.parse(element.spec)
     // We want to reload the initialFigureSpec object whenever the element id changes
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element.id, element.spec])
 
@@ -478,6 +480,8 @@ export function PlotlyChart({
     }
     return config
     // We want to reload the plotlyConfig object whenever the element id changes
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     element.id,
@@ -568,6 +572,8 @@ export function PlotlyChart({
     })
     // We want to reload these options whenever the element id changes
     // or the selection modes change.
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     element.id,
@@ -626,6 +632,8 @@ export function PlotlyChart({
     },
     // We are using element.id here instead of element since we don't
     // shallow reference equality will not work correctly for element.
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [element.id, widgetMgr, fragmentId]
   )
@@ -668,6 +676,8 @@ export function PlotlyChart({
     },
     // We are using element.id here instead of element since we don't
     // shallow reference equality will not work correctly for element.
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [element.id, widgetMgr, fragmentId]
   )
@@ -731,6 +741,8 @@ export function PlotlyChart({
       })
     }
     // We only want to trigger this effect if the dragmode changes.
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plotlyFigure.layout?.dragmode])
 
@@ -779,4 +791,4 @@ export function PlotlyChart({
   )
 }
 
-export default withFullScreenWrapper(PlotlyChart, true)
+export default withFullScreenWrapper(PlotlyChart)

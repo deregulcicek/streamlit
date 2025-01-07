@@ -16,8 +16,8 @@
 
 import React from "react"
 
-import { fireEvent, screen } from "@testing-library/react"
-import "@testing-library/jest-dom"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
 import { render } from "@streamlit/lib/src/test_util"
 import { lightTheme } from "@streamlit/lib/src/theme"
@@ -90,11 +90,12 @@ describe("Button element", () => {
     expect(buttonWidget).toBeDisabled()
   })
 
-  it("calls onClick when button is clicked", () => {
-    const onClick = jest.fn()
+  it("calls onClick when button is clicked", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
     render(<BaseButton {...getProps({ onClick })}>Hello</BaseButton>)
     const buttonWidget = screen.getByRole("button")
-    fireEvent.click(buttonWidget)
+    await user.click(buttonWidget)
 
     expect(onClick).toHaveBeenCalled()
   })

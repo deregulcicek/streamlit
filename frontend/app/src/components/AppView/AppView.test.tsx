@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen, within } from "@testing-library/react"
 
 import {
@@ -82,19 +81,18 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
   return {
     endpoints: mockEndpointProp,
     elements: AppRoot.empty(FAKE_SCRIPT_HASH, true),
-    sendMessageToHost: jest.fn(),
-    sessionInfo,
+    sendMessageToHost: vi.fn(),
     scriptRunId: "script run 123",
     scriptRunState: ScriptRunState.NOT_RUNNING,
     widgetMgr: new WidgetStateManager({
-      sendRerunBackMsg: jest.fn(),
-      formsDataChanged: jest.fn(),
+      sendRerunBackMsg: vi.fn(),
+      formsDataChanged: vi.fn(),
     }),
     uploadClient: new FileUploadClient({
       sessionInfo,
       endpoints: mockEndpointProp,
       formsWithPendingRequestsChanged: () => {},
-      requestFileURLs: jest.fn(),
+      requestFileURLs: vi.fn(),
     }),
     widgetsDisabled: true,
     componentRegistry: new ComponentRegistry(mockEndpointProp),
@@ -102,7 +100,7 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
     appLogo: null,
     appPages: [{ pageName: "streamlit_app", pageScriptHash: "page_hash" }],
     navSections: [],
-    onPageChange: jest.fn(),
+    onPageChange: vi.fn(),
     currentPageScriptHash: "main_page_script_hash",
     hideSidebarNav: false,
     expandSidebarNav: false,
@@ -112,7 +110,7 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
 
 describe("AppView element", () => {
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it("renders without crashing", () => {
@@ -258,7 +256,7 @@ describe("AppView element", () => {
 
   it("does not render the wide class", () => {
     const realUseContext = React.useContext
-    jest.spyOn(React, "useContext").mockImplementation(input => {
+    vi.spyOn(React, "useContext").mockImplementation(input => {
       if (input === AppContext) {
         return getContextOutput({ wideMode: false, embedded: false })
       }
@@ -303,7 +301,7 @@ describe("AppView element", () => {
 
   it("does render the wide class when specified", () => {
     const realUseContext = React.useContext
-    jest.spyOn(React, "useContext").mockImplementation(input => {
+    vi.spyOn(React, "useContext").mockImplementation(input => {
       if (input === AppContext) {
         return getContextOutput({ wideMode: true, embedded: false })
       }
@@ -320,7 +318,7 @@ describe("AppView element", () => {
   describe("handles padding an embedded app", () => {
     it("embedded triggers default padding", () => {
       const realUseContext = React.useContext
-      jest.spyOn(React, "useContext").mockImplementation(input => {
+      vi.spyOn(React, "useContext").mockImplementation(input => {
         if (input === AppContext) {
           return getContextOutput({ embedded: true })
         }
@@ -337,7 +335,7 @@ describe("AppView element", () => {
 
     it("showPadding triggers expected padding", () => {
       const realUseContext = React.useContext
-      jest.spyOn(React, "useContext").mockImplementation(input => {
+      vi.spyOn(React, "useContext").mockImplementation(input => {
         if (input === AppContext) {
           return getContextOutput({ showPadding: true })
         }
@@ -354,7 +352,7 @@ describe("AppView element", () => {
 
     it("showToolbar triggers expected top padding", () => {
       const realUseContext = React.useContext
-      jest.spyOn(React, "useContext").mockImplementation(input => {
+      vi.spyOn(React, "useContext").mockImplementation(input => {
         if (input === AppContext) {
           return getContextOutput({ showToolbar: true })
         }
@@ -371,7 +369,7 @@ describe("AppView element", () => {
 
     it("hasSidebar triggers expected top padding", () => {
       const realUseContext = React.useContext
-      jest.spyOn(React, "useContext").mockImplementation(input => {
+      vi.spyOn(React, "useContext").mockImplementation(input => {
         if (input === AppContext) {
           return getContextOutput({ embedded: true })
         }
@@ -445,7 +443,7 @@ describe("AppView element", () => {
     })
 
     it("uses iconImage if provided", () => {
-      const sourceSpy = jest.spyOn(mockEndpointProp, "buildMediaURL")
+      const sourceSpy = vi.spyOn(mockEndpointProp, "buildMediaURL")
       render(<AppView {...getProps({ appLogo: fullAppLogo })} />)
       const openSidebarContainer = screen.getByTestId(
         "stSidebarCollapsedControl"
@@ -460,7 +458,7 @@ describe("AppView element", () => {
     })
 
     it("defaults to image if no iconImage", () => {
-      const sourceSpy = jest.spyOn(mockEndpointProp, "buildMediaURL")
+      const sourceSpy = vi.spyOn(mockEndpointProp, "buildMediaURL")
       render(<AppView {...getProps({ appLogo: imageOnly })} />)
       const openSidebarContainer = screen.getByTestId(
         "stSidebarCollapsedControl"
@@ -499,7 +497,7 @@ describe("AppView element", () => {
     afterEach(() => (window.location = originalLocation))
 
     it("sends UPDATE_HASH message to host", () => {
-      const sendMessageToHost = jest.fn()
+      const sendMessageToHost = vi.fn()
       render(<AppView {...getProps({ sendMessageToHost })} />)
 
       window.location.hash = "mock_hash"

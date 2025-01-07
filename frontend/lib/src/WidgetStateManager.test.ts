@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Mock } from "vitest"
 import { enableAllPlugins } from "immer"
 
 import {
@@ -71,15 +72,15 @@ const MOCK_FILE_UPLOADER_STATE = new FileUploaderStateProto({
 enableAllPlugins()
 
 describe("Widget State Manager", () => {
-  let sendBackMsg: jest.Mock
+  let sendBackMsg: Mock
   let widgetMgr: WidgetStateManager
   let formsData: FormsData
-  let onFormsDataChanged: jest.Mock
+  let onFormsDataChanged: Mock
 
   beforeEach(() => {
     formsData = createFormsData()
-    sendBackMsg = jest.fn()
-    onFormsDataChanged = jest.fn(newData => {
+    sendBackMsg = vi.fn()
+    onFormsDataChanged = vi.fn(newData => {
       formsData = newData
     })
     widgetMgr = new WidgetStateManager({
@@ -157,9 +158,10 @@ describe("Widget State Manager", () => {
    * Buttons (which set trigger values) can't be used within forms, so this test
    * is not parameterized on insideForm.
    */
-  it("sets trigger value correctly", () => {
+  it("sets trigger value correctly", async () => {
     const widget = getWidget({ insideForm: false })
-    widgetMgr.setTriggerValue(widget, { fromUi: true }, undefined)
+    await widgetMgr.setTriggerValue(widget, { fromUi: true }, undefined)
+
     // @ts-expect-error
     expect(widgetMgr.getWidgetState(widget)).toBe(undefined)
     assertCallbacks({ insideForm: false })
@@ -169,9 +171,9 @@ describe("Widget State Manager", () => {
    * String Triggers can't be used within forms, so this test
    * is not parameterized on insideForm.
    */
-  it("sets string trigger value correctly", () => {
+  it("sets string trigger value correctly", async () => {
     const widget = getWidget({ insideForm: false })
-    widgetMgr.setStringTriggerValue(
+    await widgetMgr.setStringTriggerValue(
       widget,
       "sample string",
       { fromUi: true },
@@ -384,9 +386,9 @@ describe("Widget State Manager", () => {
         setterMethod: "setFileUploaderStateValue",
         value: MOCK_FILE_UPLOADER_STATE,
       },
-    ])("%p", ({ setterMethod, value }) => {
+    ])("%p", async ({ setterMethod, value }) => {
       // @ts-expect-error
-      widgetMgr[setterMethod](
+      await widgetMgr[setterMethod](
         MOCK_WIDGET,
         value,
         {
@@ -404,8 +406,8 @@ describe("Widget State Manager", () => {
 
     // This test isn't parameterized like the ones above because setTriggerValue
     // has a slightly different signature from the other setter methods.
-    it("can set fragmentId in setTriggerValue", () => {
-      widgetMgr.setTriggerValue(
+    it("can set fragmentId in setTriggerValue", async () => {
+      await widgetMgr.setTriggerValue(
         MOCK_WIDGET,
         {
           fromUi: true,
@@ -1111,8 +1113,8 @@ describe("WidgetStateDict", () => {
 
   it("supplies WidgetStates with for active widgets based on input", () => {
     const widgetStateManager = new WidgetStateManager({
-      sendRerunBackMsg: jest.fn(),
-      formsDataChanged: jest.fn(),
+      sendRerunBackMsg: vi.fn(),
+      formsDataChanged: vi.fn(),
     })
 
     widgetStateManager.setStringValue(

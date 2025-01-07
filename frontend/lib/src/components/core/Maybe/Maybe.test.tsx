@@ -16,7 +16,6 @@
 
 import React, { FC } from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -35,6 +34,8 @@ interface InnerProps {
 let innerRenderCount = 0
 const Inner: FC<InnerProps> = props => {
   // Side-effect: mutable variable for testing render counts
+  // TODO: Update to match React best practices
+  // eslint-disable-next-line react-compiler/react-compiler
   innerRenderCount += 1
   return <div>{props.name}</div>
 }

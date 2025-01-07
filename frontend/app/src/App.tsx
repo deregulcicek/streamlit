@@ -28,6 +28,7 @@ import {
   AutoRerun,
   BackMsg,
   BaseUriParts,
+  CircularBuffer,
   ComponentRegistry,
   Config,
   createFormsData,
@@ -63,6 +64,7 @@ import {
   isColoredLineDisplayed,
   isEmbed,
   isInChildFrame,
+  isNullOrUndefined,
   isPaddingDisplayed,
   isPresetTheme,
   isScrollingHidden,
@@ -73,8 +75,11 @@ import {
   logError,
   logMessage,
   Logo,
+  mark,
+  measure,
   Navigation,
   NewSession,
+  notNullOrUndefined,
   notUndefined,
   PageConfig,
   PageInfo,
@@ -83,6 +88,7 @@ import {
   PagesChanged,
   ParentMessage,
   PerformanceEvents,
+  preserveEmbedQueryParams,
   PresetThemeName,
   ScriptRunState,
   SessionEvent,
@@ -95,12 +101,7 @@ import {
   WidgetStateManager,
   WidgetStates,
 } from "@streamlit/lib"
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-  preserveEmbedQueryParams,
-} from "@streamlit/lib/src/util/utils"
-import getBrowserInfo from "@streamlit/lib/src/util/getBrowserInfo"
+import getBrowserInfo from "@streamlit/app/src/util/getBrowserInfo"
 import { AppContext } from "@streamlit/app/src/components/AppContext"
 import AppView from "@streamlit/app/src/components/AppView"
 import StatusWidget from "@streamlit/app/src/components/StatusWidget"
@@ -118,12 +119,13 @@ import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 import { SessionEventDispatcher } from "@streamlit/app/src/SessionEventDispatcher"
 import { UserSettings } from "@streamlit/app/src/components/StreamlitDialog/UserSettings"
 import { DefaultStreamlitEndpoints } from "@streamlit/app/src/connection/DefaultStreamlitEndpoints"
-import { SegmentMetricsManager } from "@streamlit/app/src/SegmentMetricsManager"
+import { MetricsManager } from "@streamlit/app/src/MetricsManager"
 import { StyledApp } from "@streamlit/app/src/styled-components"
 import withScreencast, {
   ScreenCastHOC,
 } from "@streamlit/app/src/hocs/withScreencast/withScreencast"
 
+import { showDevelopmentOptions } from "./showDevelopmentOptions"
 // Used to import fonts + responsive reboot items
 import "@streamlit/app/src/assets/css/theme.scss"
 import { ThemeManager } from "./util/useThemeManager"
@@ -132,6 +134,7 @@ import { AppNavigation, MaybeStateUpdate } from "./util/AppNavigation"
 export interface Props {
   screenCast: ScreenCastHOC
   theme: ThemeManager
+  streamlitExecutionStartedAt: number
 }
 
 interface State {
@@ -145,7 +148,6 @@ interface State {
   userSettings: UserSettings
   dialog?: DialogProps | null
   layout: PageConfig.Layout
-  pageLayouts: Record<string, PageConfig.Layout>
   initialSidebarState: PageConfig.SidebarState
   menuItems?: PageConfig.IMenuItems | null
   allowRunOnSave: boolean
@@ -192,23 +194,17 @@ declare global {
   interface Window {
     streamlitDebug: any
     iFrameResizer: any
+    __streamlit_profiles__?: Record<
+      string,
+      CircularBuffer<{
+        phase: "mount" | "update" | "nested-update"
+        actualDuration: number
+        baseDuration: number
+        startTime: number
+        commitTime: number
+      }>
+    >
   }
-}
-
-export const showDevelopmentOptions = (
-  hostIsOwner: boolean | undefined,
-  toolbarMode: Config.ToolbarMode
-): boolean => {
-  if (toolbarMode == Config.ToolbarMode.DEVELOPER) {
-    return true
-  }
-  if (
-    Config.ToolbarMode.VIEWER == toolbarMode ||
-    Config.ToolbarMode.MINIMAL == toolbarMode
-  ) {
-    return false
-  }
-  return hostIsOwner || isLocalhost()
 }
 
 export class App extends PureComponent<Props, State> {
@@ -216,7 +212,7 @@ export class App extends PureComponent<Props, State> {
 
   private readonly sessionInfo = new SessionInfo()
 
-  private readonly metricsMgr = new SegmentMetricsManager(this.sessionInfo)
+  private readonly metricsMgr = new MetricsManager(this.sessionInfo)
 
   private readonly sessionEventDispatcher = new SessionEventDispatcher()
 
@@ -276,7 +272,6 @@ export class App extends PureComponent<Props, State> {
         runOnSave: false,
       },
       layout: PageConfig.Layout.CENTERED,
-      pageLayouts: {},
       initialSidebarState: PageConfig.SidebarState.AUTO,
       menuItems: undefined,
       allowRunOnSave: true,
@@ -323,6 +318,7 @@ export class App extends PureComponent<Props, State> {
     })
 
     this.hostCommunicationMgr = new HostCommunicationManager({
+      streamlitExecutionStartedAt: props.streamlitExecutionStartedAt,
       sendRerunBackMsg: this.sendRerunBackMsg,
       closeModal: this.closeDialog,
       stopScript: this.stopScript,
@@ -335,12 +331,9 @@ export class App extends PureComponent<Props, State> {
       themeChanged: this.handleThemeMessage,
       pageChanged: this.onPageChange,
       isOwnerChanged: isOwner => this.setState({ isOwner }),
-      jwtHeaderChanged: ({ jwtHeaderName, jwtHeaderValue }) => {
-        if (
-          this.endpoints.setJWTHeader !== undefined &&
-          this.state.appConfig.useExternalAuthToken
-        ) {
-          this.endpoints.setJWTHeader({ jwtHeaderName, jwtHeaderValue })
+      fileUploadClientConfigChanged: config => {
+        if (this.endpoints.setFileUploadClientConfig !== undefined) {
+          this.endpoints.setFileUploadClientConfig(config)
         }
       },
       hostMenuItemsChanged: hostMenuItems => {
@@ -427,6 +420,7 @@ export class App extends PureComponent<Props, State> {
           enableCustomParentMessages,
           mapboxToken,
           enforceDownloadInNewTab,
+          metricsUrl,
         } = response
 
         const appConfig: AppConfig = {
@@ -440,6 +434,8 @@ export class App extends PureComponent<Props, State> {
           enforceDownloadInNewTab,
         }
 
+        // Set the metrics configuration:
+        this.metricsMgr.setMetricsConfig(metricsUrl)
         // Set the allowed origins configuration for the host communication:
         this.hostCommunicationMgr.setAllowedOrigins(appConfig)
         // Set the streamlit-app specific config settings in AppContext:
@@ -455,6 +451,7 @@ export class App extends PureComponent<Props, State> {
     // "Can't call setState on a component that is not yet mounted." error.
     this.initializeConnectionManager()
 
+    mark(this.state.scriptRunState)
     this.hostCommunicationMgr.sendMessageToHost({
       type: "SCRIPT_RUN_STATE_CHANGED",
       scriptRunState: this.state.scriptRunState,
@@ -506,6 +503,16 @@ export class App extends PureComponent<Props, State> {
       window.prerenderReady = true
     }
     if (this.state.scriptRunState !== prevState.scriptRunState) {
+      mark(this.state.scriptRunState)
+
+      if (this.state.scriptRunState === ScriptRunState.NOT_RUNNING) {
+        measure(
+          "script-run-cycle",
+          ScriptRunState.RUNNING,
+          ScriptRunState.NOT_RUNNING
+        )
+      }
+
       this.hostCommunicationMgr.sendMessageToHost({
         type: "SCRIPT_RUN_STATE_CHANGED",
         scriptRunState: this.state.scriptRunState,
@@ -981,11 +988,7 @@ export class App extends PureComponent<Props, State> {
       this.handleOneTimeInitialization(newSessionProto)
     }
 
-    const {
-      appHash,
-      pageLayouts,
-      currentPageScriptHash: prevPageScriptHash,
-    } = this.state
+    const { appHash, currentPageScriptHash: prevPageScriptHash } = this.state
     const {
       scriptRunId,
       name: scriptName,
@@ -1016,7 +1019,7 @@ export class App extends PureComponent<Props, State> {
       this.maybeSetState(this.appNavigation.handleNewSession(newSessionProto))
 
       // Set the favicon to its default values
-      this.onPageIconChanged(`${process.env.PUBLIC_URL}/favicon.png`)
+      this.onPageIconChanged(`${import.meta.env.BASE_URL}favicon.png`)
     } else {
       this.setState({
         fragmentIdsThisRun,
@@ -1048,20 +1051,6 @@ export class App extends PureComponent<Props, State> {
         mainScriptHash
       )
     }
-
-    // Use previously saved layout if exists, otherwise default to CENTERED
-    // Pages using set_page_config(layout=...) will be overriding these values
-    this.setState((prevState: State) => {
-      const newLayout =
-        pageLayouts[newPageScriptHash] ?? PageConfig.Layout.CENTERED
-      return {
-        layout: newLayout,
-        userSettings: {
-          ...prevState.userSettings,
-          wideMode: newLayout === PageConfig.Layout.WIDE,
-        },
-      }
-    })
   }
 
   /**
@@ -1077,6 +1066,7 @@ export class App extends PureComponent<Props, State> {
 
     this.metricsMgr.initialize({
       gatherUsageStats: config.gatherUsageStats,
+      sendMessageToHost: this.hostCommunicationMgr.sendMessageToHost,
     })
 
     // Protobuf typing cannot handle complex types, so we need to cast to what
@@ -1457,15 +1447,6 @@ export class App extends PureComponent<Props, State> {
         .filter(notUndefined)
     )
 
-    // Save current page layout before rerun
-    this.setState((prevState: State) => {
-      const pageLayouts = prevState.pageLayouts
-      pageLayouts[prevState.currentPageScriptHash] = prevState.layout
-      return {
-        pageLayouts: pageLayouts,
-      }
-    })
-
     this.sendRerunBackMsg(
       this.widgetMgr.getActiveWidgetStates(activeWidgetIds),
       undefined,
@@ -1606,10 +1587,14 @@ export class App extends PureComponent<Props, State> {
   }
 
   openThemeCreatorDialog = (): void => {
+    this.metricsMgr.enqueue("menuClick", {
+      label: "editTheme",
+    })
     const newDialog: DialogProps = {
       type: DialogType.THEME_CREATOR,
       backToSettings: this.settingsCallback,
       onClose: this.closeDialog,
+      metricsMgr: this.metricsMgr,
     }
     this.openDialog(newDialog)
   }
@@ -1929,6 +1914,7 @@ export class App extends PureComponent<Props, State> {
             currentPageScriptHash,
             libConfig,
             fragmentIdsThisRun: this.state.fragmentIdsThisRun,
+            locale: window.navigator.language,
           }}
         >
           <Hotkeys
@@ -1994,7 +1980,6 @@ export class App extends PureComponent<Props, State> {
 
               <AppView
                 endpoints={this.endpoints}
-                sessionInfo={this.sessionInfo}
                 sendMessageToHost={this.hostCommunicationMgr.sendMessageToHost}
                 elements={elements}
                 scriptRunId={scriptRunId}

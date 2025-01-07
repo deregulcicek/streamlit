@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks"
 import { CompactSelection } from "@glideapps/glide-data-grid"
+import { act, renderHook } from "@testing-library/react-hooks"
 
-import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 import { TextColumn } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
+import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 
 import useSelectionHandler from "./useSelectionHandler"
 
-const syncSelectionStateMock = jest.fn()
+const syncSelectionStateMock = vi.fn()
 
 describe("useSelectionHandler hook", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("detects single row selection", () => {
@@ -566,6 +566,7 @@ describe("useSelectionHandler hook", () => {
             isEditable: true,
             isHidden: false,
             isIndex: true,
+            isPinned: false,
             isStretched: false,
             title: "",
           }),

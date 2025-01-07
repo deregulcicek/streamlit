@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Union, cast, overload
 from typing_extensions import TypeAlias
 
 from streamlit import config
+from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.policies import (
     check_widget_policies,
@@ -54,15 +55,6 @@ SomeUploadedFiles: TypeAlias = Union[
     DeletedFile,
     List[Union[UploadedFile, DeletedFile]],
     None,
-]
-
-
-TYPE_PAIRS = [
-    (".jpg", ".jpeg"),
-    (".mpg", ".mpeg"),
-    (".mp4", ".mpeg4"),
-    (".tif", ".tiff"),
-    (".htm", ".html"),
 ]
 
 
@@ -251,8 +243,9 @@ class FileUploaderMixin:
         label : str
             A short label explaining to the user what this file uploader is for.
             The label can optionally contain GitHub-flavored Markdown of the
-            following types: Bold, Italics, Strikethroughs, Inline Code, and
-            Links.
+            following types: Bold, Italics, Strikethroughs, Inline Code, Links,
+            and Images. Images display like icons, with a max height equal to
+            the font height.
 
             Unsupported Markdown elements are unwrapped so only their children
             (text contents) render. Display unsupported elements as literal
@@ -262,9 +255,9 @@ class FileUploaderMixin:
             See the ``body`` parameter of |st.markdown|_ for additional,
             supported Markdown directives.
 
-            For accessibility reasons, you should never set an empty label (label="")
-            but hide it with label_visibility if needed. In the future, we may disallow
-            empty labels by raising an exception.
+            For accessibility reasons, you should never set an empty label, but
+            you can hide it with ``label_visibility`` if needed. In the future,
+            we may disallow empty labels by raising an exception.
 
             .. |st.markdown| replace:: ``st.markdown``
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
@@ -284,7 +277,9 @@ class FileUploaderMixin:
             based on its content. No two widgets may have the same key.
 
         help : str
-            A tooltip that gets displayed next to the file uploader.
+            An optional tooltip that gets displayed next to the widget label.
+            Streamlit only displays the tooltip when
+            ``label_visibility="visible"``.
 
         on_change : callable
             An optional callback invoked when this file_uploader's value
@@ -297,15 +292,14 @@ class FileUploaderMixin:
             An optional dict of kwargs to pass to the callback.
 
         disabled : bool
-            An optional boolean, which disables the file uploader if set to
-            True. The default is False. This argument can only be supplied by
-            keyword.
+            An optional boolean that disables the file uploader if set to
+            ``True``. The default is ``False``.
 
         label_visibility : "visible", "hidden", or "collapsed"
-            The visibility of the label. If "hidden", the label doesn't show but there
-            is still empty space for it above the widget (equivalent to label="").
-            If "collapsed", both the label and the space are removed. Default is
-            "visible".
+            The visibility of the label. The default is ``"visible"``. If this
+            is ``"hidden"``, Streamlit displays an empty spacer instead of the
+            label, which can help keep the widget alligned with other widgets.
+            If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
         Returns
         -------
@@ -415,23 +409,7 @@ class FileUploaderMixin:
         )
 
         if type:
-            if isinstance(type, str):
-                type = [type]
-
-            # May need a regex or a library to validate file types are valid
-            # extensions.
-            type = [
-                file_type if file_type[0] == "." else f".{file_type}"
-                for file_type in type
-            ]
-
-            type = [t.lower() for t in type]
-
-            for x, y in TYPE_PAIRS:
-                if x in type and y not in type:
-                    type.append(y)
-                if y in type and x not in type:
-                    type.append(x)
+            type = normalize_upload_file_type(type)
 
         file_uploader_proto = FileUploaderProto()
         file_uploader_proto.id = element_id

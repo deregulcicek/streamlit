@@ -72,26 +72,31 @@ class StreamlitWriteTest(unittest.TestCase):
             def _repr_html_(self):
                 return "<strong>hello world</strong>"
 
-        with patch("streamlit.delta_generator.DeltaGenerator.markdown") as p:
+        with patch("streamlit.delta_generator.DeltaGenerator.html") as p:
             st.write(FakeHTMLable(), unsafe_allow_html=True)
 
-            p.assert_called_once_with(
-                "<strong>hello world</strong>", unsafe_allow_html=True
-            )
+            p.assert_called_once_with("<strong>hello world</strong>")
 
     def test_repr_html_no_html_tags_in_string(self):
         """Test st.write with an object that defines _repr_html_ but does not have any
-        html tags in the returned string.
+        html tags in the returned string, when unsafe_allow_html=False. In that case,
+        we should just honor unsafe_allow_html even though the output of _repr_html_
+        actually doesn't have HTML. (The reason we're testing for this is because this
+        is a behavior change)
         """
 
         class FakeHTMLable:
             def _repr_html_(self):
                 return "hello **world**"
 
-        with patch("streamlit.delta_generator.DeltaGenerator.markdown") as p:
-            st.write(FakeHTMLable())
+        with patch("streamlit.delta_generator.DeltaGenerator.html") as p1, patch(
+            "streamlit.delta_generator.DeltaGenerator.help"
+        ) as p2:
+            obj = FakeHTMLable()
+            st.write(obj)
 
-            p.assert_called_once_with("hello **world**", unsafe_allow_html=False)
+            p1.assert_not_called()
+            p2.assert_called_once_with(obj)
 
     def test_repr_html_not_callable(self):
         """Test st.write with an object that defines _repr_html_ but is not callable"""
@@ -217,6 +222,24 @@ class StreamlitWriteTest(unittest.TestCase):
 
             p.assert_called_once()
 
+    def test_async_generator(self):
+        """Test st.write with async generator function."""
+
+        async def async_gen_function():
+            yield "hello"
+            yield "world"
+
+        # Should support it as a generator function
+        with patch("streamlit.delta_generator.DeltaGenerator.write_stream") as p:
+            st.write(async_gen_function)
+
+            p.assert_called_once()
+
+        with patch("streamlit.delta_generator.DeltaGenerator.write_stream") as p:
+            st.write(async_gen_function())
+
+            p.assert_called_once()
+
     @patch("streamlit.type_util.is_type")
     def test_openai_stream(self, is_type):
         """Test st.write with openai.Stream."""
@@ -250,6 +273,13 @@ class StreamlitWriteTest(unittest.TestCase):
         """Test st.write with st.query_params."""
         with patch("streamlit.delta_generator.DeltaGenerator.json") as p:
             st.write(QueryParamsProxy())
+
+            p.assert_called_once()
+
+    def test_delta_generator_input(self):
+        """Test st.write with DeltaGenerator as input uses st.help."""
+        with patch("streamlit.delta_generator.DeltaGenerator.help") as p:
+            st.write(st.container())
 
             p.assert_called_once()
 
@@ -456,6 +486,19 @@ class StreamlitStreamTest(unittest.TestCase):
             yield "World"
 
         stream_return = st.write_stream(test_stream)
+        self.assertEqual(stream_return, "Hello World")
+
+    def test_with_async_generator_text(self):
+        """Test st.write_stream with async generator text content."""
+
+        async def test_stream():
+            yield "Hello "
+            yield "World"
+
+        stream_return = st.write_stream(test_stream)
+        self.assertEqual(stream_return, "Hello World")
+
+        stream_return = st.write_stream(test_stream())
         self.assertEqual(stream_return, "Hello World")
 
     def test_with_empty_chunks(self):

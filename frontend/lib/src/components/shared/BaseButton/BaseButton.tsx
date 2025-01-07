@@ -23,10 +23,10 @@ import {
   StyledBorderlessIconButton,
   StyledBorderlessIconButtonActive,
   StyledElementToolbarButton,
+  StyledGhostButton,
   StyledHeaderButton,
   StyledHeaderNoPaddingButton,
   StyledIconButton,
-  StyledIconButtonActive,
   StyledLinkButton,
   StyledMinimalButton,
   StyledPillsButton,
@@ -35,7 +35,10 @@ import {
   StyledPrimaryFormSubmitButton,
   StyledSecondaryButton,
   StyledSecondaryFormSubmitButton,
+  StyledSegmentedControlButton,
+  StyledSegmentedControlButtonActive,
   StyledTertiaryButton,
+  StyledTertiaryFormSubmitButton,
 } from "./styled-components"
 
 function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
@@ -48,16 +51,20 @@ function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
     ComponentType = StyledSecondaryButton
   } else if (kind === BaseButtonKind.TERTIARY) {
     ComponentType = StyledTertiaryButton
+  } else if (kind === BaseButtonKind.GHOST) {
+    ComponentType = StyledGhostButton
   } else if (kind === BaseButtonKind.LINK) {
     ComponentType = StyledLinkButton
-  } else if (kind === BaseButtonKind.SEGMENT) {
+  } else if (kind === BaseButtonKind.ICON) {
     ComponentType = StyledIconButton
-  } else if (kind === BaseButtonKind.SEGMENT_ACTIVE) {
-    ComponentType = StyledIconButtonActive
   } else if (kind === BaseButtonKind.PILLS) {
     ComponentType = StyledPillsButton
   } else if (kind === BaseButtonKind.PILLS_ACTIVE) {
     ComponentType = StyledPillsButtonActive
+  } else if (kind === BaseButtonKind.SEGMENTED_CONTROL) {
+    ComponentType = StyledSegmentedControlButton
+  } else if (kind === BaseButtonKind.SEGMENTED_CONTROL_ACTIVE) {
+    ComponentType = StyledSegmentedControlButtonActive
   } else if (kind === BaseButtonKind.BORDERLESS_ICON) {
     ComponentType = StyledBorderlessIconButton
   } else if (kind === BaseButtonKind.BORDERLESS_ICON_ACTIVE) {
@@ -68,6 +75,8 @@ function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
     ComponentType = StyledPrimaryFormSubmitButton
   } else if (kind === BaseButtonKind.SECONDARY_FORM_SUBMIT) {
     ComponentType = StyledSecondaryFormSubmitButton
+  } else if (kind === BaseButtonKind.TERTIARY_FORM_SUBMIT) {
+    ComponentType = StyledTertiaryFormSubmitButton
   } else if (kind === BaseButtonKind.HEADER_BUTTON) {
     ComponentType = StyledHeaderButton
   } else if (kind === BaseButtonKind.HEADER_NO_PADDING) {

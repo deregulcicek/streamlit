@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useMemo } from "react"
+import React, { FC, memo, useCallback, useMemo } from "react"
 
 import { ChevronDown } from "baseui/icon"
 import {
@@ -42,8 +42,8 @@ import { labelVisibilityProtoValueToEnum } from "@streamlit/lib/src/util/utils"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import {
   useBasicWidgetState,
-  ValueWSource,
-} from "@streamlit/lib/src/useBasicWidgetState"
+  ValueWithSource,
+} from "@streamlit/lib/src/hooks/useBasicWidgetState"
 
 export interface Props {
   disabled: boolean
@@ -82,7 +82,7 @@ const getCurrStateFromProto = (
 const updateWidgetMgrState = (
   element: MultiSelectProto,
   widgetMgr: WidgetStateManager,
-  valueWithSource: ValueWSource<MultiselectValue>,
+  valueWithSource: ValueWithSource<MultiselectValue>,
   fragmentId?: string
 ): void => {
   widgetMgr.setIntArrayValue(
@@ -97,7 +97,7 @@ const Multiselect: FC<Props> = props => {
   const { element, widgetMgr, width, fragmentId } = props
 
   const theme: EmotionTheme = useTheme()
-  const [value, setValueWSource] = useBasicWidgetState<
+  const [value, setValueWithSource] = useBasicWidgetState<
     MultiselectValue,
     MultiSelectProto
   >({
@@ -164,12 +164,12 @@ const Multiselect: FC<Props> = props => {
       ) {
         return
       }
-      setValueWSource({
+      setValueWithSource({
         value: generateNewState(params),
         fromUi: true,
       })
     },
-    [element.maxSelections, generateNewState, setValueWSource, value.length]
+    [element.maxSelections, generateNewState, setValueWithSource, value.length]
   )
 
   const filterOptions = useCallback(
@@ -296,6 +296,7 @@ const Multiselect: FC<Props> = props => {
                       padding: theme.spacing.threeXS,
                       height: theme.sizes.clearIconSize,
                       width: theme.sizes.clearIconSize,
+                      cursor: "pointer",
                       ":hover": {
                         fill: theme.colors.bodyText,
                       },
@@ -327,6 +328,11 @@ const Multiselect: FC<Props> = props => {
                       // to nicely fit into the input field.
                       height: `calc(${theme.sizes.minElementHeight} - 2 * ${theme.spacing.xs})`,
                       maxWidth: `calc(100% - ${theme.spacing.lg})`,
+                      // Using !important because the alternative would be
+                      // uglier: we'd have to put it under a selector like
+                      // "&[role="button"]:not(:disabled)" in order to win in
+                      // the order of the precendence.
+                      cursor: "default !important",
                     },
                   },
                   Action: {
@@ -378,4 +384,4 @@ const Multiselect: FC<Props> = props => {
   )
 }
 
-export default Multiselect
+export default memo(Multiselect)

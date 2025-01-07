@@ -243,7 +243,7 @@ class VegaLiteStateSerde:
 
 def _prepare_vega_lite_spec(
     spec: VegaLiteSpec,
-    use_container_width: bool = False,
+    use_container_width: bool,
     **kwargs,
 ) -> VegaLiteSpec:
     if len(kwargs):
@@ -322,7 +322,9 @@ def _marshall_chart_data(
         proto.data.data = dataframe_util.convert_anything_to_arrow_bytes(data)
 
 
-def _convert_altair_to_vega_lite_spec(altair_chart: alt.Chart) -> VegaLiteSpec:
+def _convert_altair_to_vega_lite_spec(
+    altair_chart: alt.Chart | alt.LayerChart,
+) -> VegaLiteSpec:
     """Convert an Altair chart object to a Vega-Lite chart spec."""
     import altair as alt
 
@@ -449,8 +451,8 @@ def _parse_selection_mode(
     for selection_name in selection_mode:
         if selection_name not in all_selection_params:
             raise StreamlitAPIException(
-                f"Selection parameter '{selection_name}' is not defined in the chart spec. "
-                f"Available selection parameters are: {all_selection_params}."
+                f"Selection parameter '{selection_name}' is not defined in the chart "
+                f"spec. Available selection parameters are: {all_selection_params}."
             )
     return sorted(selection_mode)
 
@@ -603,17 +605,17 @@ class VegaChartsMixin:
 
             For a line chart with just one line, this can be:
 
-            * None, to use the default color.
-            * A hex string like "#ffaa00" or "#ffaa0088".
-            * An RGB or RGBA tuple with the red, green, blue, and alpha
+            - None, to use the default color.
+            - A hex string like "#ffaa00" or "#ffaa0088".
+            - An RGB or RGBA tuple with the red, green, blue, and alpha
               components specified as ints from 0 to 255 or floats from 0.0 to
               1.0.
 
             For a line chart with multiple lines, where the dataframe is in
             long format (that is, y is None or just one column), this can be:
 
-            * None, to use the default colors.
-            * The name of a column in the dataset. Data points will be grouped
+            - None, to use the default colors.
+            - The name of a column in the dataset. Data points will be grouped
               into lines of the same color based on the value of this column.
               In addition, if the values in this column match one of the color
               formats above (hex string or color tuple), then that color will
@@ -632,8 +634,8 @@ class VegaChartsMixin:
             For a line chart with multiple lines, where the dataframe is in
             wide format (that is, y is a Sequence of columns), this can be:
 
-            * None, to use the default colors.
-            * A list of string colors or color tuples to be used for each of
+            - None, to use the default colors.
+            - A list of string colors or color tuples to be used for each of
               the lines in the chart. This list should have the same length
               as the number of y values (e.g. ``color=["#fd0", "#f0f", "#04f"]``
               for three lines).
@@ -800,17 +802,17 @@ class VegaChartsMixin:
 
             For an area chart with just 1 series, this can be:
 
-            * None, to use the default color.
-            * A hex string like "#ffaa00" or "#ffaa0088".
-            * An RGB or RGBA tuple with the red, green, blue, and alpha
+            - None, to use the default color.
+            - A hex string like "#ffaa00" or "#ffaa0088".
+            - An RGB or RGBA tuple with the red, green, blue, and alpha
               components specified as ints from 0 to 255 or floats from 0.0 to
               1.0.
 
             For an area chart with multiple series, where the dataframe is in
             long format (that is, y is None or just one column), this can be:
 
-            * None, to use the default colors.
-            * The name of a column in the dataset. Data points will be grouped
+            - None, to use the default colors.
+            - The name of a column in the dataset. Data points will be grouped
               into series of the same color based on the value of this column.
               In addition, if the values in this column match one of the color
               formats above (hex string or color tuple), then that color will
@@ -829,8 +831,8 @@ class VegaChartsMixin:
             For an area chart with multiple series, where the dataframe is in
             wide format (that is, y is a Sequence of columns), this can be:
 
-            * None, to use the default colors.
-            * A list of string colors or color tuples to be used for each of
+            - None, to use the default colors.
+            - A list of string colors or color tuples to be used for each of
               the series in the chart. This list should have the same length
               as the number of y values (e.g. ``color=["#fd0", "#f0f", "#04f"]``
               for three lines).
@@ -1042,17 +1044,17 @@ class VegaChartsMixin:
 
             For a bar chart with just one series, this can be:
 
-            * None, to use the default color.
-            * A hex string like "#ffaa00" or "#ffaa0088".
-            * An RGB or RGBA tuple with the red, green, blue, and alpha
+            - None, to use the default color.
+            - A hex string like "#ffaa00" or "#ffaa0088".
+            - An RGB or RGBA tuple with the red, green, blue, and alpha
               components specified as ints from 0 to 255 or floats from 0.0 to
               1.0.
 
             For a bar chart with multiple series, where the dataframe is in
             long format (that is, y is None or just one column), this can be:
 
-            * None, to use the default colors.
-            * The name of a column in the dataset. Data points will be grouped
+            - None, to use the default colors.
+            - The name of a column in the dataset. Data points will be grouped
               into series of the same color based on the value of this column.
               In addition, if the values in this column match one of the color
               formats above (hex string or color tuple), then that color will
@@ -1071,8 +1073,8 @@ class VegaChartsMixin:
             For a bar chart with multiple series, where the dataframe is in
             wide format (that is, y is a Sequence of columns), this can be:
 
-            * None, to use the default colors.
-            * A list of string colors or color tuples to be used for each of
+            - None, to use the default colors.
+            - A list of string colors or color tuples to be used for each of
               the series in the chart. This list should have the same length
               as the number of y values (e.g. ``color=["#fd0", "#f0f", "#04f"]``
               for three lines).
@@ -1219,7 +1221,8 @@ class VegaChartsMixin:
         # Offset encodings (used for non-stacked/grouped bar charts) are not supported in Altair < 5.0.0
         if type_util.is_altair_version_less_than("5.0.0") and stack is False:
             raise StreamlitAPIException(
-                "Streamlit does not support non-stacked (grouped) bar charts with Altair 4.x. Please upgrade to Version 5."
+                "Streamlit does not support non-stacked (grouped) bar charts with "
+                "Altair 4.x. Please upgrade to Version 5."
             )
 
         bar_chart_type = (
@@ -1306,12 +1309,12 @@ class VegaChartsMixin:
 
             This can be:
 
-            * None, to use the default color.
-            * A hex string like "#ffaa00" or "#ffaa0088".
-            * An RGB or RGBA tuple with the red, green, blue, and alpha
+            - None, to use the default color.
+            - A hex string like "#ffaa00" or "#ffaa0088".
+            - An RGB or RGBA tuple with the red, green, blue, and alpha
               components specified as ints from 0 to 255 or floats from 0.0 to
               1.0.
-            * The name of a column in the dataset where the color of that
+            - The name of a column in the dataset where the color of that
               datapoint will come from.
 
               If the values in this column are in one of the color formats
@@ -1335,7 +1338,7 @@ class VegaChartsMixin:
             If the dataframe is in wide format (that is, y is a Sequence of
             columns), this can also be:
 
-            * A list of string colors or color tuples to be used for each of
+            - A list of string colors or color tuples to be used for each of
               the series in the chart. This list should have the same length
               as the number of y values (e.g. ``color=["#fd0", "#f0f", "#04f"]``
               for three series).
@@ -1345,9 +1348,9 @@ class VegaChartsMixin:
 
             This can be:
 
-            * A number like 100, to specify a single size to use for all
+            - A number like 100, to specify a single size to use for all
               datapoints.
-            * The name of the column to use for the size. This allows each
+            - The name of the column to use for the size. This allows each
               datapoint to be represented by a circle of a different size.
 
         width : int or None
@@ -1464,7 +1467,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["ignore"],  # No default value here to make it work with mypy
@@ -1476,7 +1479,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun"] | WidgetCallback = "rerun",
@@ -1488,7 +1491,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun", "ignore"] | WidgetCallback = "ignore",
@@ -1507,13 +1510,17 @@ class VegaChartsMixin:
             https://altair-viz.github.io/gallery/ for examples of graph
             descriptions.
 
-        use_container_width : bool
+        use_container_width : bool or None
             Whether to override the figure's native width with the width of
-            the parent container. If ``use_container_width`` is ``False``
-            (default), Streamlit sets the width of the chart to fit its contents
+            the parent container. If ``use_container_width`` is None (default),
+            Streamlit will set it to True for all charts except for facet,
+            horizontal concatenation, and repeat charts (note that for these chart
+            types, ``use_container_width=True`` doesn't work properly). If
+            ``use_container_width`` is ``True``, Streamlit sets the width of the
+            figure to match the width of the parent container. If ``use_container_width``
+            is ``False``, Streamlit sets the width of the chart to fit its contents
             according to the plotting library, up to the width of the parent
-            container. If ``use_container_width`` is ``True``, Streamlit sets
-            the width of the figure to match the width of the parent container.
+            container.
 
         theme : "streamlit" or None
             The theme of the chart. If ``theme`` is ``"streamlit"`` (default),
@@ -1593,7 +1600,7 @@ class VegaChartsMixin:
         ...    .encode(x="a", y="b", size="c", color="c", tooltip=["a", "b", "c"])
         ... )
         >>>
-        >>> st.altair_chart(c, use_container_width=True)
+        >>> st.altair_chart(c)
 
         .. output::
            https://doc-vega-lite-chart.streamlit.app/
@@ -1615,7 +1622,7 @@ class VegaChartsMixin:
         data: Data = None,
         spec: VegaLiteSpec | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["ignore"],  # No default value here to make it work with mypy
@@ -1629,7 +1636,7 @@ class VegaChartsMixin:
         data: Data = None,
         spec: VegaLiteSpec | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun"] | WidgetCallback = "rerun",
@@ -1643,7 +1650,7 @@ class VegaChartsMixin:
         data: Data = None,
         spec: VegaLiteSpec | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun", "ignore"] | WidgetCallback = "ignore",
@@ -1667,13 +1674,17 @@ class VegaChartsMixin:
             to both ``data`` and ``spec``. See
             https://vega.github.io/vega-lite/docs/ for more info.
 
-        use_container_width : bool
+        use_container_width : bool or None
             Whether to override the figure's native width with the width of
-            the parent container. If ``use_container_width`` is ``False``
-            (default), Streamlit sets the width of the chart to fit its contents
+            the parent container. If ``use_container_width`` is None (default),
+            Streamlit will set it to True for all charts except for facet,
+            horizontal concatenation, and repeat charts (note that for these chart
+            types, ``use_container_width=True`` doesn't work properly). If
+            ``use_container_width`` is ``True``, Streamlit sets the width of the
+            figure to match the width of the parent container. If ``use_container_width``
+            is ``False``, Streamlit sets the width of the chart to fit its contents
             according to the plotting library, up to the width of the parent
-            container. If ``use_container_width`` is ``True``, Streamlit sets
-            the width of the figure to match the width of the parent container.
+            container.
 
         theme : "streamlit" or None
             The theme of the chart. If ``theme`` is ``"streamlit"`` (default),
@@ -1784,8 +1795,8 @@ class VegaChartsMixin:
 
     def _altair_chart(
         self,
-        altair_chart: alt.Chart,
-        use_container_width: bool = False,
+        altair_chart: alt.Chart | alt.LayerChart,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun", "ignore"] | WidgetCallback = "ignore",
@@ -1799,7 +1810,8 @@ class VegaChartsMixin:
 
         if type_util.is_altair_version_less_than("5.0.0") and on_select != "ignore":
             raise StreamlitAPIException(
-                "Streamlit does not support selections with Altair 4.x. Please upgrade to Version 5. "
+                "Streamlit does not support selections with Altair 4.x. Please upgrade "
+                "to Version 5. "
                 "If you would like to use Altair 4.x with selections, please upvote "
                 "this [Github issue](https://github.com/streamlit/streamlit/issues/8516)."
             )
@@ -1820,7 +1832,7 @@ class VegaChartsMixin:
         self,
         data: Data = None,
         spec: VegaLiteSpec | None = None,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun", "ignore"] | WidgetCallback = "ignore",
@@ -1835,12 +1847,15 @@ class VegaChartsMixin:
 
         if theme not in ["streamlit", None]:
             raise StreamlitAPIException(
-                f'You set theme="{theme}" while Streamlit charts only support theme=”streamlit” or theme=None to fallback to the default library theme.'
+                f'You set theme="{theme}" while Streamlit charts only support '
+                "theme=”streamlit” or theme=None to fallback to the default "
+                "library theme."
             )
 
         if on_select not in ["ignore", "rerun"] and not callable(on_select):
             raise StreamlitAPIException(
-                f"You have passed {on_select} to `on_select`. But only 'ignore', 'rerun', or a callable is supported."
+                f"You have passed {on_select} to `on_select`. But only 'ignore', "
+                "'rerun', or a callable is supported."
             )
 
         key = to_key(key)
@@ -1867,6 +1882,22 @@ class VegaChartsMixin:
 
         if spec is None:
             spec = {}
+
+        # Set the default value for `use_container_width`.
+        if use_container_width is None:
+            # Some multi-view charts (facet, horizontal concatenation, and repeat;
+            # see https://altair-viz.github.io/user_guide/compound_charts.html)
+            # don't work well with `use_container_width=True`, so we disable it for
+            # those charts (see https://github.com/streamlit/streamlit/issues/9091).
+            # All other charts (including vertical concatenation) default to
+            # `use_container_width=True`.
+            is_facet_chart = "facet" in spec or (
+                "encoding" in spec
+                and (any(x in spec["encoding"] for x in ["row", "column", "facet"]))
+            )
+            use_container_width = not (
+                is_facet_chart or "hconcat" in spec or "repeat" in spec
+            )
 
         vega_lite_proto = ArrowVegaLiteChartProto()
 

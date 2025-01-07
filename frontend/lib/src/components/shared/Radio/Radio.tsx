@@ -69,6 +69,8 @@ function Radio({
     setValue(defaultValue ?? null)
 
     // Exclude value from the dependency list on purpose to avoid a loop.
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [defaultValue])
 
@@ -177,11 +179,13 @@ function Radio({
               },
               RadioMarkInner: {
                 style: ({ $checked }: { $checked: boolean }) => ({
+                  // If checked, it should fill 37.5% of the total radio size.
+                  // if not checked, show a border of spacing.threeXS.
                   height: $checked
-                    ? "6px"
+                    ? "37.5%"
                     : `calc(${theme.sizes.checkbox} - ${theme.spacing.threeXS})`,
                   width: $checked
-                    ? "6px"
+                    ? "37.5%"
                     : `calc(${theme.sizes.checkbox} - ${theme.spacing.threeXS})`,
                 }),
               },

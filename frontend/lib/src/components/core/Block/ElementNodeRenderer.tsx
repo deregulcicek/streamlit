@@ -66,7 +66,6 @@ import {
   Video as VideoProto,
 } from "@streamlit/lib/src/proto"
 import { ElementNode } from "@streamlit/lib/src/AppNode"
-import ElementFullscreenWrapper from "@streamlit/lib/src/components/shared/ElementFullscreen/ElementFullscreenWrapper"
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 // Load (non-lazy) elements.
 import AlertElement from "@streamlit/lib/src/components/elements/AlertElement"
@@ -312,6 +311,7 @@ const RawElementNodeRenderer = (
           language={codeProto.language}
           showLineNumbers={codeProto.showLineNumbers}
           wrapLines={codeProto.wrapLines}
+          height={codeProto.height}
         >
           {codeProto.codeText}
         </StreamlitSyntaxHighlighter>
@@ -320,12 +320,10 @@ const RawElementNodeRenderer = (
 
     case "deckGlJsonChart":
       return (
-        <ElementFullscreenWrapper width={widgetProps.width}>
-          <DeckGlJsonChart
-            element={node.element.deckGlJsonChart as DeckGlJsonChartProto}
-            {...widgetProps}
-          />
-        </ElementFullscreenWrapper>
+        <DeckGlJsonChart
+          element={node.element.deckGlJsonChart as DeckGlJsonChartProto}
+          {...widgetProps}
+        />
       )
 
     case "docString":

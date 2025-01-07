@@ -47,6 +47,33 @@ def test_wide_layout(app: Page):
     assert narrow_expander_width < expander_dimensions["width"]
 
 
+def test_wide_layout_with_small_viewport(app: Page):
+    """Test that the wide layout is using the same width as the centered layout
+    when the viewport is narrow."""
+
+    app.set_viewport_size({"width": 640, "height": 800})
+
+    app_view_container = app.get_by_test_id("stAppViewContainer")
+    # The default layout is "centered":
+    expect(app_view_container).to_have_attribute("data-layout", "narrow")
+
+    expander_container = get_expander(app, "Expander in main")
+    expect(expander_container).to_be_visible()
+    expander_dimensions = expander_container.bounding_box()
+    assert expander_dimensions is not None
+    narrow_expander_width = expander_dimensions["width"]
+
+    click_button(app, "Wide Layout")
+    expect(app).to_have_title("Wide Layout")
+    app_view_container = app.get_by_test_id("stAppViewContainer")
+    expect(app_view_container).to_have_attribute("data-layout", "wide")
+    expander_dimensions = expander_container.bounding_box()
+    assert expander_dimensions is not None
+
+    # Its fine to use assert here since we don't need to wait for this to be true:
+    assert narrow_expander_width == expander_dimensions["width"]
+
+
 def test_centered_layout(app: Page):
     click_button(app, "Centered Layout")
     expect(app).to_have_title("Centered Layout")
@@ -108,15 +135,21 @@ def test_page_icon_with_emoji_symbol(app: Page):
     )
 
 
-def test_page_icon_with_local_icon(app: Page):
-    click_button(app, "Page Config With Local Icon")
-    expect(app).to_have_title("With Local Icon")
+def test_page_icon_with_local_icon_str(app: Page):
+    click_button(app, "Page Config With Local Icon Str")
+    expect(app).to_have_title("With Local Icon Str")
     favicon_element = app.locator("link[rel='shortcut icon']")
     expect(favicon_element).to_have_count(1)
-    expect(favicon_element).to_have_attribute(
-        "href",
-        re.compile(r"d1e92a291d26c1e0cb9b316a93c929b3be15899677ef3bc6e3bf3573\.png"),
-    )
+    expect(favicon_element).to_have_attribute("href", re.compile(r".*\.png$"))
+    expect_no_exception(app)
+
+
+def test_page_icon_with_local_icon(app: Page):
+    click_button(app, "Page Config With Local Icon Path")
+    expect(app).to_have_title("With Local Icon Path")
+    favicon_element = app.locator("link[rel='shortcut icon']")
+    expect(favicon_element).to_have_count(1)
+    expect(favicon_element).to_have_attribute("href", re.compile(r".*\.png$"))
     expect_no_exception(app)
 
 

@@ -64,3 +64,21 @@ export const StyledToolbar = styled.div(({ theme }) => ({
   width: "fit-content",
   zIndex: theme.zIndices.sidebar + 1,
 }))
+
+export const StyledToolbarElementContainer = styled.div<{
+  width?: number
+  height?: number
+  useContainerWidth: boolean
+  topCentered?: boolean
+}>(({ width, height, useContainerWidth, topCentered }) => ({
+  position: "relative",
+  height: useContainerWidth && height ? height : "fit-content",
+  width: useContainerWidth ? width : "fit-content",
+  maxWidth: "100%",
+  ...(topCentered
+    ? {
+        display: "flex",
+        justifyContent: "center",
+      }
+    : {}),
+}))

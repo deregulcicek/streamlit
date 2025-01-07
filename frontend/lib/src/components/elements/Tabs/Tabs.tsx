@@ -30,6 +30,7 @@ import { BlockPropsWithoutWidth } from "@streamlit/lib/src/components/core/Block
 import { isElementStale } from "@streamlit/lib/src/components/core/Block/utils"
 import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
 import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown"
+import { STALE_STYLES } from "@streamlit/lib/src/theme"
 
 import { StyledTabContainer } from "./styled-components"
 
@@ -63,6 +64,8 @@ function Tabs(props: Readonly<TabProps>): ReactElement {
       setActiveTabKey(0)
       setActiveTabName(allTabLabels[0])
     }
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allTabLabels])
 
@@ -82,10 +85,12 @@ function Tabs(props: Readonly<TabProps>): ReactElement {
       setActiveTabName(allTabLabels[0])
     }
 
+    // TODO: Update to match React best practices
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [node.children.length])
 
-  const TAB_HEIGHT = "2.5rem"
+  const TAB_HEIGHT = theme.sizes.tabHeight
   const TAB_BORDER_HEIGHT = theme.spacing.threeXS
   return (
     <StyledTabContainer
@@ -128,12 +133,7 @@ function Tabs(props: Readonly<TabProps>): ReactElement {
               marginBottom: `-${TAB_BORDER_HEIGHT}`,
               paddingBottom: TAB_BORDER_HEIGHT,
               overflowY: "hidden",
-              ...(isStale
-                ? {
-                    opacity: 0.33,
-                    transition: "opacity 1s ease-in 0.5s",
-                  }
-                : {}),
+              ...(isStale && STALE_STYLES),
             }),
           },
           Root: {
@@ -228,21 +228,16 @@ function Tabs(props: Readonly<TabProps>): ReactElement {
                             : theme.colors.primary,
                         }
                       : {}),
+                    // Add minimal required padding to hide the overscroll gradient
+                    // This is calculated based on the width of the gradient (spacing.lg)
                     ...(isOverflowing && isLast
                       ? {
-                          // Add minimal required padding to hide the overscroll gradient
-                          // This is calculated based on the width of the gradient (spacing.lg)
                           paddingRight: `calc(${theme.spacing.lg} * 0.6)`,
                         }
                       : {}),
-                    ...(!isStale && isStaleTab
-                      ? {
-                          // Apply stale effect if only this specific
-                          // tab is stale but not the entire tab container.
-                          opacity: 0.33,
-                          transition: "opacity 1s ease-in 0.5s",
-                        }
-                      : {}),
+                    // Apply stale effect if only this specific
+                    // tab is stale but not the entire tab container.
+                    ...(!isStale && isStaleTab && STALE_STYLES),
                   }),
                 },
               }}

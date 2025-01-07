@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -47,7 +46,7 @@ describe("HTML element", () => {
     const props = getProps({
       body: `
         <style>
-            #random { color: orange; }
+            #random { color: rgb(255, 165, 0); }
         </style>
         <div id="random">Test Html</div>
     `,
@@ -56,7 +55,9 @@ describe("HTML element", () => {
     const html = screen.getByTestId("stHtml")
     expect(html).toHaveTextContent("Test Html")
     // Check that the style tag is applied to the div
-    expect(screen.getByText("Test Html")).toHaveStyle("color: orange")
+    expect(screen.getByText("Test Html")).toHaveStyle(
+      "color: rgb(255, 165, 0)"
+    )
     // Check that the unnecessary spacing handling by hiding parent
     // eslint-disable-next-line testing-library/no-node-access
     expect(html.parentElement).toHaveClass("stHtml-empty")
@@ -80,5 +81,36 @@ describe("HTML element", () => {
     })
     render(<Html {...props} />)
     expect(screen.getByTestId("stHtml")).toHaveTextContent("")
+  })
+
+  describe("sanitizes anchor tags", () => {
+    it("does not add target when not present", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).not.toHaveAttribute("target")
+    })
+
+    it("preserves target='_blank' and adds rel attributes", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io" target="_blank">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).toHaveAttribute("target", "_blank")
+      expect(anchorElement).toHaveAttribute("rel", "noopener noreferrer")
+    })
+
+    it("removes non-_blank target attributes", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io" target="_self">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).not.toHaveAttribute("target")
+      expect(anchorElement).not.toHaveAttribute("rel")
+    })
   })
 })

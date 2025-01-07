@@ -16,12 +16,13 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { act, fireEvent, screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import { Selectbox as SelectboxProto } from "@streamlit/lib/src/proto"
+import * as Utils from "@streamlit/lib/src/theme/utils"
+import { mockConvertRemToPx } from "@streamlit/lib/src/mocks/mocks"
 
 import Selectbox, { Props } from "./Selectbox"
 
@@ -39,19 +40,27 @@ const getProps = (
   width: 0,
   disabled: false,
   widgetMgr: new WidgetStateManager({
-    sendRerunBackMsg: jest.fn(),
-    formsDataChanged: jest.fn(),
+    sendRerunBackMsg: vi.fn(),
+    formsDataChanged: vi.fn(),
   }),
   ...widgetProps,
 })
 
 const pickOption = (selectbox: HTMLElement, value: string): void => {
+  // TODO: Utilize user-event instead of fireEvent
+  // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.click(selectbox)
   const valueElement = screen.getByText(value)
+  // TODO: Utilize user-event instead of fireEvent
+  // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.click(valueElement)
 }
 
 describe("Selectbox widget", () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it("renders without crashing", () => {
     const props = getProps()
     render(<Selectbox {...props} />)
@@ -62,7 +71,7 @@ describe("Selectbox widget", () => {
 
   it("sets widget value on mount", () => {
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(props.widgetMgr, "setIntValue")
 
     render(<Selectbox {...props} />)
     expect(props.widgetMgr.setIntValue).toHaveBeenCalledWith(
@@ -75,7 +84,7 @@ describe("Selectbox widget", () => {
 
   it("can pass fragmentId to setIntValue", () => {
     const props = getProps(undefined, { fragmentId: "myFragmentId" })
-    jest.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(props.widgetMgr, "setIntValue")
 
     render(<Selectbox {...props} />)
     expect(props.widgetMgr.setIntValue).toHaveBeenCalledWith(
@@ -88,11 +97,13 @@ describe("Selectbox widget", () => {
 
   it("handles the onChange event", () => {
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(Utils, "convertRemToPx").mockImplementation(mockConvertRemToPx)
 
     render(<Selectbox {...props} />)
 
     const selectbox = screen.getByRole("combobox")
+
     pickOption(selectbox, "b")
 
     expect(props.widgetMgr.setIntValue).toHaveBeenLastCalledWith(
@@ -105,12 +116,13 @@ describe("Selectbox widget", () => {
     expect(screen.getByText("b")).toBeInTheDocument()
   })
 
-  it("resets its value when form is cleared", async () => {
+  it("resets its value when form is cleared", () => {
     // Create a widget in a clearOnSubmit form
     const props = getProps({ formId: "form" })
     props.widgetMgr.setFormSubmitBehaviors("form", true)
 
-    jest.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(props.widgetMgr, "setIntValue")
+    vi.spyOn(Utils, "convertRemToPx").mockImplementation(mockConvertRemToPx)
 
     render(<Selectbox {...props} />)
 
@@ -125,7 +137,7 @@ describe("Selectbox widget", () => {
     )
 
     // "Submit" the form
-    await act(async () => {
+    act(() => {
       props.widgetMgr.submitForm("form", undefined)
     })
 

@@ -15,8 +15,8 @@
  */
 import React from "react"
 
-import "@testing-library/jest-dom"
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 import { enableAllPlugins } from "immer"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -39,8 +39,8 @@ describe("FormSubmitButton", () => {
   beforeEach(() => {
     formsData = createFormsData()
     widgetMgr = new WidgetStateManager({
-      sendRerunBackMsg: jest.fn(),
-      formsDataChanged: jest.fn(newData => {
+      sendRerunBackMsg: vi.fn(),
+      formsDataChanged: vi.fn(newData => {
         formsData = newData
       }),
     })
@@ -94,13 +94,14 @@ describe("FormSubmitButton", () => {
   })
 
   it("calls submitForm when clicked", async () => {
+    const user = userEvent.setup()
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "submitForm")
+    vi.spyOn(props.widgetMgr, "submitForm")
     render(<FormSubmitButton {...props} />)
 
     const formSubmitButton = screen.getByRole("button")
 
-    fireEvent.click(formSubmitButton)
+    await user.click(formSubmitButton)
     expect(props.widgetMgr.submitForm).toHaveBeenCalledWith(
       props.element.formId,
       undefined,
@@ -109,13 +110,14 @@ describe("FormSubmitButton", () => {
   })
 
   it("can pass fragmentId to submitForm", async () => {
+    const user = userEvent.setup()
     const props = getProps({ fragmentId: "myFragmentId" })
-    jest.spyOn(props.widgetMgr, "submitForm")
+    vi.spyOn(props.widgetMgr, "submitForm")
     render(<FormSubmitButton {...props} />)
 
     const formSubmitButton = screen.getByRole("button")
 
-    fireEvent.click(formSubmitButton)
+    await user.click(formSubmitButton)
     expect(props.widgetMgr.submitForm).toHaveBeenCalledWith(
       props.element.formId,
       "myFragmentId",

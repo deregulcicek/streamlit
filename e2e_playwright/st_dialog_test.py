@@ -214,9 +214,6 @@ def test_fullscreen_is_disabled_for_dialog_elements(app: Page):
     main_dialog = app.get_by_test_id(modal_test_id)
     expect(main_dialog).to_have_count(1)
 
-    # check that the images do not have the fullscreen button
-    expect(app.get_by_test_id("StyledFullScreenButton")).to_have_count(0)
-
     # check that the dataframe does not have the fullscreen button
     dataframe_toolbar = app.get_by_test_id("stElementToolbarButton")
     # 2 elements are in the toolbar as of today: download, search
@@ -395,6 +392,23 @@ def test_dialog_with_chart(app: Page):
     chart.hover(position={"x": 60, "y": 220})
     tooltip = app.locator("#vg-tooltip-element")
     expect(tooltip).to_be_visible()
+
+
+def test_dialog_with_dataframe_shows_toolbar(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Check that the dataframe toolbar is fully visible when hovering over
+    the dataframe."""
+    click_button(app, "Open Dialog with dataframe")
+    dialog = app.get_by_role("dialog")
+    expect(dialog).to_be_visible()
+    df_element = dialog.get_by_test_id("stDataFrame")
+    expect(df_element).to_be_visible()
+    df_element.hover(force=True)
+    df_toolbar = df_element.get_by_test_id("stElementToolbar")
+    expect(df_toolbar).to_have_css("opacity", "1")
+    expect(df_toolbar).to_be_visible()
+    assert_snapshot(df_toolbar, name="st_dialog-shows_full_dataframe_toolbar")
 
 
 def test_check_top_level_class(app: Page):

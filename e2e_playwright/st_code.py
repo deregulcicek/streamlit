@@ -53,6 +53,8 @@ with st.expander("`st.code` usage", expanded=True):
 with st.expander("`st.markdown` code usage", expanded=True):
     st.markdown("```python\n" + code + "\n```")
     st.markdown("```python\n" + code + "\n```")
+    st.markdown("[a link with `code`](https://streamlit.io)")
+
 
 long_string = "Testing line wrapping: " + "foo bar baz " * 10 + "{EOL}"
 
@@ -66,3 +68,30 @@ st.code(wide_code_block, wrap_lines=False)
 st.code(wide_code_block, wrap_lines=False, line_numbers=True)
 st.code(wide_code_block, wrap_lines=True)
 st.code(wide_code_block, wrap_lines=True, line_numbers=True)
+
+
+long_code = """
+print("Hello!")
+print("This is a tall code block")
+print("With many lines")
+print("That will scroll")
+print("Hello!")
+print("This is a tall code block")
+print("With many lines")
+print("That will scroll")
+print("Hello!")
+print("This is a tall code block")
+print("With many lines")
+print("That will scroll")
+print("Hello!")
+print("This is a tall code block")
+print("With many lines")
+print("That will scroll")
+print("Hello!")
+print("This is a tall code block")
+print("With many lines")
+print("That will scroll")
+"""
+
+st.code(long_code, height=200)
+st.code(code, height=200)

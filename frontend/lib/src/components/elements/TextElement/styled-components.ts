@@ -18,6 +18,8 @@ import styled from "@emotion/styled"
 
 export const StyledText = styled.div(({ theme }) => ({
   fontFamily: theme.genericFonts.bodyFont,
+  color: theme.colors.bodyText,
   whiteSpace: "pre-line",
-  workdbreak: "break-word",
+  whiteSpaceCollapse: "preserve",
+  wordBreak: "break-word",
 }))

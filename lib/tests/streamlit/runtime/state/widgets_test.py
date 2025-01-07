@@ -15,7 +15,6 @@
 """Tests widget-related functionality"""
 
 import inspect
-import sys
 import unittest
 from dataclasses import dataclass
 from typing import get_args
@@ -542,6 +541,20 @@ class ComputeElementIdTests(DeltaGeneratorTestCase):
                 style="": st.pills("some_label", options, disabled=disabled),
                 "button_group",
             ),
+            (
+                # define a lambda that matches the signature of what button_group is
+                # passing to compute_and_register_element_id, because st.feedback does
+                # not take a label and its arguments are different.
+                lambda key,
+                options,
+                disabled=False,
+                default=[],
+                click_mode=0,
+                style="": st.segmented_control(
+                    "some_label", options, disabled=disabled
+                ),
+                "button_group",
+            ),
             (st.multiselect, "multiselect"),
             (st.radio, "radio"),
             (st.select_slider, "select_slider"),
@@ -592,9 +605,6 @@ class ComputeElementIdTests(DeltaGeneratorTestCase):
 
 class RegisterWidgetsTest(DeltaGeneratorTestCase):
     @parameterized.expand(WIDGET_ELEMENTS)
-    @unittest.skipIf(
-        sys.version_info < (3, 9), reason="the type check requires python3.9 or higher"
-    )
     def test_register_widget_called_with_valid_value_type(
         self, _element_name: str, widget_func: ELEMENT_PRODUCER
     ):

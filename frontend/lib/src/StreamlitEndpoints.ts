@@ -18,9 +18,9 @@ import { CancelToken } from "axios"
 
 import { IAppPage } from "./proto"
 
-export type JWTHeader = {
-  jwtHeaderName: string
-  jwtHeaderValue: string
+export type FileUploadClientConfig = {
+  prefix: string
+  headers: Record<string, string>
 }
 
 /** Exposes non-websocket endpoints used by the frontend. */
@@ -98,8 +98,8 @@ export interface StreamlitEndpoints {
   fetchCachedForwardMsg(hash: string): Promise<Uint8Array>
 
   /**
-   * Set JWT Header.
-   * @param jwtHeader the object that contains jwtHeaderName and jwtHeaderValue
+   * setFileUploadClientConfig.
+   * @param config the object that contains prefix and headers object
    */
-  setJWTHeader?(jwtHeader: JWTHeader): void
+  setFileUploadClientConfig?(config: FileUploadClientConfig): void
 }

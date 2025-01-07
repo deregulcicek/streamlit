@@ -18,7 +18,6 @@ import { AppNode, BlockNode } from "@streamlit/lib/src/AppNode"
 import { ComponentRegistry } from "@streamlit/lib/src/components/widgets/CustomComponent"
 import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
 import { ScriptRunState } from "@streamlit/lib/src/ScriptRunState"
-import { SessionInfo } from "@streamlit/lib/src/SessionInfo"
 import { StreamlitEndpoints } from "@streamlit/lib/src/StreamlitEndpoints"
 import { EmotionTheme, getDividerColors } from "@streamlit/lib/src/theme"
 import { isValidElementId } from "@streamlit/lib/src/util/utils"
@@ -114,11 +113,6 @@ export interface BaseBlockProps {
   endpoints: StreamlitEndpoints
 
   /**
-   * The app's SessionInfo instance. Exposes session-specific properties.
-   */
-  sessionInfo: SessionInfo
-
-  /**
    * The app's WidgetStateManager instance. Used by all widget elements to
    * store and retrieve widget state. When the user interacts with a widget,
    * the WidgetStateManager initiates the "rerun BackMsg" data flow to kick
@@ -200,6 +194,9 @@ export function getKeyFromId(
     return undefined
   }
 
-  const userKey = elementId.split("-", 3).pop()
+  // Split the elementId by hyphens
+  const parts = elementId.split("-")
+  // Extract all parts after the second hyphen
+  const userKey = parts.slice(2).join("-")
   return userKey === "None" ? undefined : userKey
 }

@@ -17,10 +17,10 @@
 import React, { ReactElement, useEffect, useRef } from "react"
 
 import { useTheme } from "@emotion/react"
+import { EmotionIcon } from "@emotion-icons/emotion-icon"
 import { ArrowDownward, ArrowUpward } from "@emotion-icons/material-outlined"
 
 import { Metric as MetricProto } from "@streamlit/lib/src/proto"
-import { EmotionTheme } from "@streamlit/lib/src/theme"
 import { labelVisibilityProtoValueToEnum } from "@streamlit/lib/src/util/utils"
 import Icon from "@streamlit/lib/src/components/shared/Icon"
 import { StyledWidgetLabelHelpInline } from "@streamlit/lib/src/components/widgets/BaseWidget"
@@ -30,6 +30,7 @@ import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMar
 
 import { applyStreamlitTheme } from "@streamlit/lib/src/components/elements/ArrowVegaLiteChart"
 import {
+  StyledMetricContainer,
   StyledMetricDeltaText,
   StyledMetricLabelText,
   StyledMetricValueText,
@@ -37,6 +38,7 @@ import {
 } from "./styled-components"
 
 import { expressionInterpreter } from "vega-interpreter"
+import { EmotionTheme } from "src/theme"
 import embed from "vega-embed"
 
 export interface MetricProps {
@@ -49,42 +51,32 @@ export default function Metric({
   width,
 }: Readonly<MetricProps>): ReactElement {
   const theme: EmotionTheme = useTheme()
-  const { MetricColor, MetricDirection } = MetricProto
+  const { MetricDirection } = MetricProto
+  const {
+    body,
+    label,
+    delta,
+    direction,
+    color,
+    labelVisibility,
+    help,
+    showBorder,
+    sparkline,
+  } = element
 
-  let direction: any = null
-  let color = ""
+  let metricDirection: EmotionIcon | null = null
 
-  const sparkline = element.sparkline
-
-  switch (element.color) {
-    case MetricColor.RED:
-      color = theme.colors.red
-      break
-    case MetricColor.GREEN:
-      color = theme.colors.green
-      break
-    // this must be grey
-    default:
-      color = theme.colors.fadedText60
-      break
-  }
-
-  switch (element.direction) {
+  switch (direction) {
     case MetricDirection.DOWN:
-      direction = ArrowDownward
+      metricDirection = ArrowDownward
       break
     case MetricDirection.UP:
-      direction = ArrowUpward
-      break
-    // this must be none
-    default:
-      direction = null
+      metricDirection = ArrowUpward
       break
   }
 
   const arrowMargin = "0 threeXS 0 0"
-  const deltaStyle = { color }
-  const deltaExists = element.delta !== ""
+  const deltaExists = delta !== ""
 
   const sparklineRef = useRef<HTMLDivElement>(null)
 
@@ -135,46 +127,42 @@ export default function Metric({
   }, [sparkline, color, theme, width])
 
   return (
-    <div className="stMetric" data-testid="stMetric">
+    <StyledMetricContainer
+      className="stMetric"
+      data-testid="stMetric"
+      showBorder={showBorder}
+    >
       <StyledMetricLabelText
         data-testid="stMetricLabel"
-        visibility={labelVisibilityProtoValueToEnum(
-          element.labelVisibility?.value
-        )}
+        visibility={labelVisibilityProtoValueToEnum(labelVisibility?.value)}
       >
         <StyledTruncateText>
-          <StreamlitMarkdown
-            source={element.label}
-            allowHTML={false}
-            isLabel
-          />
+          <StreamlitMarkdown source={label} allowHTML={false} isLabel />
         </StyledTruncateText>
-        {element.help && (
+        {help && (
           <StyledWidgetLabelHelpInline>
-            <TooltipIcon
-              content={element.help}
-              placement={Placement.TOP_RIGHT}
-            />
+            <TooltipIcon content={help} placement={Placement.TOP_RIGHT} />
           </StyledWidgetLabelHelpInline>
         )}
       </StyledMetricLabelText>
       <StyledMetricValueText data-testid="stMetricValue">
-        <StyledTruncateText> {element.body} </StyledTruncateText>
+        <StyledTruncateText> {body} </StyledTruncateText>
       </StyledMetricValueText>
       {deltaExists && (
-        <StyledMetricDeltaText data-testid="stMetricDelta" style={deltaStyle}>
-          <Icon
-            testid={
-              // if direction is null, icon will be null
-              direction === ArrowUpward
-                ? "stMetricDeltaIcon-Up"
-                : "stMetricDeltaIcon-Down"
-            }
-            content={direction}
-            size="lg"
-            margin={arrowMargin}
-          />
-          <StyledTruncateText> {element.delta} </StyledTruncateText>
+        <StyledMetricDeltaText data-testid="stMetricDelta" metricColor={color}>
+          {metricDirection && (
+            <Icon
+              testid={
+                metricDirection === ArrowUpward
+                  ? "stMetricDeltaIcon-Up"
+                  : "stMetricDeltaIcon-Down"
+              }
+              content={metricDirection}
+              size="lg"
+              margin={arrowMargin}
+            />
+          )}
+          <StyledTruncateText> {delta} </StyledTruncateText>
         </StyledMetricDeltaText>
       )}
       {sparkline && sparkline.length > 0 && (
@@ -184,6 +172,6 @@ export default function Metric({
           style={{ marginTop: "0.5rem" }}
         />
       )}
-    </div>
+    </StyledMetricContainer>
   )
 }
