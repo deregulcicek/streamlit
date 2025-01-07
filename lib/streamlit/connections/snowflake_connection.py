@@ -227,29 +227,9 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
                 conn_kwargs = {**st_secrets, **kwargs}
                 return snowflake.connector.connect(**conn_kwargs)
 
-            # session.connector.connection.CONFIG_MANAGER is only available in more recent
-            # versions of snowflake-connector-python.
-            if hasattr(snowflake.connector.connection, "CONFIG_MANAGER"):
-                config_mgr = snowflake.connector.connection.CONFIG_MANAGER
-
-                default_connection_name = "default"
-                try:
-                    default_connection_name = config_mgr["default_connection_name"]
-                except snowflake.connector.errors.ConfigSourceError:
-                    # Similarly, config_mgr["default_connection_name"] only exists in even
-                    # later versions of recent versions. if it doesn't, we just use
-                    # "default" as the default connection name.
-                    pass
-
-                connection_name = (
-                    default_connection_name
-                    if self._connection_name == "snowflake"
-                    else self._connection_name
-                )
-                return snowflake.connector.connect(
-                    connection_name=connection_name,
-                    **kwargs,
-                )
+            # Use the default configuration as defined in https://docs.snowflake.cn/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection
+            if self._connection_name == "snowflake":
+                return snowflake.connector.connect()
 
             return snowflake.connector.connect(**kwargs)
         except SnowflakeError as e:
@@ -321,28 +301,10 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
         >>> st.dataframe(df)
 
         """
-        from snowflake.connector.errors import ProgrammingError  # type: ignore[import]
-        from snowflake.connector.network import (  # type: ignore[import]
-            BAD_REQUEST_GS_CODE,
-            ID_TOKEN_EXPIRED_GS_CODE,
-            MASTER_TOKEN_EXPIRED_GS_CODE,
-            MASTER_TOKEN_INVALD_GS_CODE,
-            MASTER_TOKEN_NOTFOUND_GS_CODE,
-            SESSION_EXPIRED_GS_CODE,
-        )
         from tenacity import retry, retry_if_exception, stop_after_attempt, wait_fixed
 
-        retryable_error_codes = {
-            int(code)
-            for code in (
-                ID_TOKEN_EXPIRED_GS_CODE,
-                SESSION_EXPIRED_GS_CODE,
-                MASTER_TOKEN_NOTFOUND_GS_CODE,
-                MASTER_TOKEN_EXPIRED_GS_CODE,
-                MASTER_TOKEN_INVALD_GS_CODE,
-                BAD_REQUEST_GS_CODE,
-            )
-        }
+        # the ANSI-compliant SQL code for "connection was not established" (see docs: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#id6)
+        SQLSTATE_CONNECTION_WAS_NOT_ESTABLISHED = "08001"
 
         @retry(
             after=lambda _: self.reset(),
@@ -352,9 +314,8 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
             # `snowflake-connector-python` library already implements retries for
             # retryable HTTP errors.
             retry=retry_if_exception(
-                lambda e: isinstance(e, ProgrammingError)
-                and hasattr(e, "errno")
-                and e.errno in retryable_error_codes
+                lambda e: hasattr(e, "sqlstate")
+                and e.sqlstate == SQLSTATE_CONNECTION_WAS_NOT_ESTABLISHED
             ),
             wait=wait_fixed(1),
         )

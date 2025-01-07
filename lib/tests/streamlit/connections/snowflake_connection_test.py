@@ -63,19 +63,7 @@ class SnowflakeConnectionTest(unittest.TestCase):
     def test_uses_config_manager_if_available(self, patched_connect):
         SnowflakeConnection("snowflake", some_kwarg="some_value")
 
-        patched_connect.assert_called_once_with(
-            connection_name="default", some_kwarg="some_value"
-        )
-
-    @patch("snowflake.connector.connection")
-    @patch("snowflake.connector.connect")
-    def test_falls_back_to_using_kwargs_last(self, patched_connect, patched_connection):
-        delattr(patched_connection, "CONFIG_MANAGER")
-
-        SnowflakeConnection("snowflake", account="account", some_kwarg="some_value")
-        patched_connect.assert_called_once_with(
-            account="account", some_kwarg="some_value"
-        )
+        patched_connect.assert_called_once_with()
 
     def test_throws_friendly_error_if_no_config_set(self):
         with pytest.raises(StreamlitAPIException) as e:
