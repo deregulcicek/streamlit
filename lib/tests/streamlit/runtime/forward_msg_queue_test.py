@@ -319,7 +319,7 @@ class ForwardMsgQueueTest(unittest.TestCase):
     def test_on_before_enqueue_msg(self):
         count = 0
 
-        def increase_counter():
+        def increase_counter(_msg):
             nonlocal count
             count += 1
 

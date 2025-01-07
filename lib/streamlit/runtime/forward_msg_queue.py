@@ -48,7 +48,6 @@ class ForwardMsgQueue:
         # an older Delta, with the same delta_path, that's still in the
         # queue).
         self._delta_index_map: dict[tuple[int, ...], int] = {}
-        self._before_enqueue_msg = None
 
     def get_debug(self) -> dict[str, Any]:
         from google.protobuf.json_format import MessageToDict
