@@ -38,7 +38,7 @@ import {
 } from "./styled-components"
 
 import { expressionInterpreter } from "vega-interpreter"
-import { EmotionTheme } from "src/theme"
+import { EmotionTheme } from "@streamlit/lib"
 import embed from "vega-embed"
 
 export interface MetricProps {
