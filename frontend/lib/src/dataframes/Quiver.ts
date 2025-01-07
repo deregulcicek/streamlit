@@ -40,24 +40,14 @@ import {
   IndexTypeName,
   Type,
 } from "./arrowTypeUtils"
-// This type should be recursive as there can be nested structures.
-// Example: list[int64], list[list[unicode]], etc.
-// NOTE: Commented out until we can find a way to properly define recursive types.
-//
-// enum DataTypeName {
-//   Empty = "empty",
-//   Boolean = "bool",
-//   Number = "int64",
-//   Float = "float64",
-//   String = "unicode",
-//   Date = "date", // "datetime", "datetimetz"
-//   Bytes = "bytes",
-//   Object = "object",
-//   List = "list[int64]",
-// }
 
-/** DataFrame's Styler information. */
-interface Styler {
+/**
+ * Pandas Styler data from proto message.
+ *
+ * This is only present if the DataFrame was created based
+ * on a Pandas Styler object.
+ */
+interface PandasStylerData {
   /** Styler's UUID. */
   uuid: string
 
@@ -70,6 +60,9 @@ interface Styler {
   /**
    * Stringified versions of each cell in the DataFrame, in the
    * user-specified format.
+   *
+   * The display values table is expected to always have the same dimensions
+   * as the actual data table.
    */
   displayValues: Quiver
 }
@@ -146,16 +139,16 @@ export class Quiver {
    */
   [immerable] = true
 
-  /** DataFrame's index (matrix of row names). */
-  private _index: Index
-
-  /** DataFrame's column labels (matrix of column names). */
+  /** Column names (matrix of column names to support multi-level headers). */
   private _columns: ColumnNames
 
-  /** DataFrame's index names. */
+  /** Column names of the index columns (there can be multiple index columns). */
   private _indexNames: string[]
 
-  /** DataFrame's data. */
+  /** Cell values of the index columns (there can be multiple index columns). */
+  private _index: Index
+
+  /** Cell values of the data columns. */
   private _data: Data
 
   /** Definition for DataFrame's fields. */
@@ -164,8 +157,8 @@ export class Quiver {
   /** Types for DataFrame's index and data. */
   private _types: Types
 
-  /** [optional] DataFrame's Styler data. This will be defined if the user styled the dataframe. */
-  private readonly _styler?: Styler
+  /** [optional] Pandas Styler data. This will be defined if the user styled the dataframe. */
+  private readonly _styler?: PandasStylerData
 
   constructor(element: IArrow) {
     const { index, columns, data, types, fields, indexNames } =
@@ -214,33 +207,33 @@ export class Quiver {
       : undefined
   }
 
-  /** DataFrame's index (matrix of row names). */
+  /** Cell values of the index columns (there can be multiple index columns). */
   public get index(): Index {
     return this._index
   }
 
-  /** DataFrame's index names. */
+  /** Column names of the index columns (there can be multiple index columns). */
   public get indexNames(): string[] {
     return this._indexNames
   }
 
-  /** DataFrame's column labels (matrix of column names). */
+  /** Column names of the data columns (there can be multiple data columns). */
   public get columns(): ColumnNames {
     return this._columns
   }
 
-  /** DataFrame's data. */
+  /** Cell values of the data columns. */
   public get data(): Data {
     return this._data
   }
 
-  /** Types for DataFrame's index and data. */
+  /** Types for the index and data columns. */
   public get types(): Types {
     return this._types
   }
 
   /**
-   * The DataFrame's CSS id, if it has one.
+   * The CSS id given to the DataFrame from Pandas Styler (if it has one).
    *
    * If the DataFrame has a Styler, the  CSS id is `T_${StylerUUID}`. Otherwise,
    * it's undefined.
@@ -269,7 +262,7 @@ export class Quiver {
     return this._styler?.caption || undefined
   }
 
-  /** The DataFrame's dimensions. */
+  /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
     const indexColumns = this._index.length || this.types.index.length || 1
     const headerRows = this._columns.length || 1
@@ -492,7 +485,7 @@ st.add_rows(my_styler.data)
 }
 
 /** Parse styler information from proto. */
-function parseStyler(styler: StylerProto): Styler {
+function parseStyler(styler: StylerProto): PandasStylerData {
   return {
     uuid: styler.uuid,
     caption: styler.caption,
