@@ -84,12 +84,20 @@ export default function Metric({
     if (sparkline && sparklineRef.current) {
       const spec = {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        width,
-        height: 60,
+        width: showBorder ? width - 32 : width,
+        height: 20,
         data: {
           values: sparkline.map((value, index) => ({ x: index, y: value })),
         },
-        mark: "line",
+        mark: {
+          type: "line",
+          color:
+            color === MetricProto.MetricColor.GREEN
+              ? "#0AAB3B"
+              : color === MetricProto.MetricColor.RED
+              ? "#FF2A2B"
+              : theme.colors.bodyText,
+        },
         encoding: {
           x: {
             field: "x",
@@ -147,29 +155,34 @@ export default function Metric({
       </StyledMetricLabelText>
       <StyledMetricValueText data-testid="stMetricValue">
         <StyledTruncateText> {body} </StyledTruncateText>
+        {deltaExists && (
+          <StyledMetricDeltaText
+            data-testid="stMetricDelta"
+            metricColor={color}
+          >
+            {metricDirection && (
+              <Icon
+                testid={
+                  metricDirection === ArrowUpward
+                    ? "stMetricDeltaIcon-Up"
+                    : "stMetricDeltaIcon-Down"
+                }
+                content={metricDirection}
+                size="sm"
+                margin={arrowMargin}
+              />
+            )}
+            <StyledTruncateText>
+              {delta?.startsWith("-") ? delta.substring(1) : delta}
+            </StyledTruncateText>
+          </StyledMetricDeltaText>
+        )}
       </StyledMetricValueText>
-      {deltaExists && (
-        <StyledMetricDeltaText data-testid="stMetricDelta" metricColor={color}>
-          {metricDirection && (
-            <Icon
-              testid={
-                metricDirection === ArrowUpward
-                  ? "stMetricDeltaIcon-Up"
-                  : "stMetricDeltaIcon-Down"
-              }
-              content={metricDirection}
-              size="lg"
-              margin={arrowMargin}
-            />
-          )}
-          <StyledTruncateText> {delta} </StyledTruncateText>
-        </StyledMetricDeltaText>
-      )}
       {sparkline && sparkline.length > 0 && (
         <div
           ref={sparklineRef}
           data-testid="stMetricSparkline"
-          style={{ marginTop: "0.5rem" }}
+          style={{ marginTop: "1rem" }}
         />
       )}
     </StyledMetricContainer>

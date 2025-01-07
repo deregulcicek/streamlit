@@ -30,6 +30,7 @@ export const StyledMetricContainer = styled.div<StyledMetricContainerProps>(
       border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
       borderRadius: theme.radii.default,
       padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
+      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
     }),
   })
 )
@@ -70,9 +71,14 @@ export const StyledMetricLabelText = styled(
 }))
 
 export const StyledMetricValueText = styled.div(({ theme }) => ({
-  fontSize: theme.fontSizes.threeXL,
+  fontSize: theme.fontSizes.twoXL,
   color: theme.colors.bodyText,
   paddingBottom: theme.spacing.twoXS,
+  fontWeight: theme.fontWeights.bold,
+  display: "inline-flex",
+  alignItems: "center",
+  gap: theme.spacing.sm,
+  width: "fit-content",
 }))
 
 export interface StyledMetricDeltaTextProps {
@@ -85,9 +91,9 @@ const getMetricColor = (
 ): string => {
   switch (color) {
     case MetricProto.MetricColor.RED:
-      return theme.colors.metricNegativeDeltaColor
+      return theme.colors.red80
     case MetricProto.MetricColor.GREEN:
-      return theme.colors.metricPositiveDeltaColor
+      return theme.colors.green80
     // this must be grey
     default:
       return theme.colors.metricNeutralDeltaColor
@@ -97,10 +103,18 @@ const getMetricColor = (
 export const StyledMetricDeltaText = styled.div<StyledMetricDeltaTextProps>(
   ({ theme, metricColor }) => ({
     color: getMetricColor(theme, metricColor),
-    fontSize: theme.fontSizes.md,
-    display: "flex",
+    fontSize: theme.fontSizes.sm,
+    display: "inline-flex",
     flexDirection: "row",
     alignItems: "center",
     fontWeight: theme.fontWeights.normal,
+    backgroundColor:
+      metricColor === MetricProto.MetricColor.GREEN
+        ? "rgba(45, 200, 65, 0.1)"
+        : metricColor === MetricProto.MetricColor.RED
+        ? "rgba(255, 65, 50, 0.1)"
+        : theme.colors.secondaryBackgroundColor,
+    padding: `${theme.spacing.threeXS} ${theme.spacing.sm}`,
+    borderRadius: "1rem",
   })
 )
