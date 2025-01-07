@@ -70,6 +70,21 @@ export interface RangeIndex {
   stop: number
 }
 
+/**
+ * Converts an Arrow vector to a list of strings.
+ *
+ * @param vector The Arrow vector to convert.
+ * @returns The list of strings.
+ */
+export function convertVectorToList(vector: Vector<any>): string[] {
+  const values = []
+
+  for (let i = 0; i < vector.length; i++) {
+    values.push(vector.get(i))
+  }
+  return values
+}
+
 /** True if the index name represents a "range" index. */
 export function isRangeIndex(
   indexName: string | RangeIndex

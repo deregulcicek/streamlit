@@ -105,12 +105,11 @@ interface ColumnSchema {
 }
 
 /**
- * The Arrow table schema. It's a blueprint that tells us where data
- * is stored in the associated table. (Arrow stores the schema as a JSON string,
- * and we parse it into this typed object - so these member names come from
- * Arrow.)
+ * The Pandas schema extracted from an Arrow table.
+ * Arrow stores the schema as a JSON string, and we parse it into this typed object.
+ * The Pandas schema is only present if the Arrow table was processed through Pandas.
  */
-interface Schema {
+interface PandasSchema {
   /**
    * The DataFrame's index names (either provided by user or generated,
    * guaranteed unique). It is used to fetch the index data. Each DataFrame has
@@ -137,8 +136,11 @@ interface Schema {
   column_indexes: ColumnSchema[]
 }
 
-/** Parse Arrow table's schema from a JSON string to an object. */
-function parseSchema(table: Table): Schema {
+/**
+ * Parse the Pandas schema that is embedded in the Arrow table if the table was
+ * processed through Pandas.
+ */
+function parsePandasSchema(table: Table): PandasSchema {
   const schema = table.schema.metadata.get("pandas")
   if (isNullOrUndefined(schema)) {
     // This should never happen!
@@ -149,7 +151,7 @@ function parseSchema(table: Table): Schema {
 
 /** Get unprocessed column names for data columns. Needed for selecting
  * data columns when there are multi-columns. */
-function getRawColumns(schema: Schema): string[] {
+function getRawColumns(schema: PandasSchema): string[] {
   return (
     schema.columns
       .map(columnSchema => columnSchema.field_name)
@@ -159,7 +161,7 @@ function getRawColumns(schema: Schema): string[] {
 }
 
 /** Parse DataFrame's index header values. */
-function parseIndex(table: Table, schema: Schema): Index {
+function parseIndex(table: Table, schema: PandasSchema): Index {
   return schema.index_columns
     .map(indexName => {
       // Generate a range using the "range" index metadata.
@@ -181,7 +183,7 @@ function parseIndex(table: Table, schema: Schema): Index {
 }
 
 /** Parse DataFrame's index header names. */
-function parseIndexNames(schema: Schema): string[] {
+function parseIndexNames(schema: PandasSchema): string[] {
   return schema.index_columns.map(indexName => {
     // Range indices are treated differently since they
     // contain additional metadata (e.g. start, stop, step).
@@ -199,7 +201,7 @@ function parseIndexNames(schema: Schema): string[] {
 }
 
 /** Parse DataFrame's column header values. */
-function parseColumns(schema: Schema): Columns {
+function parseColumns(schema: PandasSchema): Columns {
   // If DataFrame `columns` has multi-level indexing, the length of
   // `column_indexes` will show how many levels there are.
   const isMultiIndex = schema.column_indexes.length > 1
@@ -240,14 +242,14 @@ function parseData(
 }
 
 /** Parse DataFrame's index and data types. */
-function parseTypes(table: Table, schema: Schema): Types {
+function parseTypes(table: Table, schema: PandasSchema): Types {
   const index = parseIndexType(schema)
   const data = parseDataType(table, schema)
   return { index, data }
 }
 
 /** Parse types for each non-index column. */
-function parseDataType(table: Table, schema: Schema): Type[] {
+function parseDataType(table: Table, schema: PandasSchema): Type[] {
   return (
     schema.columns
       // Filter out all index columns
@@ -263,7 +265,7 @@ function parseDataType(table: Table, schema: Schema): Type[] {
 }
 
 /** Parse types for each index column. */
-function parseIndexType(schema: Schema): Type[] {
+function parseIndexType(schema: PandasSchema): Type[] {
   return schema.index_columns.map(indexName => {
     if (isRangeIndex(indexName)) {
       return {
@@ -322,7 +324,7 @@ export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
 ): ParsedTable {
   const table = tableFromIPC(ipcBytes)
-  const schema = parseSchema(table)
+  const schema = parsePandasSchema(table)
   const rawColumns = getRawColumns(schema)
   const fields = parseFields(table.schema)
 

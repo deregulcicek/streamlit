@@ -21,7 +21,10 @@ import { Dictionary, Field, Vector } from "apache-arrow"
 import { immerable, produce } from "immer"
 
 import { IArrow, Styler as StylerProto } from "@streamlit/lib/src/proto"
-import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import {
+  isNullOrUndefined,
+  notNullOrUndefined,
+} from "@streamlit/lib/src/util/utils"
 
 import { concat } from "./arrowConcatUtils"
 import {
@@ -31,7 +34,12 @@ import {
   parseArrowIpcBytes,
   Types,
 } from "./arrowParseUtils"
-import { DataType, IndexTypeName, Type } from "./arrowTypeUtils"
+import {
+  convertVectorToList,
+  DataType,
+  IndexTypeName,
+  Type,
+} from "./arrowTypeUtils"
 // This type should be recursive as there can be nested structures.
 // Example: list[int64], list[list[unicode]], etc.
 // NOTE: Commented out until we can find a way to properly define recursive types.
@@ -68,11 +76,17 @@ interface Styler {
 
 /** Dimensions of the DataFrame. */
 interface DataFrameDimensions {
+  // The number of header rows (> 1 for multi-level headers)
   headerRows: number
-  headerColumns: number
+  // The number of index columns
+  indexColumns: number
+  // The number of data rows (excluding header rows)
   dataRows: number
+  // The number of data columns (excluding index columns)
   dataColumns: number
+  // The total number of rows (header rows + data rows)
   rows: number
+  // The total number of columns (index + data columns)
   columns: number
 }
 
@@ -193,16 +207,10 @@ export class Quiver {
 
     const categoricalDict =
       this._data.getChildAt(dataColumnIndex)?.data[0]?.dictionary
-    if (categoricalDict) {
-      // get all values into a list
-      const values = []
 
-      for (let i = 0; i < categoricalDict.length; i++) {
-        values.push(categoricalDict.get(i))
-      }
-      return values
-    }
-    return undefined
+    return notNullOrUndefined(categoricalDict)
+      ? convertVectorToList(categoricalDict)
+      : undefined
   }
 
   /** DataFrame's index (matrix of row names). */
@@ -262,17 +270,17 @@ export class Quiver {
 
   /** The DataFrame's dimensions. */
   public get dimensions(): DataFrameDimensions {
-    const headerColumns = this._index.length || this.types.index.length || 1
+    const indexColumns = this._index.length || this.types.index.length || 1
     const headerRows = this._columns.length || 1
     const dataRows = this._data.numRows || 0
     const dataColumns = this._data.numCols || this._columns?.[0]?.length || 0
 
     const rows = headerRows + dataRows
-    const columns = headerColumns + dataColumns
+    const columns = indexColumns + dataColumns
 
     return {
       headerRows,
-      headerColumns,
+      indexColumns: indexColumns,
       dataRows,
       dataColumns,
       rows,
@@ -292,7 +300,12 @@ export class Quiver {
 
   /** Return a single cell in the table. */
   public getCell(rowIndex: number, columnIndex: number): DataFrameCell {
-    const { headerRows, headerColumns, rows, columns } = this.dimensions
+    const {
+      headerRows,
+      indexColumns: headerColumns,
+      rows,
+      columns,
+    } = this.dimensions
 
     if (rowIndex < 0 || rowIndex >= rows) {
       throw new Error(`Row index is out of range: ${rowIndex}`)
@@ -412,6 +425,7 @@ export class Quiver {
     }
   }
 
+  /** Get the raw value of an index cell. */
   public getIndexValue(rowIndex: number, columnIndex: number): any {
     const index = this._index[columnIndex]
     const value =
@@ -419,6 +433,7 @@ export class Quiver {
     return value
   }
 
+  /** Get the raw value of a data cell. */
   public getDataValue(rowIndex: number, columnIndex: number): any {
     return this._data.getChildAt(columnIndex)?.get(rowIndex)
   }

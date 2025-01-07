@@ -318,7 +318,7 @@ export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
   const columns: BaseColumnProps[] = []
 
   const { dimensions } = data
-  const numIndices = dimensions.headerColumns
+  const numIndices = dimensions.indexColumns
   const numColumns = dimensions.dataColumns
 
   if (numIndices === 0 && numColumns === 0) {
