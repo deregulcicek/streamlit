@@ -32,6 +32,14 @@ from .test_run_utils import get_stable_test_name
             "test_something_performance",
         ),
         (
+            "20241219180035_test_something_performance[dark_mode][chromium-9-10].json",
+            "test_something_performance",
+        ),
+        (
+            "20241219180035_test_something_performance[light_mode].json",
+            "test_something_performance",
+        ),
+        (
             "20241219180035_test_something_performance.json",
             "test_something_performance",
         ),
