@@ -63,10 +63,10 @@ class ForwardMsgQueue:
         return len(self._queue) == 0
 
     def enqueue(self, msg: ForwardMsg) -> None:
+        """Add message into queue, possibly composing it with another message."""
+
         if _before_enqueue_msg:
             _before_enqueue_msg(msg)
-
-        """Add message into queue, possibly composing it with another message."""
         if not _is_composable_message(msg):
             self._queue.append(msg)
             return
