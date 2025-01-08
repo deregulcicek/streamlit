@@ -17,7 +17,7 @@ import zipfile
 import re
 import requests
 from datetime import datetime
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 # Read the GH_TOKEN from the environment
 GH_TOKEN = os.getenv("GH_TOKEN")
@@ -54,7 +54,7 @@ def make_http_request(
 
 def make_github_request(
     url: str, params: Optional[Dict[str, Union[str, int]]] = None
-) -> Dict:
+) -> Dict[str, Any]:
     """
     Make a GET request to the GitHub API.
 
@@ -66,7 +66,7 @@ def make_github_request(
         Dict: The JSON response from the GitHub API.
     """
     response = make_http_request(url, headers=HEADERS, params=params)
-    return response.json()
+    return response.json()  # type: ignore
 
 
 def download_artifact(
@@ -119,7 +119,7 @@ def unzip_file(zip_path: str, artifact_directory: str) -> str:
     return extract_to
 
 
-def get_build_from_github(commit_hash: str) -> Optional[Dict]:
+def get_build_from_github(commit_hash: str) -> Optional[Dict[str, Any]]:
     """
     Get the build data from GitHub for a specific commit hash.
 
@@ -138,7 +138,9 @@ def get_build_from_github(commit_hash: str) -> Optional[Dict]:
         return None
 
 
-def get_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
+def get_check_run_by_name(
+    check_runs: List[Dict[str, Any]], name: str
+) -> Optional[Dict[str, Any]]:
     """
     Get a check run by name from a list of check runs.
 
@@ -156,9 +158,11 @@ def get_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
 
 # Temporary function, will remove once we get the naming convention for
 # `playwright-performance.yml` checked in
-def get_shortest_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
+def get_shortest_check_run_by_name(
+    check_runs: List[Dict[str, Any]], name: str
+) -> Optional[Dict[str, Any]]:
     shortest_check_run = None
-    shortest_duration = None
+    shortest_duration = float("inf")
 
     for check_run in check_runs:
         if check_run["name"] == name:
@@ -169,7 +173,7 @@ def get_shortest_check_run_by_name(check_runs: List[Dict], name: str) -> Optiona
                 check_run["completed_at"], "%Y-%m-%dT%H:%M:%SZ"
             )
             duration = (completed_at - started_at).total_seconds()
-            if shortest_duration is None or duration < shortest_duration:
+            if duration < shortest_duration:
                 shortest_duration = duration
                 shortest_check_run = check_run
 
@@ -190,7 +194,7 @@ def extract_run_id_from_url(url: str) -> Optional[str]:
     return match.group(1) if match else None
 
 
-def get_artifact_for_run_id(run_id: str) -> Optional[Dict]:
+def get_artifact_for_run_id(run_id: str) -> Optional[Dict[str, Any]]:
     """
     Get the artifacts for a specific run ID from GitHub.
 
@@ -209,7 +213,9 @@ def get_artifact_for_run_id(run_id: str) -> Optional[Dict]:
         return None
 
 
-def get_artifact_by_name(artifacts: List[Dict], name: str) -> Optional[Dict]:
+def get_artifact_by_name(
+    artifacts: List[Dict[str, Any]], name: str
+) -> Optional[Dict[str, Any]]:
     """
     Get an artifact by name from a list of artifacts.
 
