@@ -21,7 +21,7 @@ import { Dictionary, Field, Vector } from "apache-arrow"
 import { immerable, produce } from "immer"
 
 import { IArrow, Styler as StylerProto } from "@streamlit/lib/src/proto"
-import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import { hashString, isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
 import { concat } from "./arrowConcatUtils"
 import {
@@ -32,6 +32,7 @@ import {
   Types,
 } from "./arrowParseUtils"
 import { DataType, IndexTypeName, Type } from "./arrowTypeUtils"
+
 // This type should be recursive as there can be nested structures.
 // Example: list[int64], list[list[unicode]], etc.
 // NOTE: Commented out until we can find a way to properly define recursive types.
@@ -153,6 +154,9 @@ export class Quiver {
   /** [optional] DataFrame's Styler data. This will be defined if the user styled the dataframe. */
   private readonly _styler?: Styler
 
+  /** Number of bytes in the Arrow IPC bytes. */
+  private _num_bytes: number
+
   constructor(element: IArrow) {
     const { index, columns, data, types, fields, indexNames } =
       parseArrowIpcBytes(element.data)
@@ -170,6 +174,7 @@ export class Quiver {
     this._fields = fields
     this._styler = styler
     this._indexNames = indexNames
+    this._num_bytes = element.data?.length || 0
   }
 
   /**
@@ -228,6 +233,29 @@ export class Quiver {
   /** Types for DataFrame's index and data. */
   public get types(): Types {
     return this._types
+  }
+
+  /**
+   * A hash that identifies the underlying data.
+   *
+   * This hash is based on various descriptive information
+   * but is not 100% guaranteed to be unique.
+   */
+  public get hash(): string {
+    // Its important to calculate this at runtime
+    // since some of the data can change when `add_rows` is
+    // used.
+    const valuesToHash = [
+      this.dimensions.columns,
+      this.dimensions.dataColumns,
+      this.dimensions.dataRows,
+      this.dimensions.headerColumns,
+      this.dimensions.headerRows,
+      this.dimensions.rows,
+      this._num_bytes,
+      this._columns,
+    ]
+    return hashString(valuesToHash.join("-"))
   }
 
   /**
