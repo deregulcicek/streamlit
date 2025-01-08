@@ -21,6 +21,7 @@ from .github import (
     get_artifact_by_name,
     get_artifact_for_run_id,
     get_build_from_github,
+    get_shortest_check_run_by_name,
     get_check_run_by_name,
     unzip_file,
 )
@@ -45,11 +46,22 @@ def main():
         sys.exit(1)
 
     e2e_playwright_run = get_check_run_by_name(
-        build_data["check_runs"], "playwright-e2e-tests"
+        build_data["check_runs"], "playwright-performance"
     )
 
     if not e2e_playwright_run:
+        e2e_playwright_run = get_shortest_check_run_by_name(
+            build_data["check_runs"], "playwright-e2e-tests"
+        )
+
+    if not e2e_playwright_run:
         print("Error finding e2e playwright check run")
+        sys.exit(1)
+
+    if e2e_playwright_run.get("status") != "completed":
+        # TODO: We may want to go find a previous run that is completed instead
+        # of exiting.
+        print("Performance run is not completed yet")
         sys.exit(1)
 
     run_id = extract_run_id_from_url(e2e_playwright_run["details_url"])

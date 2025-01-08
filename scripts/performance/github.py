@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import os
 import zipfile
 import re
 import requests
+from datetime import datetime
 from typing import Dict, List, Optional, Union
 
 # Read the GH_TOKEN from the environment
@@ -152,6 +152,28 @@ def get_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
     return next(
         (check_run for check_run in check_runs if check_run["name"] == name), None
     )
+
+
+# Temporary function, will remove once we get the naming convention for
+# `playwright-performance.yml` checked in
+def get_shortest_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
+    shortest_check_run = None
+    shortest_duration = None
+
+    for check_run in check_runs:
+        if check_run["name"] == name:
+            started_at = datetime.strptime(
+                check_run["started_at"], "%Y-%m-%dT%H:%M:%SZ"
+            )
+            completed_at = datetime.strptime(
+                check_run["completed_at"], "%Y-%m-%dT%H:%M:%SZ"
+            )
+            duration = (completed_at - started_at).total_seconds()
+            if shortest_duration is None or duration < shortest_duration:
+                shortest_duration = duration
+                shortest_check_run = check_run
+
+    return shortest_check_run
 
 
 def extract_run_id_from_url(url: str) -> Optional[str]:

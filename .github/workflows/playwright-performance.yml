@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  playwright-e2e-tests:
+  playwright-performance:
     runs-on: ubuntu-latest-8-cores
     # For now this Workflow is intentionally not blocking. Once we have high
     # confidence in the performance tests we will mark this as blocking
