@@ -31,33 +31,6 @@ HEADERS = {
 }
 
 
-def append_to_performance_scores(
-    performance_scores: Dict[str, Dict[str, float]],
-    datetime: str,
-    app_name: str,
-    score: float,
-) -> None:
-    """
-    Append a performance score to the performance_scores dictionary.
-
-    Args:
-        performance_scores (Dict[str, Dict[str, float]]): Dictionary to store performance scores.
-        datetime (str): The datetime key for the performance score.
-        app_name (str): The name of the application.
-        score (float): The performance score to append.
-
-    Returns:
-        None
-    """
-    if datetime not in performance_scores:
-        performance_scores[datetime] = {}
-
-    # if app_name not in performance_scores[datetime]:
-    #     performance_scores[datetime][app_name] = []
-
-    performance_scores[datetime][app_name] = score
-
-
 def make_http_request(
     url: str,
     headers: Optional[Dict[str, str]] = None,
@@ -144,93 +117,6 @@ def unzip_file(zip_path: str, artifact_directory: str) -> str:
         zip_ref.extractall(extract_to)
 
     return extract_to
-
-
-def read_json_files(
-    performance_scores: Dict[str, Dict[str, float]], artifact: Dict, directory: str
-) -> None:
-    """
-    Read JSON files from a directory and append their performance scores to the
-    performance_scores dictionary.
-
-    Args:
-        performance_scores (Dict[str, Dict[str, float]]): Dictionary to store performance scores.
-        artifact (Dict): Dictionary containing artifact metadata.
-        directory (str): The directory to search for JSON files.
-
-    Returns:
-        None
-    """
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".json"):
-                json_path = os.path.join(root, file)
-                with open(json_path, "r") as json_file:
-                    data = json.load(json_file)
-                    app_name = json_path.split("_-_")[1]
-                    device_type = json_path.split("_-_")[2]
-                    append_to_performance_scores(
-                        performance_scores,
-                        artifact["created_at"],
-                        f"{app_name}_{device_type}",
-                        data["categories"]["performance"]["score"],
-                    )
-
-
-def get_all_prs_with_label(label: str) -> List[Dict]:
-    """
-    Get all pull requests with a specific label.
-
-    Args:
-        label (str): The label to filter pull requests by.
-
-    Returns:
-        List[Dict]: A list of pull requests with the specified label.
-    """
-    prs_url = "https://api.github.com/repos/streamlit/streamlit/pulls"
-    prs = make_github_request(prs_url)
-
-    prs_with_label = [
-        pr for pr in prs if any(lbl["name"] == label for lbl in pr["labels"])
-    ]
-    return prs_with_label
-
-
-def get_workflow_run_id(ref: str, workflow_name: str) -> Optional[int]:
-    """
-    Get the workflow run ID for a specific branch and workflow name.
-
-    Args:
-        ref (str): The branch reference (e.g., 'refs/heads/main').
-        workflow_name (str): The name of the workflow to find.
-
-    Returns:
-        Optional[int]: The ID of the workflow run if found, otherwise None.
-    """
-    url = "https://api.github.com/repos/streamlit/streamlit/actions/runs"
-    response = make_github_request(url, params={"event": "pull_request", "branch": ref})
-    workflow_runs = response["workflow_runs"]
-
-    # Filter the workflow runs to find the one with the specified name
-    for run in workflow_runs:
-        if run["name"] == workflow_name:
-            return run["id"]
-
-    return None
-
-
-def get_nightly_builds(per_page: int = 5) -> Dict:
-    """
-    Get the nightly builds from GitHub.
-
-    Args:
-        per_page (int): The number of builds to retrieve per page.
-
-    Returns:
-        Dict: The JSON response from the GitHub API.
-    """
-    url = "https://api.github.com/repos/streamlit/streamlit/actions/workflows/nightly.yml/runs"
-    return make_github_request(url, params={"per_page": per_page})
 
 
 def get_build_from_github(commit_hash: str) -> Optional[Dict]:
