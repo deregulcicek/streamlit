@@ -134,3 +134,7 @@ message ElementDimensionSpec {
   // height in pixels
   uint32 height = 2;
 }
+
+message ForwardMsgList {
+  repeated ForwardMsg messages = 1;
+}

@@ -29,6 +29,7 @@ import {
 
 import { ConnectionState } from "./ConnectionState"
 import { WebsocketConnection } from "./WebsocketConnection"
+import { StaticConnection } from "./StaticConnection"
 
 /**
  * When the websocket connection retries this many times, we show a dialog
@@ -137,15 +138,28 @@ export class ConnectionManager {
   }
 
   private async connect(): Promise<void> {
-    try {
-      this.connection = await this.connectToRunningServer()
-    } catch (e) {
-      const err = ensureError(e)
-      logError(err.message)
-      this.setConnectionState(
-        ConnectionState.DISCONNECTED_FOREVER,
-        err.message
-      )
+    const queryParams = new URLSearchParams(document.location.search)
+    const staticAppId = queryParams.get("appId")
+
+    if (staticAppId) {
+      // Establish a static connection
+      StaticConnection({
+        appId: staticAppId,
+        onConnectionStateChange: this.setConnectionState,
+        onMessage: this.props.onMessage,
+      })
+    } else {
+      // Establish a websocket connection
+      try {
+        this.connection = await this.connectToRunningServer()
+      } catch (e) {
+        const err = ensureError(e)
+        logError(err.message)
+        this.setConnectionState(
+          ConnectionState.DISCONNECTED_FOREVER,
+          err.message
+        )
+      }
     }
   }
 
