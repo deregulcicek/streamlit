@@ -39,8 +39,7 @@ class ForwardMsgQueue:
     def on_before_enqueue_msg(
         before_enqueue_msg: Callable[[ForwardMsg], None] | None,
     ) -> None:
-        global _before_enqueue_msg
-        _before_enqueue_msg = before_enqueue_msg
+        ForwardMsgQueue._before_enqueue_msg = before_enqueue_msg
 
     def __init__(self):
         self._queue: list[ForwardMsg] = []
@@ -65,8 +64,9 @@ class ForwardMsgQueue:
     def enqueue(self, msg: ForwardMsg) -> None:
         """Add message into queue, possibly composing it with another message."""
 
-        if _before_enqueue_msg:
-            _before_enqueue_msg(msg)
+        if ForwardMsgQueue._before_enqueue_msg:
+            ForwardMsgQueue._before_enqueue_msg(msg)
+
         if not _is_composable_message(msg):
             self._queue.append(msg)
             return
