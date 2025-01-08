@@ -16,30 +16,30 @@ import subprocess
 from typing import Optional
 
 
-def rev_parse(branchName: str = "origin/develop"):
+def rev_parse(branch_name: str = "origin/develop"):
     try:
         return (
-            subprocess.check_output(["git", "rev-parse", branchName]).decode().strip()
+            subprocess.check_output(["git", "rev-parse", branch_name]).decode().strip()
         )
     except subprocess.CalledProcessError as error:
-        print(f"Error finding latest commit hash for {branchName}: {error}")
+        print(f"Error finding latest commit hash for {branch_name}: {error}")
         return None
 
 
-def get_branch_point_commit_hash(branchName: str = "origin/develop") -> Optional[str]:
+def get_branch_point_commit_hash(branch_name: str = "origin/develop") -> Optional[str]:
     """
     Get the commit hash of the branch point between the current branch and the specified branch.
     If the has is not found, the latest commit hash of the given `branchName` is returned.
 
     Args:
-        branchName: The name of the branch to compare with. Default is "develop".
+        branch_name: The name of the branch to compare with. Default is "develop".
 
     Returns:
         The commit hash of the branch point, or None if an error occurs.
     """
     try:
         return (
-            subprocess.check_output(["git", "merge-base", "HEAD", branchName])
+            subprocess.check_output(["git", "merge-base", "HEAD", branch_name])
             .decode()
             .strip()
         )

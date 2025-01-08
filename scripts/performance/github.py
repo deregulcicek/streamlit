@@ -209,18 +209,18 @@ def get_nightly_builds(per_page=5):
     return make_github_request(url, params=params)
 
 
-def get_build_from_github(commitHash):
+def get_build_from_github(commit_hash):
     """
     Get the build data from GitHub for a specific commit hash.
 
     Args:
-        commitHash (str): The commit hash to get the build data for.
+        commit_hash (str): The commit hash to get the build data for.
 
     Returns:
         dict: The build data from GitHub.
     """
     try:
-        url = f"https://api.github.com/repos/streamlit/streamlit/commits/{commitHash}/check-runs"
+        url = f"https://api.github.com/repos/streamlit/streamlit/commits/{commit_hash}/check-runs"
         response = make_github_request(url)
         return response
     except Exception as error:
