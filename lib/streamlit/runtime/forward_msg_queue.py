@@ -21,15 +21,6 @@ from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 if TYPE_CHECKING:
     from streamlit.proto.Delta_pb2 import Delta
 
-_before_enqueue_msg = None
-
-
-def on_before_enqueue_msg(
-    before_enqueue_msg: Callable[[ForwardMsg], None] | None,
-) -> None:
-    global _before_enqueue_msg
-    _before_enqueue_msg = before_enqueue_msg
-
 
 class ForwardMsgQueue:
     """Accumulates a session's outgoing ForwardMsgs.
@@ -41,6 +32,15 @@ class ForwardMsgQueue:
     ForwardMsgQueue is not thread-safe - a queue should only be used from
     a single thread.
     """
+
+    _before_enqueue_msg = None
+
+    @staticmethod
+    def on_before_enqueue_msg(
+        before_enqueue_msg: Callable[[ForwardMsg], None] | None,
+    ) -> None:
+        global _before_enqueue_msg
+        _before_enqueue_msg = before_enqueue_msg
 
     def __init__(self):
         self._queue: list[ForwardMsg] = []
