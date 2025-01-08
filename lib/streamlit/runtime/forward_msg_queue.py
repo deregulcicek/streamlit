@@ -33,7 +33,7 @@ class ForwardMsgQueue:
     a single thread.
     """
 
-    _before_enqueue_msg = None
+    _before_enqueue_msg: Callable[[ForwardMsg], None] | None = None
 
     @staticmethod
     def on_before_enqueue_msg(
