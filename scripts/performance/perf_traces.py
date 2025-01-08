@@ -52,11 +52,11 @@ def calculate_phases(
     Calculate phases for a specific profile from the given dictionary.
 
     Args:
-        file_as_dict: A dictionary containing JSON data.
-        profile_name: The name of the profile to extract phases from.
+        file_as_dict (Dict[str, CapturedTraces]): A dictionary containing JSON data.
+        profile_name (str): The name of the profile to extract phases from.
 
     Returns:
-        A dictionary containing phases and their durations and counts.
+        CalculatedPhases: A dictionary containing phases and their durations and counts.
     """
     profiles = get_react_profiles(file_as_dict, profile_name)
     phases: CalculatedPhases = {}
@@ -80,10 +80,10 @@ def calculate_phases_for_all_profiles(
     Calculate phases for all profiles from the given dictionary.
 
     Args:
-        file_as_dict: A dictionary containing JSON data.
+        file_as_dict (Dict[str, CapturedTraces]): A dictionary containing JSON data.
 
     Returns:
-        A dictionary containing phases for all profiles.
+        Dict[str, CalculatedPhases]: A dictionary containing phases for all profiles.
     """
     profile_names = get_all_profile_names(file_as_dict)
     return {
@@ -97,10 +97,10 @@ def sum_long_animation_frames(file_as_dict: Dict[str, CapturedTraces]) -> float:
     Sum the durations of all long animation frames from the given dictionary.
 
     Args:
-        file_as_dict: A dictionary containing JSON data.
+        file_as_dict (Dict[str, CapturedTraces]): A dictionary containing JSON data.
 
     Returns:
-        The sum of durations of all long animation frames.
+        float: The sum of durations of all long animation frames.
     """
     long_animation_frames = get_long_animation_frames(file_as_dict)
     if long_animation_frames is None:
@@ -115,11 +115,11 @@ def count_entries_per_phase(
     Count the number of entries per phase for a specific profile.
 
     Args:
-        file_as_dict: A dictionary containing JSON data.
-        profile_name: The name of the profile to count entries for.
+        file_as_dict (Dict[str, CapturedTraces]): A dictionary containing JSON data.
+        profile_name (str): The name of the profile to count entries for.
 
     Returns:
-        A dictionary with phases as keys and counts as values.
+        Dict[str, int]: A dictionary with phases as keys and counts as values.
     """
     profiles = get_react_profiles(file_as_dict, profile_name)
 
@@ -146,7 +146,10 @@ def load_files(
     Load files from the directory and extract relevant data.
 
     Args:
-        directory_path: The path to the directory containing the files.
+        directory_path (str): The path to the directory containing the files.
+
+    Returns:
+        LoadFilesOutput: A dictionary containing filenames, all phases, and all long animation frames.
     """
     filenames = []
     all_phases = []
