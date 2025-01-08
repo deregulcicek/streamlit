@@ -67,6 +67,10 @@ class ServerUtilTest(unittest.TestCase):
 
         if port:
             options["server.port"] = port
+        else:
+            # We explicitly set the port to 8501 (the default) to allow running
+            # the tests locally, even when 8501 is already in use.
+            options["server.port"] = 8501
 
         mock_get_option = testutil.build_mock_config_get_option(options)
 
