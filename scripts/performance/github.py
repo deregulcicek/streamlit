@@ -17,6 +17,7 @@ import os
 import zipfile
 import re
 import requests
+from typing import Dict, List, Optional, Union
 
 # Read the GH_TOKEN from the environment
 GH_TOKEN = os.getenv("GH_TOKEN")
@@ -30,12 +31,17 @@ HEADERS = {
 }
 
 
-def append_to_performance_scores(performance_scores, datetime, app_name, score):
+def append_to_performance_scores(
+    performance_scores: Dict[str, Dict[str, float]],
+    datetime: str,
+    app_name: str,
+    score: float,
+) -> None:
     """
     Append a performance score to the performance_scores dictionary.
 
     Args:
-        performance_scores (dict): Dictionary to store performance scores.
+        performance_scores (Dict[str, Dict[str, float]]): Dictionary to store performance scores.
         datetime (str): The datetime key for the performance score.
         app_name (str): The name of the application.
         score (float): The performance score to append.
@@ -52,14 +58,18 @@ def append_to_performance_scores(performance_scores, datetime, app_name, score):
     performance_scores[datetime][app_name] = score
 
 
-def make_http_request(url, headers=None, params=None):
+def make_http_request(
+    url: str,
+    headers: Optional[Dict[str, str]] = None,
+    params: Optional[Dict[str, Union[str, int]]] = None,
+) -> requests.Response:
     """
     Make an HTTP GET request.
 
     Args:
         url (str): The URL to make the request to.
-        headers (dict): Optional dictionary of headers.
-        params (dict): Optional dictionary of query parameters.
+        headers (Optional[Dict[str, str]]): Optional dictionary of headers.
+        params (Optional[Dict[str, Union[str, int]]]): Optional dictionary of query parameters.
 
     Returns:
         requests.Response: The HTTP response object.
@@ -69,22 +79,26 @@ def make_http_request(url, headers=None, params=None):
     return response
 
 
-def make_github_request(url, params=None):
+def make_github_request(
+    url: str, params: Optional[Dict[str, Union[str, int]]] = None
+) -> Dict:
     """
     Make a GET request to the GitHub API.
 
     Args:
         url (str): The URL to make the request to.
-        params (dict): Optional dictionary of query parameters.
+        params (Optional[Dict[str, Union[str, int]]]): Optional dictionary of query parameters.
 
     Returns:
-        dict: The JSON response from the GitHub API.
+        Dict: The JSON response from the GitHub API.
     """
     response = make_http_request(url, headers=HEADERS, params=params)
     return response.json()
 
 
-def download_artifact(download_url: str, artifact_name: str, artifact_directory: str):
+def download_artifact(
+    download_url: str, artifact_name: str, artifact_directory: str
+) -> str:
     """
     Download an artifact from a given URL and save it as a zip file in the
     ./artifacts directory.
@@ -110,12 +124,13 @@ def download_artifact(download_url: str, artifact_name: str, artifact_directory:
     return zip_path
 
 
-def unzip_file(zip_path: str, artifact_directory: str):
+def unzip_file(zip_path: str, artifact_directory: str) -> str:
     """
     Unzip a zip file to a directory in the ./artifacts directory that has the same name as the file.
 
     Args:
         zip_path (str): The path to the zip file.
+        artifact_directory (str): The directory to save the extracted files.
 
     Returns:
         str: The path to the directory where the zip file was extracted.
@@ -131,14 +146,16 @@ def unzip_file(zip_path: str, artifact_directory: str):
     return extract_to
 
 
-def read_json_files(performance_scores, artifact, directory):
+def read_json_files(
+    performance_scores: Dict[str, Dict[str, float]], artifact: Dict, directory: str
+) -> None:
     """
     Read JSON files from a directory and append their performance scores to the
     performance_scores dictionary.
 
     Args:
-        performance_scores (dict): Dictionary to store performance scores.
-        artifact (dict): Dictionary containing artifact metadata.
+        performance_scores (Dict[str, Dict[str, float]]): Dictionary to store performance scores.
+        artifact (Dict): Dictionary containing artifact metadata.
         directory (str): The directory to search for JSON files.
 
     Returns:
@@ -160,7 +177,7 @@ def read_json_files(performance_scores, artifact, directory):
                     )
 
 
-def get_all_prs_with_label(label):
+def get_all_prs_with_label(label: str) -> List[Dict]:
     """
     Get all pull requests with a specific label.
 
@@ -168,7 +185,7 @@ def get_all_prs_with_label(label):
         label (str): The label to filter pull requests by.
 
     Returns:
-        list: A list of pull requests with the specified label.
+        List[Dict]: A list of pull requests with the specified label.
     """
     prs_url = "https://api.github.com/repos/streamlit/streamlit/pulls"
     prs = make_github_request(prs_url)
@@ -179,7 +196,7 @@ def get_all_prs_with_label(label):
     return prs_with_label
 
 
-def get_workflow_run_id(ref, workflow_name):
+def get_workflow_run_id(ref: str, workflow_name: str) -> Optional[int]:
     """
     Get the workflow run ID for a specific branch and workflow name.
 
@@ -188,11 +205,10 @@ def get_workflow_run_id(ref, workflow_name):
         workflow_name (str): The name of the workflow to find.
 
     Returns:
-        int: The ID of the workflow run if found, otherwise None.
+        Optional[int]: The ID of the workflow run if found, otherwise None.
     """
     url = "https://api.github.com/repos/streamlit/streamlit/actions/runs"
-    params = {"event": "pull_request", "branch": ref}
-    response = make_github_request(url, params=params)
+    response = make_github_request(url, params={"event": "pull_request", "branch": ref})
     workflow_runs = response["workflow_runs"]
 
     # Filter the workflow runs to find the one with the specified name
@@ -203,13 +219,21 @@ def get_workflow_run_id(ref, workflow_name):
     return None
 
 
-def get_nightly_builds(per_page=5):
+def get_nightly_builds(per_page: int = 5) -> Dict:
+    """
+    Get the nightly builds from GitHub.
+
+    Args:
+        per_page (int): The number of builds to retrieve per page.
+
+    Returns:
+        Dict: The JSON response from the GitHub API.
+    """
     url = "https://api.github.com/repos/streamlit/streamlit/actions/workflows/nightly.yml/runs"
-    params = {"per_page": per_page}
-    return make_github_request(url, params=params)
+    return make_github_request(url, params={"per_page": per_page})
 
 
-def get_build_from_github(commit_hash):
+def get_build_from_github(commit_hash: str) -> Optional[Dict]:
     """
     Get the build data from GitHub for a specific commit hash.
 
@@ -217,7 +241,7 @@ def get_build_from_github(commit_hash):
         commit_hash (str): The commit hash to get the build data for.
 
     Returns:
-        dict: The build data from GitHub.
+        Optional[Dict]: The build data from GitHub.
     """
     try:
         url = f"https://api.github.com/repos/streamlit/streamlit/commits/{commit_hash}/check-runs"
@@ -228,23 +252,23 @@ def get_build_from_github(commit_hash):
         return None
 
 
-def get_check_run_by_name(check_runs, name):
+def get_check_run_by_name(check_runs: List[Dict], name: str) -> Optional[Dict]:
     """
     Get a check run by name from a list of check runs.
 
     Args:
-        check_runs (list): The list of check runs.
+        check_runs (List[Dict]): The list of check runs.
         name (str): The name of the check run to find.
 
     Returns:
-        dict: The check run with the specified name, or None if not found.
+        Optional[Dict]: The check run with the specified name, or None if not found.
     """
     return next(
         (check_run for check_run in check_runs if check_run["name"] == name), None
     )
 
 
-def extract_run_id_from_url(url):
+def extract_run_id_from_url(url: str) -> Optional[str]:
     """
     Extract the run ID from a GitHub actions URL.
 
@@ -252,13 +276,13 @@ def extract_run_id_from_url(url):
         url (str): The URL to extract the run ID from.
 
     Returns:
-        str: The extracted run ID, or None if not found.
+        Optional[str]: The extracted run ID, or None if not found.
     """
     match = re.search(r"/runs/(\d+)/", url)
     return match.group(1) if match else None
 
 
-def get_artifact_for_run_id(run_id):
+def get_artifact_for_run_id(run_id: str) -> Optional[Dict]:
     """
     Get the artifacts for a specific run ID from GitHub.
 
@@ -266,7 +290,7 @@ def get_artifact_for_run_id(run_id):
         run_id (str): The run ID to get the artifacts for.
 
     Returns:
-        dict: The artifact data from GitHub.
+        Optional[Dict]: The artifact data from GitHub.
     """
     try:
         url = f"https://api.github.com/repos/streamlit/streamlit/actions/runs/{run_id}/artifacts"
@@ -277,15 +301,15 @@ def get_artifact_for_run_id(run_id):
         return None
 
 
-def get_artifact_by_name(artifacts, name):
+def get_artifact_by_name(artifacts: List[Dict], name: str) -> Optional[Dict]:
     """
     Get an artifact by name from a list of artifacts.
 
     Args:
-        artifacts (list): The list of artifacts.
+        artifacts (List[Dict]): The list of artifacts.
         name (str): The name of the artifact to find.
 
     Returns:
-        dict: The artifact with the specified name, or None if not found.
+        Optional[Dict]: The artifact with the specified name, or None if not found.
     """
     return next((artifact for artifact in artifacts if artifact["name"] == name), None)

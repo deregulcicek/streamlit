@@ -34,7 +34,6 @@ def main():
         branch_point = rev_parse()
 
         if not branch_point:
-            # Exit with code 1
             sys.exit(1)
 
     print(f"Branch point commit hash: {branch_point}")
@@ -43,7 +42,6 @@ def main():
 
     if not build_data:
         print("Error fetching build from GitHub")
-        # Exit with code 1
         sys.exit(1)
 
     e2e_playwright_run = get_check_run_by_name(
@@ -52,14 +50,12 @@ def main():
 
     if not e2e_playwright_run:
         print("Error finding e2e playwright check run")
-        # Exit with code 1
         sys.exit(1)
 
     run_id = extract_run_id_from_url(e2e_playwright_run["details_url"])
 
     if not run_id:
         print("Error extracting run ID from URL")
-        # Exit with code 1
         sys.exit(1)
 
     this_file_directory = os.path.dirname(os.path.realpath(__file__))
@@ -82,7 +78,6 @@ def main():
 
         if not artifact_data:
             print("Error fetching artifact for run ID")
-            # Exit with code 1
             sys.exit(1)
 
         performance_artifact = get_artifact_by_name(
@@ -91,7 +86,6 @@ def main():
 
         if not performance_artifact:
             print("Error finding performance artifact")
-            # Exit with code 1
             sys.exit(1)
 
         downloaded_zip_path = download_artifact(
