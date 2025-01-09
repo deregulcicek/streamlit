@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dictionary, Struct, StructRow, Vector } from "apache-arrow"
+import { Dictionary, Field, Struct, StructRow, Vector } from "apache-arrow"
 
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
@@ -49,11 +49,14 @@ export enum PandasIndexTypeName {
 
 /** Pandas type information for single-index columns, and data columns. */
 export interface PandasColumnType {
+  /** The Arrow field that corresponds to the column. */
+  field?: Field
+
   /** The type label returned by pandas.api.types.infer_dtype */
-  pandas_type: PandasIndexTypeName | string
+  pandas_type?: PandasIndexTypeName | string
 
   /** The numpy dtype that corresponds to the types returned in df.dtypes */
-  numpy_type: string
+  numpy_type?: string
 
   /** Type metadata. */
   meta?: Record<string, any> | null
@@ -94,6 +97,10 @@ export function isRangeIndex(
 export function getTypeName(
   type: PandasColumnType
 ): PandasIndexTypeName | string {
+  if (type.pandas_type === undefined || type.numpy_type === undefined) {
+    return String(type.field?.type)
+  }
+
   // For `PeriodType` and `IntervalType` types are kept in `numpy_type`,
   // for the rest of the indexes in `pandas_type`.
   return type.pandas_type === "object" ? type.numpy_type : type.pandas_type
@@ -131,9 +138,8 @@ export function sameIndexTypes(
 
 /** Returns the timezone of the arrow type metadata. */
 export function getTimezone(arrowType: PandasColumnType): string | undefined {
-  // TODO(lukasmasuch): Use info from field instead:
-  // return arrowType?.field?.type?.timezone
-  return arrowType?.meta?.timezone
+  // Get timezone from pandas metadata, and if not available, use the Arrow field.
+  return arrowType?.meta?.timezone ?? arrowType?.field?.type?.timezone
 }
 
 /** True if the arrow type is an integer type.

@@ -270,8 +270,7 @@ export class Quiver {
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
     const indexColumns =
-      // TODO(lukasmasuch): Change default to 0?
-      this._indexData.length || this.columnTypes.index.length || 1
+      this._indexData.length || this.columnTypes.index.length || 0
     const headerRows = this._columnNames.length || 1
     const dataRows = this._data.numRows || 0
     const dataColumns =
