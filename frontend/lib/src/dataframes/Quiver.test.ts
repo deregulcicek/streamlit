@@ -219,7 +219,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-        expect(q.columns).toEqual([["c1", "c2"]])
+        expect(q.columnNames).toEqual([["c1", "c2"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -257,7 +257,7 @@ describe("Quiver", () => {
         expect(arrayFromVector(q.index)).toEqual([
           [978220800000, 1009756800000],
         ])
-        expect(q.columns).toEqual([
+        expect(q.columnNames).toEqual([
           ["2000-12-31 00:00:00", "2001-12-31 00:00:00"],
         ])
 
@@ -299,7 +299,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([[1.24, 2.35]])
-        expect(q.columns).toEqual([["1.24", "2.35"]])
+        expect(q.columnNames).toEqual([["1.24", "2.35"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           [1.2, 1.3],
           [1.4, 1.5],
@@ -332,7 +332,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([[BigInt(1), BigInt(2)]])
-        expect(q.columns).toEqual([["1", "2"]])
+        expect(q.columnNames).toEqual([["1", "2"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           [BigInt(0), BigInt(1)],
           [BigInt(2), BigInt(3)],
@@ -367,7 +367,7 @@ describe("Quiver", () => {
         expect(q.index.toString()).toEqual(
           '[{"left": 1483228800000, "right": 1483315200000},{"left": 1483315200000, "right": 1483401600000}]'
         )
-        expect(q.columns).toEqual([
+        expect(q.columnNames).toEqual([
           ["(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
         ])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
@@ -404,7 +404,7 @@ describe("Quiver", () => {
         expect(q.index.toString()).toEqual(
           '[{"left": 0, "right": 1.5},{"left": 1.5, "right": 3}]'
         )
-        expect(q.columns).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
+        expect(q.columnNames).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -439,7 +439,7 @@ describe("Quiver", () => {
         expect(q.index.toString()).toEqual(
           '[{"left": 0, "right": 1},{"left": 1, "right": 2}]'
         )
-        expect(q.columns).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(q.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -474,7 +474,7 @@ describe("Quiver", () => {
         expect(q.index.toString()).toEqual(
           '[{"left": 0, "right": 1},{"left": 1, "right": 2}]'
         )
-        expect(q.columns).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(q.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -507,7 +507,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([[0, 1]])
-        expect(q.columns).toEqual([["0", "1"]])
+        expect(q.columnNames).toEqual([["0", "1"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -546,7 +546,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([[BigInt(1), BigInt(2)]])
-        expect(q.columns).toEqual([["1", "2"]])
+        expect(q.columnNames).toEqual([["1", "2"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           [BigInt(1), BigInt(2)],
           [BigInt(3), BigInt(4)],
@@ -579,7 +579,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-        expect(q.columns).toEqual([["c1", "c2"]])
+        expect(q.columnNames).toEqual([["c1", "c2"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -623,7 +623,7 @@ describe("Quiver", () => {
         })
 
         expect(arrayFromVector(q.index)).toEqual([])
-        expect(q.columns).toEqual([])
+        expect(q.columnNames).toEqual([])
         expect(q.data.toArray()).toEqual([])
         expect(q.types).toEqual({
           index: [{ pandas_type: "empty", numpy_type: "object", meta: null }],
@@ -639,7 +639,7 @@ describe("Quiver", () => {
           [BigInt(1), BigInt(2)],
           ["red", "blue"],
         ])
-        expect(q.columns).toEqual([
+        expect(q.columnNames).toEqual([
           ["1", "2"],
           ["red", "blue"],
         ])
@@ -688,7 +688,7 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         expect(arrayFromVector(q.index)).toEqual([[0, 1]])
-        expect(q.columns).toEqual([["0", "1"]])
+        expect(q.columnNames).toEqual([["0", "1"]])
         expect(q.data.toArray().map(a => a?.toArray())).toEqual([
           [BigInt(1), BigInt(2)],
           [BigInt(3), BigInt(4)],
@@ -738,7 +738,7 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         expect(arrayFromVector(qq.index)).toEqual([["i1", "i2", "i1", "i2"]])
-        expect(qq.columns).toEqual([["c1", "c2"]])
+        expect(qq.columnNames).toEqual([["c1", "c2"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -780,7 +780,7 @@ describe("Quiver", () => {
         expect(arrayFromVector(qq.index)).toEqual([
           [978220800000, 1009756800000, 978220800000, 1009756800000],
         ])
-        expect(qq.columns).toEqual([
+        expect(qq.columnNames).toEqual([
           ["2000-12-31 00:00:00", "2001-12-31 00:00:00"],
         ])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
@@ -831,7 +831,7 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         expect(arrayFromVector(qq.index)).toEqual([[1.24, 2.35, 1.24, 2.35]])
-        expect(qq.columns).toEqual([["1.24", "2.35"]])
+        expect(qq.columnNames).toEqual([["1.24", "2.35"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           [1.2, 1.3],
           [1.4, 1.5],
@@ -870,7 +870,7 @@ describe("Quiver", () => {
         expect(arrayFromVector(qq.index)).toEqual([
           [BigInt(1), BigInt(2), BigInt(1), BigInt(2)],
         ])
-        expect(qq.columns).toEqual([["1", "2"]])
+        expect(qq.columnNames).toEqual([["1", "2"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           [BigInt(0), BigInt(1)],
           [BigInt(2), BigInt(3)],
@@ -909,7 +909,7 @@ describe("Quiver", () => {
         expect(qq.index.toString()).toEqual(
           '[{"left": 1483228800000, "right": 1483315200000},{"left": 1483315200000, "right": 1483401600000},{"left": 1483228800000, "right": 1483315200000},{"left": 1483315200000, "right": 1483401600000}]'
         )
-        expect(qq.columns).toEqual([
+        expect(qq.columnNames).toEqual([
           ["(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
         ])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
@@ -950,7 +950,7 @@ describe("Quiver", () => {
         expect(qq.index.toString()).toEqual(
           '[{"left": 0, "right": 1.5},{"left": 1.5, "right": 3},{"left": 0, "right": 1.5},{"left": 1.5, "right": 3}]'
         )
-        expect(qq.columns).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
+        expect(qq.columnNames).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -989,7 +989,7 @@ describe("Quiver", () => {
         expect(qq.index.toString()).toEqual(
           '[{"left": 0, "right": 1},{"left": 1, "right": 2},{"left": 0, "right": 1},{"left": 1, "right": 2}]'
         )
-        expect(qq.columns).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(qq.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -1028,7 +1028,7 @@ describe("Quiver", () => {
         expect(qq.index.toString()).toEqual(
           '[{"left": 0, "right": 1},{"left": 1, "right": 2},{"left": 0, "right": 1},{"left": 1, "right": 2}]'
         )
-        expect(qq.columns).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(qq.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", BigInt(100)],
           ["bar", BigInt(200)],
@@ -1065,7 +1065,7 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         expect(arrayFromVector(qq.index)).toEqual([[0, 1, 2, 3]])
-        expect(qq.columns).toEqual([["0", "1"]])
+        expect(qq.columnNames).toEqual([["0", "1"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -1110,7 +1110,7 @@ describe("Quiver", () => {
         expect(arrayFromVector(qq.index)).toEqual([
           [BigInt(1), BigInt(2), BigInt(1), BigInt(2)],
         ])
-        expect(qq.columns).toEqual([["1", "2"]])
+        expect(qq.columnNames).toEqual([["1", "2"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           [BigInt(1), BigInt(2)],
           [BigInt(3), BigInt(4)],
@@ -1147,7 +1147,7 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         expect(arrayFromVector(qq.index)).toEqual([["i1", "i2", "i1", "i2"]])
-        expect(qq.columns).toEqual([["c1", "c2"]])
+        expect(qq.columnNames).toEqual([["c1", "c2"]])
         expect(qq.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -1198,7 +1198,7 @@ describe("Quiver", () => {
           [BigInt(1), BigInt(2), BigInt(1), BigInt(2)],
           ["red", "blue", "red", "blue"],
         ])
-        expect(qq.columns).toEqual([
+        expect(qq.columnNames).toEqual([
           ["1", "2"],
           ["red", "blue"],
         ])
@@ -1245,7 +1245,7 @@ describe("Quiver", () => {
         const q1q2 = q1.addRows(q2)
 
         expect(arrayFromVector(q1q2.index)).toEqual([["i1", "i2", "i1", "i2"]])
-        expect(q1q2.columns).toEqual([["c1", "c2"]])
+        expect(q1q2.columnNames).toEqual([["c1", "c2"]])
         expect(q1q2.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -1313,7 +1313,7 @@ describe("Quiver", () => {
         const q1q2 = q1.addRows(q2)
 
         expect(arrayFromVector(q1q2.index)).toEqual([["i1", "i2", "i1", "i2"]])
-        expect(q1q2.columns).toEqual([["c1"]])
+        expect(q1q2.columnNames).toEqual([["c1"]])
         expect(q1q2.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo"],
           ["bar"],

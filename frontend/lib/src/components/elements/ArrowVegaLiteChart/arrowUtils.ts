@@ -178,11 +178,11 @@ export function getDataArray(
         // Vega JS assumes dates in the local timezone, so we need to convert
         // UTC date to be the same date in the local timezone.
         const offset = new Date(dataValue).getTimezoneOffset() * 60 * 1000 // minutes to milliseconds
-        row[quiverData.columns[0][colIndex]] = dataValue.valueOf() + offset
+        row[quiverData.columnNames[0][colIndex]] = dataValue.valueOf() + offset
       } else if (typeof dataValue === "bigint") {
-        row[quiverData.columns[0][colIndex]] = Number(dataValue)
+        row[quiverData.columnNames[0][colIndex]] = Number(dataValue)
       } else {
-        row[quiverData.columns[0][colIndex]] = dataValue
+        row[quiverData.columnNames[0][colIndex]] = dataValue
       }
     }
     dataArr.push(row)

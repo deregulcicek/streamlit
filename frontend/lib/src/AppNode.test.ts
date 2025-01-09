@@ -106,7 +106,7 @@ describe("ElementNode.quiverElement", () => {
     const q = node.quiverElement
 
     expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-    expect(q.columns).toEqual([["c1", "c2"]])
+    expect(q.columnNames).toEqual([["c1", "c2"]])
     expect(q.data.toArray().map(a => a?.toArray())).toEqual([
       ["foo", "1"],
       ["bar", "2"],
@@ -139,7 +139,7 @@ describe("ElementNode.quiverElement", () => {
     const q = node.quiverElement
 
     expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-    expect(q.columns).toEqual([["c1", "c2"]])
+    expect(q.columnNames).toEqual([["c1", "c2"]])
     expect(q.data.toArray().map(a => a?.toArray())).toEqual([
       ["foo", "1"],
       ["bar", "2"],
@@ -211,7 +211,7 @@ describe("ElementNode.vegaLiteChartElement", () => {
 
     // data
     expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-    expect(element.data?.columns).toEqual([["c1", "c2"]])
+    expect(element.data?.columnNames).toEqual([["c1", "c2"]])
     expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
       ["foo", "1"],
       ["bar", "2"],
@@ -281,7 +281,7 @@ describe("ElementNode.vegaLiteChartElement", () => {
     expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
       ["i1", "i2"],
     ])
-    expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
+    expect(element.datasets[0].data.columnNames).toEqual([["c1", "c2"]])
     expect(
       element.datasets[0].data.data.toArray().map(a => a?.toArray())
     ).toEqual([
@@ -368,7 +368,7 @@ describe("ElementNode.arrowAddRows", () => {
       const q = newNode.quiverElement
 
       expect(arrayFromVector(q.index)).toEqual([["i1", "i2", "i1", "i2"]])
-      expect(q.columns).toEqual([["c1", "c2"]])
+      expect(q.columnNames).toEqual([["c1", "c2"]])
       expect(q.data.toArray().map(a => a?.toArray())).toEqual([
         ["foo", "1"],
         ["bar", "2"],
@@ -415,7 +415,7 @@ describe("ElementNode.arrowAddRows", () => {
       const q = newNode.quiverElement
 
       expect(arrayFromVector(q.index)).toEqual([["i1", "i2", "i1", "i2"]])
-      expect(q.columns).toEqual([["c1", "c2"]])
+      expect(q.columnNames).toEqual([["c1", "c2"]])
       expect(q.data.toArray().map(a => a?.toArray())).toEqual([
         ["foo", "1"],
         ["bar", "2"],
@@ -485,7 +485,7 @@ describe("ElementNode.arrowAddRows", () => {
         expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
           ["i1", "i2", "i1", "i2"],
         ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
+        expect(element.datasets[0].data.columnNames).toEqual([["c1", "c2"]])
         expect(
           element.datasets[0].data.data.toArray().map(a => a?.toArray())
         ).toEqual([
@@ -527,7 +527,7 @@ describe("ElementNode.arrowAddRows", () => {
         expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
           ["i1", "i2", "i1", "i2"],
         ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
+        expect(element.datasets[0].data.columnNames).toEqual([["c1", "c2"]])
         expect(
           element.datasets[0].data.data.toArray().map(a => a?.toArray())
         ).toEqual([
@@ -567,7 +567,7 @@ describe("ElementNode.arrowAddRows", () => {
         expect(arrayFromVector(element.data?.index)).toEqual([
           ["i1", "i2", "i1", "i2"],
         ])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
+        expect(element.data?.columnNames).toEqual([["c1", "c2"]])
         expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -608,7 +608,7 @@ describe("ElementNode.arrowAddRows", () => {
         const element = newNode.vegaLiteChartElement
 
         expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
+        expect(element.data?.columnNames).toEqual([["c1", "c2"]])
         expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -642,7 +642,7 @@ describe("ElementNode.arrowAddRows", () => {
         const element = newNode.vegaLiteChartElement
 
         expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
+        expect(element.data?.columnNames).toEqual([["c1", "c2"]])
         expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -683,7 +683,7 @@ describe("ElementNode.arrowAddRows", () => {
         expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
           ["i1", "i2", "i1", "i2"],
         ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
+        expect(element.datasets[0].data.columnNames).toEqual([["c1", "c2"]])
         expect(
           element.datasets[0].data.data.toArray().map(a => a?.toArray())
         ).toEqual([
@@ -726,7 +726,7 @@ describe("ElementNode.arrowAddRows", () => {
         expect(arrayFromVector(element.data?.index)).toEqual([
           ["i1", "i2", "i1", "i2"],
         ])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
+        expect(element.data?.columnNames).toEqual([["c1", "c2"]])
         expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],
@@ -765,7 +765,7 @@ describe("ElementNode.arrowAddRows", () => {
         const element = newNode.vegaLiteChartElement
 
         expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
+        expect(element.data?.columnNames).toEqual([["c1", "c2"]])
         expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
           ["foo", "1"],
           ["bar", "2"],

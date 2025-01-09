@@ -49,21 +49,21 @@ import {
  * on a Pandas Styler object.
  */
 interface PandasStylerData {
-  /** Styler's UUID. */
+  /** UUID from Styler. */
   uuid: string
 
   /** Optional user-specified caption. */
   caption: string | null
 
-  /** DataFrame's CSS styles. */
+  /** CSS styles from Styler. */
   styles: string | null
 
   /**
    * Stringified versions of each cell in the DataFrame, in the
    * user-specified format.
    *
-   * The display values table is expected to always have the same dimensions
-   * as the actual data table.
+   * The display values table is expected to always have the same
+   * dimensions as the actual data table.
    */
   displayValues: Quiver
 }
@@ -141,7 +141,7 @@ export class Quiver {
   [immerable] = true
 
   /** Column names (matrix of column names to support multi-level headers). */
-  private _columns: ColumnNames
+  private _columnNames: ColumnNames
 
   /** Column names of the index columns (there can be multiple index columns). */
   private _indexNames: string[]
@@ -176,7 +176,7 @@ export class Quiver {
     // The assignment is done below to avoid partially populating the instance
     // if an error is thrown.
     this._index = index
-    this._columns = columns
+    this._columnNames = columns
     this._data = data
     this._types = types
     this._fields = fields
@@ -223,8 +223,8 @@ export class Quiver {
   }
 
   /** Column names of the data columns (there can be multiple data columns). */
-  public get columns(): ColumnNames {
-    return this._columns
+  public get columnNames(): ColumnNames {
+    return this._columnNames
   }
 
   /** Cell values of the data columns. */
@@ -269,10 +269,11 @@ export class Quiver {
 
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
-    const indexColumns = this._index.length || this.types.index.length || 1
-    const headerRows = this._columns.length || 1
+    const indexColumns = this._index.length || this.types.index.length || 1 // # TODO: Change default to 0?
+    const headerRows = this._columnNames.length || 1
     const dataRows = this._data.numRows || 0
-    const dataColumns = this._data.numCols || this._columns?.[0]?.length || 0
+    const dataColumns =
+      this._data.numCols || this._columnNames?.[0]?.length || 0
 
     const rows = headerRows + dataRows
     const columns = indexColumns + dataColumns
@@ -305,7 +306,7 @@ export class Quiver {
       this.dimensions.headerRows,
       this.dimensions.rows,
       this._num_bytes,
-      this._columns,
+      this._columnNames,
     ]
     return hashString(valuesToHash.join("-"))
   }
@@ -314,7 +315,7 @@ export class Quiver {
   public isEmpty(): boolean {
     return (
       this._index.length === 0 &&
-      this._columns.length === 0 &&
+      this._columnNames.length === 0 &&
       this._data.numRows === 0 &&
       this._data.numCols === 0
     )
@@ -404,7 +405,7 @@ export class Quiver {
       return {
         type: DataFrameCellType.COLUMNS,
         cssClass,
-        content: this._columns[rowIndex][dataColumnIndex],
+        content: this._columnNames[rowIndex][dataColumnIndex],
         // ArrowJS automatically converts "columns" cells to strings.
         // Keep ArrowJS structure for consistency.
         contentType: {

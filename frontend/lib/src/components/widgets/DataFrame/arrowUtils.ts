@@ -232,9 +232,11 @@ export function getColumnFromArrow(
   data: Quiver,
   columnPosition: number
 ): BaseColumnProps {
-  // data.columns refers to the header rows (not sure about why it is named this way)
-  // It is a matrix of column names.
-  const columnHeaderNames = data.columns.map(column => column[columnPosition])
+  // columnNames a matrix of column names.
+  // Multi-level headers will have more than one row of column names.
+  const columnHeaderNames = data.columnNames.map(
+    column => column[columnPosition]
+  )
   const title =
     columnHeaderNames.length > 0
       ? columnHeaderNames[columnHeaderNames.length - 1]
