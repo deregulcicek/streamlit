@@ -34,55 +34,51 @@ modal_test_id = "stDialog"
 
 
 def open_dialog_with_images(app: Page):
-    app.get_by_role("button").filter(has_text="Open Dialog with Images").click()
+    click_button(app, "Open Dialog with Images")
 
 
 def open_dialog_without_images(app: Page, *, delay: int = 0):
-    app.get_by_role("button").filter(has_text="Open Dialog without Images").click(
-        delay=delay
-    )
+    click_button(app, "Open Dialog without Images")
 
 
 def open_largewidth_dialog(app: Page):
-    app.get_by_role("button").filter(has_text="Open large-width Dialog").click()
+    click_button(app, "Open large-width Dialog")
 
 
 def open_headings_dialogs(app: Page):
-    app.get_by_role("button").filter(has_text="Open headings Dialog").click()
+    click_button(app, "Open headings Dialog")
 
 
 def open_sidebar_dialog(app: Page):
-    app.get_by_role("button").filter(has_text="Open Sidebar-Dialog").click()
+    click_button(app, "Open Sidebar-Dialog")
 
 
 def open_dialog_with_internal_error(app: Page):
-    app.get_by_role("button").filter(has_text="Open Dialog with Key Error").click()
+    click_button(app, "Open Dialog with Key Error")
 
 
 def open_nested_dialogs(app: Page):
-    app.get_by_role("button").filter(has_text="Open Nested Dialogs").click()
+    click_button(app, "Open Nested Dialogs")
 
 
 def open_submit_button_dialog(app: Page):
-    app.get_by_role("button").filter(has_text="Open submit-button Dialog").click()
+    click_button(app, "Open submit-button Dialog")
 
 
 def open_dialog_with_copy_buttons(app: Page):
-    app.get_by_role("button").filter(has_text="Open Dialog with Copy Buttons").click()
+    click_button(app, "Open Dialog with Copy Buttons")
 
 
 def open_dialog_with_deprecation_warning(app: Page):
-    app.get_by_role("button").filter(
-        has_text="Open Dialog with deprecation warning"
-    ).click()
+    click_button(app, "Open Dialog with deprecation warning")
 
 
 def open_dialog_with_chart(app: Page):
-    app.get_by_role("button").filter(has_text="Open Chart Dialog").click()
+    click_button(app, "Open Chart Dialog")
 
 
 def open_dialog_with_rerun(app: Page):
-    app.get_by_role("button").filter(has_text="Open Dialog with rerun").click()
+    click_button(app, "Open Dialog with rerun")
 
 
 def click_to_dismiss(app: Page):
