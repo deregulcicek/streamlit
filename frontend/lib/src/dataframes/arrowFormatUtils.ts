@@ -38,7 +38,7 @@ import {
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
 
-import { DataType, getTypeName, Type } from "./arrowTypeUtils"
+import { DataType, getTypeName, PandasColumnType } from "./arrowTypeUtils"
 
 /**
  * The frequency strings defined in pandas.
@@ -519,12 +519,16 @@ function formatInterval(x: StructRow, field?: Field): string {
  * they would have to somehow deal with the exception on a cell level to not crash the full table or app.
  *
  * @param x The cell value.
- * @param type The type metadata based on the pandas metadata embedded in the arrow table.
+ * @param pandasType The type metadata based on the pandas metadata embedded in the arrow table.
  * @param field The field metadata from arrow containing metadata about the column.
  * @returns The formatted cell value.
  */
-export function format(x: DataType, type?: Type, field?: Field): string {
-  const typeName = type && getTypeName(type)
+export function format(
+  x: DataType,
+  pandasType?: PandasColumnType,
+  field?: Field
+): string {
+  const typeName = pandasType && getTypeName(pandasType)
   const extensionName = field && field.metadata.get("ARROW:extension:name")
   const fieldType = field?.type
 

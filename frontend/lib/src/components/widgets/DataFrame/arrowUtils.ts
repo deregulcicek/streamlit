@@ -31,7 +31,7 @@ import {
   format as formatArrowCell,
 } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
 import {
-  Type as ArrowType,
+  PandasColumnType as ArrowType,
   getTypeName,
   isBooleanType,
   isNumericType,
@@ -198,7 +198,7 @@ export function getIndexFromArrow(
   data: Quiver,
   indexPosition: number
 ): BaseColumnProps {
-  const arrowType = data.types.index[indexPosition]
+  const arrowType = data.columnTypes.index[indexPosition]
   const title = data.indexNames[indexPosition]
   let isEditable = true
 
@@ -258,7 +258,7 @@ export function getColumnFromArrow(
           .join(" / ")
       : undefined
 
-  let arrowType = data.types.data[columnPosition]
+  let arrowType = data.columnTypes.data[columnPosition]
 
   if (isNullOrUndefined(arrowType)) {
     // Use empty column type as fallback

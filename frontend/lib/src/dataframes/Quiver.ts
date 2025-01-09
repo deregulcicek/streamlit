@@ -30,16 +30,16 @@ import {
 import { concat } from "./arrowConcatUtils"
 import {
   ColumnNames,
+  ColumnTypes,
   Data,
   IndexData,
   parseArrowIpcBytes,
-  Types,
 } from "./arrowParseUtils"
 import {
   convertVectorToList,
   DataType,
-  IndexTypeName,
-  Type,
+  PandasColumnType,
+  PandasIndexTypeName,
 } from "./arrowTypeUtils"
 
 /**
@@ -114,7 +114,7 @@ export interface DataFrameCell {
 
   /** The cell's content type. */
   // For "blank" cells "contentType" is undefined.
-  contentType?: Type
+  contentType?: PandasColumnType
 
   /** The cell's field. */
   field?: Field
@@ -155,8 +155,8 @@ export class Quiver {
   /** Definition for DataFrame's fields. */
   private _fields: Record<string, Field<any>>
 
-  /** Types for DataFrame's index and data. */
-  private _types: Types
+  /** Types for DataFrame's index and data columns. */
+  private _columnTypes: ColumnTypes
 
   /** [optional] Pandas Styler data. This will be defined if the user styled the dataframe. */
   private readonly _styler?: PandasStylerData
@@ -165,7 +165,7 @@ export class Quiver {
   private _num_bytes: number
 
   constructor(element: IArrow) {
-    const { indexData, columnNames, data, types, fields, indexNames } =
+    const { indexData, columnNames, data, columnTypes, fields, indexNames } =
       parseArrowIpcBytes(element.data)
 
     // Load styler data (if provided):
@@ -178,7 +178,7 @@ export class Quiver {
     this._indexData = indexData
     this._columnNames = columnNames
     this._data = data
-    this._types = types
+    this._columnTypes = columnTypes
     this._fields = fields
     this._styler = styler
     this._indexNames = indexNames
@@ -233,8 +233,8 @@ export class Quiver {
   }
 
   /** Types for the index and data columns. */
-  public get types(): Types {
-    return this._types
+  public get columnTypes(): ColumnTypes {
+    return this._columnTypes
   }
 
   /**
@@ -269,7 +269,9 @@ export class Quiver {
 
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
-    const indexColumns = this._indexData.length || this.types.index.length || 1 // # TODO: Change default to 0?
+    const indexColumns =
+      // TODO(lukasmasuch): Change default to 0?
+      this._indexData.length || this.columnTypes.index.length || 1
     const headerRows = this._columnNames.length || 1
     const dataRows = this._data.numRows || 0
     const dataColumns =
@@ -280,7 +282,7 @@ export class Quiver {
 
     return {
       headerRows,
-      indexColumns: indexColumns,
+      indexColumns,
       dataRows,
       dataColumns,
       rows,
@@ -372,7 +374,7 @@ export class Quiver {
         `row${dataRowIndex}`,
       ].join(" ")
 
-      const contentType = this._types.index[columnIndex]
+      const contentType = this._columnTypes.index[columnIndex]
       const content = this.getIndexValue(dataRowIndex, columnIndex)
       let field = this._fields[`__index_level_${String(columnIndex)}__`]
       if (field === undefined) {
@@ -409,7 +411,7 @@ export class Quiver {
         // ArrowJS automatically converts "columns" cells to strings.
         // Keep ArrowJS structure for consistency.
         contentType: {
-          pandas_type: IndexTypeName.UnicodeIndex,
+          pandas_type: PandasIndexTypeName.UnicodeIndex,
           numpy_type: "object",
         },
       }
@@ -429,7 +431,7 @@ export class Quiver {
       `col${dataColumnIndex}`,
     ].join(" ")
 
-    const contentType = this._types.data[dataColumnIndex]
+    const contentType = this._columnTypes.data[dataColumnIndex]
     const field = this._fields[String(dataColumnIndex)]
     const content = this.getDataValue(dataRowIndex, dataColumnIndex)
     const displayContent = this._styler?.displayValues
@@ -496,10 +498,10 @@ st.add_rows(my_styler.data)
       data: newData,
       types: newTypes,
     } = concat(
-      this._types,
+      this._columnTypes,
       this._indexData,
       this._data,
-      other._types,
+      other._columnTypes,
       other._indexData,
       other._data
     )
@@ -508,7 +510,7 @@ st.add_rows(my_styler.data)
     return produce(this, (draft: Quiver) => {
       draft._indexData = newIndex
       draft._data = newData
-      draft._types = newTypes
+      draft._columnTypes = newTypes
     })
   }
 }

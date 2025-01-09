@@ -35,7 +35,7 @@ import {
   formatPeriodFromFreq,
   PandasPeriodFrequency,
 } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
-import { Type as ArrowType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
+import { PandasColumnType as ArrowType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { EmotionTheme } from "@streamlit/lib/src/theme"
 import {
   isNullOrUndefined,
