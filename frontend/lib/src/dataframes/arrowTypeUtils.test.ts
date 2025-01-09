@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { makeVector } from "apache-arrow"
+
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 import {
   CATEGORICAL,
@@ -34,6 +36,7 @@ import {
 } from "@streamlit/lib/src/mocks/arrow"
 
 import {
+  convertVectorToList,
   getTimezone,
   getTypeName,
   IndexTypeName,
@@ -536,4 +539,12 @@ describe("isNumericType", () => {
       expect(isNumericType(arrowType)).toEqual(expected)
     }
   )
+})
+
+describe("convertVectorToList", () => {
+  it("converts vector to list", () => {
+    const vector = makeVector(Int32Array.from([1, 2, 3]))
+    const expected = [1, 2, 3]
+    expect(convertVectorToList(vector)).toEqual(expected)
+  })
 })
