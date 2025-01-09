@@ -165,7 +165,7 @@ export class Quiver {
   private _num_bytes: number
 
   constructor(element: IArrow) {
-    const { index, columns, data, types, fields, indexNames } =
+    const { index, columnNames, data, types, fields, indexNames } =
       parseArrowIpcBytes(element.data)
 
     // Load styler data (if provided):
@@ -176,7 +176,7 @@ export class Quiver {
     // The assignment is done below to avoid partially populating the instance
     // if an error is thrown.
     this._index = index
-    this._columnNames = columns
+    this._columnNames = columnNames
     this._data = data
     this._types = types
     this._fields = fields

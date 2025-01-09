@@ -201,7 +201,7 @@ function parseIndexNames(schema: PandasSchema): string[] {
 }
 
 /** Parse DataFrame's column header names. */
-function parseColumns(schema: PandasSchema): ColumnNames {
+function parseColumnNames(schema: PandasSchema): ColumnNames {
   // If DataFrame `columns` has multi-level indexing, the length of
   // `column_indexes` will show how many levels there are.
   const isMultiIndex = schema.column_indexes.length > 1
@@ -305,7 +305,7 @@ function parseFields(schema: ArrowSchema): Record<string, Field> {
 }
 
 interface ParsedTable {
-  columns: ColumnNames
+  columnNames: ColumnNames
   fields: Record<string, Field>
   index: Index
   indexNames: string[]
@@ -318,7 +318,7 @@ interface ParsedTable {
  *
  * @param ipcBytes - Arrow bytes (IPC format)
  * @returns - Parsed Arrow table split into different
- *  components for easier access: columns, fields, index, indexNames, data, types.
+ *  components for easier access: columnNames, fields, index, indexNames, data, types.
  */
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
@@ -332,7 +332,7 @@ export function parseArrowIpcBytes(
   const pandasSchema = parsePandasSchema(table)
 
   // Load all column names from table schema:
-  const columns = parseColumns(pandasSchema)
+  const columnNames = parseColumnNames(pandasSchema)
 
   // Load the display names of the index columns:
   const indexNames = parseIndexNames(pandasSchema)
@@ -342,7 +342,7 @@ export function parseArrowIpcBytes(
   const rawColumns = getRawColumns(pandasSchema)
 
   // Load all non-index data cells:
-  const data = parseData(table, columns, rawColumns)
+  const data = parseData(table, columnNames, rawColumns)
 
   // Load all index data cells:
   const index = parseIndex(table, pandasSchema)
@@ -351,7 +351,7 @@ export function parseArrowIpcBytes(
   const types = parseTypes(table, pandasSchema)
 
   return {
-    columns,
+    columnNames,
     fields,
     index,
     indexNames,
