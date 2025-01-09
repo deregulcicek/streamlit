@@ -22,7 +22,7 @@
 import range from "lodash/range"
 import zip from "lodash/zip"
 
-import { ColumnTypes, Data, IndexData } from "./arrowParseUtils"
+import { Data, IndexData, PandasColumnTypes } from "./arrowParseUtils"
 import {
   getTypeName,
   PandasColumnType,
@@ -132,9 +132,9 @@ but was expecting \`${JSON.stringify(expectedDataTypes)}\`.
 
 /** Concatenate index and data types. */
 function concatTypes(
-  baseTypes: ColumnTypes,
-  appendTypes: ColumnTypes
-): ColumnTypes {
+  baseTypes: PandasColumnTypes,
+  appendTypes: PandasColumnTypes
+): PandasColumnTypes {
   const index = concatIndexTypes(baseTypes.index, appendTypes.index)
   const data = concatDataTypes(baseTypes.data, appendTypes.data)
   return { index, data }
@@ -209,13 +209,13 @@ function concatDataTypes(
 
 /** Concatenate the index, data, and types of parsed arrow tables. */
 export function concat(
-  baseTypes: ColumnTypes,
+  baseTypes: PandasColumnTypes,
   baseIndex: IndexData,
   baseData: Data,
-  appendTypes: ColumnTypes,
+  appendTypes: PandasColumnTypes,
   appendIndex: IndexData,
   appendData: Data
-): { index: IndexData; data: Data; types: ColumnTypes } {
+): { index: IndexData; data: Data; types: PandasColumnTypes } {
   // Concatenate all data into temporary variables. If any of
   // these operations fail, an error will be thrown and we'll prematurely
   // exit the function.

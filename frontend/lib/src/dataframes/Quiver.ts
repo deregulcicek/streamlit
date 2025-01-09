@@ -30,9 +30,9 @@ import {
 import { concat } from "./arrowConcatUtils"
 import {
   ColumnNames,
-  ColumnTypes,
   Data,
   IndexData,
+  PandasColumnTypes,
   parseArrowIpcBytes,
 } from "./arrowParseUtils"
 import {
@@ -155,8 +155,8 @@ export class Quiver {
   /** Definition for DataFrame's fields. */
   private _fields: Record<string, Field<any>>
 
-  /** Types for DataFrame's index and data columns. */
-  private _columnTypes: ColumnTypes
+  /** Types (from Pandas) for DataFrame's index and data columns. */
+  private _columnTypes: PandasColumnTypes
 
   /** [optional] Pandas Styler data. This will be defined if the user styled the dataframe. */
   private readonly _styler?: PandasStylerData
@@ -232,8 +232,8 @@ export class Quiver {
     return this._data
   }
 
-  /** Types for the index and data columns. */
-  public get columnTypes(): ColumnTypes {
+  /** Types (from Pandas) for the index and data columns. */
+  public get columnTypes(): PandasColumnTypes {
     return this._columnTypes
   }
 

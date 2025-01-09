@@ -44,12 +44,14 @@ import {
 type IndexValue = Vector | number[]
 
 /**
- * A row-major grid of DataFrame index data values.
+ * A row-major matrix of DataFrame index data values.
  */
 export type IndexData = IndexValue[]
 
 /**
- * A row-major grid of DataFrame column header values.
+ * A row-major matrix of DataFrame column header names.
+ * This is a matrix (multidimensional array) to support multi-level headers.
+ *
  * NOTE: ArrowJS automatically formats the columns in schema, i.e. we always get strings.
  */
 export type ColumnNames = string[][]
@@ -59,8 +61,8 @@ export type ColumnNames = string[][]
  */
 export type Data = Table
 
-/** DataFrame's index and data column types. */
-export interface ColumnTypes {
+/** A DataFrame's index and data column (pandas) types. */
+export interface PandasColumnTypes {
   /** Types for each index column. */
   index: PandasColumnType[]
 
@@ -245,7 +247,7 @@ function parseData(
 function parseColumnTypes(
   table: Table,
   pandasSchema: PandasSchema
-): ColumnTypes {
+): PandasColumnTypes {
   const index = parseIndexType(pandasSchema)
   const data = parseDataType(pandasSchema)
   return { index, data }
@@ -315,7 +317,7 @@ interface ParsedTable {
   indexData: IndexData
   indexNames: string[]
   data: Data
-  columnTypes: ColumnTypes
+  columnTypes: PandasColumnTypes
 }
 
 /**
