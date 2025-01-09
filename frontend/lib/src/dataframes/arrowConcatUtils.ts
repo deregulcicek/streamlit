@@ -22,7 +22,7 @@
 import range from "lodash/range"
 import zip from "lodash/zip"
 
-import { Data, Index, Types } from "./arrowParseUtils"
+import { Data, IndexData, Types } from "./arrowParseUtils"
 import {
   getTypeName,
   IndexTypeName,
@@ -34,11 +34,11 @@ import {
 
 /** Concatenate the original DataFrame index with the given one. */
 function concatIndexes(
-  baseIndex: Index,
+  baseIndex: IndexData,
   baseIndexTypes: Type[],
-  appendIndex: Index,
+  appendIndex: IndexData,
   appendIndexTypes: Type[]
-): Index {
+): IndexData {
   // If one of the `index` arrays is empty, return the other one.
   // Otherwise, they will have different types and an error will be thrown.
   if (appendIndex.length === 0) {
@@ -207,12 +207,12 @@ function concatDataTypes(
 /** Concatenate the index, data, and types of parsed arrow tables. */
 export function concat(
   baseTypes: Types,
-  baseIndex: Index,
+  baseIndex: IndexData,
   baseData: Data,
   appendTypes: Types,
-  appendIndex: Index,
+  appendIndex: IndexData,
   appendData: Data
-): { index: Index; data: Data; types: Types } {
+): { index: IndexData; data: Data; types: Types } {
   // Concatenate all data into temporary variables. If any of
   // these operations fail, an error will be thrown and we'll prematurely
   // exit the function.

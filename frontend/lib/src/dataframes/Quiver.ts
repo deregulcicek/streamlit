@@ -31,7 +31,7 @@ import { concat } from "./arrowConcatUtils"
 import {
   ColumnNames,
   Data,
-  Index,
+  IndexData,
   parseArrowIpcBytes,
   Types,
 } from "./arrowParseUtils"
@@ -147,7 +147,7 @@ export class Quiver {
   private _indexNames: string[]
 
   /** Cell values of the index columns (there can be multiple index columns). */
-  private _index: Index
+  private _indexData: IndexData
 
   /** Cell values of the data columns. */
   private _data: Data
@@ -165,7 +165,7 @@ export class Quiver {
   private _num_bytes: number
 
   constructor(element: IArrow) {
-    const { index, columnNames, data, types, fields, indexNames } =
+    const { indexData, columnNames, data, types, fields, indexNames } =
       parseArrowIpcBytes(element.data)
 
     // Load styler data (if provided):
@@ -175,7 +175,7 @@ export class Quiver {
 
     // The assignment is done below to avoid partially populating the instance
     // if an error is thrown.
-    this._index = index
+    this._indexData = indexData
     this._columnNames = columnNames
     this._data = data
     this._types = types
@@ -213,8 +213,8 @@ export class Quiver {
   }
 
   /** Cell values of the index columns (there can be multiple index columns). */
-  public get index(): Index {
-    return this._index
+  public get indexData(): IndexData {
+    return this._indexData
   }
 
   /** Column names of the index columns (there can be multiple index columns). */
@@ -269,7 +269,7 @@ export class Quiver {
 
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
-    const indexColumns = this._index.length || this.types.index.length || 1 // # TODO: Change default to 0?
+    const indexColumns = this._indexData.length || this.types.index.length || 1 // # TODO: Change default to 0?
     const headerRows = this._columnNames.length || 1
     const dataRows = this._data.numRows || 0
     const dataColumns =
@@ -314,7 +314,7 @@ export class Quiver {
   /** True if the DataFrame has no index, columns, and data. */
   public isEmpty(): boolean {
     return (
-      this._index.length === 0 &&
+      this._indexData.length === 0 &&
       this._columnNames.length === 0 &&
       this._data.numRows === 0 &&
       this._data.numCols === 0
@@ -450,7 +450,7 @@ export class Quiver {
 
   /** Get the raw value of an index cell. */
   public getIndexValue(rowIndex: number, columnIndex: number): any {
-    const index = this._index[columnIndex]
+    const index = this._indexData[columnIndex]
     const value =
       index instanceof Vector ? index.get(rowIndex) : index[rowIndex]
     return value
@@ -497,16 +497,16 @@ st.add_rows(my_styler.data)
       types: newTypes,
     } = concat(
       this._types,
-      this._index,
+      this._indexData,
       this._data,
       other._types,
-      other._index,
+      other._indexData,
       other._data
     )
 
     // If we get here, then we had no concatenation errors.
     return produce(this, (draft: Quiver) => {
-      draft._index = newIndex
+      draft._indexData = newIndex
       draft._data = newData
       draft._types = newTypes
     })

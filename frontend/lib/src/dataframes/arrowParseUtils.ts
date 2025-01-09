@@ -46,7 +46,7 @@ type IndexValue = Vector | number[]
 /**
  * A row-major grid of DataFrame index data values.
  */
-export type Index = IndexValue[]
+export type IndexData = IndexValue[]
 
 /**
  * A row-major grid of DataFrame column header values.
@@ -161,7 +161,9 @@ function getRawColumns(schema: PandasSchema): string[] {
 }
 
 /** Parse DataFrame's index data values. */
-function parseIndex(table: Table, schema: PandasSchema): Index {
+function parseIndexData(table: Table, schema: PandasSchema): IndexData {
+  // TODO(lukasmasuch): Is range index the only case that is not from
+  // the table data?
   return schema.index_columns
     .map(indexName => {
       // Generate a range using the "range" index metadata.
@@ -307,7 +309,7 @@ function parseFields(schema: ArrowSchema): Record<string, Field> {
 interface ParsedTable {
   columnNames: ColumnNames
   fields: Record<string, Field>
-  index: Index
+  indexData: IndexData
   indexNames: string[]
   data: Data
   types: Types
@@ -318,7 +320,7 @@ interface ParsedTable {
  *
  * @param ipcBytes - Arrow bytes (IPC format)
  * @returns - Parsed Arrow table split into different
- *  components for easier access: columnNames, fields, index, indexNames, data, types.
+ *  components for easier access: columnNames, fields, indexData, indexNames, data, types.
  */
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
@@ -345,7 +347,7 @@ export function parseArrowIpcBytes(
   const data = parseData(table, columnNames, rawColumns)
 
   // Load all index data cells:
-  const index = parseIndex(table, pandasSchema)
+  const indexData = parseIndexData(table, pandasSchema)
 
   // Load types for index and data columns:
   const types = parseTypes(table, pandasSchema)
@@ -353,7 +355,7 @@ export function parseArrowIpcBytes(
   return {
     columnNames,
     fields,
-    index,
+    indexData,
     indexNames,
     data,
     types,
