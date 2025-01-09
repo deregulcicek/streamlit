@@ -515,16 +515,16 @@ st.add_rows(my_styler.data)
   }
 }
 
-/** Parse styler information from proto. */
-function parseStyler(styler: StylerProto): PandasStylerData {
+/** Parse Pandas styler information from proto. */
+function parseStyler(pandasStyler: StylerProto): PandasStylerData {
   return {
-    uuid: styler.uuid,
-    caption: styler.caption,
-    styles: styler.styles,
+    uuid: pandasStyler.uuid,
+    caption: pandasStyler.caption,
+    styles: pandasStyler.styles,
 
     // Recursively create a new Quiver instance for Styler's display values.
     // This values will be used for rendering the DataFrame, while the original values
     // will be used for sorting, etc.
-    displayValues: new Quiver({ data: styler.displayValues }),
+    displayValues: new Quiver({ data: pandasStyler.displayValues }),
   }
 }
