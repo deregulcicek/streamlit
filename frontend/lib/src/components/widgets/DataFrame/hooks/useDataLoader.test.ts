@@ -34,7 +34,12 @@ import useDataLoader from "./useDataLoader"
 // These columns are based on the UNICODE mock arrow table:
 const MOCK_COLUMNS: BaseColumn[] = [
   TextColumn({
-    arrowType: { meta: null, numpy_type: "object", pandas_type: "unicode" },
+    arrowType: {
+      field: undefined,
+      meta: null,
+      numpy_type: "object",
+      pandas_type: "unicode",
+    },
     id: "index-0",
     name: "",
     indexNumber: 0,
@@ -46,7 +51,12 @@ const MOCK_COLUMNS: BaseColumn[] = [
     title: "",
   }),
   TextColumn({
-    arrowType: { meta: null, numpy_type: "object", pandas_type: "unicode" },
+    arrowType: {
+      field: undefined,
+      meta: null,
+      numpy_type: "object",
+      pandas_type: "unicode",
+    },
     id: "column-c1-0",
     name: "c1",
     indexNumber: 1,
@@ -58,7 +68,12 @@ const MOCK_COLUMNS: BaseColumn[] = [
     title: "c1",
   }),
   TextColumn({
-    arrowType: { meta: null, numpy_type: "object", pandas_type: "unicode" },
+    arrowType: {
+      field: undefined,
+      meta: null,
+      numpy_type: "object",
+      pandas_type: "unicode",
+    },
     columnTypeOptions: undefined,
     id: "column-c2-1",
     name: "c2",

@@ -18,6 +18,26 @@ import { Dictionary, Field, Struct, StructRow, Vector } from "apache-arrow"
 
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
+enum ColumnDataKind {
+  Empty,
+  Boolean,
+  Integer,
+  Float,
+  String,
+  Date,
+  Datetime,
+  Time,
+  List,
+  Period,
+  Interval,
+  Timedelta,
+  Decimal,
+  Bytes,
+  Dict,
+  Categorical,
+  Unknown,
+}
+
 /** Data types used by ArrowJS. */
 export type DataType =
   | null
@@ -199,4 +219,82 @@ export function isBooleanType(type?: PandasColumnType): boolean {
     return false
   }
   return getTypeName(type) === "bool"
+}
+
+export function determineColumnKind(arrowType: Type): ColumnDataKind {
+  const typeName = getTypeName(arrowType) ?? ""
+  const field = arrowType.field
+  const extensionName = field && field.metadata.get("ARROW:extension:name")
+
+  if (["unicode", "empty", "large_string[pyarrow]"].includes(typeName)) {
+    return ColumnDataKind.String
+  }
+
+  if (typeName?.startsWith("datetime")) {
+    return ColumnDataKind.Datetime
+  }
+
+  if (typeName === "time") {
+    return ColumnDataKind.Time
+  }
+
+  if (typeName === "date") {
+    return ColumnDataKind.Date
+  }
+
+  if (typeName === "bytes") {
+    return ColumnDataKind.Bytes
+  }
+
+  if (typeName === "bool") {
+    return ColumnDataKind.Boolean
+  }
+
+  if (
+    ["float16", "float32", "float64", "float96", "float128"].includes(typeName)
+  ) {
+    return ColumnDataKind.Float
+  }
+
+  if (
+    [
+      "int8",
+      "int16",
+      "int32",
+      "int64",
+      "uint8",
+      "uint16",
+      "uint32",
+      "uint64",
+      "range", // The default index in pandas uses a range type.
+    ].includes(typeName)
+  ) {
+    return ColumnDataKind.Integer
+  }
+
+  if (typeName === "decimal") {
+    return ColumnDataKind.Decimal
+  }
+
+  if (typeName === "categorical") {
+    return ColumnDataKind.Categorical
+  }
+
+  if (typeName?.startsWith("period") || extensionName === "pandas.period") {
+    return ColumnDataKind.Period
+  }
+
+  if (typeName?.startsWith("interval")) {
+    return ColumnDataKind.Interval
+  }
+
+  if (typeName?.startsWith("timedelta")) {
+    return ColumnDataKind.Timedelta
+  }
+
+  if (typeName.startsWith("list")) {
+    return ColumnDataKind.List
+  }
+
+  return ColumnDataKind.Unknown
 }
