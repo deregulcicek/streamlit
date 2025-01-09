@@ -822,11 +822,8 @@ class ButtonGroupMixin:
             if len(transformed_parts) > 0:
                 maybe_icon = transformed_parts[0].strip()
                 try:
-                    # we only want to extract material icons because we treat them
-                    # differently than emojis visually
                     if maybe_icon.startswith(":material"):
                         icon = validate_material_icon(maybe_icon)
-
                     elif is_emoji(maybe_icon):
                         icon = maybe_icon
 
