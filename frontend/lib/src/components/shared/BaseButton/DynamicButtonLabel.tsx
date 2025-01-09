@@ -22,21 +22,24 @@ import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMar
 export interface DynamicButtonLabelProps {
   icon?: string
   label?: string
+  iconSize?: "sm" | "md" | "lg" | "base" | "xs" | "xl" | "twoXL" | "threeXL"
 }
 
 export const DynamicButtonLabel = ({
   icon,
   label,
+  iconSize,
 }: DynamicButtonLabelProps): React.ReactElement | null => {
-  // Material icons need to be larger to render similar size of emojis, emojis need addtl margin
   const isMaterialIcon = icon?.startsWith(":material")
   const iconMargin = isMaterialIcon ? "0 sm 0 0" : "0 md 0 0"
+  // Material icons need to be larger to render similar size of emojis, emojis need addtl margin
+  const dynamicIconSize = iconSize ?? (isMaterialIcon ? "lg" : "base")
 
   return (
     <>
       {icon && (
         <DynamicIcon
-          size={isMaterialIcon ? "lg" : "base"}
+          size={dynamicIconSize}
           margin={label ? iconMargin : "0"}
           color="inherit"
           iconValue={icon}

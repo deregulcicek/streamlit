@@ -116,8 +116,12 @@ export function getContentElement(
       ? BaseButtonSize.XSMALL
       : BaseButtonSize.MEDIUM
 
+  const iconSize = style === ButtonGroupProto.Style.BORDERLESS ? "lg" : "base"
+
   return {
-    element: <DynamicButtonLabel icon={icon} label={content} />,
+    element: (
+      <DynamicButtonLabel icon={icon} label={content} iconSize={iconSize} />
+    ),
     kind: kind,
     size: size,
   }
