@@ -20,15 +20,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
+from streamlit import logger
 from streamlit.connections import BaseConnection
 from streamlit.connections.util import running_in_sis
 from streamlit.errors import StreamlitAPIException
-from streamlit.logger import get_logger
 from streamlit.runtime.caching import cache_data
 
-LOGGER = get_logger(__name__)
+_LOGGER: Final = logger.get_logger(__name__)
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -227,7 +227,7 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
         try:
             st_secrets = self._secrets.to_dict()
             if len(st_secrets):
-                LOGGER.info(
+                _LOGGER.info(
                     "Connect to Snowflake using the Streamlit secret defined under "
                     "[connections.snowflake]."
                 )
@@ -236,7 +236,7 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
 
             # Use the default configuration as defined in https://docs.snowflake.cn/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection
             if self._connection_name == "snowflake":
-                LOGGER.info(
+                _LOGGER.info(
                     "Connect to Snowflake using the default configuration as defined "
                     "in https://docs.snowflake.cn/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection"
                 )
