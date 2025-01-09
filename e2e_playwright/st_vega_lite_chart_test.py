@@ -132,10 +132,10 @@ def test_check_top_level_class(app: Page):
 
 
 def test_vega_lite_chart_updates_with_slightly_different_data(
-    themed_app: Page, assert_snapshot: ImageCompareFunction
+    app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Tests that it displays interactive charts on the DOM"""
-    vega_lite_charts = themed_app.get_by_test_id("stVegaLiteChart")
+    vega_lite_charts = app.get_by_test_id("stVegaLiteChart")
     # expect statement here so that snapshots are taken properly
     expect(vega_lite_charts).to_have_count(VEGA_LITE_CHART_COUNT)
     expect(vega_lite_charts.nth(14)).to_be_visible()
@@ -144,8 +144,8 @@ def test_vega_lite_chart_updates_with_slightly_different_data(
         name="st_vega_lite_chart-before_update",
     )
 
-    get_button(themed_app, "change").click()
-    wait_for_app_run(themed_app)
+    get_button(app, "change").click()
+    wait_for_app_run(app)
 
     expect(vega_lite_charts).to_have_count(VEGA_LITE_CHART_COUNT)
     expect(vega_lite_charts.nth(14)).to_be_visible()
