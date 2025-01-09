@@ -63,7 +63,7 @@ describe("Quiver", () => {
       test("dimensions", () => {
         expect(q.dimensions).toStrictEqual({
           headerRows: 1,
-          headerColumns: 1,
+          indexColumns: 1,
           dataRows: 2,
           dataColumns: 2,
           rows: 3,
@@ -120,7 +120,7 @@ describe("Quiver", () => {
       test("dimensions", () => {
         expect(q.dimensions).toStrictEqual({
           headerRows: 1,
-          headerColumns: 1,
+          indexColumns: 1,
           dataRows: 2,
           dataColumns: 2,
           rows: 3,
@@ -615,7 +615,7 @@ describe("Quiver", () => {
 
         expect(q.dimensions).toStrictEqual({
           headerRows: 1,
-          headerColumns: 1,
+          indexColumns: 1,
           dataRows: 0,
           dataColumns: 0,
           rows: 1,
