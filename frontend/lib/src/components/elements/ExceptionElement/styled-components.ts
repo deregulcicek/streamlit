@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,6 @@ export const StyledStackTraceTitle = styled.div(({ theme }) => ({
   // Need to add xl to top margin because markdown has negative xl margin bottom.
   marginTop: `calc(${theme.spacing.sm} + ${theme.spacing.xl})`,
   marginBottom: theme.spacing.sm,
-}))
-
-export const StyledStackTrace = styled.pre(({ theme }) => ({
-  whiteSpace: "pre-wrap",
-  wordWrap: "break-word",
-  color: "inherit",
-  fontSize: theme.fontSizes.sm,
-  backgroundColor: theme.colors.transparent,
-  overflowX: "auto",
-  margin: `0 0 ${theme.spacing.lg} 0`,
-  borderRadius: theme.radii.default,
 }))
 
 // This extra div makes sure that we also have a padding on the right side of the stack

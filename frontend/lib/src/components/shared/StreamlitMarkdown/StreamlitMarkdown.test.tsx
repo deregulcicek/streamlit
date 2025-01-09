@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 import React, { ReactElement } from "react"
 
-import "@testing-library/jest-dom"
 import ReactMarkdown from "react-markdown"
+// eslint-disable-next-line testing-library/no-manual-cleanup
 import { cleanup, screen } from "@testing-library/react"
 import { transparentize } from "color2k"
 
@@ -332,7 +332,11 @@ describe("StreamlitMarkdown", () => {
     render(<StreamlitMarkdown source={source} allowHTML={false} isToast />)
 
     const textTag = screen.getByText("Here is some toast text")
-    expect(textTag).toHaveStyle("font-size: 14px")
+    expect(textTag).toBeInTheDocument()
+
+    // Use the smaller font size for the markdown container
+    const markdownContainer = screen.getByTestId("stMarkdownContainer")
+    expect(markdownContainer).toHaveStyle("font-size: 14px")
   })
 
   it("renders regular text sizing when largerLabel is true", () => {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ import React, { FC } from "react"
 
 import { render, screen } from "@testing-library/react"
 
-import "@testing-library/jest-dom"
 import ThemeProvider from "@streamlit/lib/src/components/core/ThemeProvider"
 import { mockTheme } from "@streamlit/lib/src/mocks/mockTheme"
 import { useRequiredContext } from "@streamlit/lib/src/hooks/useRequiredContext"
@@ -27,7 +26,7 @@ import { WindowDimensionsContext } from "@streamlit/lib/src/components/shared/Wi
 
 describe("WindowDimensionsProvider", () => {
   it("should provide the width and height of the window and take into account the theme padding", () => {
-    jest.spyOn(window, "getComputedStyle").mockReturnValue({
+    vi.spyOn(window, "getComputedStyle").mockReturnValue({
       fontSize: "16px",
     } as any)
 
@@ -48,7 +47,7 @@ describe("WindowDimensionsProvider", () => {
   })
 
   it("should throw an error if there are multiple providers in the tree", () => {
-    const consoleError = jest
+    const consoleError = vi
       .spyOn(console, "error")
       .mockImplementation(() => {})
 

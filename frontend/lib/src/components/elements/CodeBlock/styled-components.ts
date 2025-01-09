@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Theme } from "@emotion/react"
+import { CSSObject, Theme } from "@emotion/react"
 import styled from "@emotion/styled"
 
-const codeLink = {
+const codeLink: CSSObject = {
   // Streamline the style when inside anchors to avoid broken underline and more
   "a > &": {
     color: "inherit",
@@ -38,11 +38,12 @@ export const StyledInlineCode = styled.code(({ theme }) => ({
   ...codeLink,
 }))
 
-const codeBlockStyle = (theme: Theme): React.CSSProperties => ({
+const codeBlockStyle = (theme: Theme): CSSObject => ({
   background: "transparent",
   border: 0,
   color: "inherit",
   display: "inline",
+  fontFamily: theme.genericFonts.codeFont,
   fontSize: theme.fontSizes.sm,
   lineHeight: "inherit",
   margin: 0,
@@ -58,17 +59,23 @@ export const StyledCode = styled.code(({ theme }) => ({
   ...codeBlockStyle(theme),
 }))
 
+interface StyledPreProps {
+  height?: number
+}
+
 /*
   This is the default prism.js theme for JavaScript, CSS and HTML, but
   stripped of everything except for token styling.
 
   See https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript
 */
-export const StyledPre = styled.pre(({ theme }) => ({
+export const StyledPre = styled.pre<StyledPreProps>(({ theme, height }) => ({
+  height: height ? `${height}px` : undefined,
   background: theme.colors.codeHighlightColor,
   borderRadius: theme.radii.default,
   color: theme.colors.bodyText,
   fontSize: theme.fontSizes.twoSm,
+  fontFamily: theme.genericFonts.codeFont,
   display: "block",
   // Remove browser default top margin
   margin: 0,
@@ -78,7 +85,8 @@ export const StyledPre = styled.pre(({ theme }) => ({
 
   // Don't allow content to break outside
   overflow: "auto",
-  // Add padding
+
+  // Add padding around the code
   padding: theme.spacing.lg,
   // Add padding to the right to account for the copy button
   paddingRight: theme.iconSizes.threeXL,

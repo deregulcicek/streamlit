@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 import React from "react"
 
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
-import "@testing-library/jest-dom"
 import { customRenderLibContext, render } from "@streamlit/lib/src/test_util"
 import IsSidebarContext from "@streamlit/lib/src/components/core/IsSidebarContext"
 import { PageLink as PageLinkProto } from "@streamlit/lib/src/proto"
@@ -41,7 +41,7 @@ const getProps = (
   ...widgetProps,
 })
 
-const mockOnPageChange = jest.fn()
+const mockOnPageChange = vi.fn()
 
 describe("PageLink", () => {
   beforeEach(() => {
@@ -121,7 +121,8 @@ describe("PageLink", () => {
     expect(pageNavLink).toHaveStyle("width: fit-content")
   })
 
-  it("triggers onPageChange with pageScriptHash when clicked", () => {
+  it("triggers onPageChange with pageScriptHash when clicked", async () => {
+    const user = userEvent.setup()
     const props = getProps()
 
     customRenderLibContext(<PageLink {...props} />, {
@@ -129,11 +130,12 @@ describe("PageLink", () => {
     })
 
     const pageNavLink = screen.getByTestId("stPageLink-NavLink")
-    fireEvent.click(pageNavLink)
+    await user.click(pageNavLink)
     expect(mockOnPageChange).toHaveBeenCalledWith("main_page_hash")
   })
 
-  it("does not trigger onPageChange when disabled", () => {
+  it("does not trigger onPageChange when disabled", async () => {
+    const user = userEvent.setup()
     const props = getProps({}, { disabled: true })
 
     customRenderLibContext(<PageLink {...props} />, {
@@ -141,11 +143,12 @@ describe("PageLink", () => {
     })
 
     const pageNavLink = screen.getByTestId("stPageLink-NavLink")
-    fireEvent.click(pageNavLink)
+    await user.click(pageNavLink)
     expect(mockOnPageChange).not.toHaveBeenCalled()
   })
 
-  it("does not trigger onPageChange for external links", () => {
+  it("does not trigger onPageChange for external links", async () => {
+    const user = userEvent.setup()
     const props = getProps({ page: "http://example.com", external: true })
 
     customRenderLibContext(<PageLink {...props} />, {
@@ -153,7 +156,7 @@ describe("PageLink", () => {
     })
 
     const pageNavLink = screen.getByTestId("stPageLink-NavLink")
-    fireEvent.click(pageNavLink)
+    await user.click(pageNavLink)
     expect(mockOnPageChange).not.toHaveBeenCalled()
   })
 })

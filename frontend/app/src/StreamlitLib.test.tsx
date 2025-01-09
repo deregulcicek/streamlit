@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 import React, { PureComponent, ReactElement } from "react"
 
-import "@testing-library/jest-dom"
 import { screen, waitFor } from "@testing-library/react"
 
 import {
@@ -121,7 +120,7 @@ class StreamlitLibExample extends PureComponent<Props, State> {
       // reads the state.
       formsWithPendingRequestsChanged: formIds =>
         this.widgetMgr.setFormsWithUploadsInProgress(formIds),
-      requestFileURLs: jest.fn(),
+      requestFileURLs: vi.fn(),
     })
 
     this.sessionInfo.setCurrent({
@@ -201,7 +200,6 @@ class StreamlitLibExample extends PureComponent<Props, State> {
       <VerticalBlock
         node={blockNode}
         endpoints={this.endpoints}
-        sessionInfo={this.sessionInfo}
         scriptRunId={this.state.scriptRunId}
         scriptRunState={this.state.scriptRunState}
         widgetMgr={this.widgetMgr}

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ class AppSession:
         uploaded_file_manager: UploadedFileManager,
         script_cache: ScriptCache,
         message_enqueued_callback: Callable[[], None] | None,
-        user_info: dict[str, str | None],
+        user_info: dict[str, str | bool | None],
         session_id_override: str | None = None,
     ) -> None:
         """Initialize the AppSession.
@@ -177,11 +177,11 @@ class AppSession:
         """Register handlers to be called when various files are changed.
 
         Files that we watch include:
-          * source files that already exist (for edits)
-          * `.py` files in the the main script's `pages/` directory (for file additions
+          - source files that already exist (for edits)
+          - `.py` files in the the main script's `pages/` directory (for file additions
             and deletions)
-          * project and user-level config.toml files
-          * the project-level secrets.toml files
+          - project and user-level config.toml files
+          - the project-level secrets.toml files
 
         This method is called automatically on AppSession construction, but it may be
         called again in the case when a session is disconnected and is being reconnect
@@ -399,6 +399,10 @@ class AppSession:
         """
         if self._scriptrunner is not None:
             self._scriptrunner.request_stop()
+
+    def clear_user_info(self) -> None:
+        """Clear the user info for this session."""
+        self._user_info.clear()
 
     def _create_scriptrunner(self, initial_rerun_data: RerunData) -> None:
         """Create and run a new ScriptRunner with the given RerunData."""

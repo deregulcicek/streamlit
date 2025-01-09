@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ import styled from "@emotion/styled"
 
 export const StyledText = styled.div(({ theme }) => ({
   fontFamily: theme.genericFonts.bodyFont,
+  color: theme.colors.bodyText,
   whiteSpace: "pre-line",
-  workdbreak: "break-word",
+  whiteSpaceCollapse: "preserve",
+  wordBreak: "break-word",
 }))

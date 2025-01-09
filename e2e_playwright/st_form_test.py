@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run
@@ -20,6 +21,18 @@ from e2e_playwright.shared.app_utils import (
     click_checkbox,
     click_toggle,
 )
+
+
+@pytest.mark.performance
+def test_form_input_performance(app: Page):
+    """
+    Tests the re-render performance when typing in an input that is in a form.
+    """
+    form_1 = app.get_by_test_id("stForm").nth(0)
+    form_1.get_by_test_id("stTextArea").locator("textarea").press_sequentially(
+        "this is some text", delay=100
+    )
+    wait_for_app_run(app)
 
 
 def change_widget_values(app: Page):
@@ -242,3 +255,14 @@ def test_borderless_form(app: Page, assert_snapshot: ImageCompareFunction):
 def test_check_top_level_class(app: Page):
     """Check that the top level class is correctly set."""
     check_top_level_class(app, "stForm")
+
+
+def test_check_form_submit_button_types(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Check that the form submit button types are correctly set."""
+    form_9 = app.get_by_test_id("stForm").nth(8)
+    assert_snapshot(form_9, name="st_form-primary_submit_button")
+
+    form_10 = app.get_by_test_id("stForm").nth(9)
+    assert_snapshot(form_10, name="st_form-tertiary_submit_button")

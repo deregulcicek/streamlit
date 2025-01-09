@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import { ChatInput as ChatInputProto } from "@streamlit/lib/src/proto"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import Icon from "@streamlit/lib/src/components/shared/Icon"
 import InputInstructions from "@streamlit/lib/src/components/shared/InputInstructions/InputInstructions"
+import { isEnterKeyPressed } from "@streamlit/lib/src/util/inputUtils"
 
 import {
   StyledChatInput,
@@ -53,20 +54,6 @@ const MAX_VISIBLE_NUM_LINES = 6.5
 // Rounding errors can arbitrarily create scrollbars. We add a rounding offset
 // to manage it better.
 const ROUNDING_OFFSET = 1
-
-const isEnterKeyPressed = (
-  event: KeyboardEvent<HTMLTextAreaElement>
-): boolean => {
-  // Using keyCode as well due to some different behaviors on Windows
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
-
-  const { keyCode, key } = event
-  return (
-    (key === "Enter" || keyCode === 13 || keyCode === 10) &&
-    // Do not send the sentence being composed when Enter is typed into the IME.
-    !(event.nativeEvent?.isComposing === true)
-  )
-}
 
 function ChatInput({
   width,
@@ -149,6 +136,8 @@ function ChatInput({
   useEffect(() => {
     if (element.setValue) {
       // We are intentionally setting this to avoid regularly calling this effect.
+      // TODO: Update to match React best practices
+      // eslint-disable-next-line react-compiler/react-compiler
       element.setValue = false
       const val = element.value || ""
       setValue(val)
@@ -195,6 +184,7 @@ function ChatInput({
                 outline: "none",
                 backgroundColor: theme.colors.transparent,
                 // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
+                borderRadius: theme.radii.xxxl,
                 borderLeftWidth: theme.sizes.borderWidth,
                 borderRightWidth: theme.sizes.borderWidth,
                 borderTopWidth: theme.sizes.borderWidth,
@@ -214,6 +204,8 @@ function ChatInput({
               style: {
                 lineHeight: theme.lineHeights.inputWidget,
                 backgroundColor: theme.colors.transparent,
+                // Disable resizing via drag and drop
+                resize: "none",
                 "::placeholder": {
                   opacity: "0.7",
                 },
@@ -222,7 +214,7 @@ function ChatInput({
                   : "auto",
                 maxHeight: maxHeight ? `${maxHeight}px` : "none",
                 // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-                paddingLeft: theme.spacing.sm,
+                paddingLeft: theme.spacing.lg,
                 paddingBottom: theme.spacing.sm,
                 paddingTop: theme.spacing.sm,
                 // Calculate the right padding to account for the send icon (iconSizes.xl + 2 * spacing.sm)

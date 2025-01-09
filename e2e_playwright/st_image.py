@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -225,3 +225,10 @@ col7.image(img, use_container_width=False)
 col7.image(img, width=50)
 # 50 px since the width parameter is given, and use_container_width is not True
 col7.image(img, use_container_width=False, width=50)
+
+
+st.image(
+    [img, img, img, img, img],
+    caption=[f"Overflow {i}" for i in range(5)],
+    width=200,
+)

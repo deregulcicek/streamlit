@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback, useEffect, useState } from "react"
+import React, { ReactElement, useCallback, useState } from "react"
 
 import uniqueId from "lodash/uniqueId"
 import { Input as UIInput } from "baseui/input"
 import { useTheme } from "@emotion/react"
 
+import useOnInputChange from "@streamlit/lib/src/hooks/useOnInputChange"
 import { TextInput as TextInputProto } from "@streamlit/lib/src/proto"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import {
   useBasicWidgetState,
   ValueWithSource,
-} from "@streamlit/lib/src/useBasicWidgetState"
+} from "@streamlit/lib/src/hooks/useBasicWidgetState"
+import useUpdateUiValue from "@streamlit/lib/src/hooks/useUpdateUiValue"
+import useSubmitFormViaEnterKey from "@streamlit/lib/src/hooks/useSubmitFormViaEnterKey"
 import InputInstructions from "@streamlit/lib/src/components/shared/InputInstructions/InputInstructions"
 import {
   StyledWidgetLabelHelp,
@@ -87,16 +90,7 @@ function TextInput({
     onFormCleared,
   })
 
-  useEffect(() => {
-    // the UI did not sync its value
-    if (dirty) {
-      return
-    }
-    // If the incoming value changes, update the UI value (e.g. set via state)
-    if (value !== uiValue) {
-      setUiValue(value)
-    }
-  }, [value, uiValue, dirty])
+  useUpdateUiValue(value, uiValue, setUiValue, dirty)
 
   /**
    * Whether the input is currently focused.
@@ -132,48 +126,20 @@ function TextInput({
     setFocused(true)
   }, [])
 
-  const onChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-      const { value: newValue } = e.target
-      const { maxChars } = element
+  const onChange = useOnInputChange({
+    formId: element.formId,
+    maxChars: element.maxChars,
+    setDirty,
+    setUiValue,
+    setValueWithSource,
+  })
 
-      if (maxChars !== 0 && newValue.length > maxChars) {
-        return
-      }
-
-      setDirty(true)
-      setUiValue(newValue)
-
-      // We immediately update its widgetValue on text changes in forms
-      // see here for why: https://github.com/streamlit/streamlit/issues/7101
-      // The widgetValue won't be passed to the Python script until the form
-      // is submitted, so this won't cause the script to re-run.
-      if (isInForm(element)) {
-        // Make sure dirty is true so that enter to submit form text shows
-        setValueWithSource({ value: newValue, fromUi: true })
-      }
-      // If the TextInput is *not* part of a form, we mark it dirty but don't
-      // update its value in the WidgetMgr. This means that individual keypresses
-      // won't trigger a script re-run.
-    },
-    [element, setValueWithSource]
-  )
-
-  const onKeyPress = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-      if (e.key !== "Enter") {
-        return
-      }
-
-      if (dirty) {
-        commitWidgetValue()
-      }
-
-      if (widgetMgr.allowFormEnterToSubmit(element.formId)) {
-        widgetMgr.submitForm(element.formId, fragmentId)
-      }
-    },
-    [element, fragmentId, dirty, commitWidgetValue, widgetMgr]
+  const onKeyPress = useSubmitFormViaEnterKey(
+    element.formId,
+    commitWidgetValue,
+    dirty,
+    widgetMgr,
+    fragmentId
   )
 
   return (

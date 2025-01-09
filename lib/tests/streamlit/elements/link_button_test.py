@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 # limitations under the License.
 
 """link_button unit tests."""
+
+from parameterized import parameterized
 
 import streamlit as st
 from streamlit.errors import StreamlitAPIException
@@ -45,12 +47,13 @@ class LinkButtonTest(DeltaGeneratorTestCase):
         c = self.get_delta_from_queue().new_element.link_button
         self.assertTrue("https://streamlit.io" in c.url)
 
-    def test_type(self):
+    @parameterized.expand(["primary", "secondary", "tertiary"])
+    def test_type(self, type):
         """Test that it can be called with type param."""
-        st.link_button("the label", url="https://streamlit.io", type="primary")
+        st.link_button("the label", url="https://streamlit.io", type=type)
 
         c = self.get_delta_from_queue().new_element.link_button
-        self.assertEqual(c.type, "primary")
+        self.assertEqual(c.type, type)
 
     def test_use_container_width_can_be_set_to_true(self):
         """Test use_container_width can be set to true."""

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ describe("FileUploadClient Upload", () => {
     uploader = new FileUploadClient({
       sessionInfo: mockSessionInfo(),
       endpoints: {
-        buildComponentURL: jest.fn(),
-        buildMediaURL: jest.fn(),
-        buildFileUploadURL: jest.fn(),
-        buildAppPageURL: jest.fn(),
+        buildComponentURL: vi.fn(),
+        buildMediaURL: vi.fn(),
+        buildFileUploadURL: vi.fn(),
+        buildAppPageURL: vi.fn(),
         uploadFileUploaderFile: uploadFileUploaderFile,
-        deleteFileAtURL: jest.fn(),
-        fetchCachedForwardMsg: jest.fn(),
+        deleteFileAtURL: vi.fn(),
+        fetchCachedForwardMsg: vi.fn(),
       },
       formsWithPendingRequestsChanged,
       requestFileURLs,

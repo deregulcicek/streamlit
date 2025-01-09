@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 import React, { MouseEvent, ReactElement } from "react"
 
-import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
+import { DynamicIcon } from "@streamlit/lib"
 
 import {
   StyledSidebarLinkText,
+  StyledSidebarNavIcon,
   StyledSidebarNavLink,
   StyledSidebarNavLinkContainer,
 } from "./styled-components"
@@ -47,7 +48,11 @@ const SidebarNavLink = ({
         href={pageUrl}
         onClick={onClick}
       >
-        {icon && icon.length && <DynamicIcon size="md" iconValue={icon} />}
+        {icon && icon.length && (
+          <StyledSidebarNavIcon isActive={isActive}>
+            <DynamicIcon size="md" iconValue={icon} />
+          </StyledSidebarNavIcon>
+        )}
         <StyledSidebarLinkText isActive={isActive}>
           {children}
         </StyledSidebarLinkText>

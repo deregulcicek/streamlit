@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
 import { render } from "@streamlit/lib/src/test_util"
 import { Text as TextProto } from "@streamlit/lib/src/proto"
@@ -48,7 +48,7 @@ describe("TextElement element", () => {
     render(<TextElement {...props} />)
     const tooltip = screen.getByTestId("stTooltipHoverTarget")
     expect(tooltip).toBeInTheDocument()
-    fireEvent.mouseOver(tooltip)
+    await userEvent.hover(tooltip)
 
     const helpText = await screen.findAllByText("help text")
     expect(helpText[0].textContent).toBe("help text")

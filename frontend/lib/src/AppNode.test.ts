@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 
 import { Writer } from "protobufjs"
+import { MockInstance } from "vitest"
 
 import { arrayFromVector } from "@streamlit/lib/src/test_util"
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
+import { AppNode, AppRoot, BlockNode, ElementNode } from "./AppNode"
+import { IndexTypeName } from "./dataframes/arrowTypeUtils"
+import { UNICODE } from "./mocks/arrow"
 import {
   ArrowNamedDataSet,
   Block as BlockProto,
@@ -28,9 +32,6 @@ import {
   IArrowVegaLiteChart,
   Logo as LogoProto,
 } from "./proto"
-import { AppNode, AppRoot, BlockNode, ElementNode } from "./AppNode"
-import { IndexTypeName } from "./dataframes/Quiver"
-import { UNICODE } from "./mocks/arrow"
 
 const NO_SCRIPT_RUN_ID = "NO_SCRIPT_RUN_ID"
 const FAKE_SCRIPT_HASH = "fake_script_hash"
@@ -803,10 +804,10 @@ describe("ElementNode.arrowAddRows", () => {
 })
 
 describe("AppRoot.empty", () => {
-  let windowSpy: jest.SpyInstance
+  let windowSpy: MockInstance
 
   beforeEach(() => {
-    windowSpy = jest.spyOn(window, "window", "get")
+    windowSpy = vi.spyOn(window, "window", "get")
   })
 
   afterEach(() => {
@@ -1168,7 +1169,7 @@ describe("AppRoot.applyDelta", () => {
 
   it("timestamp is set on BlockNode as message id", () => {
     const timestamp = new Date(Date.UTC(2017, 1, 14)).valueOf()
-    Date.now = jest.fn(() => timestamp)
+    Date.now = vi.fn(() => timestamp)
     const delta = makeProto(DeltaProto, {
       addBlock: {},
     })
@@ -1490,15 +1491,24 @@ function makeProto<Type, Props>(
 // Custom Jest matchers for dealing with AppNodes
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace jest {
+  namespace vi {
     interface Matchers<R> {
       toBeTextNode(text: string): R
     }
   }
 }
 
+interface CustomMatchers<R = unknown> {
+  toBeTextNode(text: string): R
+}
+
+declare module "vitest" {
+  interface Assertion<T = any> extends CustomMatchers<T> {}
+  interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
+
 expect.extend({
-  toBeTextNode(received, text): jest.CustomMatcherResult {
+  toBeTextNode(received, text): any {
     const elementNode = received as ElementNode
     if (isNullOrUndefined(elementNode)) {
       return {

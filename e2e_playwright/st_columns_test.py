@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,6 +52,12 @@ def test_columns_always_take_up_space(app: Page, assert_snapshot: ImageCompareFu
     """Test that columns still takes up space with no elements present"""
     column_element = app.get_by_test_id("stHorizontalBlock").nth(1)
     assert_snapshot(column_element, name="st_columns-with_empty_columns")
+
+
+def test_columns_with_border(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that columns with border are correctly displayed"""
+    column_element = app.get_by_test_id("stHorizontalBlock").nth(2)
+    assert_snapshot(column_element, name="st_columns-with_border")
 
 
 def test_column_gap_small_is_correctly_applied(

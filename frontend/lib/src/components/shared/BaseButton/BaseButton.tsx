@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import {
   StyledBorderlessIconButton,
   StyledBorderlessIconButtonActive,
   StyledElementToolbarButton,
+  StyledGhostButton,
   StyledHeaderButton,
   StyledHeaderNoPaddingButton,
   StyledIconButton,
@@ -37,6 +38,7 @@ import {
   StyledSegmentedControlButton,
   StyledSegmentedControlButtonActive,
   StyledTertiaryButton,
+  StyledTertiaryFormSubmitButton,
 } from "./styled-components"
 
 function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
@@ -49,6 +51,8 @@ function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
     ComponentType = StyledSecondaryButton
   } else if (kind === BaseButtonKind.TERTIARY) {
     ComponentType = StyledTertiaryButton
+  } else if (kind === BaseButtonKind.GHOST) {
+    ComponentType = StyledGhostButton
   } else if (kind === BaseButtonKind.LINK) {
     ComponentType = StyledLinkButton
   } else if (kind === BaseButtonKind.ICON) {
@@ -71,6 +75,8 @@ function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
     ComponentType = StyledPrimaryFormSubmitButton
   } else if (kind === BaseButtonKind.SECONDARY_FORM_SUBMIT) {
     ComponentType = StyledSecondaryFormSubmitButton
+  } else if (kind === BaseButtonKind.TERTIARY_FORM_SUBMIT) {
+    ComponentType = StyledTertiaryFormSubmitButton
   } else if (kind === BaseButtonKind.HEADER_BUTTON) {
     ComponentType = StyledHeaderButton
   } else if (kind === BaseButtonKind.HEADER_NO_PADDING) {

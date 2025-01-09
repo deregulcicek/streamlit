@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,17 +36,17 @@ const getMetricsManager = (
 ): MetricsManager => {
   const mm = new MetricsManager(sessionInfo || mockSessionInfo())
   if (mockRequestDefaultMetricsConfig) {
-    mm.requestDefaultMetricsConfig = jest.fn()
+    mm.requestDefaultMetricsConfig = vi.fn()
   }
   mm.setMetricsConfig(metricsConfig)
-  mm.track = jest.fn()
-  mm.identify = jest.fn()
-  mm.postMessageEvent = jest.fn()
+  mm.track = vi.fn()
+  mm.identify = vi.fn()
+  mm.postMessageEvent = vi.fn()
   return mm
 }
 
 // Mock fetch for our metrics config request
-global.fetch = jest.fn(() =>
+global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
     json: () =>
@@ -56,7 +56,7 @@ global.fetch = jest.fn(() =>
 
 // Mock AbortSignal, otherwise TypeError timeout is not a function
 global.AbortSignal = {
-  timeout: jest.fn(),
+  timeout: vi.fn(),
 }
 
 const DEFAULT_EVENT_DATA = {
@@ -173,7 +173,7 @@ describe("initialize", () => {
 
   test("attempts fetch when no metrics config received", () => {
     // eslint-disable-next-line no-proto
-    const getItemSpy = jest.spyOn(window.localStorage.__proto__, "getItem")
+    const getItemSpy = vi.spyOn(window.localStorage.__proto__, "getItem")
     const mm = getMetricsManager(undefined, "", false)
     mm.initialize({ gatherUsageStats: true })
 
@@ -182,23 +182,6 @@ describe("initialize", () => {
     // Fetches if no cached config
     expect(fetch.mock.calls.length).toBe(1)
     expect(fetch.mock.calls[0][0]).toEqual(DEFAULT_METRICS_CONFIG)
-  })
-
-  test("does not initialize Segment analytics when gatherUsageStats=false", () => {
-    const mm = getMetricsManager()
-    expect(window.analytics).toBeUndefined()
-    mm.initialize({ gatherUsageStats: false })
-    expect(window.analytics).toBeUndefined()
-  })
-
-  test("initializes Segment analytics when gatherUsageStats=true", () => {
-    const mm = getMetricsManager()
-    expect(window.analytics).toBeUndefined()
-    mm.initialize({ gatherUsageStats: true })
-    expect(window.analytics).toBeDefined()
-    expect(window.analytics.invoked).toBe(true)
-    expect(window.analytics.methods).toHaveLength(20)
-    expect(window.analytics.load).toBeDefined()
   })
 })
 
@@ -318,11 +301,11 @@ describe("metrics helpers", () => {
     expect(window.localStorage.getItem("ajs_anonymous_id")).toBeNull()
     expect(document.cookie).not.toContain("ajs_anonymous_id")
 
-    const setCookieSpy = jest.spyOn(document, "cookie", "set")
-    const getCookieSpy = jest.spyOn(document, "cookie", "get")
+    const setCookieSpy = vi.spyOn(document, "cookie", "set")
+    const getCookieSpy = vi.spyOn(document, "cookie", "get")
     // eslint-disable-next-line no-proto
-    const getItemSpy = jest.spyOn(window.localStorage.__proto__, "getItem")
-    const setItemSpy = jest.spyOn(window.localStorage.__proto__, "setItem")
+    const getItemSpy = vi.spyOn(window.localStorage.__proto__, "getItem")
+    const setItemSpy = vi.spyOn(window.localStorage.__proto__, "setItem")
     const mm = getMetricsManager()
     mm.initialize({ gatherUsageStats: true })
 
@@ -408,13 +391,13 @@ test("tracks host data when in an iFrame", () => {
   mm.initialize({ gatherUsageStats: true })
   mm.enqueue("ev1", { data1: 11 })
 
-  expect(mm.track.mock.calls[0][1]).toMatchObject({
-    hostedAt: "S4A",
-    data1: 11,
-  })
-  expect(mm.track.mock.calls[0][1]).not.toMatchObject({
-    k: "v",
-  })
+  const trackCall = mm.track.mock.calls[0][0]
+  // Check that unexpected event data not included
+  expect(trackCall.data1).not.toBeDefined()
+
+  // Check that only expected metadata fields present (see getHostTrackingData)
+  expect(trackCall.hostedAt).toEqual("S4A")
+  expect(trackCall.k).not.toBeDefined()
 })
 
 test("tracks installation data", () => {
@@ -423,20 +406,6 @@ test("tracks installation data", () => {
   mm.initialize({ gatherUsageStats: true })
   mm.enqueue("ev1", { data1: 11 })
 
-  expect(mm.track.mock.calls[0][1]).toMatchObject({
-    machineIdV3: sessionInfo.current.installationIdV3,
-  })
-})
-
-test("ip address is overwritten", () => {
-  const mm = getMetricsManager()
-  mm.initialize({ gatherUsageStats: true })
-
-  mm.enqueue("ev1", { data1: 11 })
-
-  expect(mm.track.mock.calls[0][2]).toMatchObject({
-    context: {
-      ip: "0.0.0.0",
-    },
-  })
+  const trackCall = mm.track.mock.calls[0][0]
+  expect(trackCall.machineIdV3).toEqual(sessionInfo.current.installationIdV3)
 })

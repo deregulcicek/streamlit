@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,13 @@ CONSTRAINTS_URL ?= https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${CONS
 
 # Black magic to get module directories
 PYTHON_MODULES := $(foreach initpy, $(foreach dir, $(wildcard lib/*), $(wildcard $(dir)/__init__.py)), $(realpath $(dir $(initpy))))
+
+# Check if Python is installed and can be executed, otherwise show an error message in red (but continue)
+ifeq ($(PYTHON_VERSION),)
+error_message="Error: Python version is not detected. Please ensure Python is installed and accessible in your PATH."
+error_message_red_colored=$(shell echo -e "\033[0;31m ${error_message} \033[0m")
+$(warning ${error_message_red_colored})
+endif
 
 .PHONY: help
 help:
@@ -159,6 +166,7 @@ mypy:
 .PHONY: bare-execution-tests
 # Run all our e2e tests in "bare" mode and check for non-zero exit codes.
 bare-execution-tests:
+	PYTHONPATH=. \
 	python3 scripts/run_bare_execution_tests.py
 
 .PHONY: cli-smoke-tests
@@ -217,6 +225,7 @@ clean:
 	rm -f lib/Pipfile.lock
 	rm -rf frontend/app/build
 	rm -rf frontend/node_modules
+	rm -rf frontend/app/performance/lighthouse/reports
 	rm -rf frontend/app/node_modules
 	rm -rf frontend/lib/node_modules
 	rm -rf frontend/test_results
@@ -226,7 +235,8 @@ clean:
 	rm -rf frontend/lib/dist
 	rm -rf ~/.cache/pre-commit
 	rm -rf e2e_playwright/test-results
-	find . -name .streamlit -type d -exec rm -rfv {} \; || true
+	rm -rf e2e_playwright/performance-results
+	find . -name .streamlit -not -path './e2e_playwright/.streamlit' -type d -exec rm -rfv {} \; || true
 	cd lib; rm -rf .coverage .coverage\.*
 
 MIN_PROTOC_VERSION = 3.20
@@ -241,10 +251,10 @@ check-protoc:
 	PROTOC_VERSION=$$(protoc --version | cut -d ' ' -f 2); \
 	\
 	if [[ $$(echo -e "$$PROTOC_VERSION\n$(MIN_PROTOC_VERSION)" | sort -V | head -n1) != $(MIN_PROTOC_VERSION) ]]; then \
-	  echo "Error: protoc version $${PROTOC_VERSION} is < $(MIN_PROTOC_VERSION)"; \
-	  exit 1; \
+		echo "Error: protoc version $${PROTOC_VERSION} is < $(MIN_PROTOC_VERSION)"; \
+		exit 1; \
 	else \
-	  echo "protoc version $${PROTOC_VERSION} is >= than $(MIN_PROTOC_VERSION)"; \
+		echo "protoc version $${PROTOC_VERSION} is >= than $(MIN_PROTOC_VERSION)"; \
 	fi
 
 .PHONY: protobuf
@@ -284,10 +294,9 @@ react-build:
 	rsync -av --delete --delete-excluded --exclude=reports \
 		frontend/app/build/ lib/streamlit/static/
 
-.PHONY: frontend-fast
-# Build frontend into static files faster by setting BUILD_AS_FAST_AS_POSSIBLE=true flag, which disables eslint and typechecking.
-frontend-fast:
-	cd frontend/ ; yarn run buildFast
+.PHONY: frontend-build-with-profiler
+frontend-build-with-profiler:
+	cd frontend/ ; yarn run buildWithProfiler
 	rsync -av --delete --delete-excluded --exclude=reports \
 		frontend/app/build/ lib/streamlit/static/
 
@@ -302,20 +311,20 @@ frontend-app:
 	cd frontend/ ; yarn run buildApp
 
 .PHONY: jslint
-# Lint the JS code.
+# Verify that our JS/TS code is formatted and that there are no lint errors.
 jslint:
-	cd frontend; \
-		yarn lint;
+	cd frontend/ ; yarn run formatCheck
+	cd frontend/ ; yarn run lint
 
 .PHONY: tstypecheck
 # Typecheck the JS/TS code.
 tstypecheck:
-	pre-commit run typecheck-lib --all-files --hook-stage manual && pre-commit run typecheck-app --all-files --hook-stage manual
+	cd frontend/ ; yarn run typecheck
 
 .PHONY: jsformat
 # Fix formatting issues in our JavaScript & TypeScript files.
 jsformat:
-	pre-commit run prettier --all-files --hook-stage manual
+	cd frontend/ ; yarn run format
 
 .PHONY: jstest
 # Run JS unit tests.
@@ -333,7 +342,14 @@ custom_components_test_folder = ./custom_components
 playwright:
 	cd e2e_playwright; \
 	rm -rf ./test-results; \
-	pytest --ignore ${custom_components_test_folder} --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v
+	pytest --ignore ${custom_components_test_folder} --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -m "not performance"
+
+.PHONY: playwright-performance
+playwright-performance:
+	cd e2e_playwright; \
+	rm -rf ./test-results; \
+	pytest --browser chromium --output ./test-results/ -n 1 --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -m "performance" --count=10
+
 .PHONY: playwright-custom-components
 # Run playwright custom component E2E tests.
 playwright-custom-components:
@@ -353,6 +369,17 @@ playwright-custom-components:
 # Update e2e playwright snapshots based on the latest completed CI run.
 update-snapshots:
 	python ./scripts/update_e2e_snapshots.py
+
+.PHONY: update-snapshots-changed
+# Update e2e playwright snapshots of changed files based on the latest completed CI run.
+update-snapshots-changed:
+	python ./scripts/update_e2e_snapshots.py --changed
+
+.PHONY: update-material-icons
+# Update material icon names and font file based on latest google material symbol rounded font version.
+update-material-icons:
+	python ./scripts/update_material_icon_font_and_names.py
+
 
 .PHONY: loc
 # Count the number of lines of code in the project.
@@ -388,9 +415,7 @@ notices:
 	./scripts/append_license.sh frontend/app/src/assets/img/Open-Iconic.LICENSE
 	./scripts/append_license.sh frontend/lib/src/vendor/bokeh/bokeh-LICENSE.txt
 	./scripts/append_license.sh frontend/lib/src/vendor/twemoji-LICENSE.txt
-	./scripts/append_license.sh frontend/app/src/vendor/Segment-LICENSE.txt
 	./scripts/append_license.sh frontend/lib/src/vendor/react-bootstrap-LICENSE.txt
-	./scripts/append_license.sh lib/streamlit/vendor/ipython/IPython-LICENSE.txt
 
 .PHONY: headers
 # Update the license header on all source files.
@@ -413,6 +438,12 @@ pre-commit-install:
 # Ensure relative imports exist within the lib/dist folder when doing yarn buildLibProd.
 ensure-relative-imports:
 	./scripts/ensure_relative_imports.sh
+
+.PHONY: performance-lighthouse
+# Run Lighthouse performance tests
+performance-lighthouse:
+	cd frontend/app; \
+	yarn run lighthouse:run
 
 .PHONY frontend-lib-prod:
 # Build the production version for @streamlit/lib.

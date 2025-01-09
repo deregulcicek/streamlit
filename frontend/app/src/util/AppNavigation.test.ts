@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ vi.mock("@streamlit/lib/src/hostComm/HostCommunicationManager", async () => {
     "@streamlit/lib/src/hostComm/HostCommunicationManager"
   )
 
-  const MockedClass = jest.fn().mockImplementation((...props) => {
+  const MockedClass = vi.fn().mockImplementation((...props) => {
     const hostCommunicationMgr = new actualModule.default(...props)
     vi.spyOn(hostCommunicationMgr, "sendMessageToHost")
     return hostCommunicationMgr
@@ -116,7 +116,6 @@ describe("AppNavigation", () => {
       themeChanged: () => {},
       pageChanged: () => {},
       isOwnerChanged: () => {},
-      jwtHeaderChanged: () => {},
       hostMenuItemsChanged: () => {},
       hostToolbarItemsChanged: () => {},
       hostHideSidebarNavChanged: () => {},
@@ -127,9 +126,9 @@ describe("AppNavigation", () => {
       restartWebsocketConnection: () => {},
       terminateWebsocketConnection: () => {},
     })
-    onUpdatePageUrl = jest.fn()
-    onPageNotFound = jest.fn()
-    onPageIconChange = jest.fn()
+    onUpdatePageUrl = vi.fn()
+    onPageNotFound = vi.fn()
+    onPageIconChange = vi.fn()
     appNavigation = new AppNavigation(
       hostCommunicationMgr,
       onUpdatePageUrl,

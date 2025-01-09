@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -127,6 +127,11 @@ def rerun(  # type: ignore[misc]
         ``StreamlitAPIException``.
 
     """
+
+    if scope not in ["app", "fragment"]:
+        raise StreamlitAPIException(
+            f"'{scope}'is not a valid rerun scope. Valid scopes are 'app' and 'fragment'."
+        )
 
     ctx = get_script_run_ctx()
 

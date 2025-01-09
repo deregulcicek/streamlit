@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ import {
 
 import useDataExporter, { toCsvRow } from "./useDataExporter"
 
-const mockWrite = jest.fn()
-const mockClose = jest.fn()
+const mockWrite = vi.fn()
+const mockClose = vi.fn()
 
 // The native-file-system-adapter is not available in tests, so we need to mock it.
 vi.mock("native-file-system-adapter", () => ({
-  showSaveFilePicker: jest.fn().mockImplementation((_object: any) => {
+  showSaveFilePicker: vi.fn().mockImplementation((_object: any) => {
     return {
-      createWritable: jest.fn().mockImplementation(() => {
+      createWritable: vi.fn().mockImplementation(() => {
         return {
           write: mockWrite,
           close: mockClose,
@@ -55,6 +55,7 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isEditable: false,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
   }),
   TextColumn({
@@ -69,6 +70,7 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isEditable: false,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
     columnTypeOptions: {},
   }),

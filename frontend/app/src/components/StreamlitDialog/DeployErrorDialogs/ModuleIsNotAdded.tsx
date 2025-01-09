@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,21 @@
 
 import React from "react"
 
-import { StyledInlineCode } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
+import { StreamlitMarkdown } from "@streamlit/lib"
 
 import { IDeployErrorDialog } from "./types"
-import { StyledParagraph } from "./styled-components"
 
 function ModuleIsNotAdded(module: string): IDeployErrorDialog {
   return {
     title: "Unable to deploy",
     body: (
-      <StyledParagraph>
-        The app’s main file <StyledInlineCode>{module}</StyledInlineCode> has
-        not been pushed to GitHub. Please add it to continue.
-      </StyledParagraph>
+      <StreamlitMarkdown
+        source={`
+The app's main file \`${module}\` has
+not been pushed to GitHub. Please add it to continue.
+`}
+        allowHTML={false}
+      />
     ),
   }
 }

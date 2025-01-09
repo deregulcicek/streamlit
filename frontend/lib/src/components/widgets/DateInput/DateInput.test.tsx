@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { act, fireEvent, screen, within } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
@@ -48,8 +47,8 @@ const getProps = (
   width: 0,
   disabled: false,
   widgetMgr: new WidgetStateManager({
-    sendRerunBackMsg: jest.fn(),
-    formsDataChanged: jest.fn(),
+    sendRerunBackMsg: vi.fn(),
+    formsDataChanged: vi.fn(),
   }),
   ...widgetProps,
 })
@@ -100,7 +99,7 @@ describe("DateInput widget", () => {
 
   it("sets widget value on render", () => {
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "setStringArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<DateInput {...props} />)
     expect(props.widgetMgr.setStringArrayValue).toHaveBeenCalledWith(
@@ -115,7 +114,7 @@ describe("DateInput widget", () => {
 
   it("can pass a fragmentId to setStringArrayValue", () => {
     const props = getProps(undefined, { fragmentId: "myFragmentId" })
-    jest.spyOn(props.widgetMgr, "setStringArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<DateInput {...props} />)
     expect(props.widgetMgr.setStringArrayValue).toHaveBeenCalledWith(
@@ -154,10 +153,12 @@ describe("DateInput widget", () => {
 
   it("updates the widget value when it's changed", () => {
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "setStringArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<DateInput {...props} />)
     const datePicker = screen.getByTestId("stDateInputField")
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(datePicker, { target: { value: newDate } })
 
     expect(screen.getByTestId("stDateInputField")).toHaveValue(newDate)
@@ -173,11 +174,13 @@ describe("DateInput widget", () => {
 
   it("resets its value to default when it's closed with empty input", () => {
     const props = getProps()
-    jest.spyOn(props.widgetMgr, "setStringArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<DateInput {...props} />)
     const dateInput = screen.getByTestId("stDateInputField")
 
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(dateInput, {
       target: { value: newDate },
     })
@@ -185,6 +188,8 @@ describe("DateInput widget", () => {
     expect(dateInput).toHaveValue(newDate)
 
     // Simulating clearing the date input
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(dateInput, {
       target: { value: null },
     })
@@ -194,14 +199,14 @@ describe("DateInput widget", () => {
     expect(dateInput).toHaveValue(fullOriginalDate)
   })
 
-  it("has a minDate", () => {
+  it("has a minDate", async () => {
+    const user = userEvent.setup()
     const props = getProps({})
 
     render(<DateInput {...props} />)
 
     const dateInput = screen.getByTestId("stDateInputField")
-
-    fireEvent.focus(dateInput)
+    await user.click(dateInput)
 
     expect(
       screen.getByLabelText("Not available. Monday, January 19th 1970.")
@@ -213,7 +218,8 @@ describe("DateInput widget", () => {
     ).toBeTruthy()
   })
 
-  it("has a minDate if passed", () => {
+  it("has a minDate if passed", async () => {
+    const user = userEvent.setup()
     const props = getProps({
       min: "2020/01/05",
       // Choose default so min is in the default page when the widget is opened.
@@ -223,8 +229,7 @@ describe("DateInput widget", () => {
     render(<DateInput {...props} />)
 
     const dateInput = screen.getByTestId("stDateInputField")
-
-    fireEvent.focus(dateInput)
+    await user.click(dateInput)
 
     expect(
       screen.getByLabelText("Not available. Saturday, January 4th 2020.")
@@ -235,7 +240,8 @@ describe("DateInput widget", () => {
     ).toBeTruthy()
   })
 
-  it("has a maxDate if it is passed", () => {
+  it("has a maxDate if it is passed", async () => {
+    const user = userEvent.setup()
     const props = getProps({
       max: "2020/01/25",
       // Choose default so min is in the default page when the widget is opened.
@@ -245,8 +251,7 @@ describe("DateInput widget", () => {
     render(<DateInput {...props} />)
 
     const dateInput = screen.getByTestId("stDateInputField")
-
-    fireEvent.focus(dateInput)
+    await user.click(dateInput)
 
     expect(
       screen.getByLabelText(
@@ -264,11 +269,13 @@ describe("DateInput widget", () => {
     const props = getProps({ formId: "form" })
     props.widgetMgr.setFormSubmitBehaviors("form", true)
 
-    jest.spyOn(props.widgetMgr, "setStringArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<DateInput {...props} />)
 
     const dateInput = screen.getByTestId("stDateInputField")
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(dateInput, {
       target: { value: newDate },
     })

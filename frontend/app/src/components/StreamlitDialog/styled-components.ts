@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 import styled from "@emotion/styled"
 import { darken } from "color2k"
 import { ChevronLeft } from "react-feather"
-
-import { Small } from "@streamlit/lib"
 
 export const StyledShortcutLabel = styled.span({
   "&::first-letter": {
@@ -72,15 +70,6 @@ export const StyledLabel = styled.label(({ theme }) => ({
   marginTop: 0,
   lineHeight: theme.lineHeights.tight,
   fontSize: theme.fontSizes.sm,
-}))
-
-export const StyledSmall = styled(Small)(({ theme }) => ({
-  display: "block",
-  paddingBottom: 0,
-  paddingTop: 0,
-  marginBottom: 0,
-  marginTop: 0,
-  lineHeight: theme.lineHeights.small,
 }))
 
 export const StyledHr = styled.hr(({ theme }) => ({

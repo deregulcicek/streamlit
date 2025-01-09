@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,6 @@ import React, { Fragment } from "react"
 import styled from "@emotion/styled"
 import axios from "axios"
 
-import { StyledPre } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
 import {
   BackMsg,
   BaseUriParts,
@@ -31,15 +26,19 @@ import {
   buildWsUri,
   ForwardMsg,
   ForwardMsgCache,
+  getCookie,
   IBackMsg,
   IHostConfigResponse,
+  isNullOrUndefined,
   logError,
   logMessage,
   logWarning,
+  notNullOrUndefined,
   PerformanceEvents,
   Resolver,
   SessionInfo,
   StreamlitEndpoints,
+  StreamlitMarkdown,
 } from "@streamlit/lib"
 import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 
@@ -395,11 +394,12 @@ export class WebsocketConnection {
    */
   private async getSessionTokens(): Promise<Array<string>> {
     const hostAuthToken = await this.args.claimHostAuthToken()
+    const xsrfCookie = getCookie("_streamlit_xsrf")
     this.args.resetHostAuthToken()
     return [
       // NOTE: We have to set the auth token to some arbitrary placeholder if
       // not provided since the empty string is an invalid protocol option.
-      hostAuthToken ?? "PLACEHOLDER_AUTH_TOKEN",
+      hostAuthToken ?? xsrfCookie ?? "PLACEHOLDER_AUTH_TOKEN",
       ...(this.args.sessionInfo.last?.sessionId
         ? [this.args.sessionInfo.last?.sessionId]
         : []),
@@ -596,13 +596,15 @@ export class WebsocketConnection {
   }
 }
 
-export const StyledBashCode = styled.code({
+export const StyledBashCode = styled.code(({ theme }) => ({
+  fontFamily: theme.genericFonts.codeFont,
+  fontSize: theme.fontSizes.sm,
   "&::before": {
     content: '"$"',
     // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
     marginRight: "1ex",
   },
-})
+}))
 
 /**
  * Attempts to connect to the URIs in uriList (in round-robin fashion) and
@@ -653,17 +655,14 @@ export function doInitPings(
     const uri = new URL(buildHttpUri(uriParts, ""))
 
     if (uri.hostname === "localhost") {
-      retry(
-        <Fragment>
-          <p>
-            Is Streamlit still running? If you accidentally stopped Streamlit,
-            just restart it in your terminal:
-          </p>
-          <StyledPre>
-            <StyledBashCode>streamlit run yourscript.py</StyledBashCode>
-          </StyledPre>
-        </Fragment>
-      )
+      const markdownMessage = `
+Is Streamlit still running? If you accidentally stopped Streamlit, just restart it in your terminal:
+
+\`\`\`bash
+streamlit run yourscript.py
+\`\`\`
+      `
+      retry(<StreamlitMarkdown source={markdownMessage} allowHTML={false} />)
     } else {
       retry("Connection failed with status 0.")
     }

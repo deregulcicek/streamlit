@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,13 @@ export function FormSubmitButton(props: Props): ReactElement {
   } = props
   const { formId } = element
   const style = { width }
-  const kind =
-    element.type === "primary"
-      ? BaseButtonKind.PRIMARY_FORM_SUBMIT
-      : BaseButtonKind.SECONDARY_FORM_SUBMIT
+
+  let kind = BaseButtonKind.SECONDARY_FORM_SUBMIT
+  if (element.type === "primary") {
+    kind = BaseButtonKind.PRIMARY_FORM_SUBMIT
+  } else if (element.type === "tertiary") {
+    kind = BaseButtonKind.TERTIARY_FORM_SUBMIT
+  }
 
   useEffect(() => {
     widgetMgr.addSubmitButton(formId, element)

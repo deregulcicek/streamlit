@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import AlertContainer, {
 } from "@streamlit/lib/src/components/shared/AlertContainer"
 import { StyledCode } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
 
-import { StyledPreError } from "./styled-components"
+import { StyledErrorName, StyledStackTrace } from "./styled-components"
 
 export interface ErrorElementProps {
   name: string
@@ -47,12 +47,12 @@ function ErrorElement(props: ErrorElementProps): ReactElement {
 
   return (
     <AlertContainer kind={Kind.ERROR} width={width}>
-      <strong>{name}: </strong>
+      <StyledErrorName>{name}: </StyledErrorName>
       {message}
       {stack ? (
-        <StyledPreError data-testid="stErrorElementStack">
+        <StyledStackTrace data-testid="stErrorElementStack">
           <StyledCode>{cleanedStack}</StyledCode>
-        </StyledPreError>
+        </StyledStackTrace>
       ) : null}
     </AlertContainer>
   )

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,6 +63,10 @@ st.button(
 
 st.button("Like Button", icon=":material/thumb_up:")
 st.button("Star Button", icon="⭐")
+
+st.button("Tertiary Button", type="tertiary")
+st.button("Disabled Tertiary Button", type="tertiary", disabled=True)
+
 
 cols = st.columns(3)
 

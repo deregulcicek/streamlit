@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen, waitFor } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -76,17 +75,16 @@ function getProps(
   return {
     endpoints: endpoints,
     scriptRunState: ScriptRunState.RUNNING,
-    sessionInfo: sessionInfo,
     widgetMgr: new WidgetStateManager({
-      sendRerunBackMsg: jest.fn(),
-      formsDataChanged: jest.fn(),
+      sendRerunBackMsg: vi.fn(),
+      formsDataChanged: vi.fn(),
     }),
     widgetsDisabled: false,
     uploadClient: new FileUploadClient({
       sessionInfo: sessionInfo,
       endpoints,
       formsWithPendingRequestsChanged: () => {},
-      requestFileURLs: jest.fn(),
+      requestFileURLs: vi.fn(),
     }),
     componentRegistry: new ComponentRegistry(endpoints),
     formsData: createFormsData(),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -30,10 +29,10 @@ vi.mock("@streamlit/lib/src/vendor/bokeh/bokeh.esm", () => ({
   __esModule: true,
   default: {
     // the js source code has main.register_plugin so we need to mock it
-    register_plugin: jest.fn(),
+    register_plugin: vi.fn(),
     // actual function that we need to mock and check
     embed: {
-      embed_item: jest.fn(),
+      embed_item: vi.fn(),
     },
   },
 }))

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -466,7 +466,7 @@ describe("getLoadingScreenType", () => {
       delete window.location
       // @ts-expect-error
       window.location = {
-        assign: jest.fn(),
+        assign: vi.fn(),
         search: "foo=bar",
       }
       expect(preserveEmbedQueryParams()).toBe("")
@@ -477,7 +477,7 @@ describe("getLoadingScreenType", () => {
       delete window.location
       // @ts-expect-error
       window.location = {
-        assign: jest.fn(),
+        assign: vi.fn(),
         search: "embed=true&foo=bar",
       }
       expect(preserveEmbedQueryParams()).toBe("embed=true")
@@ -488,7 +488,7 @@ describe("getLoadingScreenType", () => {
       delete window.location
       // @ts-expect-error
       window.location = {
-        assign: jest.fn(),
+        assign: vi.fn(),
         search:
           "embed=true&embed_options=option1&embed_options=option2&foo=bar",
       }

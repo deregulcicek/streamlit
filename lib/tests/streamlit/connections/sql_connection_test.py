@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -178,37 +178,6 @@ class SQLConnectionTest(unittest.TestCase):
         conn2.query("SELECT 1;")
 
         assert patched_read_sql.call_count == 2
-
-    @patch("streamlit.connections.sql_connection.SQLConnection._connect", MagicMock())
-    def test_repr_html_(self):
-        conn = SQLConnection("my_sql_connection")
-        with conn.session as s:
-            s.bind.dialect.name = "postgres"
-        repr_ = conn._repr_html_()
-
-        assert (
-            "st.connection my_sql_connection built from `streamlit.connections.sql_connection.SQLConnection`"
-            in repr_
-        )
-        assert "Dialect: `postgres`" in repr_
-
-    @patch("streamlit.connections.sql_connection.SQLConnection._connect", MagicMock())
-    @patch(
-        "streamlit.connections.sql_connection.SQLConnection._secrets",
-        PropertyMock(return_value=AttrDict({"url": "some_sql_conn_string"})),
-    )
-    def test_repr_html_with_secrets(self):
-        conn = SQLConnection("my_sql_connection")
-        with conn.session as s:
-            s.bind.dialect.name = "postgres"
-        repr_ = conn._repr_html_()
-
-        assert (
-            "st.connection my_sql_connection built from `streamlit.connections.sql_connection.SQLConnection`"
-            in repr_
-        )
-        assert "Dialect: `postgres`" in repr_
-        assert "Configured from `[connections.my_sql_connection]`" in repr_
 
     @patch("streamlit.connections.sql_connection.SQLConnection._connect", MagicMock())
     @patch("pandas.read_sql")

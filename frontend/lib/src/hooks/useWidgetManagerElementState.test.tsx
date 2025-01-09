@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 import React, { FC } from "react"
 
 import { act, renderHook } from "@testing-library/react-hooks"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import { Form } from "@streamlit/lib/src/components/widgets/Form"
@@ -32,8 +33,8 @@ const elementId = "elementId"
 describe("useWidgetManagerElementState hook", () => {
   it("should initialize correctly with initial state", () => {
     const widgetMgr = new WidgetStateManager({
-      formsDataChanged: jest.fn(),
-      sendRerunBackMsg: jest.fn(),
+      formsDataChanged: vi.fn(),
+      sendRerunBackMsg: vi.fn(),
     })
 
     const { result } = renderHook(() =>
@@ -54,8 +55,8 @@ describe("useWidgetManagerElementState hook", () => {
 
   it("should set state correctly", () => {
     const widgetMgr = new WidgetStateManager({
-      formsDataChanged: jest.fn(),
-      sendRerunBackMsg: jest.fn(),
+      formsDataChanged: vi.fn(),
+      sendRerunBackMsg: vi.fn(),
     })
 
     const { result } = renderHook(() =>
@@ -79,6 +80,7 @@ describe("useWidgetManagerElementState hook", () => {
   })
 
   it("should properly clear state on form clear", async () => {
+    const user = userEvent.setup()
     const formId = "formId"
     const stateKey = "stateKey"
     const defaultValue = "initial"
@@ -86,8 +88,8 @@ describe("useWidgetManagerElementState hook", () => {
     const testInputAriaLabel = "test input"
 
     const widgetMgr = new WidgetStateManager({
-      formsDataChanged: jest.fn(),
-      sendRerunBackMsg: jest.fn(),
+      formsDataChanged: vi.fn(),
+      sendRerunBackMsg: vi.fn(),
     })
 
     const TestComponent: FC = () => {
@@ -133,7 +135,8 @@ describe("useWidgetManagerElementState hook", () => {
     expect(widgetMgr.getElementState(elementId, stateKey)).toBe(defaultValue)
 
     // change the input value
-    fireEvent.change(inputElement, { target: { value: newValue } })
+    await user.clear(inputElement)
+    await user.type(inputElement, newValue)
 
     // verify new value is set
     expect(inputElement.value).toBe(newValue)

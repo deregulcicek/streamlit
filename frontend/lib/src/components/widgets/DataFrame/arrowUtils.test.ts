@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Type as ArrowType,
-  DataFrameCell,
-  Quiver,
-} from "@streamlit/lib/src/dataframes/Quiver"
+import { Type as ArrowType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
+import { DataFrameCell, Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 import {
   CATEGORICAL_COLUMN,
   DECIMAL,
@@ -52,7 +49,6 @@ import {
   TextColumn,
   TimeColumn,
 } from "./columns"
-import { isIntegerType } from "./isIntegerType"
 
 const MOCK_TEXT_COLUMN = TextColumn({
   id: "1",
@@ -62,6 +58,7 @@ const MOCK_TEXT_COLUMN = TextColumn({
   isEditable: false,
   isHidden: false,
   isIndex: false,
+  isPinned: false,
   isStretched: false,
   arrowType: {
     pandas_type: "unicode",
@@ -78,6 +75,7 @@ const MOCK_NUMBER_COLUMN = NumberColumn({
   isHidden: false,
   isIndex: false,
   isStretched: false,
+  isPinned: false,
   arrowType: {
     pandas_type: "int64",
     numpy_type: "int64",
@@ -246,7 +244,7 @@ describe("getIndexFromArrow", () => {
 
     const indexColumn = getIndexFromArrow(data, 0)
     expect(indexColumn).toEqual({
-      id: `index-0`,
+      id: `_index-0`,
       isEditable: true,
       name: "",
       title: "",
@@ -256,6 +254,7 @@ describe("getIndexFromArrow", () => {
         pandas_type: "unicode",
       },
       isIndex: true,
+      isPinned: true,
       isHidden: false,
     })
   })
@@ -268,7 +267,7 @@ describe("getIndexFromArrow", () => {
 
     const indexColumn1 = getIndexFromArrow(data, 0)
     expect(indexColumn1).toEqual({
-      id: `index-0`,
+      id: `_index-0`,
       isEditable: true,
       name: "number",
       title: "number",
@@ -278,12 +277,13 @@ describe("getIndexFromArrow", () => {
         pandas_type: "int64",
       },
       isIndex: true,
+      isPinned: true,
       isHidden: false,
     })
 
     const indexColumn2 = getIndexFromArrow(data, 1)
     expect(indexColumn2).toEqual({
-      id: `index-1`,
+      id: `_index-1`,
       isEditable: true,
       name: "color",
       title: "color",
@@ -293,6 +293,7 @@ describe("getIndexFromArrow", () => {
         pandas_type: "unicode",
       },
       isIndex: true,
+      isPinned: true,
       isHidden: false,
     })
   })
@@ -307,7 +308,7 @@ describe("getColumnFromArrow", () => {
 
     const column = getColumnFromArrow(data, 0)
     expect(column).toEqual({
-      id: "column-c1-0",
+      id: "_column-c1-0",
       name: "c1",
       title: "c1",
       isEditable: true,
@@ -317,6 +318,7 @@ describe("getColumnFromArrow", () => {
         pandas_type: "unicode",
       },
       isIndex: false,
+      isPinned: false,
       isHidden: false,
     })
   })
@@ -329,7 +331,7 @@ describe("getColumnFromArrow", () => {
 
     const column = getColumnFromArrow(data, 0)
     expect(column).toEqual({
-      id: "column-red-0",
+      id: "_column-red-0",
       name: "red",
       title: "red",
       isEditable: true,
@@ -339,6 +341,7 @@ describe("getColumnFromArrow", () => {
         pandas_type: "unicode",
       },
       isIndex: false,
+      isPinned: false,
       isHidden: false,
       group: "1",
     })
@@ -352,7 +355,7 @@ describe("getColumnFromArrow", () => {
 
     const column = getColumnFromArrow(data, 0)
     expect(column).toEqual({
-      id: "column-c1-0",
+      id: "_column-c1-0",
       name: "c1",
       title: "c1",
       isEditable: true,
@@ -365,6 +368,7 @@ describe("getColumnFromArrow", () => {
         pandas_type: "categorical",
       },
       isIndex: false,
+      isPinned: false,
       isHidden: false,
       columnTypeOptions: {
         options: ["bar", "foo"],
@@ -387,11 +391,12 @@ describe("getAllColumnsFromArrow", () => {
           numpy_type: "object",
           pandas_type: "unicode",
         },
-        id: "index-0",
+        id: "_index-0",
         indexNumber: 0,
         isEditable: true,
         isHidden: false,
         isIndex: true,
+        isPinned: true,
         name: "",
         title: "",
       },
@@ -402,11 +407,12 @@ describe("getAllColumnsFromArrow", () => {
           pandas_type: "unicode",
         },
         columnTypeOptions: undefined,
-        id: "column-c1-0",
+        id: "_column-c1-0",
         indexNumber: 1,
         isEditable: true,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         name: "c1",
         title: "c1",
       },
@@ -417,11 +423,12 @@ describe("getAllColumnsFromArrow", () => {
           pandas_type: "unicode",
         },
         columnTypeOptions: undefined,
-        id: "column-c2-1",
+        id: "_column-c2-1",
         indexNumber: 2,
         isEditable: true,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         name: "c2",
         title: "c2",
       },
@@ -443,11 +450,12 @@ describe("getAllColumnsFromArrow", () => {
           numpy_type: "object",
           pandas_type: "empty",
         },
-        id: "index-0",
+        id: "_index-0",
         indexNumber: 0,
         isEditable: true,
         isHidden: false,
         isIndex: true,
+        isPinned: true,
         name: "",
         title: "",
       },
@@ -484,6 +492,7 @@ describe("getCellFromArrow", () => {
       isEditable: false,
       isHidden: false,
       isIndex: false,
+      isPinned: false,
       isStretched: false,
       arrowType: {
         pandas_type: "decimal",
@@ -524,6 +533,7 @@ describe("getCellFromArrow", () => {
         isEditable: false,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         isStretched: false,
         arrowType: {
           pandas_type: "time",
@@ -564,6 +574,7 @@ describe("getCellFromArrow", () => {
         isEditable: false,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         isStretched: false,
         columnTypeOptions: {
           format: "YYYY",
@@ -609,13 +620,14 @@ describe("getCellFromArrow", () => {
         isEditable: false,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         isStretched: false,
         arrowType: {
           pandas_type: "time",
           numpy_type: "object",
         },
       }),
-      getCell: jest.fn().mockReturnValue(getTextCell(false, false)),
+      getCell: vi.fn().mockReturnValue(getTextCell(false, false)),
     }
 
     // Create a mock arrowCell object with time data
@@ -654,13 +666,14 @@ describe("getCellFromArrow", () => {
         isEditable: false,
         isHidden: false,
         isIndex: false,
+        isPinned: false,
         isStretched: false,
         arrowType: {
           pandas_type: "datetime",
           numpy_type: "datetime64[ns]",
         },
       }),
-      getCell: jest.fn().mockReturnValue(getTextCell(false, false)),
+      getCell: vi.fn().mockReturnValue(getTextCell(false, false)),
     }
 
     // Create a mock arrowCell object with time data
@@ -930,79 +943,6 @@ describe("getColumnTypeFromArrow", () => {
     "interprets %p as column type: %p",
     (arrowType: ArrowType, expectedType: ColumnCreator) => {
       expect(getColumnTypeFromArrow(arrowType)).toEqual(expectedType)
-    }
-  )
-})
-
-describe("isIntegerType", () => {
-  it.each([
-    [
-      {
-        pandas_type: "float64",
-        numpy_type: "float64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "int16",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "range",
-        numpy_type: "range",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "uint64",
-        numpy_type: "uint64",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "unicode",
-        numpy_type: "object",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "bool",
-        numpy_type: "bool",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "int8",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "interval[int64, both]",
-      },
-      false,
-    ],
-  ])(
-    "interprets %p as integer type: %p",
-    (arrowType: ArrowType, expected: boolean) => {
-      expect(isIntegerType(Quiver.getTypeName(arrowType))).toEqual(expected)
     }
   )
 })

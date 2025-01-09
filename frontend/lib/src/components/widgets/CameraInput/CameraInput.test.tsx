@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 import createFetchMock from "vitest-fetch-mock"
 
@@ -48,15 +47,15 @@ const getProps = (
     width: 0,
     disabled: false,
     widgetMgr: new WidgetStateManager({
-      sendRerunBackMsg: jest.fn(),
-      formsDataChanged: jest.fn(),
+      sendRerunBackMsg: vi.fn(),
+      formsDataChanged: vi.fn(),
     }),
     // @ts-expect-error
     uploadClient: {
-      uploadFile: jest.fn().mockImplementation(() => {
+      uploadFile: vi.fn().mockImplementation(() => {
         return Promise.resolve()
       }),
-      fetchFileURLs: jest.fn().mockImplementation((acceptedFiles: File[]) => {
+      fetchFileURLs: vi.fn().mockImplementation((acceptedFiles: File[]) => {
         return Promise.resolve(
           acceptedFiles.map(file => {
             return new FileURLsProto({
@@ -67,7 +66,7 @@ const getProps = (
           })
         )
       }),
-      deleteFile: jest.fn(),
+      deleteFile: vi.fn(),
     },
     ...props,
   }

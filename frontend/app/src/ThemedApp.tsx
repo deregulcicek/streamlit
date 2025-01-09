@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 import React from "react"
 
-import { CUSTOM_THEME_NAME, RootStyleProvider } from "@streamlit/lib"
+import {
+  CUSTOM_THEME_NAME,
+  PortalProvider,
+  RootStyleProvider,
+  WindowDimensionsProvider,
+} from "@streamlit/lib"
 import FontFaceDeclaration from "@streamlit/app/src/components/FontFaceDeclaration"
-import { PortalProvider } from "@streamlit/lib/src/components/core/Portal/PortalProvider"
-import { WindowDimensionsProvider } from "@streamlit/lib/src/components/shared/WindowDimensions/Provider"
 
 import AppWithScreencast from "./App"
 import { useThemeManager } from "./util/useThemeManager"

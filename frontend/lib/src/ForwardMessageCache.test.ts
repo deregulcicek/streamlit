@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@ function createCache(): MockCache {
   const mockFetchCachedForwardMsg = vi.fn()
 
   const cache = new ForwardMsgCache({
-    buildComponentURL: jest.fn(),
-    buildMediaURL: jest.fn(),
-    buildFileUploadURL: jest.fn(),
-    buildAppPageURL: jest.fn(),
-    uploadFileUploaderFile: jest.fn(),
-    deleteFileAtURL: jest.fn(),
+    buildComponentURL: vi.fn(),
+    buildMediaURL: vi.fn(),
+    buildFileUploadURL: vi.fn(),
+    buildAppPageURL: vi.fn(),
+    uploadFileUploaderFile: vi.fn(),
+    deleteFileAtURL: vi.fn(),
     fetchCachedForwardMsg: mockFetchCachedForwardMsg,
   })
 

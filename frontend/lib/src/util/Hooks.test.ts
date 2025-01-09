@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ const stateSetters: Array<any> = []
 vi.mock("react", async () => ({
   __esModule: true,
   ...(await vi.importActual("react")),
-  useCallback: jest.fn().mockImplementation(cb => cb),
-  useEffect: jest.fn().mockImplementation(cb => cb()),
-  useState: jest.fn().mockImplementation(() => {
-    const setValue = jest.fn()
+  useCallback: vi.fn().mockImplementation(cb => cb),
+  useEffect: vi.fn().mockImplementation(cb => cb()),
+  useState: vi.fn().mockImplementation(() => {
+    const setValue = vi.fn()
     stateSetters.push(setValue)
 
     return [false, setValue]

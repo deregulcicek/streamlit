@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,8 @@ import {
   Args,
   CORS_ERROR_MESSAGE_DOCUMENTATION_LINK,
   doInitPings,
-  StyledBashCode,
   WebsocketConnection,
 } from "@streamlit/app/src/connection/WebsocketConnection"
-import { StyledPre } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
 
 const MOCK_ALLOWED_ORIGINS_CONFIG = {
   allowedOrigins: ["list", "of", "allowed", "origins"],
@@ -59,12 +57,12 @@ function createMockArgs(overrides?: Partial<Args>): Args {
         basePath: "/",
       },
     ],
-    onMessage: jest.fn(),
-    onConnectionStateChange: jest.fn(),
-    onRetry: jest.fn(),
+    onMessage: vi.fn(),
+    onConnectionStateChange: vi.fn(),
+    onRetry: vi.fn(),
     claimHostAuthToken: () => Promise.resolve(undefined),
-    resetHostAuthToken: jest.fn(),
-    onHostConfigResp: jest.fn(),
+    resetHostAuthToken: vi.fn(),
+    onHostConfigResp: vi.fn(),
     ...overrides,
   }
 }
@@ -77,16 +75,16 @@ describe("doInitPings", () => {
     ],
     timeoutMs: 10,
     maxTimeoutMs: 100,
-    retryCallback: jest.fn(),
-    setAllowedOrigins: jest.fn(),
+    retryCallback: vi.fn(),
+    setAllowedOrigins: vi.fn(),
   }
 
   let originalAxiosGet: any
 
   beforeEach(() => {
     originalAxiosGet = axios.get
-    MOCK_PING_DATA.retryCallback = jest.fn()
-    MOCK_PING_DATA.setAllowedOrigins = jest.fn()
+    MOCK_PING_DATA.retryCallback = vi.fn()
+    MOCK_PING_DATA.setAllowedOrigins = vi.fn()
   })
 
   afterEach(() => {
@@ -283,18 +281,6 @@ describe("doInitPings", () => {
       },
     }
 
-    const NoResponse = (
-      <Fragment>
-        <p>
-          Is Streamlit still running? If you accidentally stopped Streamlit,
-          just restart it in your terminal:
-        </p>
-        <StyledPre>
-          <StyledBashCode>streamlit run yourscript.py</StyledBashCode>
-        </StyledPre>
-      </Fragment>
-    )
-
     axios.get = vi
       .fn()
       // First Connection attempt
@@ -314,7 +300,7 @@ describe("doInitPings", () => {
 
     expect(MOCK_PING_DATA_LOCALHOST.retryCallback).toHaveBeenCalledWith(
       1,
-      NoResponse,
+      expect.anything(),
       expect.anything()
     )
   })
@@ -683,7 +669,7 @@ describe("WebsocketConnection auth token handling", () => {
     websocketSpy = vi.spyOn(window, "WebSocket")
 
     originalAxiosGet = axios.get
-    axios.get = jest.fn()
+    axios.get = vi.fn()
   })
 
   afterEach(() => {
@@ -693,7 +679,7 @@ describe("WebsocketConnection auth token handling", () => {
   })
 
   it("always sets first Sec-WebSocket-Protocol option to 'streamlit'", async () => {
-    const resetHostAuthToken = jest.fn()
+    const resetHostAuthToken = vi.fn()
     const ws = new WebsocketConnection(createMockArgs({ resetHostAuthToken }))
 
     // Set correct state for this action
@@ -710,7 +696,7 @@ describe("WebsocketConnection auth token handling", () => {
   })
 
   it("sets second Sec-WebSocket-Protocol option to value from claimHostAuthToken", async () => {
-    const resetHostAuthToken = jest.fn()
+    const resetHostAuthToken = vi.fn()
     const ws = new WebsocketConnection(
       createMockArgs({
         claimHostAuthToken: () => Promise.resolve("iAmAnAuthToken"),
@@ -763,7 +749,7 @@ describe("WebsocketConnection auth token handling", () => {
     sessionInfo.setCurrent(mockSessionInfoProps())
     expect(sessionInfo.last?.sessionId).toBe("lastSessionId")
 
-    const resetHostAuthToken = jest.fn()
+    const resetHostAuthToken = vi.fn()
     const ws = new WebsocketConnection(
       createMockArgs({
         sessionInfo,

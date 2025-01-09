@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ import { AppNode, BlockNode } from "@streamlit/lib/src/AppNode"
 import { ComponentRegistry } from "@streamlit/lib/src/components/widgets/CustomComponent"
 import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
 import { ScriptRunState } from "@streamlit/lib/src/ScriptRunState"
-import { SessionInfo } from "@streamlit/lib/src/SessionInfo"
 import { StreamlitEndpoints } from "@streamlit/lib/src/StreamlitEndpoints"
 import { EmotionTheme, getDividerColors } from "@streamlit/lib/src/theme"
 import { isValidElementId } from "@streamlit/lib/src/util/utils"
@@ -112,11 +111,6 @@ export interface BaseBlockProps {
    * used by various Streamlit elements.
    */
   endpoints: StreamlitEndpoints
-
-  /**
-   * The app's SessionInfo instance. Exposes session-specific properties.
-   */
-  sessionInfo: SessionInfo
 
   /**
    * The app's WidgetStateManager instance. Used by all widget elements to

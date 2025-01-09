@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib/src/test_util"
@@ -82,5 +81,36 @@ describe("HTML element", () => {
     })
     render(<Html {...props} />)
     expect(screen.getByTestId("stHtml")).toHaveTextContent("")
+  })
+
+  describe("sanitizes anchor tags", () => {
+    it("does not add target when not present", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).not.toHaveAttribute("target")
+    })
+
+    it("preserves target='_blank' and adds rel attributes", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io" target="_blank">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).toHaveAttribute("target", "_blank")
+      expect(anchorElement).toHaveAttribute("rel", "noopener noreferrer")
+    })
+
+    it("removes non-_blank target attributes", () => {
+      const props = getProps({
+        body: '<a href="https://streamlit.io" target="_self">Click Me</a>',
+      })
+      render(<Html {...props} />)
+      const anchorElement = screen.getByRole("link", { name: "Click Me" })
+      expect(anchorElement).not.toHaveAttribute("target")
+      expect(anchorElement).not.toHaveAttribute("rel")
+    })
   })
 })

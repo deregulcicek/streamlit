@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,12 @@ export const sizes = {
   // Used for checkboxes, radio, and toggles:
   checkbox: "1rem",
   borderWidth: "1px",
+  // Used for checkboxes/toggle
+  smallElementHeight: "1.5rem",
+  // min height used for most input widgets
   minElementHeight: "2.5rem",
+  // min height for larger input widgets like text area and audio input
+  largestElementHeight: "4.25rem",
   smallLogoHeight: "1.25rem",
   defaultLogoHeight: "1.5rem",
   largeLogoHeight: "2rem",
@@ -35,7 +40,6 @@ export const sizes = {
   headerDecorationHeight: "0.125rem",
   appRunningMen: "1.6rem",
   appStatusMaxWidth: "20rem",
-  largestElementHeight: "4.25rem",
   spinnerSize: "1.375rem",
   spinnerThickness: "0.2rem",
   tabHeight: "2.5rem",
@@ -46,4 +50,8 @@ export const sizes = {
   // Used for the clear icon used by some Input elements
   clearIconSize: "1.5em",
   numberInputControlsWidth: "2rem",
+  emptyDropdownHeight: "5.625rem",
+  dropdownItemHeight: "2.5rem",
+  maxDropdownHeight: "18.75rem",
+  appDefaultBottomPadding: "3.5rem",
 }

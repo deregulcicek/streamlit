@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { fireEvent, screen, within } from "@testing-library/react"
 
 import {
+  customRenderLibContext,
   CustomThemeConfig,
   darkTheme,
   fonts,
@@ -29,21 +29,20 @@ import {
   toThemeInput,
 } from "@streamlit/lib"
 import { MetricsManager } from "@streamlit/app/src/MetricsManager"
-import { customRenderLibContext } from "@streamlit/lib/src/test_util"
 
 import ThemeCreatorDialog, {
   Props as ThemeCreatorDialogProps,
   toMinimalToml,
 } from "./ThemeCreatorDialog"
 
-const mockSetTheme = jest.fn()
-const mockAddThemes = jest.fn()
+const mockSetTheme = vi.fn()
+const mockAddThemes = vi.fn()
 
 const getProps = (
   props: Partial<ThemeCreatorDialogProps> = {}
 ): ThemeCreatorDialogProps => ({
-  backToSettings: jest.fn(),
-  onClose: jest.fn(),
+  backToSettings: vi.fn(),
+  onClose: vi.fn(),
   metricsMgr: new MetricsManager(mockSessionInfo()),
   ...props,
 })
@@ -60,7 +59,7 @@ const getContext = (
 
 Object.assign(navigator, {
   clipboard: {
-    writeText: jest.fn(),
+    writeText: vi.fn(),
   },
 })
 
@@ -167,7 +166,7 @@ font="monospace"
 
 describe("Opened ThemeCreatorDialog", () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("should update theme on color change", () => {
@@ -183,12 +182,18 @@ describe("Opened ThemeCreatorDialog", () => {
     const primaryColorPicker = within(themeColorPickers[0]).getByTestId(
       "stColorPickerBlock"
     )
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(primaryColorPicker)
 
     const newColor = "#e91e63"
     const colorInput = screen.getByRole("textbox")
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(colorInput, { target: { value: newColor } })
     // Close out of the popover
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(primaryColorPicker)
 
     expect(mockAddThemes).toHaveBeenCalled()
@@ -207,6 +212,8 @@ describe("Opened ThemeCreatorDialog", () => {
       addThemes: mockAddThemes,
     })
 
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(screen.getByRole("combobox"))
     const options = screen.getAllByRole("option")
 
@@ -214,6 +221,8 @@ describe("Opened ThemeCreatorDialog", () => {
       Object.keys(CustomThemeConfig.FontFamily).length
     )
 
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(options[2])
     expect(mockAddThemes).toHaveBeenCalled()
     expect(
@@ -233,6 +242,8 @@ describe("Opened ThemeCreatorDialog", () => {
       addThemes: mockAddThemes,
     })
 
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(screen.getByRole("combobox"))
     const options = screen.getAllByRole("option")
 
@@ -251,6 +262,8 @@ describe("Opened ThemeCreatorDialog", () => {
     })
 
     const backButton = screen.getByTestId("stThemeCreatorBack")
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(backButton)
     expect(props.backToSettings).toHaveBeenCalled()
   })
@@ -266,6 +279,8 @@ describe("Opened ThemeCreatorDialog", () => {
     const copyBtn = screen.getByRole("button", {
       name: "Copy theme to clipboard",
     })
+    // TODO: Utilize user-event instead of fireEvent
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(copyBtn)
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`[theme]

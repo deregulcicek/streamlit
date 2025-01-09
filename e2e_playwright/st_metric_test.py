@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,6 +73,13 @@ def test_none_results_in_dash_in_value(
     assert_snapshot(
         themed_app.get_by_test_id("stMetric").nth(7),
         name="st_metric-with_none_value",
+    )
+
+
+def test_border(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    assert_snapshot(
+        themed_app.get_by_test_id("stMetric").nth(10),
+        name="st_metric-border",
     )
 
 

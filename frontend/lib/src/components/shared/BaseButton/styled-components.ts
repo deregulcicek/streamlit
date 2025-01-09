@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ export enum BaseButtonKind {
   PRIMARY = "primary",
   SECONDARY = "secondary",
   TERTIARY = "tertiary",
+  GHOST = "ghost",
   LINK = "link",
   ICON = "icon",
   BORDERLESS_ICON = "borderlessIcon",
@@ -32,6 +33,7 @@ export enum BaseButtonKind {
   MINIMAL = "minimal",
   PRIMARY_FORM_SUBMIT = "primaryFormSubmit",
   SECONDARY_FORM_SUBMIT = "secondaryFormSubmit",
+  TERTIARY_FORM_SUBMIT = "tertiaryFormSubmit",
   HEADER_BUTTON = "header",
   HEADER_NO_PADDING = "headerNoPadding",
   ELEMENT_TOOLBAR = "elementToolbar",
@@ -100,6 +102,9 @@ export const StyledBaseButton = styled.button<RequiredBaseButtonProps>(
       minHeight: theme.sizes.minElementHeight,
       margin: theme.spacing.none,
       lineHeight: theme.lineHeights.base,
+      textTransform: "none",
+      fontSize: "inherit",
+      fontFamily: "inherit",
       color: "inherit",
       width: fluidWidth ? buttonWidth : "auto",
       cursor: "pointer",
@@ -164,6 +169,35 @@ export const StyledSecondaryButton = styled(
 
 export const StyledTertiaryButton = styled(
   StyledBaseButton
+)<RequiredBaseButtonProps>(({ theme }) => {
+  return {
+    padding: theme.spacing.none,
+    backgroundColor: theme.colors.transparent,
+    border: "none",
+
+    "&:active": {
+      color: theme.colors.primary,
+    },
+    "&:focus": {
+      outline: "none",
+    },
+    "&:focus-visible": {
+      color: theme.colors.primary,
+      boxShadow: `0 0 0 0.2rem ${transparentize(theme.colors.primary, 0.5)}`,
+    },
+    "&:hover": {
+      color: theme.colors.primary,
+    },
+    "&:disabled, &:disabled:hover, &:disabled:active": {
+      backgroundColor: theme.colors.transparent,
+      color: theme.colors.fadedText40,
+      cursor: "not-allowed",
+    },
+  }
+})
+
+export const StyledGhostButton = styled(
+  StyledBaseButton
 )<RequiredBaseButtonProps>(({ theme }) => ({
   backgroundColor: theme.colors.transparent,
   border: `${theme.sizes.borderWidth} solid ${theme.colors.transparent}`,
@@ -227,6 +261,11 @@ export const StyledPrimaryFormSubmitButton =
 export const StyledSecondaryFormSubmitButton = styled(
   StyledSecondaryButton
 )<RequiredBaseButtonProps>()
+
+export const StyledTertiaryFormSubmitButton = styled(
+  StyledTertiaryButton
+)<RequiredBaseButtonProps>()
+
 export const StyledIconButton = styled(
   StyledBaseButton
 )<RequiredBaseButtonProps>(({ theme }) => {
@@ -449,8 +488,13 @@ export const StyledBorderlessIconButton = styled(
       color: theme.colors.text,
     },
     "&:disabled, &:disabled:hover, &:disabled:active": {
-      color: theme.colors.fadedText20,
+      color: theme.colors.fadedText10,
       cursor: "not-allowed",
+
+      // For image content
+      img: {
+        opacity: 0.4,
+      },
     },
   }
 })
@@ -460,6 +504,9 @@ export const StyledBorderlessIconButtonActive = styled(
 )<RequiredBaseButtonProps>(({ theme }) => {
   return {
     color: theme.colors.bodyText,
+    "&:disabled, &:disabled:hover, &:disabled:active": {
+      color: theme.colors.fadedText40,
+    },
   }
 })
 

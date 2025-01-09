@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,10 @@ export default function AlertContainer({
             borderBottomRightRadius: theme.radii.default,
             borderTopLeftRadius: theme.radii.default,
             borderBottomLeftRadius: theme.radii.default,
+            paddingTop: theme.spacing.lg,
+            paddingBottom: theme.spacing.lg,
+            paddingRight: theme.spacing.lg,
+            paddingLeft: theme.spacing.lg,
           },
           props: {
             "data-testid": "stAlertContainer",

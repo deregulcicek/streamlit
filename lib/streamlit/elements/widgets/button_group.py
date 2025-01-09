@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -392,7 +392,7 @@ class ButtonGroupMixin:
         label: str,
         options: OptionSequence[V],
         *,
-        selection_mode: Literal["single"],
+        selection_mode: Literal["single"] = "single",
         default: V | None = None,
         format_func: Callable[[Any], str] | None = None,
         key: Key | None = None,
@@ -409,7 +409,7 @@ class ButtonGroupMixin:
         label: str,
         options: OptionSequence[V],
         *,
-        selection_mode: Literal["multi"] = "multi",
+        selection_mode: Literal["multi"],
         default: Sequence[V] | V | None = None,
         format_func: Callable[[Any], str] | None = None,
         key: Key | None = None,
@@ -594,7 +594,7 @@ class ButtonGroupMixin:
         label: str,
         options: OptionSequence[V],
         *,
-        selection_mode: Literal["single"],
+        selection_mode: Literal["single"] = "single",
         default: V | None = None,
         format_func: Callable[[Any], str] | None = None,
         key: str | int | None = None,
@@ -611,7 +611,7 @@ class ButtonGroupMixin:
         label: str,
         options: OptionSequence[V],
         *,
-        selection_mode: Literal["multi"] = "multi",
+        selection_mode: Literal["multi"],
         default: Sequence[V] | V | None = None,
         format_func: Callable[[Any], str] | None = None,
         key: str | int | None = None,

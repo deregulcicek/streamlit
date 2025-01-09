@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 import React from "react"
 
 import { CancelTokenSource } from "axios"
-import "@testing-library/jest-dom"
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
 import { render } from "@streamlit/lib/src/test_util"
 
@@ -27,7 +27,7 @@ import { FileStatus, UploadFileInfo } from "./UploadFileInfo"
 
 const getProps = (fileStatus: FileStatus): Props => ({
   fileInfo: new UploadFileInfo("filename.txt", 15, 1, fileStatus),
-  onDelete: jest.fn(),
+  onDelete: vi.fn(),
 })
 
 describe("FileStatus widget", () => {
@@ -63,7 +63,8 @@ describe("FileStatus widget", () => {
 })
 
 describe("UploadedFile widget", () => {
-  it("renders without crashing", () => {
+  it("renders without crashing", async () => {
+    const user = userEvent.setup()
     const props = getProps({
       type: "uploaded",
       fileId: "fileId",
@@ -72,7 +73,7 @@ describe("UploadedFile widget", () => {
     render(<UploadedFile {...props} />)
     expect(screen.getByTestId("stFileUploaderFile")).toBeInTheDocument()
     const deleteBtn = screen.getByRole("button")
-    fireEvent.click(deleteBtn)
+    await user.click(deleteBtn)
     expect(props.onDelete).toHaveBeenCalledWith(1)
   })
 })

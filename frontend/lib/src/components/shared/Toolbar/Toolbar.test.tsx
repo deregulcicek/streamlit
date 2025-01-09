@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { Info } from "@emotion-icons/material-outlined"
+import { userEvent } from "@testing-library/user-event"
 
 import { render } from "@streamlit/lib/src/test_util"
 
@@ -28,8 +28,8 @@ import Toolbar, {
   ToolbarProps,
 } from "./Toolbar"
 
-const onExpand = jest.fn()
-const onCollapse = jest.fn()
+const onExpand = vi.fn()
+const onCollapse = vi.fn()
 
 const getToolbarProps = (
   propOverrides: Partial<ToolbarProps> = {}
@@ -44,7 +44,7 @@ const getToolbarProps = (
 const getToolbarActionsProps = (
   propOverrides: Partial<ToolbarActionProps> = {}
 ): ToolbarActionProps => ({
-  onClick: jest.fn(),
+  onClick: vi.fn(),
   icon: Info,
   label: "info",
   show_label: false,
@@ -53,7 +53,7 @@ const getToolbarActionsProps = (
 
 describe("Toolbar element", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it("renders a Toolbar", async () => {
@@ -87,6 +87,7 @@ describe("Toolbar element", () => {
   })
 
   it("allows expanding into fullscreen mode", async () => {
+    const user = userEvent.setup()
     render(
       <Toolbar {...getToolbarProps()}>
         <ToolbarAction {...getToolbarActionsProps()} />
@@ -101,13 +102,14 @@ describe("Toolbar element", () => {
     const toolbarButton = screen.getAllByRole("button")
     expect(toolbarButton).toHaveLength(2)
     // Clicking the second button should close the fullscreen mode
-    fireEvent.click(toolbarButton[1])
+    await user.click(toolbarButton[1])
 
     // Check that onCollapse was clicked
     expect(onExpand).toHaveBeenCalled()
   })
 
   it("adapts to fullscreen mode", async () => {
+    const user = userEvent.setup()
     render(
       <Toolbar {...getToolbarProps({ locked: false, isFullScreen: true })}>
         <ToolbarAction {...getToolbarActionsProps()} />
@@ -122,7 +124,7 @@ describe("Toolbar element", () => {
     const toolbarButton = screen.getAllByRole("button")
     expect(toolbarButton).toHaveLength(2)
     // Clicking the second button should close the fullscreen mode
-    fireEvent.click(toolbarButton[1])
+    await user.click(toolbarButton[1])
 
     // Check that onCollapse was clicked
     expect(onCollapse).toHaveBeenCalled()
@@ -181,7 +183,8 @@ describe("ToolbarAction Button element", () => {
   })
 
   it("calls callback on click", async () => {
-    const onClickMock = jest.fn()
+    const user = userEvent.setup()
+    const onClickMock = vi.fn()
 
     render(
       <ToolbarAction {...getToolbarActionsProps({ onClick: onClickMock })} />
@@ -190,7 +193,7 @@ describe("ToolbarAction Button element", () => {
     const toolbarButton = screen.getByRole("button")
     expect(toolbarButton).toBeInTheDocument()
 
-    fireEvent.click(toolbarButton)
+    await user.click(toolbarButton)
 
     // Check that onClick callback was clicked
     expect(onClickMock).toHaveBeenCalled()

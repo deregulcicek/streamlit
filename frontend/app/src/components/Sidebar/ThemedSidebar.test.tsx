@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import React from "react"
 
-import "@testing-library/jest-dom"
 import { screen } from "@testing-library/react"
 
 import { emotionLightTheme, mockEndpoints, render } from "@streamlit/lib"
@@ -31,7 +30,7 @@ function getProps(
     endpoints: mockEndpoints(),
     appPages: [],
     navSections: [],
-    onPageChange: jest.fn(),
+    onPageChange: vi.fn(),
     currentPageScriptHash: "page_hash",
     hasElements: true,
     hideSidebarNav: false,

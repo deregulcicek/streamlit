@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ def test_renders_settings_dialog_properly(
     themed_app.get_by_text("Settings").click()
     dialog = themed_app.get_by_test_id("stDialog")
     expect(dialog).to_be_visible()
+
     assert_snapshot(dialog.get_by_role("dialog"), name="settings_dialog")
 
 
@@ -103,5 +104,4 @@ def test_renders_active_theme_dialog_properly(
 
     dialog = themed_app.get_by_test_id("stDialog")
     expect(dialog).to_be_visible()
-
     assert_snapshot(dialog.get_by_role("dialog"), name="edit_active_theme_dialog")

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import AlertContainer, {
 import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown"
 import { Exception as ExceptionProto } from "@streamlit/lib/src/proto"
 import { StyledCode } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
+import { StyledStackTrace } from "@streamlit/lib/src/components/shared/ErrorElement/styled-components"
 
 import {
   StyledExceptionMessage,
   StyledMessageType,
-  StyledStackTrace,
   StyledStackTraceContent,
   StyledStackTraceRow,
   StyledStackTraceTitle,
@@ -66,16 +66,17 @@ function ExceptionMessage({
   // messages, and so we wrap those messages inside our Markdown renderer.
 
   if (messageIsMarkdown) {
-    let markdown = `**${type}**`
-    if (message) {
-      markdown += `: ${message}`
+    let markdown = message ?? ""
+    if (type.length !== 0) {
+      markdown = `**${type}**: ${markdown}`
     }
     return <StreamlitMarkdown source={markdown} allowHTML={false} />
   }
   return (
     <>
       <StyledMessageType>{type}</StyledMessageType>
-      {isNonEmptyString(message) ? `: ${message}` : null}
+      {type.length !== 0 && ": "}
+      {isNonEmptyString(message) ? message : null}
     </>
   )
 }

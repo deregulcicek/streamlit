@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run, wait_until
-from e2e_playwright.shared.app_utils import check_top_level_class
+from e2e_playwright.shared.app_utils import check_top_level_class, get_radio_button
 
 
 def get_first_graph_svg(app: Page):
@@ -23,7 +23,9 @@ def get_first_graph_svg(app: Page):
 
 
 def click_fullscreen(app: Page):
-    app.get_by_role("button", name="Fullscreen").nth(0).click()
+    fullscreen_button = app.get_by_role("button", name="Fullscreen").nth(0)
+    expect(fullscreen_button).to_be_visible()
+    fullscreen_button.click()
     # Wait for the animation to finish
     app.wait_for_timeout(1000)
 
@@ -32,7 +34,7 @@ def test_initial_setup(app: Page):
     """Initial setup: ensure charts are loaded."""
     expect(
         app.get_by_test_id("stGraphVizChart").locator("svg > g > title")
-    ).to_have_count(6)
+    ).to_have_count(7)
 
 
 def test_shows_left_and_right_graph(app: Page):
@@ -56,14 +58,13 @@ def test_first_graph_dimensions(app: Page):
 
 def test_first_graph_fullscreen(app: Page, assert_snapshot: ImageCompareFunction):
     """Test if the first graph shows in fullscreen."""
-
-    # Hover over the parent div
-    app.get_by_test_id("stGraphVizChart").nth(0).hover()
+    first_graph_svg = get_first_graph_svg(app)
+    expect(first_graph_svg).to_have_attribute("width", "79pt")
+    first_graph_svg.hover()
 
     # Enter fullscreen
     click_fullscreen(app)
 
-    first_graph_svg = get_first_graph_svg(app)
     # The width and height unset on the element on fullscreen
     expect(first_graph_svg).not_to_have_attribute("width", "79pt")
     expect(first_graph_svg).not_to_have_attribute("height", "116pt")
@@ -82,14 +83,17 @@ def test_first_graph_after_exit_fullscreen(
 ):
     """Test if the first graph has correct size after exiting fullscreen."""
 
-    # Hover over the parent div
-    app.get_by_test_id("stGraphVizChart").nth(0).hover()
+    first_graph_svg = get_first_graph_svg(app)
+    expect(first_graph_svg).to_have_attribute("width", "79pt")
+    first_graph_svg.hover()
 
     # Enter and exit fullscreen
     click_fullscreen(app)
+    # in fullscreen mode, the width attribute is removed. Wait for this to
+    # avoid flakiness.
+    expect(first_graph_svg).not_to_have_attribute("width", "79pt")
     click_fullscreen(app)
 
-    first_graph_svg = get_first_graph_svg(app)
     expect(first_graph_svg).to_have_attribute("width", "79pt")
     expect(first_graph_svg).to_have_attribute("height", "116pt")
     assert_snapshot(first_graph_svg, name="st_graphviz-after_exit_fullscreen")
@@ -101,11 +105,12 @@ def test_renders_with_specified_engines(
     """Test if it renders with specified engines."""
 
     engines = ["dot", "neato", "twopi", "circo", "fdp", "osage", "patchwork"]
+    radio_group = app.get_by_test_id("stRadio")
+    radios = radio_group.get_by_role("radio")
+    expect(radios).to_have_count(len(engines))
 
-    radios = app.query_selector_all('label[data-baseweb="radio"]')
-
-    for idx, engine in enumerate(engines):
-        radios[idx].click(force=True)
+    for engine in engines:
+        get_radio_button(radio_group, engine).click(force=True)
         wait_for_app_run(app)
         expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text(engine)
 
@@ -130,3 +135,11 @@ def test_dot_string(app: Page, assert_snapshot: ImageCompareFunction):
 def test_check_top_level_class(app: Page):
     """Check that the top level class is correctly set."""
     check_top_level_class(app, "stGraphVizChart")
+
+
+def test_use_container_width_true(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that it renders correctly with use_container_width=True."""
+    assert_snapshot(
+        app.get_by_test_id("stGraphVizChart").nth(6).locator("svg"),
+        name="st_graphviz_chart_use_container_width_true",
+    )

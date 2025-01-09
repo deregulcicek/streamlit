@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +25,14 @@ if TYPE_CHECKING:
     segmented_control = ButtonGroupMixin().segmented_control
 
     options: list[int] = [1, 2, 3]
+    assert_type(
+        segmented_control("foo", options),
+        Union[int, None],
+    )
+    assert_type(
+        segmented_control("foo", options, default=1),
+        Union[int, None],
+    )
     assert_type(
         segmented_control("foo", options, selection_mode="single"),
         Union[int, None],

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks"
 import { GridMouseEventArgs } from "@glideapps/glide-data-grid"
+import { act, renderHook } from "@testing-library/react-hooks"
 
 import {
   BaseColumn,
@@ -43,6 +43,7 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isRequired: true,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
     help: TOOLTIP_CONTENT,
   }),
@@ -59,11 +60,12 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isRequired: false,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
   }),
 ]
 
-const getCellContentMock = jest
+const getCellContentMock = vi
   .fn()
   .mockImplementation(([col]: readonly [number]) => {
     const column = MOCK_COLUMNS[col]
@@ -73,7 +75,7 @@ const getCellContentMock = jest
     return { ...column.getCell("foo"), tooltip: "Cell tooltip 2" }
   })
 
-const getEmptyCellContentMock = jest
+const getEmptyCellContentMock = vi
   .fn()
   .mockImplementation(([col]: readonly [number]) => {
     const column = MOCK_COLUMNS[col]
@@ -82,13 +84,13 @@ const getEmptyCellContentMock = jest
 
 describe("useTooltips hook", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.useFakeTimers()
+    vi.clearAllMocks()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   it("renders a tooltip on hovering the header column with a tooltip", () => {
@@ -104,7 +106,7 @@ describe("useTooltips hook", () => {
         bounds: { x: 0, y: 0, width: 100, height: 30 },
       } as object as GridMouseEventArgs)
 
-      jest.advanceTimersByTime(DEBOUNCE_TIME_MS)
+      vi.advanceTimersByTime(DEBOUNCE_TIME_MS)
     })
 
     expect(result.current.tooltip).toMatchObject({
@@ -127,7 +129,7 @@ describe("useTooltips hook", () => {
         bounds: { x: 0, y: 30, width: 100, height: 30 },
       } as object as GridMouseEventArgs)
 
-      jest.advanceTimersByTime(DEBOUNCE_TIME_MS)
+      vi.advanceTimersByTime(DEBOUNCE_TIME_MS)
     })
 
     expect(result.current.tooltip).toMatchObject({
@@ -150,7 +152,7 @@ describe("useTooltips hook", () => {
         bounds: { x: 0, y: 30, width: 100, height: 30 },
       } as object as GridMouseEventArgs)
 
-      jest.advanceTimersByTime(DEBOUNCE_TIME_MS)
+      vi.advanceTimersByTime(DEBOUNCE_TIME_MS)
     })
 
     expect(result.current.tooltip).toMatchObject({
@@ -173,7 +175,7 @@ describe("useTooltips hook", () => {
         bounds: { x: 0, y: 0, width: 100, height: 30 },
       } as object as GridMouseEventArgs)
 
-      jest.advanceTimersByTime(DEBOUNCE_TIME_MS)
+      vi.advanceTimersByTime(DEBOUNCE_TIME_MS)
     })
 
     expect(result.current.tooltip).toMatchObject({

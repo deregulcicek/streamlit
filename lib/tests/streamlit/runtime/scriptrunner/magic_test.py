@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,6 +54,11 @@ a
 b
 """
         self._testCode(CODE_SIMPLE_STATEMENTS, 2)
+
+    def test_empty_ast(self):
+        """Test empty AST"""
+        CODE_EMPTY_AST = ""
+        self._testCode(CODE_EMPTY_AST, 0)
 
     def test_if_statement(self):
         """Test if statements"""

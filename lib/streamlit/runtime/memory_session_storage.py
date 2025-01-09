@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ class MemorySessionStorage(SessionStorage):
             The maximum number of sessions we allow to be stored in this
             MemorySessionStorage. If an entry needs to be removed because we have
             exceeded this number, either
-              * an expired entry is removed, or
-              * the least recently used entry is removed (if no entries have expired).
+            - an expired entry is removed, or
+            - the least recently used entry is removed (if no entries have expired).
 
         ttl_seconds
             The time in seconds for an entry added to a MemorySessionStorage to live.

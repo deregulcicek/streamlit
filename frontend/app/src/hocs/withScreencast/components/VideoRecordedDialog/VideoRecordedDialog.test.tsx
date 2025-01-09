@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 import React from "react"
 
 import { BaseProvider, LightTheme } from "baseui"
-import "@testing-library/jest-dom"
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 
 import { render } from "@streamlit/lib"
 
 import VideoRecordedDialog, { Props } from "./VideoRecordedDialog"
 
-URL.createObjectURL = jest.fn()
+URL.createObjectURL = vi.fn()
 
 const getProps = (props: Partial<Props> = {}): Props => ({
   fileName: "test",
-  onClose: jest.fn(),
+  onClose: vi.fn(),
   videoBlob: new Blob(),
   ...props,
 })
@@ -69,7 +69,8 @@ describe("VideoRecordedDialog", () => {
     expect(URL.createObjectURL).toHaveBeenCalled()
   })
 
-  it("should render a download button", () => {
+  it("should render a download button", async () => {
+    const user = userEvent.setup()
     render(
       <BaseProvider theme={LightTheme}>
         <VideoRecordedDialog {...props} />
@@ -80,7 +81,7 @@ describe("VideoRecordedDialog", () => {
     })
 
     expect(downloadButton).toBeInTheDocument()
-    fireEvent.click(downloadButton)
+    await user.click(downloadButton)
     expect(props.onClose).toHaveBeenCalled()
   })
 })

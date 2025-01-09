@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -706,8 +706,7 @@ def _get_offset_encoding(
     x_offset = alt.XOffset()
     y_offset = alt.YOffset()
 
-    # our merge gate does not find the alt.UndefinedType type for some reason
-    _color_column: str | alt.UndefinedType = (  # type: ignore[name-defined]
+    _color_column: str | alt.UndefinedType = (
         color_column if color_column is not None else alt.utils.Undefined
     )
 

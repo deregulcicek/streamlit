@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import {
   isDarkThemeInQueryParams,
   isLightThemeInQueryParams,
 } from "@streamlit/lib/src/util/utils"
+import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
@@ -62,6 +63,16 @@ declare global {
       LIGHT_THEME: ICustomThemeConfig
       DARK_THEME: ICustomThemeConfig
     }
+    __streamlit_profiles__?: Record<
+      string,
+      CircularBuffer<{
+        phase: "mount" | "update" | "nested-update"
+        actualDuration: number
+        baseDuration: number
+        startTime: number
+        commitTime: number
+      }>
+    >
   }
 }
 
@@ -496,6 +507,8 @@ export const convertRemToPx = (scssValue: string): number => {
     // TODO(lukasmasuch): We might want to somehow cache this value at some point.
     // However, I did experimented with the performance of calling this, and
     // it seems not like a big deal to call it many times.
-    remValue * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    remValue *
+    // We fallback to 16px if the fontSize is not defined (should only happen in tests)
+    (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16)
   )
 }
