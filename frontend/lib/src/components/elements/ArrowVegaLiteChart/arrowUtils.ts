@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,48 +189,4 @@ export function getDataArray(
   }
 
   return dataArr
-}
-
-/**
- * Checks if data looks like it's just prevData plus some appended rows.
- */
-export function dataIsAnAppendOfPrev(
-  prevData: Quiver,
-  prevNumRows: number,
-  prevNumCols: number,
-  data: Quiver,
-  numRows: number,
-  numCols: number
-): boolean {
-  // Check whether dataframes have the same shape.
-
-  // not an append
-  if (prevNumCols !== numCols) {
-    return false
-  }
-
-  // Data can be updated, but still have the same number of rows.
-  // We consider the case an append only when the number of rows has increased
-  if (prevNumRows >= numRows) {
-    return false
-  }
-
-  // if no previous data, render from scratch
-  if (prevNumRows === 0) {
-    return false
-  }
-
-  const c = numCols - 1
-  const r = prevNumRows - 1
-
-  // Check if the new dataframe looks like it's a superset of the old one.
-  // (this is a very light check, and not guaranteed to be right!)
-  if (
-    prevData.getDataValue(0, c) !== data.getDataValue(0, c) ||
-    prevData.getDataValue(r, c) !== data.getDataValue(r, c)
-  ) {
-    return false
-  }
-
-  return true
 }
