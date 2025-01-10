@@ -18,11 +18,12 @@ import React from "react"
 
 import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
 import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown"
+import { IconSize } from "@streamlit/lib/src/theme"
 
 export interface DynamicButtonLabelProps {
   icon?: string
   label?: string
-  iconSize?: "sm" | "md" | "lg" | "base" | "xs" | "xl" | "twoXL" | "threeXL"
+  iconSize?: IconSize
 }
 
 export const DynamicButtonLabel = ({
