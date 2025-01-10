@@ -115,7 +115,11 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
 
     >>> import streamlit as st
     >>> conn = st.connection(
-    ...     "snowflake", account="xxx-xxx", user="xxx", authenticator="externalbrowser"
+    ...     connection_name,
+    ...     type="snowflake",
+    ...     account="xxx-xxx",
+    ...     user="xxx",
+    ...     authenticator="externalbrowser",
     ... )
     >>> df = conn.query("SELECT * FROM my_table")
 
@@ -160,7 +164,12 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
     >>> conn = st.connection("snowflake")
     >>> df = conn.query("SELECT * FROM my_table")
 
-    **Example 5: Default connection with an environment variable**
+    **Snowflake Default Connection**
+    If you don't have Streamlit secret `[connections.snowflake]` and just use
+    `st.connection("snowflake")`, Streamlit will use the default connection behavior as documented in
+    https://docs.snowflake.cn/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection
+
+    ***Example 5: Default connection with an environment variable***
 
     If you have a Snowflake configuration file with a connection named
     ``my_connection`` as in Example 3, you can set an environment variable to
@@ -174,7 +183,7 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
     >>> conn = st.connection("snowflake")
     >>> df = conn.query("SELECT * FROM my_table")
 
-    **Example 6: Default connection in Snowflake's connection configuration file**
+    ***Example 6: Default connection in Snowflake's connection configuration file***
 
     If you have a Snowflake configuration file that defines your ``default``
     connection, Streamlit will automatically use it if no other connection is
