@@ -16,7 +16,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterator,
+    Literal,
+    Mapping,
+    Sequence,
+    Union,
+    cast,
+    overload,
+)
 
 from streamlit import runtime
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
@@ -52,13 +62,19 @@ if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
 
 
-class ChatInputValue:
+class ChatInputValue(Mapping[str, Union[str, list[UploadedFile], None]]):
     text: str
     files: list[UploadedFile]
 
     def __init__(self, text: str, files: list[UploadedFile]):
         self.text = text
         self.files = files
+
+    def __len__(self) -> int:
+        return 2
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter({"text": self.text, "files": self.files})
 
     @overload
     def __getitem__(self, item: Literal["text"]) -> str:
@@ -73,6 +89,9 @@ class ChatInputValue:
             return getattr(self, item)  # type: ignore[no-any-return]
         except AttributeError:
             raise KeyError(f"Invalid key: {item}") from None
+
+    def to_dict(self) -> dict[str, str | list[UploadedFile]]:
+        return {"text": self.text, "files": self.files}
 
 
 TYPE_PAIRS = [
