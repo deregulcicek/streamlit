@@ -43,7 +43,7 @@ requirements:
       # Conda doesn't support the `platform_system` conditional that pip does.
       # We may need to figure out how to avoid installing watchdog on MacOS
       # by default in our conda distribution due to this.
-      {% elif 'watchdog' in req %}
+      {% if 'watchdog' in req %}
         - watchdog
       {% else %}
         - {{ req }}
