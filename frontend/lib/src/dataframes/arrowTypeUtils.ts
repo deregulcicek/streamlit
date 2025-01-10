@@ -65,7 +65,7 @@ export interface PandasColumnType {
   field?: Field
 
   /** The type label returned by pandas.api.types.infer_dtype */
-  pandas_type: string
+  pandas_type?: string
 
   /** The numpy dtype that corresponds to the types returned in df.dtypes */
   numpy_type?: string
