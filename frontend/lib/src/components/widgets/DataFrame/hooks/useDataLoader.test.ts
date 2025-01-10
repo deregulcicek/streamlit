@@ -93,7 +93,7 @@ describe("useDataLoader hook", () => {
       data: UNICODE,
     })
     const data = new Quiver(element)
-    const numRows = data.dimensions.rows
+    const numRows = data.dimensions.numRows
 
     const { result } = renderHook(() => {
       const editingState = React.useRef<EditingState>(
@@ -136,7 +136,7 @@ describe("useDataLoader hook", () => {
       data: MULTI,
     })
     const data = new Quiver(element)
-    const numRows = data.dimensions.rows
+    const numRows = data.dimensions.numRows
 
     const { result } = renderHook(() => {
       const editingState = React.useRef<EditingState>(
@@ -158,7 +158,7 @@ describe("useDataLoader hook", () => {
     })
 
     const data = new Quiver(element)
-    const numRows = data.dimensions.rows
+    const numRows = data.dimensions.numRows
 
     const { result } = renderHook(() => {
       const editingState = React.useRef<EditingState>(
@@ -186,7 +186,7 @@ describe("useDataLoader hook", () => {
     })
 
     const data = new Quiver(element)
-    const numRows = data.dimensions.rows
+    const numRows = data.dimensions.numRows
 
     const { result } = renderHook(() => {
       const editingState = React.useRef<EditingState>(

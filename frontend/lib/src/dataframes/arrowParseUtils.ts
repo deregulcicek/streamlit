@@ -32,10 +32,9 @@ import unzip from "lodash/unzip"
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
 import {
-  isRangeIndex,
   PandasColumnType,
-  PandasIndexTypeName,
   PandasRangeIndex,
+  PandasRangeIndexType,
 } from "./arrowTypeUtils"
 
 /**
@@ -136,6 +135,16 @@ interface PandasSchema {
   column_indexes: ColumnMetadata[]
 }
 
+/** True if the index name represents a "range" index.
+ *
+ * This is only needed for parsing.
+ */
+function isPandasRangeIndex(
+  indexName: string | PandasRangeIndex
+): indexName is PandasRangeIndex {
+  return typeof indexName === "object" && indexName.kind === "range"
+}
+
 /**
  * Parse the Pandas schema that is embedded as JSON string in the Arrow table.
  * This is only present if the table was processed through Pandas.
@@ -175,7 +184,7 @@ function parseIndexData(table: Table, pandasSchema: PandasSchema): IndexData {
   return pandasSchema.index_columns
     .map(indexName => {
       // Generate a range using the "range" index metadata.
-      if (isRangeIndex(indexName)) {
+      if (isPandasRangeIndex(indexName)) {
         const { start, stop, step } = indexName
         return range(start, stop, step)
       }
@@ -198,7 +207,7 @@ function parseIndexNames(schema: PandasSchema): string[] {
     // Range indices are treated differently since they
     // contain additional metadata (e.g. start, stop, step).
     // and not just the name.
-    if (isRangeIndex(indexName)) {
+    if (isPandasRangeIndex(indexName)) {
       const { name } = indexName
       return name || ""
     }
@@ -301,11 +310,10 @@ function parseDataType(
 /** Parse types for each index column. */
 function parseIndexType(pandasSchema: PandasSchema): PandasColumnType[] {
   return pandasSchema.index_columns.map(indexName => {
-    if (isRangeIndex(indexName)) {
+    if (isPandasRangeIndex(indexName)) {
       return {
-        field: undefined,
-        pandas_type: PandasIndexTypeName.RangeIndex,
-        numpy_type: PandasIndexTypeName.RangeIndex,
+        pandas_type: PandasRangeIndexType,
+        numpy_type: PandasRangeIndexType,
         meta: indexName as PandasRangeIndex,
       }
     }
