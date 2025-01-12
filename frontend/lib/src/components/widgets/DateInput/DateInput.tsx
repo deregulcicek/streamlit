@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import {
 import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
 import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
 import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
+import { EmotionTheme } from "@streamlit/lib/src/theme"
 
 import { useIntlLocale } from "./useIntlLocale"
 
@@ -79,6 +80,8 @@ function DateInput({
   width,
   fragmentId,
 }: Props): ReactElement {
+  const theme: EmotionTheme = useTheme()
+
   /**
    * An array with start and end date specified by the user via the UI. If the user
    * didn't touch this widget's UI, the default value is used. End date is optional.
@@ -197,6 +200,7 @@ function DateInput({
         disabled={disabled}
         onChange={handleChange}
         onClose={handleClose}
+        quickSelect={element.isRange}
         overrides={{
           Popover: {
             props: {
@@ -332,6 +336,22 @@ function DateInput({
                   },
                   props: {
                     "data-testid": "stDateInputField",
+                  },
+                },
+              },
+            },
+          },
+          QuickSelect: {
+            props: {
+              overrides: {
+                ControlContainer: {
+                  style: {
+                    height: theme.sizes.minElementHeight,
+                    // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
+                    borderLeftWidth: theme.sizes.borderWidth,
+                    borderRightWidth: theme.sizes.borderWidth,
+                    borderTopWidth: theme.sizes.borderWidth,
+                    borderBottomWidth: theme.sizes.borderWidth,
                   },
                 },
               },
