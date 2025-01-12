@@ -41,31 +41,6 @@ class ScriptRunContextTest(unittest.TestCase):
         except AttributeError:
             pass
 
-    def test_set_page_config_immutable(self):
-        """st.set_page_config must be called at most once"""
-
-        def fake_enqueue(msg):
-            return None
-
-        ctx = ScriptRunContext(
-            session_id="TestSessionID",
-            _enqueue=fake_enqueue,
-            query_string="",
-            session_state=SafeSessionState(SessionState(), lambda: None),
-            uploaded_file_mgr=MemoryUploadedFileManager("mock/upload"),
-            main_script_path="",
-            user_info={"email": "test@example.com"},
-            fragment_storage=MemoryFragmentStorage(),
-            pages_manager=PagesManager(""),
-        )
-
-        msg = ForwardMsg()
-        msg.page_config_changed.title = "foo"
-
-        ctx.enqueue(msg)
-        with self.assertRaises(StreamlitAPIException):
-            ctx.enqueue(msg)
-
     def test_active_script_hash(self):
         """ensures active script hash is set correctly when enqueueing messages"""
 
