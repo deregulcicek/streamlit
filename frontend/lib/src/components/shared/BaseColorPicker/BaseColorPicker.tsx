@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
@@ -174,4 +174,4 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
   )
 }
 
-export default BaseColorPicker
+export default memo(BaseColorPicker)
