@@ -42,8 +42,16 @@ import {
 } from "./styled-components"
 
 function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
-  const { kind, size, disabled, onClick, fluidWidth, children, autoFocus } =
-    props
+  const {
+    kind,
+    size,
+    disabled,
+    onClick,
+    fluidWidth,
+    children,
+    autoFocus,
+    wrap,
+  } = props
 
   let ComponentType = StyledPrimaryButton
 
@@ -93,6 +101,7 @@ function BaseButton(props: Readonly<BaseButtonPropsT>): ReactElement {
       disabled={disabled || false}
       onClick={onClick || (() => {})}
       autoFocus={autoFocus || false}
+      wrap={wrap ?? true}
       data-testid={props["data-testid"] ?? `stBaseButton-${kind}`}
       aria-label={props["aria-label"] ?? ""}
     >

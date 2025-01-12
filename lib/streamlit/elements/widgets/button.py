@@ -98,6 +98,7 @@ class ButtonMixin:
         icon: str | None = None,
         disabled: bool = False,
         use_container_width: bool = False,
+        wrap: bool = True,
     ) -> bool:
         r"""Display a button widget.
 
@@ -179,6 +180,12 @@ class ButtonMixin:
             In both cases, if the contents of the button are wider than the
             parent container, the contents will line wrap.
 
+        wrap : bool
+            Whether to allow the button label to wrap to multiple lines.
+            If ``wrap`` is ``True`` (default), the label will wrap to multiple lines
+            if needed. If ``wrap`` is ``False``, the label will stay on a single line
+            and be truncated with an ellipsis if it's too long.
+
         Returns
         -------
         bool
@@ -247,6 +254,7 @@ class ButtonMixin:
             type=type,
             icon=icon,
             use_container_width=use_container_width,
+            wrap=wrap,
             ctx=ctx,
         )
 
@@ -889,6 +897,7 @@ class ButtonMixin:
         icon: str | None = None,
         disabled: bool = False,
         use_container_width: bool = False,
+        wrap: bool = True,
         ctx: ScriptRunContext | None = None,
     ) -> bool:
         key = to_key(key)
@@ -941,6 +950,7 @@ class ButtonMixin:
         button_proto.type = type
         button_proto.use_container_width = use_container_width
         button_proto.disabled = disabled
+        button_proto.wrap = wrap
 
         if help is not None:
             button_proto.help = dedent(help)

@@ -59,6 +59,7 @@ export interface BaseButtonProps {
   fluidWidth?: boolean | number
   children: ReactNode
   autoFocus?: boolean
+  wrap?: boolean
   "data-testid"?: string
   "aria-label"?: string
 }
@@ -88,7 +89,7 @@ function getSizeStyle(size: BaseButtonSize, theme: EmotionTheme): CSSObject {
 }
 
 export const StyledBaseButton = styled.button<RequiredBaseButtonProps>(
-  ({ fluidWidth, size, theme }) => {
+  ({ fluidWidth, size, wrap, theme }) => {
     const buttonWidth =
       typeof fluidWidth == "number" ? `${fluidWidth}px` : "100%"
 
@@ -109,6 +110,9 @@ export const StyledBaseButton = styled.button<RequiredBaseButtonProps>(
       width: fluidWidth ? buttonWidth : "auto",
       cursor: "pointer",
       userSelect: "none",
+      whiteSpace: wrap ? "normal" : "nowrap",
+      textOverflow: wrap ? "clip" : "ellipsis",
+      overflow: "hidden",
       "&:focus": {
         outline: "none",
       },

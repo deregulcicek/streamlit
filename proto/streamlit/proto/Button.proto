@@ -34,4 +34,5 @@ message Button {
   bool disabled = 8;
   bool use_container_width = 9;
   string icon = 10;
+  bool wrap = 11;
 }

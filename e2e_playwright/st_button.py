@@ -83,3 +83,12 @@ conn_types = [
 ]
 for i in range(len(conn_types)):
     cols[i % 3].button(conn_types[i], use_container_width=True)
+
+
+col1, _, _ = st.columns(3)
+
+col1.button(
+    "This is a very long button label that will wrap to multiple lines by default",
+    wrap=True,
+)
+col1.button("This is a very long button label that will stay on one line", wrap=False)

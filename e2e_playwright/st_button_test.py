@@ -41,6 +41,8 @@ def test_button_widget_rendering(
     assert_snapshot(button_elements.nth(8), name="st_button-emoji_icon")
     assert_snapshot(button_elements.nth(9), name="st_button-tertiary")
     assert_snapshot(button_elements.nth(10), name="st_button-disabled_tertiary")
+    assert_snapshot(button_elements.nth(11), name="st_button-wrap")
+    assert_snapshot(button_elements.nth(12), name="st_button-no_wrap")
 
     # The rest is tested in one screenshot in the following test
 

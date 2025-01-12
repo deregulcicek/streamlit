@@ -34,6 +34,7 @@ class ButtonTest(DeltaGeneratorTestCase):
         self.assertEqual(c.type, "secondary")
         self.assertEqual(c.is_form_submitter, False)
         self.assertEqual(c.disabled, False)
+        self.assertEqual(c.wrap, True)
 
     @parameterized.expand(["primary", "secondary", "tertiary"])
     def test_type(self, type):
@@ -77,6 +78,13 @@ class ButtonTest(DeltaGeneratorTestCase):
 
         c = self.get_delta_from_queue().new_element.button
         self.assertEqual(c.use_container_width, False)
+
+    def test_wrap_can_be_set_to_false(self):
+        """Test wrap can be set to false."""
+        st.button("the label", wrap=False)
+
+        c = self.get_delta_from_queue().new_element.button
+        self.assertEqual(c.wrap, False)
 
     def test_cached_widget_replay_warning(self):
         """Test that a warning is shown when this widget is used inside a cached function."""

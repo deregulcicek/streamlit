@@ -56,6 +56,7 @@ function Button(props: Props): ReactElement {
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           fluidWidth={element.useContainerWidth ? fluidWidth : false}
+          wrap={element.wrap}
           onClick={() =>
             widgetMgr.setTriggerValue(element, { fromUi: true }, fragmentId)
           }
