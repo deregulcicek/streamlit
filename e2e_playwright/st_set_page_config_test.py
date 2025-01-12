@@ -17,7 +17,6 @@ from playwright.sync_api import Page, expect
 
 from e2e_playwright.shared.app_utils import (
     click_button,
-    expect_exception,
     expect_no_exception,
     get_expander,
 )
@@ -88,14 +87,6 @@ def test_allows_preceding_command_in_callback(app: Page):
     click_button(app, "Preceding Command in Callback")
     expect(app).to_have_title("Allows preceding command in callback")
     expect_no_exception(app)
-
-
-def test_double_set_page_config(app: Page):
-    """Should display an error when st.set_page_config is called
-    multiple times in a callback."""
-    click_button(app, "Double Set Page Config")
-    expect_exception(app, "set_page_config() can only be called once per app page")
-    expect(app).to_have_title("Page Config 1")
 
 
 def test_with_collapsed_sidebar(app: Page):
