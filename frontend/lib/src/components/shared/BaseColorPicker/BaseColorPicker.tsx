@@ -27,7 +27,6 @@ import {
 import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
 import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
 import { LabelVisibilityOptions } from "@streamlit/lib/src/util/utils"
-import { logWarning } from "@streamlit/lib/src/util/log"
 import { EmotionTheme } from "@streamlit/lib/src/theme"
 
 import {
@@ -61,7 +60,6 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
     help,
   } = props
   const [value, setValue] = React.useState(propValue)
-  const [popoverKey, setPopoverKey] = React.useState(0)
   const theme: EmotionTheme = useTheme()
 
   // Reset the value when the prop value changes
@@ -69,32 +67,9 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
     setValue(propValue)
   }, [propValue])
 
-  React.useEffect(() => {
-    // 2021.06.30 - on Streamlit Sharing, ColorPicker throws a cross-origin
-    // error when its popover window is closed. There's an issue open in the
-    // react-color repo https://github.com/casesandberg/react-color/issues/806 -
-    // but it's months old and hasn't had a developer response.
-    const handleError = (error: ErrorEvent): void => {
-      if (error.error?.name === "SecurityError") {
-        logWarning(
-          `Swallowing ColorPicker SecurityError '${error.error.name}: ${error.error.message}'`
-        )
-        // We force an update by changing the key of the popover after this error,
-        // to re-mount the UIPopover - because the error sometimes cause it to be
-        // unmounted. This is an unfortunate hack.
-        setPopoverKey(prev => prev + 1)
-      }
-    }
-
-    window.addEventListener("error", handleError)
-    return () => window.removeEventListener("error", handleError)
-  }, [])
-
   // Note: This is a "local" onChange handler used to update the color preview
   // (allowing the user to click and drag). this.props.onChange is only called
   // when the ColorPicker popover is closed.
-  // const { onChange } = props
-
   const onColorChange = React.useCallback((color: ColorResult): void => {
     setValue(color.hex)
   }, [])
@@ -145,7 +120,6 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
         )}
       </WidgetLabel>
       <UIPopover
-        key={popoverKey}
         onClose={onColorClose}
         placement="bottomLeft"
         content={() => (
