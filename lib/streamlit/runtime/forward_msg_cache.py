@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -133,7 +133,9 @@ class ForwardMsgCache(CacheStatsProvider):
             if script_run_count < prev_run_count:
                 _LOGGER.error(
                     "New script_run_count (%s) is < prev_run_count (%s). "
-                    "This should never happen!" % (script_run_count, prev_run_count)
+                    "This should never happen!",
+                    script_run_count,
+                    prev_run_count,
                 )
                 script_run_count = prev_run_count
             self._session_script_run_counts[session] = script_run_count

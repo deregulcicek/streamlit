@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1126,7 +1126,8 @@ def _set_option(key: str, value: Any, where_defined: str) -> None:
         LOGGER = get_logger(__name__)
 
         LOGGER.warning(
-            f'"{key}" is not a valid config option. If you previously had this config option set, it may have been removed.'
+            f'"{key}" is not a valid config option. If you previously had this config '
+            "option set, it may have been removed."
         )
 
     else:
@@ -1197,7 +1198,7 @@ def _maybe_read_env_variable(value: Any) -> Any:
 
             LOGGER = get_logger(__name__)
 
-            LOGGER.error("No environment variable called %s" % var_name)
+            LOGGER.error("No environment variable called %s", var_name)
         else:
             return _maybe_convert_to_number(env_var)
 

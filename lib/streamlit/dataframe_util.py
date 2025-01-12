@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -818,10 +818,10 @@ def convert_pandas_df_to_arrow_bytes(df: DataFrame) -> bytes:
         table = pa.Table.from_pandas(df)
     except (pa.ArrowTypeError, pa.ArrowInvalid, pa.ArrowNotImplementedError) as ex:
         _LOGGER.info(
-            "Serialization of dataframe to Arrow table was unsuccessful due to: %s. "
+            "Serialization of dataframe to Arrow table was unsuccessful. "
             "Applying automatic fixes for column types to make the dataframe "
             "Arrow-compatible.",
-            ex,
+            exc_info=ex,
         )
         df = fix_arrow_incompatible_column_types(df)
         table = pa.Table.from_pandas(df)

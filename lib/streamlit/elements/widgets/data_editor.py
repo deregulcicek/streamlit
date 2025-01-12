@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -237,7 +237,10 @@ def _parse_value(
 
     except (ValueError, pd.errors.ParserError) as ex:
         _LOGGER.warning(
-            "Failed to parse value %s as %s. Exception: %s", value, column_data_kind, ex
+            "Failed to parse value %s as %s.",
+            value,
+            column_data_kind,
+            exc_info=ex,
         )
         return None
     return value
