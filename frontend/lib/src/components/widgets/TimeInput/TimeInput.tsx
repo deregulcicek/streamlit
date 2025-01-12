@@ -119,6 +119,7 @@ function TimeInput({
               // Somehow this adds an additional shadow, even though we already have
               // one on the popover, so we need to remove it here.
               boxShadow: "none",
+              maxHeight: theme.sizes.maxDropdownHeight,
             }),
           },
 
