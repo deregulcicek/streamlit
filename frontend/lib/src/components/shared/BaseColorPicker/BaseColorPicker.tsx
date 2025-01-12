@@ -51,13 +51,14 @@ export interface BaseColorPickerProps {
 
 const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
   const {
+    disabled,
     width,
+    value: propValue,
     showValue,
     label,
     labelVisibility,
+    onChange,
     help,
-    disabled,
-    value: propValue,
   } = props
   const [value, setValue] = React.useState(propValue)
   const [popoverKey, setPopoverKey] = React.useState(0)
@@ -92,13 +93,15 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
   // Note: This is a "local" onChange handler used to update the color preview
   // (allowing the user to click and drag). this.props.onChange is only called
   // when the ColorPicker popover is closed.
-  const onColorChange = (color: ColorResult): void => {
-    setValue(color.hex)
-  }
+  // const { onChange } = props
 
-  const onColorClose = (): void => {
-    props.onChange(value)
-  }
+  const onColorChange = React.useCallback((color: ColorResult): void => {
+    setValue(color.hex)
+  }, [])
+
+  const onColorClose = React.useCallback((): void => {
+    onChange(value)
+  }, [onChange, value])
 
   const customChromePickerStyles = {
     default: {
