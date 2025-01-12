@@ -81,10 +81,11 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
   const customChromePickerStyles = {
     default: {
       picker: {
-        borderRadius: `${theme.radii.default}`,
+        borderRadius: theme.radii.default,
         // Remove the box shadow from the color picker component since we're already
         // applying a shadow to the popover that contains the color picker.
         boxShadow: "none",
+        backgroundColor: theme.colors.background,
       },
       saturation: {
         borderRadius: `${theme.radii.default} ${theme.radii.default} 0 0`,
