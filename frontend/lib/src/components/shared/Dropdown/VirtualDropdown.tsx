@@ -73,6 +73,9 @@ const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          // Somehow this adds an additional shadow, even though we already have
+          // one on the popover, so we need to remove it here.
+          boxShadow: "none",
         }}
         ref={ref}
         data-testid="stSelectboxVirtualDropdownEmpty"
