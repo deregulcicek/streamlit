@@ -289,6 +289,10 @@ export const StyledLogo = styled.img<StyledLogoProps>(
       // L & R padding (twoXL) + R margin (sm) + collapse button (2.25rem)
       maxWidth: `calc(${sidebarWidth}px - 2 * ${theme.spacing.twoXL} - ${theme.spacing.sm} - 2.25rem)`,
     }),
+
+    // "@media print": {
+    //   display: "none",
+    // },
   })
 )
 
@@ -312,7 +316,9 @@ export const StyledSidebarOpenContainer =
       alignItems: "center",
 
       [`@media print`]: {
-        position: "static",
+        position: "absolute",
+        left: 0,
+        top: 0,
       },
     })
   )
