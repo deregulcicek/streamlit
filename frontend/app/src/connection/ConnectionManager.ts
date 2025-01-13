@@ -28,6 +28,7 @@ import {
 } from "@streamlit/lib"
 
 import { ConnectionState } from "./ConnectionState"
+import { StaticConnection } from "./StaticConnection"
 import { WebsocketConnection } from "./WebsocketConnection"
 
 /**
@@ -136,16 +137,33 @@ export class ConnectionManager {
     }
   }
 
+  private checkStaticConnection(): string | null {
+    const queryParams = new URLSearchParams(document.location.search)
+    return queryParams.get("notebookId")
+  }
+
   private async connect(): Promise<void> {
-    try {
-      this.connection = await this.connectToRunningServer()
-    } catch (e) {
-      const err = ensureError(e)
-      logError(err.message)
-      this.setConnectionState(
-        ConnectionState.DISCONNECTED_FOREVER,
-        err.message
-      )
+    const notebookId = this.checkStaticConnection()
+
+    if (notebookId) {
+      // Establish a static connection
+      StaticConnection({
+        notebookId,
+        onConnectionStateChange: this.setConnectionState,
+        onMessage: this.props.onMessage,
+      })
+    } else {
+      // Establish a websocket connection
+      try {
+        this.connection = await this.connectToRunningServer()
+      } catch (e) {
+        const err = ensureError(e)
+        logError(err.message)
+        this.setConnectionState(
+          ConnectionState.DISCONNECTED_FOREVER,
+          err.message
+        )
+      }
     }
   }
 

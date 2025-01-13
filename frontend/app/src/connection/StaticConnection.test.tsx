@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-export enum ConnectionState {
-  CONNECTED = "CONNECTED",
-  DISCONNECTED_FOREVER = "DISCONNECTED_FOREVER",
-  INITIAL = "INITIAL",
-  PINGING_SERVER = "PINGING_SERVER",
-  CONNECTING = "CONNECTING",
-  STATIC_CONNECTING = "STATIC_CONNECTING",
-  STATIC_CONNECTED = "STATIC_CONNECTED",
-}
+import React from "react"
+
+import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
+
+// describe("StaticConnection", () => {
+// it("", async () => {
+// })
+
+// xit("", async () => {
+// })
+// })
