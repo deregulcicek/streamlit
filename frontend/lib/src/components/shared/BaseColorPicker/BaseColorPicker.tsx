@@ -18,7 +18,7 @@ import React, { memo } from "react"
 
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
-import Saturation from "react-color/es/components/common/Saturation"
+import SaturationComponent from "react-color/es/components/common/Saturation"
 import { useTheme } from "@emotion/react"
 
 import {
@@ -45,7 +45,7 @@ import {
  * embedded app or in Notebooks. We're applying this fix here to prevent that:
  * https://github.com/uiwjs/react-color/issues/81#issuecomment-2208219820
  */
-Saturation.prototype.getContainerRenderWindow = function () {
+SaturationComponent.prototype.getContainerRenderWindow = function () {
   const container = this.container
   let renderWindow: Window & typeof globalThis = window
   let lastRenderWindow: Window & typeof globalThis = window
