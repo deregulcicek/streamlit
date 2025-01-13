@@ -18,7 +18,6 @@ import React, { memo } from "react"
 
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
-// @ts-ignore
 import Saturation from "react-color/es/components/common/Saturation"
 import { useTheme } from "@emotion/react"
 

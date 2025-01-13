@@ -27,3 +27,11 @@ declare module "fzy.js" {
   export function positions(pattern: string, subject: string): Array<number>
   export function hasMatch(pattern: string, subject: string): boolean
 }
+
+declare module "react-color/es/components/common/Saturation" {
+  import React from "react"
+  export default class Saturation extends React.Component<any, any> {
+    container: HTMLElement
+    getContainerRenderWindow(): Window & typeof globalThis
+  }
+}
