@@ -28,6 +28,7 @@ import {
   CORS_ERROR_MESSAGE_DOCUMENTATION_LINK,
   HOST_CONFIG_PATH,
   LOG,
+  PING_TIMEOUT_MS,
   SERVER_PING_PATH,
 } from "@streamlit/app/src/connection/constants"
 import { OnRetry } from "@streamlit/app/src/connection/types"
