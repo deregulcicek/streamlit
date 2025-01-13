@@ -33,6 +33,7 @@ from streamlit.runtime.uploaded_file_manager import (
     UploadedFile,
     UploadedFileRec,
 )
+from streamlit.type_util import is_custom_dict
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
@@ -297,3 +298,20 @@ class ChatTest(DeltaGeneratorTestCase):
         file0.seek(2)
         self.assertEqual(b"3", file0.read())
         self.assertEqual(b"123", file1.read())
+
+    @patch("streamlit.elements.widgets.chat.ChatInputSerde.deserialize")
+    def test_chat_input_value_is_custom_dict(self, deserialize_patch):
+        """Test that ChatInputValue is a custom dict."""
+        files = [
+            UploadedFile(
+                UploadedFileRec("file0", "name0", "type", b"123"),
+                FileURLsProto(file_id="file0", delete_url="d0", upload_url="u0"),
+            ),
+        ]
+        deserialize_patch.return_value = ChatInputValue(text="placeholder", files=files)
+
+        value = st.chat_input("Placeholder", accept_file=True)
+        self.assertTrue(is_custom_dict(value))
+
+        value = st.chat_input("Placeholder", accept_file="multiple")
+        self.assertTrue(is_custom_dict(value))
