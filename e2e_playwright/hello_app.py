@@ -14,6 +14,7 @@
 
 import numpy as np
 
+import streamlit as st
 from streamlit import runtime
 from streamlit.hello import streamlit_app
 
@@ -21,3 +22,4 @@ from streamlit.hello import streamlit_app
 np.random.seed(0)
 if runtime.exists():
     streamlit_app.run()
+    st.logo("./static/streamlit-logo.png", size="large")
