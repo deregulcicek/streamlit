@@ -471,7 +471,7 @@ export function formatNumber(
       }
 
       return numbro(value).format({
-        thousandSeparated: true,
+        thousandSeparated: false,
         mantissa: maxPrecision,
         trimMantissa: false,
       })
@@ -479,7 +479,7 @@ export function formatNumber(
 
     // Use a default format if no precision is given
     return numbro(value).format({
-      thousandSeparated: true,
+      thousandSeparated: false,
       mantissa: determineDefaultMantissa(value),
       trimMantissa: true,
     })

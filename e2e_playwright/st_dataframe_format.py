@@ -20,6 +20,7 @@ number_format = col1.selectbox(
         "euro",
         "scientific",
         "compact",
+        "plain",
     ],
     index=None,
 )
