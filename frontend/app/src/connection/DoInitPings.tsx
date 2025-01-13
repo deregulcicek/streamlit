@@ -23,14 +23,14 @@
 import React, { Fragment } from "react"
 
 import axios from "axios"
+
 import {
   CORS_ERROR_MESSAGE_DOCUMENTATION_LINK,
   HOST_CONFIG_PATH,
   LOG,
   SERVER_PING_PATH,
-} from "src/connection/constants"
-import { OnRetry } from "src/connection/types"
-
+} from "@streamlit/app/src/connection/constants"
+import { OnRetry } from "@streamlit/app/src/connection/types"
 import {
   BaseUriParts,
   buildHttpUri,
