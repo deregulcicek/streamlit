@@ -317,7 +317,7 @@ export const StyledSidebarOpenContainer =
         top: 0,
         marginTop: 0,
 
-        "& img": {
+        "& [data-testid='stLogo']": {
           // Add more space to the actual app content by moving the logo a little bit more to the top.
           // margin-bottom wouldn't work here to push the content down because the logo is absolutely positioned.
           marginTop: 0,
