@@ -47,9 +47,9 @@ import {
  * https://github.com/uiwjs/react-color/issues/81#issuecomment-2208219820
  */
 Saturation.prototype.getContainerRenderWindow = function () {
-  var container = this.container
-  var renderWindow: Window & typeof globalThis = window
-  var lastRenderWindow: Window & typeof globalThis = window
+  const container = this.container
+  let renderWindow: Window & typeof globalThis = window
+  let lastRenderWindow: Window & typeof globalThis = window
 
   try {
     while (
