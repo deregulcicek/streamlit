@@ -22,7 +22,7 @@ import secrets
 import threading
 from collections import OrderedDict
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Final
 
 from blinker import Signal
 
@@ -53,16 +53,18 @@ _config_options_template: dict[str, ConfigOption] = OrderedDict()
 # Stores the current state of config options.
 _config_options: dict[str, ConfigOption] | None = None
 
+# Stores the path to the main script.
+_main_script_path: str | None = None
 
 # Indicates that a config option was defined by the user.
-_USER_DEFINED = "<user defined>"
+_USER_DEFINED: Final = "<user defined>"
 
 # Indicates that a config option was defined either in an environment variable
 # or via command-line flag.
-_DEFINED_BY_FLAG = "command-line argument or environment variable"
+_DEFINED_BY_FLAG: Final = "command-line argument or environment variable"
 
 # Indicates that a config option was defined in an environment variable
-_DEFINED_BY_ENV_VAR = "environment variable"
+_DEFINED_BY_ENV_VAR: Final = "environment variable"
 
 
 class ShowErrorDetailsConfigOptions(str, Enum):
@@ -1015,21 +1017,30 @@ _create_option(
 
 _create_section("secrets", "Secrets configuration.")
 
-_create_option(
-    "secrets.files",
-    description="""
-        List of locations where secrets are searched. An entry can be a path to a
-        TOML file or directory path where Kubernetes style secrets are saved.
-        Order is important, import is first to last, so secrets in later files
-        will take precedence over earlier ones.
-    """,
-    default_val=[
-        # NOTE: The order here is important! Project-level secrets should overwrite global
-        # secrets.
+
+@_create_option("secrets.files")
+def _secrets_files() -> list[str]:
+    """List of locations where secrets are searched. An entry can be a path to a
+    TOML file or directory path where Kubernetes style secrets are saved.
+    Order is important, import is first to last, so secrets in later files
+    will take precedence over earlier ones.
+    """
+    # NOTE: The order here is important! Script-level secrets should overwrite
+    # project-level secrets, which in turn overwrite global secrets.
+
+    secrets_files = [
         file_util.get_streamlit_file_path("secrets.toml"),
         file_util.get_project_streamlit_file_path("secrets.toml"),
-    ],
-)
+    ]
+
+    if _main_script_path is not None:
+        secrets_files.append(
+            file_util.get_main_script_streamlit_file_path(
+                _main_script_path, "secrets.toml"
+            )
+        )
+
+    return secrets_files
 
 
 def get_where_defined(key: str) -> str:
@@ -1224,10 +1235,28 @@ def _maybe_convert_to_number(v: Any) -> Any:
 # something.
 _on_config_parsed = Signal(doc="Emitted when the config file is parsed.")
 
-CONFIG_FILENAMES = [
-    file_util.get_streamlit_file_path("config.toml"),
-    file_util.get_project_streamlit_file_path("config.toml"),
-]
+
+def get_config_files() -> list[str]:
+    """Return the list of config files to be parsed.
+
+    Order is important, import is first to last, so secrets in later files
+    will take precedence over earlier ones.
+    """
+    # script-level config files overwrite project-level config
+    # files, which in turn overwrite global config files.
+    config_files = [
+        file_util.get_streamlit_file_path("config.toml"),
+        file_util.get_project_streamlit_file_path("config.toml"),
+    ]
+
+    if _main_script_path is not None:
+        config_files.append(
+            file_util.get_main_script_streamlit_file_path(
+                _main_script_path, "config.toml"
+            )
+        )
+
+    return config_files
 
 
 def get_config_options(
@@ -1278,7 +1307,7 @@ def get_config_options(
 
         # Values set in files later in the CONFIG_FILENAMES list overwrite those
         # set earlier.
-        for filename in CONFIG_FILENAMES:
+        for filename in get_config_files():
             if not os.path.exists(filename):
                 continue
 

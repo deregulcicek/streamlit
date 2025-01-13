@@ -21,7 +21,6 @@ import sys
 from typing import Any, Final
 
 from streamlit import cli_util, config, env_util, file_util, net_util, secrets
-from streamlit.config import CONFIG_FILENAMES
 from streamlit.git_util import MIN_GIT_VERSION, GitRepo
 from streamlit.logger import get_logger
 from streamlit.watcher import report_watchdog_availability, watch_file
@@ -288,7 +287,7 @@ def _install_config_watchers(flag_options: dict[str, Any]) -> None:
     def on_config_changed(_path):
         load_config_options(flag_options)
 
-    for filename in CONFIG_FILENAMES:
+    for filename in config.get_config_files():
         if os.path.exists(filename):
             watch_file(filename, on_config_changed)
 
@@ -303,6 +302,9 @@ def run(
 
     This starts a blocking asyncio eventloop.
     """
+    # Set the main script path to use it for config & secret files
+    config._main_script_path = main_script_path
+
     _fix_sys_path(main_script_path)
     _fix_tornado_crash()
     _fix_sys_argv(main_script_path, args)

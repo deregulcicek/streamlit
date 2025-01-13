@@ -151,6 +151,15 @@ def get_project_streamlit_file_path(*filepath):
     return str(Path.cwd() / CONFIG_FOLDER_NAME / Path(*filepath))
 
 
+def get_main_script_streamlit_file_path(main_script_path: str, filename: str) -> str:
+    """Return the full path to a file in the .streamlit folder relative to the
+    main script's path.
+
+    This doesn't guarantee that the file (or its directory) exists.
+    """
+    return str(Path(main_script_path) / CONFIG_FOLDER_NAME / filename)
+
+
 def file_is_in_folder_glob(filepath: str, folderpath_glob: str) -> bool:
     """Test whether a file is in some folder with globbing support.
 
