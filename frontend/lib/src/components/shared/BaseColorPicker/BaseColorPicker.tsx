@@ -18,6 +18,8 @@ import React, { memo } from "react"
 
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
+// @ts-ignore
+import Saturation from "react-color/es/components/common/Saturation"
 import { useTheme } from "@emotion/react"
 
 import {
@@ -36,6 +38,32 @@ import {
   StyledColorPreview,
   StyledColorValue,
 } from "./styled-components"
+
+/* When closing the color picker popover, react-color triggers a security error
+ * if the app is in an iframe with a different origin. That security error shows up as
+ * an exception within the app and stops the app from working. This isn't a problem on
+ * Community Cloud anymore (because it uses same origin) but it can be in an
+ * embedded app or in Notebooks. We're applying this fix here to prevent that:
+ * https://github.com/uiwjs/react-color/issues/81#issuecomment-2208219820
+ */
+Saturation.prototype.getContainerRenderWindow = function () {
+  var container = this.container
+  var renderWindow: Window & typeof globalThis = window
+  var lastRenderWindow: Window & typeof globalThis = window
+
+  try {
+    while (
+      !renderWindow.document.contains(container) &&
+      renderWindow.parent !== renderWindow
+    ) {
+      lastRenderWindow = renderWindow
+      renderWindow = renderWindow.parent as Window & typeof globalThis
+    }
+  } catch (e) {
+    renderWindow = lastRenderWindow
+  }
+  return renderWindow
+}
 
 export interface BaseColorPickerProps {
   disabled: boolean
