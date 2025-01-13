@@ -1,5 +1,5 @@
 <!--
- Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -41,6 +41,10 @@ Usage:
 <script>
   window.addEventListener("message", event => {
     console.log("Received message event:", event)
+
+    if (event.data.type === "REDIRECT_TO_URL") {
+      window.location.href = event.data.url
+    }
   })
 
   function sendMessage(data) {
@@ -106,14 +110,12 @@ Usage:
   }
 
   function setAuthToken() {
-    // We handle auth token and jwt header name/value in child iframe,
+    // We handle auth token in child iframe,
     // only when `useExternalAuthToken` is set to True in
     // "_stcore/host-config" endpoint. Otherwise, we ignore this message.
     sendMessage({
       type: "SET_AUTH_TOKEN",
       authToken: "AUTH_TOKEN",
-      jwtHeaderName: "X-JWT-HEADER-NAME",
-      jwtHeaderValue: "X-JWT-HEADER-VALUE",
     })
   }
 

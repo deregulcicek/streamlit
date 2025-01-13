@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -191,6 +191,12 @@ def test_image_list(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that st.image can display a list of images."""
     image_list = get_image(app, "Image list")
     assert_snapshot(image_list, name="st_image-image_list")
+
+
+def test_image_list_overflow(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that st.image can display a list of images."""
+    image_list = get_image(app, "Overflow")
+    assert_snapshot(image_list, name="st_image-image_list_overflow")
 
 
 def test_check_top_level_class(app: Page):

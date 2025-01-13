@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -96,3 +96,8 @@ def test_st_rerun_is_fragment_scoped_rerun_flag_True(patched_get_script_run_ctx)
             is_fragment_scoped_rerun=True,
         )
     )
+
+
+def test_st_rerun_invalid_scope_throws_error():
+    with pytest.raises(StreamlitAPIException):
+        rerun(scope="foo")

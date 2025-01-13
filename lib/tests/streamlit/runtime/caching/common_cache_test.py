@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -647,6 +647,41 @@ class CommonCacheTest(DeltaGeneratorTestCase):
 
         function_with_spinner_empty_text(3)
         self.assertFalse(self.forward_msg_queue.is_empty())
+
+    @parameterized.expand(
+        [("cache_data", cache_data), ("cache_resource", cache_resource)]
+    )
+    def test_spinner_with_nested_cached_functions(self, _, cache_decorator):
+        """If a cached function calls another cached function, only one spinner
+        should be created.
+        """
+
+        @cache_decorator(show_spinner="")
+        def inner(x: int) -> int:
+            return x
+
+        @cache_decorator(show_spinner="")
+        def outer(x: int) -> int:
+            return inner(x)
+
+        outer(3)
+        self.assertFalse(self.forward_msg_queue.is_empty())
+
+        # The spinner uses an empty element and shows the spinner only
+        # after a timeout. Instead of mocking the time and waiting for the
+        # timeout, we check for the empty element in the queue as the spinner's
+        # surrogate.
+        empty_elements_count = 0
+        for msg in self.forward_msg_queue._queue:
+            if (
+                msg.HasField("delta")
+                and msg.delta.HasField("new_element")
+                and msg.delta.new_element.HasField("empty")
+            ):
+                empty_elements_count += 1
+        # Since we automatically prevent spinners for nested cached functions,
+        # there should only be a single empty element.
+        self.assertEqual(empty_elements_count, 1)
 
 
 class CommonCacheTTLTest(unittest.TestCase):

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ export {
   ModalFooter,
   ModalHeader,
 } from "./components/shared/Modal"
+export { CircularBuffer, Profiler } from "./components/shared/Profiler"
 export { default as StreamlitMarkdown } from "./components/shared/StreamlitMarkdown"
 export { Placement, default as Tooltip } from "./components/shared/Tooltip"
 export { WindowDimensionsProvider } from "./components/shared/WindowDimensions/Provider"
@@ -80,7 +81,6 @@ export { ScriptRunState } from "./ScriptRunState"
 export { SessionInfo } from "./SessionInfo"
 export type {
   FileUploadClientConfig,
-  JWTHeader,
   StreamlitEndpoints,
 } from "./StreamlitEndpoints"
 export {
@@ -149,3 +149,9 @@ export {
 } from "./util/utils"
 export { WidgetStateManager, createFormsData } from "./WidgetStateManager"
 export type { FormsData } from "./WidgetStateManager"
+export {
+  mark,
+  measure,
+  type StPerformanceMetric,
+  type StPerformanceMark,
+} from "./util/performance"

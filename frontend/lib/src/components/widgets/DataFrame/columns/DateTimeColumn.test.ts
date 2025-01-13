@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 import { GridCellKind } from "@glideapps/glide-data-grid"
 import { DatePickerType } from "@glideapps/glide-data-grid-cells"
 
-import { BaseColumnProps, isErrorCell } from "./utils"
 import DateTimeColumn, { DateColumn, TimeColumn } from "./DateTimeColumn"
+import { BaseColumnProps, isErrorCell } from "./utils"
 
 const MOCK_DATETIME_COLUMN_TEMPLATE: BaseColumnProps = {
   id: "1",
@@ -30,6 +30,7 @@ const MOCK_DATETIME_COLUMN_TEMPLATE: BaseColumnProps = {
   isEditable: true,
   isHidden: false,
   isIndex: false,
+  isPinned: false,
   isStretched: false,
   arrowType: {
     // The arrow type of the underlying data is
@@ -47,6 +48,7 @@ const MOCK_DATE_COLUMN_TEMPLATE: BaseColumnProps = {
   isEditable: true,
   isHidden: false,
   isIndex: false,
+  isPinned: false,
   isStretched: false,
   arrowType: {
     // The arrow type of the underlying data is
@@ -64,6 +66,7 @@ const MOCK_TIME_COLUMN_TEMPLATE: BaseColumnProps = {
   isEditable: true,
   isHidden: false,
   isIndex: false,
+  isPinned: false,
   isStretched: false,
   arrowType: {
     // The arrow type of the underlying data is

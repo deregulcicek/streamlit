@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { renderHook } from "@testing-library/react-hooks"
 import {
   CompactSelection,
   GridSelection,
   TextCell,
 } from "@glideapps/glide-data-grid"
+import { renderHook } from "@testing-library/react-hooks"
 
 import {
   BaseColumn,
@@ -44,6 +44,7 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isEditable: true,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
   }),
   TextColumn({
@@ -58,6 +59,7 @@ const MOCK_COLUMNS: BaseColumn[] = [
     isEditable: true,
     isHidden: false,
     isIndex: false,
+    isPinned: false,
     isStretched: false,
     defaultValue: "foo",
     columnTypeOptions: {

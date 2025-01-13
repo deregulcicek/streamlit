@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ from enum import EnumMeta
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncGenerator,
     Final,
+    Generator,
     Iterable,
     Literal,
     Mapping,
@@ -59,6 +61,10 @@ NumpyShape: TypeAlias = Tuple[int, ...]
 
 class SupportsStr(Protocol):
     def __str__(self) -> str: ...
+
+
+class SupportsReprHtml(Protocol):
+    def _repr_html_(self) -> str: ...
 
 
 class CustomDict(Protocol):
@@ -161,7 +167,7 @@ def to_bytes(obj: BytesLike) -> bytes:
 _SYMPY_RE: Final = re.compile(r"^sympy.*$")
 
 
-def is_sympy_expession(obj: object) -> TypeGuard[sympy.Expr]:
+def is_sympy_expression(obj: object) -> TypeGuard[sympy.Expr]:
     """True if input is a SymPy expression."""
     if not is_type(obj, _SYMPY_RE):
         return False
@@ -428,3 +434,24 @@ def is_version_less_than(v1: str, v2: str) -> bool:
     from packaging import version
 
     return version.parse(v1) < version.parse(v2)
+
+
+def async_generator_to_sync(
+    async_gen: AsyncGenerator[Any, Any],
+) -> Generator[Any, Any, Any]:
+    """Convert an async generator to a synchronous generator."""
+    import asyncio
+
+    # Create a new event loop.
+    # It is expected that there is no existing event loop in the user thread.
+    loop = asyncio.new_event_loop()
+
+    try:
+        # Iterate over the async generator until it raises StopAsyncIteration
+        while True:
+            yield loop.run_until_complete(async_gen.__anext__())
+    except StopAsyncIteration:
+        # The async generator has finished
+        pass
+    finally:
+        loop.close()

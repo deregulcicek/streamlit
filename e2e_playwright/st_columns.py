@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,13 @@ c3.write(LOREM_IPSUM)
 # Only fill in the last column and keep the others empty
 c1, c2, c3 = st.columns(3)
 c3.write(LOREM_IPSUM)
+
+col1, col2 = st.columns(2, border=True)
+with col1:
+    st.metric("Temperature", "72°F", "2%")
+with col2:
+    st.metric("Pressure", "30.2 in", "-4%")
+    st.slider("Slider", 0, 100, 50)
 
 with st.expander("Variable-width columns (relative numbers)", expanded=True):
     for c in st.columns([0.6, 0.3, 0.1]):

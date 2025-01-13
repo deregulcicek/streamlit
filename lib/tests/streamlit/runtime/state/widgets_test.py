@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 """Tests widget-related functionality"""
 
 import inspect
-import sys
 import unittest
 from dataclasses import dataclass
 from typing import get_args
@@ -606,9 +605,6 @@ class ComputeElementIdTests(DeltaGeneratorTestCase):
 
 class RegisterWidgetsTest(DeltaGeneratorTestCase):
     @parameterized.expand(WIDGET_ELEMENTS)
-    @unittest.skipIf(
-        sys.version_info < (3, 9), reason="the type check requires python3.9 or higher"
-    )
     def test_register_widget_called_with_valid_value_type(
         self, _element_name: str, widget_func: ELEMENT_PRODUCER
     ):

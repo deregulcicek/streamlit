@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -237,7 +237,10 @@ def _parse_value(
 
     except (ValueError, pd.errors.ParserError) as ex:
         _LOGGER.warning(
-            "Failed to parse value %s as %s. Exception: %s", value, column_data_kind, ex
+            "Failed to parse value %s as %s.",
+            value,
+            column_data_kind,
+            exc_info=ex,
         )
         return None
     return value
@@ -655,11 +658,11 @@ class DataEditorMixin:
             This needs to be a dictionary where each key is a column name and the value
             is one of:
 
-            * ``None`` to hide the column.
+            - ``None`` to hide the column.
 
-            * A string to set the display label of the column.
+            - A string to set the display label of the column.
 
-            * One of the column types defined under ``st.column_config``, e.g.
+            - One of the column types defined under ``st.column_config``, e.g.
               ``st.column_config.NumberColumn("Dollar values”, format=”$ %d")`` to show
               a column as dollar amounts. See more info on the available column types
               and config options `here <https://docs.streamlit.io/develop/api-reference/data/st.column_config>`_.

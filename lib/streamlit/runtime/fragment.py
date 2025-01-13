@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class MemoryFragmentStorage(FragmentStorage):
     the FragmentStorage protocol.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._fragments: dict[str, Fragment] = {}
 
     # Weirdly, we have to define this above the `set` method, or mypy gets it confused
@@ -355,12 +355,12 @@ def fragment(
         The time interval between automatic fragment reruns. This can be one of
         the following:
 
-            * ``None`` (default).
-            * An ``int`` or ``float`` specifying the interval in seconds.
-            * A string specifying the time in a format supported by `Pandas'
+            - ``None`` (default).
+            - An ``int`` or ``float`` specifying the interval in seconds.
+            - A string specifying the time in a format supported by `Pandas'
               Timedelta constructor <https://pandas.pydata.org/docs/reference/api/pandas.Timedelta.html>`_,
               e.g. ``"1d"``, ``"1.5 days"``, or ``"1h23s"``.
-            * A ``timedelta`` object from `Python's built-in datetime library
+            - A ``timedelta`` object from `Python's built-in datetime library
               <https://docs.python.org/3/library/datetime.html#timedelta-objects>`_,
               e.g. ``timedelta(days=1)``.
 

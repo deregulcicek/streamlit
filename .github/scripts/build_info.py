@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ FILES_WITH_PYTHON_DEPENDENCIES = [
     "lib/setup.py",
 ]
 # +1 to make range inclusive.
-ALL_PYTHON_VERSIONS = [f"3.{d}" for d in range(8, 12 + 1)]
+ALL_PYTHON_VERSIONS = [f"3.{d}" for d in range(9, 13 + 1)]
 PYTHON_MIN_VERSION = ALL_PYTHON_VERSIONS[0]
 PYTHON_MAX_VERSION = ALL_PYTHON_VERSIONS[-1]
 

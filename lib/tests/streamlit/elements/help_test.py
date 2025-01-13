@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,13 @@ class StHelpTest(DeltaGeneratorTestCase):
         self.assertEqual("", ds.name)
         self.assertEqual("None", ds.value)
         self.assertEqual("NoneType", ds.type)
-        self.assertEqual("", ds.doc_string)
+
+        import sys
+
+        if sys.version_info >= (3, 13):
+            self.assertEqual("The type of the None singleton.", ds.doc_string)
+        else:
+            self.assertEqual("", ds.doc_string)
 
     def test_basic_func_with_doc(self):
         """Test basic function with docstring."""

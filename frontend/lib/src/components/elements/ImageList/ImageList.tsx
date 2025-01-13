@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import Toolbar, {
 import { ElementFullscreenContext } from "@streamlit/lib/src/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "@streamlit/lib/src/hooks/useRequiredContext"
 import { withFullScreenWrapper } from "@streamlit/lib/src/components/shared/FullScreenWrapper"
+import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown"
 
 import {
   StyledCaption,
@@ -72,9 +73,11 @@ function ImageList({
     collapse,
   } = useRequiredContext(ElementFullscreenContext)
 
+  // The width of the element is the width of the container, not necessarily the image.
+  const elementWidth: number = isFullScreen ? fullScreenWidth : width
   // The width field in the proto sets the image width, but has special
   // cases the values in the WidthBehavior enum.
-  let containerWidth: number | undefined
+  let imageWidth: number | undefined
   const protoWidth = element.width
 
   if (
@@ -85,17 +88,17 @@ function ImageList({
     ].includes(protoWidth)
   ) {
     // Use the original image width.
-    containerWidth = undefined
+    imageWidth = undefined
   } else if (
     [WidthBehavior.ColumnWidth, WidthBehavior.MaxImageOrContainer].includes(
       protoWidth
     )
   ) {
-    // Use the column width unless the image is currently fullscreen, then use the fullscreen width
-    containerWidth = isFullScreen ? fullScreenWidth : width
+    // Use the full element width (which handles the full screen case)
+    imageWidth = elementWidth
   } else if (protoWidth > 0) {
     // Set the image width explicitly.
-    containerWidth = protoWidth
+    imageWidth = protoWidth
   } else {
     throw Error(`Invalid image width: ${protoWidth}`)
   }
@@ -106,16 +109,17 @@ function ImageList({
     imgStyle.maxHeight = height
     imgStyle.objectFit = "contain"
   } else {
-    imgStyle.width = containerWidth
+    imgStyle.width = imageWidth
     // Cap the image width, so it doesn't exceed its parent container width
     imgStyle.maxWidth = "100%"
   }
 
   return (
     <StyledToolbarElementContainer
-      width={containerWidth}
+      width={elementWidth}
       height={height}
       useContainerWidth={isFullScreen}
+      topCentered
     >
       <Toolbar
         target={StyledToolbarElementContainer}
@@ -124,11 +128,7 @@ function ImageList({
         onCollapse={collapse}
         disableFullscreenMode={disableFullscreenMode}
       ></Toolbar>
-      <StyledImageList
-        className="stImage"
-        data-testid="stImage"
-        style={{ width: containerWidth }}
-      >
+      <StyledImageList className="stImage" data-testid="stImage">
         {element.imgs.map((iimage, idx): ReactElement => {
           const image = iimage as ImageProto
           return (
@@ -140,7 +140,14 @@ function ImageList({
               />
               {image.caption && (
                 <StyledCaption data-testid="stImageCaption" style={imgStyle}>
-                  {` ${image.caption} `}
+                  <StreamlitMarkdown
+                    source={image.caption}
+                    allowHTML={false}
+                    isCaption
+                    // This is technically not a label but we want the same restrictions
+                    // as for labels (e.g. no Markdown tables or horizontal rule).
+                    isLabel
+                  />
                 </StyledCaption>
               )}
             </StyledImageContainer>

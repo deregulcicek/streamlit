@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -125,4 +125,26 @@ with st.form("form_8", enter_to_submit=False):
         use_container_width=True,
     )
     if submitted_8:
+        st.write("Form submitted")
+
+with st.form("form_9", enter_to_submit=False):
+    st.write("Inside form 9")
+    number_input = st.number_input("Form 9 - Number Input", 0, 100, step=1)
+    submitted_9 = st.form_submit_button(
+        "Form 9 - Submit",
+        type="primary",
+        use_container_width=True,
+    )
+    if submitted_9:
+        st.write("Form submitted")
+
+with st.form("form_10"):
+    st.write("Inside form 10")
+    number_input = st.number_input("Form 10 - Number Input", 0, 100, step=1)
+    submitted_10 = st.form_submit_button(
+        "Form 10 - Submit",
+        type="tertiary",
+        use_container_width=True,
+    )
+    if submitted_10:
         st.write("Form submitted")

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,6 +83,19 @@ st.download_button(
     "Button with material icon",
     data="Hello world!",
     icon=":material/download:",
+)
+
+st.download_button(
+    "Tertiary download button",
+    data="Hello world!",
+    type="tertiary",
+)
+
+st.download_button(
+    "Disabled tertiary download button",
+    data="Hello world!",
+    type="tertiary",
+    disabled=True,
 )
 
 random_str = str(random())

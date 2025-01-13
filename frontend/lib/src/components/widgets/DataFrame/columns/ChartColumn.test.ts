@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import { GridCellKind } from "@glideapps/glide-data-grid"
 import { SparklineCellType } from "@glideapps/glide-data-grid-cells"
 
-import { BaseColumnProps, isErrorCell } from "./utils"
 import {
   AREA_CHART_TYPE,
   AreaChartColumn,
@@ -27,6 +26,7 @@ import {
   LINE_CHART_TYPE,
   LineChartColumn,
 } from "./ChartColumn"
+import { BaseColumnProps, isErrorCell } from "./utils"
 
 const CHART_COLUMN_TEMPLATE = {
   id: "1",
@@ -36,6 +36,7 @@ const CHART_COLUMN_TEMPLATE = {
   isEditable: false,
   isHidden: false,
   isIndex: false,
+  isPinned: false,
   isStretched: false,
   arrowType: {
     // The arrow type of the underlying data is

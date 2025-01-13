@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,6 @@ export interface HostCommunicationProps {
   ) => void
   readonly pageChanged: (pageScriptHash: string) => void
   readonly isOwnerChanged: (isOwner: boolean) => void
-  readonly jwtHeaderChanged: (jwtPayload: {
-    jwtHeaderName: string
-    jwtHeaderValue: string
-  }) => void
   readonly fileUploadClientConfigChanged: (payload: {
     prefix: string
     headers: Record<string, string>
@@ -147,6 +143,22 @@ export default class HostCommunicationManager {
 
   /**
    * Register a function to deliver a message to the Host
+   * that is on the same origin as the Guest
+   */
+  public sendMessageToSameOriginHost = (
+    message: IGuestToHostMessage
+  ): void => {
+    window.parent.postMessage(
+      {
+        stCommVersion: HOST_COMM_VERSION,
+        ...message,
+      } as VersionedMessage<IGuestToHostMessage>,
+      window.location.origin
+    )
+  }
+
+  /**
+   * Register a function to deliver a message to the Host
    */
   public sendMessageToHost = (message: IGuestToHostMessage): void => {
     window.parent.postMessage(
@@ -214,9 +226,6 @@ export default class HostCommunicationManager {
       // is a no-op, and we already resolved the promise to undefined
       // above.
       this.deferredAuthToken.resolve(message.authToken)
-      if (message.jwtHeaderName !== undefined) {
-        this.props.jwtHeaderChanged(message)
-      }
     }
 
     if (message.type === "SET_FILE_UPLOAD_CLIENT_CONFIG") {

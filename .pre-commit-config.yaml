@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.4.8
+    rev: v0.8.0
     hooks:
       # Run the linter.
       - id: ruff
@@ -36,12 +36,21 @@ repos:
       # known problem with hooks in subdirectories when pass_filenames option
       # is set to true
       # See: https://github.com/pre-commit/pre-commit/issues/1417
-      - id: prettier
-        name: Prettier
+      - id: prettier-app
+        name: Prettier App
         # NOTE: This hook currently does not work on Windows due to "yarn" not being an executable and win32api.CreateProcess
         # turning `subprocess.run(["yarn", "prettier", "--write"])` into a call to `yarn.exe prettier --write` which does not exist
-        entry: ./scripts/run_in_subdirectory.py frontend/ yarn prettier --write
-        files: ^frontend/.*\.(js|jsx|ts|tsx)$
+        entry: ./scripts/run_in_subdirectory.py frontend/app yarn run format
+        files: ^frontend/app/.*\.(js|jsx|ts|tsx)$
+        exclude: /vendor/
+        language: node
+        pass_filenames: true
+      - id: prettier-lib
+        name: Prettier Lib
+        # NOTE: This hook currently does not work on Windows due to "yarn" not being an executable and win32api.CreateProcess
+        # turning `subprocess.run(["yarn", "prettier", "--write"])` into a call to `yarn.exe prettier --write` which does not exist
+        entry: ./scripts/run_in_subdirectory.py frontend/lib yarn run format
+        files: ^frontend/lib/.*\.(js|jsx|ts|tsx)$
         exclude: /vendor/
         language: node
         pass_filenames: true
@@ -49,7 +58,8 @@ repos:
         name: Prettier-yaml
         # NOTE: This hook currently does not work on Windows due to "yarn" not being an executable and win32api.CreateProcess
         # turning `subprocess.run(["yarn", "prettier", "--write"])` into a call to `yarn.exe prettier --write` which does not exist
-        entry: ./scripts/run_in_subdirectory.py frontend yarn prettier ../.github --write
+        # We perform this in the app directory because prettier is installed there. TODO: Break this out to a new package
+        entry: ./scripts/run_in_subdirectory.py frontend/app yarn prettier ../../.github --write
         files: ^.github/.*\.(yml|yaml)$
         language: node
         pass_filenames: false

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks"
 import { CompactSelection } from "@glideapps/glide-data-grid"
+import { act, renderHook } from "@testing-library/react-hooks"
 
-import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 import { TextColumn } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
+import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 
 import useSelectionHandler from "./useSelectionHandler"
 
@@ -566,6 +566,7 @@ describe("useSelectionHandler hook", () => {
             isEditable: true,
             isHidden: false,
             isIndex: true,
+            isPinned: false,
             isStretched: false,
             title: "",
           }),

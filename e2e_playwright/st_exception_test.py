@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import ImageCompareFunction
+from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run
 from e2e_playwright.shared.app_utils import check_top_level_class
 
 
@@ -28,6 +28,7 @@ def test_st_exception_displays_correctly(
     # Click the button that raises the exception
     button = themed_app.get_by_test_id("stButton").nth(0).locator("button")
     button.click()
+    wait_for_app_run(themed_app)
 
     for i in range(4):
         assert_snapshot(

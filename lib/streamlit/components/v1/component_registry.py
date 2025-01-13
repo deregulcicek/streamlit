@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,10 +73,10 @@ def declare_component(
         A short, descriptive name for the component, like "slider".
 
     path: str, Path, or None
-        The path to serve the component's frontend files from. If ``path`` is
-        ``None`` (default), Streamlit will serve the component from the
-        location in ``url``. Either ``path`` or ``url`` must be specified, but
-        not both.
+        The path to serve the component's frontend files from. The path should
+        be absolute. If ``path`` is ``None`` (default), Streamlit will serve
+        the component from the location in ``url``. Either ``path`` or ``url``
+        must be specified, but not both.
 
     url: str or None
         The URL that the component is served from. If ``url`` is ``None``
