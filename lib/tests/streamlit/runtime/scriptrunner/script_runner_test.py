@@ -274,6 +274,25 @@ class ScriptRunnerTest(AsyncTestCase):
 
         Runtime._instance.media_file_mgr.clear_session_refs.assert_called_once()
 
+    def test_script_finished_callback(self):
+        """Tests that the script_finished callback is called when the script
+        finishes running.
+        """
+        count = 0
+
+        def increase_counter(_dict):
+            nonlocal count
+            count += 1
+
+        ScriptRunner.on_script_finished_callback(increase_counter)
+        scriptrunner = TestScriptRunner("good_script.py")
+
+        scriptrunner.request_rerun(RerunData())
+        scriptrunner.start()
+        scriptrunner.join()
+
+        assert count == 1
+
     def test_run_one_fragment(self):
         """Tests that we can run one fragment."""
         fragment = MagicMock()

@@ -61,6 +61,7 @@ from streamlit.runtime.state import (
 
 if TYPE_CHECKING:
     from streamlit.runtime.fragment import FragmentStorage
+    from streamlit.runtime.media_file_storage import MemoryFile
     from streamlit.runtime.pages_manager import PagesManager
     from streamlit.runtime.scriptrunner.script_cache import ScriptCache
     from streamlit.runtime.uploaded_file_manager import UploadedFileManager
@@ -117,6 +118,16 @@ it in the future.
 
 
 class ScriptRunner:
+    _script_finished_callback: Callable[[dict[str, MemoryFile]], None] | None = None
+
+    @staticmethod
+    def on_script_finished_callback(
+        script_finished_callback: Callable[[dict[str, MemoryFile]], None] | None,
+    ) -> None:
+        """Set a callback to be called when the script finishes running.
+        Used in static streamlit app generation."""
+        ScriptRunner._script_finished_callback = script_finished_callback
+
     def __init__(
         self,
         session_id: str,
@@ -663,7 +674,12 @@ class ScriptRunner:
 
         # Remove orphaned files now that the script has run and files in use
         # are marked as active.
-        runtime.get_instance().media_file_mgr.remove_orphaned_files()
+        media_file_mgr = runtime.get_instance().media_file_mgr
+        media_file_mgr.remove_orphaned_files()
+
+        # Call the script finished callback if it's set
+        if ScriptRunner._script_finished_callback:
+            ScriptRunner._script_finished_callback(media_file_mgr._storage._files_by_id)
 
         # Force garbage collection to run, to help avoid memory use building up
         # This is usually not an issue, but sometimes GC takes time to kick in and
