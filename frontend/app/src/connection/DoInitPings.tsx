@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,13 @@
 import React, { Fragment } from "react"
 
 import axios from "axios"
+import {
+  CORS_ERROR_MESSAGE_DOCUMENTATION_LINK,
+  HOST_CONFIG_PATH,
+  LOG,
+  SERVER_PING_PATH,
+} from "src/connection/constants"
+import { OnRetry } from "src/connection/types"
 
 import {
   BaseUriParts,
@@ -32,13 +39,6 @@ import {
   Resolver,
   StreamlitMarkdown,
 } from "@streamlit/lib"
-import {
-  CORS_ERROR_MESSAGE_DOCUMENTATION_LINK,
-  HOST_CONFIG_PATH,
-  LOG,
-  SERVER_PING_PATH,
-} from "@streamlit/app/src/connection/Constants"
-import { OnRetry } from "@streamlit/app/src/connection/Types"
 
 export function doInitPings(
   uriPartsList: BaseUriParts[],

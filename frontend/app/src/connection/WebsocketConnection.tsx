@@ -41,14 +41,14 @@ import {
   PING_MINIMUM_RETRY_PERIOD_MS,
   WEBSOCKET_STREAM_PATH,
   WEBSOCKET_TIMEOUT_MS,
-} from "@streamlit/app/src/connection/Constants"
+} from "src/connection/constants"
 import { doInitPings } from "@streamlit/app/src/connection/DoInitPings"
 import {
   Event,
   OnConnectionStateChange,
   OnMessage,
   OnRetry,
-} from "@streamlit/app/src/connection/Types"
+} from "src/connection/types"
 
 export interface Args {
   /** The application's SessionInfo instance */
