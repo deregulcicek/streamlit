@@ -326,7 +326,18 @@ def NumberColumn(
     required: bool | None = None,
     pinned: bool | None = None,
     default: int | float | None = None,
-    format: str | None = None,
+    format: str
+    | Literal[
+        "plain",
+        "locale",
+        "dollar",
+        "euro",
+        "percent",
+        "compact",
+        "scientific",
+        "engineering",
+    ]
+    | None = None,
     min_value: int | float | None = None,
     max_value: int | float | None = None,
     step: int | float | None = None,
@@ -1424,7 +1435,7 @@ def DatetimeColumn(
     required: bool | None = None,
     pinned: bool | None = None,
     default: datetime.datetime | None = None,
-    format: str | None = None,
+    format: str | Literal["locale", "distance", "relative"] | None = None,
     min_value: datetime.datetime | None = None,
     max_value: datetime.datetime | None = None,
     step: int | float | datetime.timedelta | None = None,
@@ -1853,7 +1864,18 @@ def ProgressColumn(
     width: ColumnWidth | None = None,
     help: str | None = None,
     pinned: bool | None = None,
-    format: str | None = None,
+    format: str
+    | Literal[
+        "plain",
+        "locale",
+        "dollar",
+        "euro",
+        "percent",
+        "compact",
+        "scientific",
+        "engineering",
+    ]
+    | None = None,
     min_value: int | float | None = None,
     max_value: int | float | None = None,
 ) -> ColumnConfig:
