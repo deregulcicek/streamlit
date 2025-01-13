@@ -31,7 +31,7 @@ import {
   Args,
   WebsocketConnection,
 } from "@streamlit/app/src/connection/WebsocketConnection"
-import { CORS_ERROR_MESSAGE_DOCUMENTATION_LINK } from "@streamlit/app/src/connection/Constants"
+import { CORS_ERROR_MESSAGE_DOCUMENTATION_LINK } from "@streamlit/app/src/connection/constants"
 import { doInitPings } from "@streamlit/app/src/connection/DoInitPings"
 
 const MOCK_ALLOWED_ORIGINS_CONFIG = {

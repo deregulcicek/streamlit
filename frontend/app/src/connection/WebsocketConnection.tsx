@@ -17,6 +17,19 @@
 import styled from "@emotion/styled"
 
 import {
+  LOG,
+  PING_MAXIMUM_RETRY_PERIOD_MS,
+  PING_MINIMUM_RETRY_PERIOD_MS,
+  WEBSOCKET_STREAM_PATH,
+  WEBSOCKET_TIMEOUT_MS,
+} from "@streamlit/app/src/connection/constants"
+import {
+  Event,
+  OnConnectionStateChange,
+  OnMessage,
+  OnRetry,
+} from "@streamlit/app/src/connection/types"
+import {
   BackMsg,
   BaseUriParts,
   buildWsUri,
@@ -35,20 +48,7 @@ import {
   StreamlitEndpoints,
 } from "@streamlit/lib"
 import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
-import {
-  LOG,
-  PING_MAXIMUM_RETRY_PERIOD_MS,
-  PING_MINIMUM_RETRY_PERIOD_MS,
-  WEBSOCKET_STREAM_PATH,
-  WEBSOCKET_TIMEOUT_MS,
-} from "src/connection/constants"
 import { doInitPings } from "@streamlit/app/src/connection/DoInitPings"
-import {
-  Event,
-  OnConnectionStateChange,
-  OnMessage,
-  OnRetry,
-} from "src/connection/types"
 
 export interface Args {
   /** The application's SessionInfo instance */
