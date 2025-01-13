@@ -42,6 +42,7 @@ from streamlit.runtime.state import (
     WidgetKwargs,
     register_widget,
 )
+from streamlit.runtime.state.session_state_proxy import get_session_state
 from streamlit.string_util import is_emoji, validate_material_icon
 
 if TYPE_CHECKING:
@@ -317,16 +318,14 @@ class ChatMixin:
             https://doc-chat-input-inline.streamlit.app/
             height: 350px
         """
-        # We default to an empty string here and disallow user choice intentionally
-        default = ""
         key = to_key(key)
 
         check_widget_policies(
             self.dg,
             key,
             on_submit,
-            default_value=default,
-            writes_allowed=False,
+            default_value=None,
+            writes_allowed=True,
         )
 
         ctx = get_script_run_ctx()
@@ -369,7 +368,7 @@ class ChatMixin:
         if max_chars is not None:
             chat_input_proto.max_chars = max_chars
 
-        chat_input_proto.default = default
+        chat_input_proto.default = ""
 
         serde = ChatInputSerde()
         widget_state = register_widget(
@@ -387,6 +386,10 @@ class ChatMixin:
         if widget_state.value_changed and widget_state.value is not None:
             chat_input_proto.value = widget_state.value
             chat_input_proto.set_value = True
+
+            session_state = get_session_state()
+            if key is not None and key in session_state:
+                del session_state[key]
 
         if ctx:
             save_for_app_testing(ctx, element_id, widget_state.value)

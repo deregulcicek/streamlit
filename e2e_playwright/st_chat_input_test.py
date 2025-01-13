@@ -15,7 +15,11 @@
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, rerun_app, wait_for_app_loaded
-from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
+from e2e_playwright.shared.app_utils import (
+    check_top_level_class,
+    expect_markdown,
+    get_element_by_key,
+)
 
 
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
@@ -187,25 +191,21 @@ def test_calls_callback_on_submit(app: Page):
     chat_input_area.type("hello world")
     chat_input_area.press("Enter")
 
-    markdown_output = app.get_by_test_id("stMarkdown").nth(2)
     expect(app.get_by_test_id("stText").nth(0)).to_have_text(
         "chat input submitted",
         use_inner_text=True,
     )
-    expect(markdown_output).to_have_text(
-        "Chat input 3 (callback) - value: hello world",
-        use_inner_text=True,
-    )
+    expect_markdown(app, "Chat input 3 (callback) - session state value: hello world")
+    expect_markdown(app, "Chat input 3 (callback) - return value: hello world")
 
     rerun_app(app)
 
     # Expect the callback to not be triggered:
     expect(app.get_by_test_id("stText")).not_to_be_attached()
     # And the session state value to be reset
-    expect(markdown_output).to_have_text(
-        "Chat input 3 (callback) - value: None",
-        use_inner_text=True,
-    )
+    expect_markdown(app, "Chat input 3 (callback) - session state value: None")
+    # Also expect the return value to be None
+    expect_markdown(app, "Chat input 3 (callback) - return value: None")
 
 
 def test_check_top_level_class(app: Page):
