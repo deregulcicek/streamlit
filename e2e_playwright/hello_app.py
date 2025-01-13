@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import numpy as np
 
 import streamlit as st
@@ -19,7 +21,9 @@ from streamlit import runtime
 from streamlit.hello import streamlit_app
 
 # Set random seed to always get the same results in the plotting demo
+STATIC_ASSETS_DIR = Path(__file__).parent / "static"
+
 np.random.seed(0)
 if runtime.exists():
     streamlit_app.run()
-    st.logo("./static/streamlit-logo.png", size="large")
+    st.logo(STATIC_ASSETS_DIR / "streamlit-logo.png", size="large")
