@@ -1034,11 +1034,11 @@ def _secrets_files() -> list[str]:
     ]
 
     if _main_script_path is not None:
-        secrets_files.append(
-            file_util.get_main_script_streamlit_file_path(
-                _main_script_path, "secrets.toml"
-            )
+        script_level_config = file_util.get_main_script_streamlit_file_path(
+            _main_script_path, "secrets.toml"
         )
+        if script_level_config not in secrets_files:
+            secrets_files.append(script_level_config)
 
     return secrets_files
 
@@ -1250,11 +1250,11 @@ def get_config_files() -> list[str]:
     ]
 
     if _main_script_path is not None:
-        config_files.append(
-            file_util.get_main_script_streamlit_file_path(
-                _main_script_path, "config.toml"
-            )
+        script_level_config = file_util.get_main_script_streamlit_file_path(
+            _main_script_path, "config.toml"
         )
+        if script_level_config not in config_files:
+            config_files.append(script_level_config)
 
     return config_files
 

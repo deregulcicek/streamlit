@@ -157,7 +157,12 @@ def get_main_script_streamlit_file_path(main_script_path: str, filename: str) ->
 
     This doesn't guarantee that the file (or its directory) exists.
     """
-    return str(Path(main_script_path) / CONFIG_FOLDER_NAME / filename)
+
+    return str(
+        Path(os.path.abspath(os.path.dirname(main_script_path)))
+        / CONFIG_FOLDER_NAME
+        / filename
+    )
 
 
 def file_is_in_folder_glob(filepath: str, folderpath_glob: str) -> bool:
