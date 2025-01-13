@@ -53,7 +53,7 @@ export const StyledChromePicker = styled.div(({ theme }) => ({
     borderRadius: `${theme.radii.default} !important`,
     boxShadow: `none !important`,
     "&:focus-visible": {
-      outline: `1px solid ${theme.colors.primary} !important`,
+      outline: `${theme.sizes.borderWidth} solid ${theme.colors.primary} !important`,
     },
   },
   svg: {
