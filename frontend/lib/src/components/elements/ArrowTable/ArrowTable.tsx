@@ -83,6 +83,9 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
   )
 }
 
+/**
+ * Generate the table header rows from a Quiver object.
+ */
 function generateTableHeader(table: Quiver): ReactElement {
   return (
     <thead>
@@ -103,6 +106,9 @@ function generateTableHeader(table: Quiver): ReactElement {
   )
 }
 
+/**
+ * Generate a table data row from a Quiver object.
+ */
 function generateTableRow(
   table: Quiver,
   rowIndex: number,
@@ -117,6 +123,9 @@ function generateTableRow(
   )
 }
 
+/**
+ * Generate a table index or data cell from a Quiver object.
+ */
 function generateTableCell(
   table: Quiver,
   rowIndex: number,
