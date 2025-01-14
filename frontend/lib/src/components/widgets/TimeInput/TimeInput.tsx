@@ -120,6 +120,7 @@ function TimeInput({
               // one on the popover, so we need to remove it here.
               boxShadow: "none",
               maxHeight: theme.sizes.maxDropdownHeight,
+              border: `1px solid ${theme.colors.borderColor}`,
             }),
           },
 
@@ -138,7 +139,7 @@ function TimeInput({
               overrides: {
                 Body: {
                   style: () => ({
-                    marginTop: theme.spacing.px,
+                    // marginTop: theme.spacing.px,
                   }),
                 },
               },

@@ -207,7 +207,9 @@ function DateInput({
               overrides: {
                 Body: {
                   style: {
-                    marginTop: theme.spacing.px,
+                    // marginTop: theme.spacing.px,
+                    marginTop: 0,
+                    border: `1px solid ${theme.colors.borderColor}`,
                   },
                 },
               },

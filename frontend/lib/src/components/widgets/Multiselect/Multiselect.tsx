@@ -248,7 +248,7 @@ const Multiselect: FC<Props> = props => {
                 overrides: {
                   Body: {
                     style: () => ({
-                      marginTop: theme.spacing.px,
+                      // marginTop: theme.spacing.px,
                     }),
                   },
                 },

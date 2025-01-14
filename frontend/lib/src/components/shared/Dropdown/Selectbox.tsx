@@ -239,7 +239,7 @@ const Selectbox: React.FC<Props> = ({
               overrides: {
                 Body: {
                   style: () => ({
-                    marginTop: theme.spacing.px,
+                    // marginTop: theme.spacing.px,
                   }),
                 },
               },

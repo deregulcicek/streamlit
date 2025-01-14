@@ -113,6 +113,7 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
         // applying a shadow to the popover that contains the color picker.
         boxShadow: "none",
         backgroundColor: theme.colors.bgColor,
+        border: `1px solid ${theme.colors.borderColor}`,
       },
       saturation: {
         borderRadius: `${theme.radii.default} ${theme.radii.default} 0 0`,
