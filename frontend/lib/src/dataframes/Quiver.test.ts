@@ -133,19 +133,9 @@ describe("Quiver", () => {
       const mockElement = { data: UNICODE }
       const q = new Quiver(mockElement)
 
-      test("blank cell", () => {
-        expect(q.getCell(0, 0)).toStrictEqual({
-          type: "blank",
-          cssClass: "blank",
-          content: "",
-        })
-      })
-
       test("index cell", () => {
-        expect(q.getCell(1, 0)).toStrictEqual({
+        expect(q.getCell(0, 0)).toStrictEqual({
           type: "index",
-          cssClass: "row_heading level0 row0",
-          cssId: undefined,
           content: "i1",
           field: new Field("__index_level_0__", new Utf8(), true, new Map([])),
           contentType: {
@@ -156,23 +146,9 @@ describe("Quiver", () => {
         })
       })
 
-      test("columns cell", () => {
-        expect(q.getCell(0, 1)).toStrictEqual({
-          type: "columns",
-          cssClass: "col_heading level0 col0",
-          content: "c1",
-          contentType: {
-            pandas_type: "unicode",
-            numpy_type: "object",
-          },
-        })
-      })
-
       test("data cell", () => {
-        expect(q.getCell(1, 2)).toStrictEqual({
+        expect(q.getCell(0, 2)).toStrictEqual({
           type: "data",
-          cssClass: "data row0 col1",
-          cssId: undefined,
           content: "1",
           contentType: {
             pandas_type: "unicode",
@@ -180,7 +156,6 @@ describe("Quiver", () => {
             meta: null,
           },
           field: new Field("c2", new Utf8(), true, new Map([])),
-          displayContent: undefined,
         })
       })
 
@@ -705,10 +680,10 @@ describe("Quiver", () => {
           ],
         })
         // Check display values.
-        expect(getStyledCell(q, 1, 1)?.displayContent).toEqual("1")
-        expect(getStyledCell(q, 1, 2)?.displayContent).toEqual("2")
-        expect(getStyledCell(q, 2, 1)?.displayContent).toEqual("3")
-        expect(getStyledCell(q, 2, 2)?.displayContent).toEqual("4")
+        expect(getStyledCell(q, 0, 1)?.displayContent).toEqual("1")
+        expect(getStyledCell(q, 0, 2)?.displayContent).toEqual("2")
+        expect(getStyledCell(q, 1, 1)?.displayContent).toEqual("3")
+        expect(getStyledCell(q, 1, 2)?.displayContent).toEqual("4")
       })
     })
   })

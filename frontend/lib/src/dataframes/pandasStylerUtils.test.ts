@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest"
+import { describe, expect, test } from "vitest"
 import { Quiver } from "./Quiver"
 import { getStyledCell, getStyledHeaders } from "./pandasStylerUtils"
 
@@ -6,18 +6,17 @@ const T_FAKE_UUID = "T_FAKE_UUID"
 
 describe("getStyledHeaders", () => {
   test("returns correct headers for single-level headers", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 0,
-      numDataColumns: 0,
-      numRows: 1,
-      numColumns: 2,
-    })
-    vi.spyOn(mockQuiver, "columnNames", "get").mockReturnValue([
-      ["col1", "col2"],
-    ])
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 0,
+        numDataColumns: 0,
+        numRows: 1,
+        numColumns: 2,
+      },
+      columnNames: [["col1", "col2"]],
+    } as unknown as Quiver
 
     const headers = getStyledHeaders(mockQuiver)
     expect(headers).toEqual([
@@ -30,19 +29,20 @@ describe("getStyledHeaders", () => {
   })
 
   test("returns correct headers for multi-level headers", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 2,
-      numIndexColumns: 2,
-      numDataRows: 0,
-      numDataColumns: 0,
-      numRows: 2,
-      numColumns: 4,
-    })
-    vi.spyOn(mockQuiver, "columnNames", "get").mockReturnValue([
-      ["top1", "top2"],
-      ["sub1", "sub2"],
-    ])
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 2,
+        numIndexColumns: 2,
+        numDataRows: 0,
+        numDataColumns: 0,
+        numRows: 2,
+        numColumns: 4,
+      },
+      columnNames: [
+        ["top1", "top2"],
+        ["sub1", "sub2"],
+      ],
+    } as unknown as Quiver
 
     const headers = getStyledHeaders(mockQuiver)
     expect(headers).toEqual([
@@ -62,16 +62,17 @@ describe("getStyledHeaders", () => {
   })
 
   test("handles empty data", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 0,
-      numDataColumns: 0,
-      numRows: 1,
-      numColumns: 1,
-    })
-    vi.spyOn(mockQuiver, "columnNames", "get").mockReturnValue([[]])
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 0,
+        numDataColumns: 0,
+        numRows: 1,
+        numColumns: 1,
+      },
+      columnNames: [[]],
+    } as unknown as Quiver
 
     const headers = getStyledHeaders(mockQuiver)
     expect(headers).toEqual([[{ name: "", cssClass: "blank index_name" }]])
@@ -80,34 +81,36 @@ describe("getStyledHeaders", () => {
 
 describe("getStyledCell", () => {
   test("returns undefined when no styler is present", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 2,
-      numDataColumns: 2,
-      numRows: 3,
-      numColumns: 3,
-    })
-    vi.spyOn(mockQuiver, "styler", "get").mockReturnValue(undefined)
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 2,
+        numDataColumns: 2,
+        numRows: 3,
+        numColumns: 3,
+      },
+      styler: undefined,
+    } as unknown as Quiver
 
     const cell = getStyledCell(mockQuiver, 0, 1)
     expect(cell).toBeUndefined()
   })
 
   test("returns correct styling for index cells", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 2,
-      numDataRows: 3,
-      numDataColumns: 2,
-      numRows: 4,
-      numColumns: 4,
-    })
-    vi.spyOn(mockQuiver, "styler", "get").mockReturnValue({
-      cssId: T_FAKE_UUID,
-    } as any)
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 2,
+        numDataRows: 3,
+        numDataColumns: 2,
+        numRows: 4,
+        numColumns: 4,
+      },
+      styler: {
+        cssId: T_FAKE_UUID,
+      },
+    } as unknown as Quiver
 
     const cell = getStyledCell(mockQuiver, 1, 0)
     expect(cell).toEqual({
@@ -118,21 +121,24 @@ describe("getStyledCell", () => {
   })
 
   test("returns correct styling for data cells", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 3,
-      numDataColumns: 2,
-      numRows: 4,
-      numColumns: 3,
-    })
-    vi.spyOn(mockQuiver, "styler", "get").mockReturnValue({
-      cssId: T_FAKE_UUID,
-      displayValues: {
-        getCell: (row: number, col: number) => ({ content: `${row},${col}` }),
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 3,
+        numDataColumns: 2,
+        numRows: 4,
+        numColumns: 3,
       },
-    } as any)
+      styler: {
+        cssId: T_FAKE_UUID,
+        displayValues: {
+          getCell: (row: number, col: number) => ({
+            content: `${row},${col}`,
+          }),
+        },
+      },
+    } as unknown as Quiver
 
     const cell = getStyledCell(mockQuiver, 1, 2)
     expect(cell).toEqual({
@@ -143,18 +149,19 @@ describe("getStyledCell", () => {
   })
 
   test("throws error for out of range row index", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 2,
-      numDataColumns: 2,
-      numRows: 3,
-      numColumns: 3,
-    })
-    vi.spyOn(mockQuiver, "styler", "get").mockReturnValue({
-      cssId: T_FAKE_UUID,
-    } as any)
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 2,
+        numDataColumns: 2,
+        numRows: 3,
+        numColumns: 3,
+      },
+      styler: {
+        cssId: T_FAKE_UUID,
+      },
+    } as unknown as Quiver
 
     expect(() => getStyledCell(mockQuiver, 2, 1)).toThrow(
       "Row index is out of range: 2"
@@ -162,18 +169,19 @@ describe("getStyledCell", () => {
   })
 
   test("throws error for out of range column index", () => {
-    const mockQuiver = new Quiver({} as any)
-    vi.spyOn(mockQuiver, "dimensions", "get").mockReturnValue({
-      numHeaderRows: 1,
-      numIndexColumns: 1,
-      numDataRows: 2,
-      numDataColumns: 2,
-      numRows: 3,
-      numColumns: 3,
-    })
-    vi.spyOn(mockQuiver, "styler", "get").mockReturnValue({
-      cssId: T_FAKE_UUID,
-    } as any)
+    const mockQuiver = {
+      dimensions: {
+        numHeaderRows: 1,
+        numIndexColumns: 1,
+        numDataRows: 2,
+        numDataColumns: 2,
+        numRows: 3,
+        numColumns: 3,
+      },
+      styler: {
+        cssId: T_FAKE_UUID,
+      },
+    } as unknown as Quiver
 
     expect(() => getStyledCell(mockQuiver, 0, 3)).toThrow(
       "Column index is out of range: 3"
