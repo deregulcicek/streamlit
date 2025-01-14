@@ -88,52 +88,28 @@ interface DataFrameDimensions {
   numColumns: number
 }
 
-/**
- * There are 4 cell types:
- *  - blank, cells that are not part of index headers, column headers, or data
- *  - index, index header cells
- *  - columns, column header cells
- *  - data, data cells
- */
+/** The type of the cell. */
 export enum DataFrameCellType {
-  BLANK = "blank",
+  // Index cells
   INDEX = "index",
-  COLUMNS = "columns",
+  // Data cells
   DATA = "data",
 }
 
 /** Data for a single cell in a DataFrame. */
 export interface DataFrameCell {
-  /** The cell's type (blank, index, columns, or data). */
+  /** The cell's type (index or data). */
   type: DataFrameCellType
-
-  /** The cell's CSS id, if the DataFrame has Styler. */
-  cssId?: string
-
-  /** The cell's CSS class. */
-  cssClass: string
 
   /** The cell's content. */
   content: DataType
 
   /** The cell's content type. */
   // For "blank" cells "contentType" is undefined.
-  contentType?: PandasColumnType
+  contentType: PandasColumnType
 
   /** The cell's field. */
-  field?: Field
-
-  /**
-   * The cell's formatted content string, if the DataFrame was created with a Styler.
-   * If the DataFrame is unstyled, displayContent will be undefined, and display
-   * code should apply a default formatting to the `content` value instead.
-   */
-  displayContent?: string
-}
-
-interface StyledHeader {
-  name: string
-  cssClass: string
+  field: Field
 }
 
 /**
@@ -269,58 +245,22 @@ export class Quiver {
     return hashString(valuesToHash.join("-"))
   }
 
-  /** Return a single cell in the table. */
+  /** Return a single index or data cell from the DataFrame. */
   public getCell(rowIndex: number, columnIndex: number): DataFrameCell {
-    const { numHeaderRows, numIndexColumns, numRows, numColumns } =
-      this.dimensions
+    const { numIndexColumns, numDataRows, numColumns } = this.dimensions
 
-    if (rowIndex < 0 || rowIndex >= numRows) {
+    if (rowIndex < 0 || rowIndex >= numDataRows) {
       throw new Error(`Row index is out of range: ${rowIndex}`)
     }
     if (columnIndex < 0 || columnIndex >= numColumns) {
       throw new Error(`Column index is out of range: ${columnIndex}`)
     }
 
-    const isBlankCell =
-      rowIndex < numHeaderRows && columnIndex < numIndexColumns
-    const isIndexCell =
-      rowIndex >= numHeaderRows && columnIndex < numIndexColumns
-    const isColumnsCell =
-      rowIndex < numHeaderRows && columnIndex >= numIndexColumns
-
-    if (isBlankCell) {
-      // Blank cells include `blank`.
-      const cssClass = ["blank"]
-      if (columnIndex > 0) {
-        cssClass.push(`level${rowIndex}`)
-      }
-
-      return {
-        type: DataFrameCellType.BLANK,
-        cssClass: cssClass.join(" "),
-        content: "",
-      }
-    }
+    const isIndexCell = columnIndex < numIndexColumns
 
     if (isIndexCell) {
-      const dataRowIndex = rowIndex - numHeaderRows
-
-      const cssId = this._styler?.cssId
-        ? `${this._styler.cssId}level${columnIndex}_row${dataRowIndex}`
-        : undefined
-
-      // Index label cells include:
-      // - row_heading
-      // - row<n> where n is the numeric position of the row
-      // - level<k> where k is the level in a MultiIndex
-      const cssClass = [
-        `row_heading`,
-        `level${columnIndex}`,
-        `row${dataRowIndex}`,
-      ].join(" ")
-
-      const contentType = this._columnTypes.index[columnIndex]
-      const content = this.getIndexValue(dataRowIndex, columnIndex)
+      const contentType = this.columnTypes.index[columnIndex]
+      const content = this.getIndexValue(rowIndex, columnIndex)
       let field = this._fields[`__index_level_${String(columnIndex)}__`]
       if (field === undefined) {
         // If the index column has a name, we need to get it differently:
@@ -328,121 +268,23 @@ export class Quiver {
       }
       return {
         type: DataFrameCellType.INDEX,
-        cssId,
-        cssClass,
         content,
         contentType,
         field,
       }
     }
 
-    if (isColumnsCell) {
-      const dataColumnIndex = columnIndex - numIndexColumns
-
-      // Column label cells include:
-      // - col_heading
-      // - col<n> where n is the numeric position of the column
-      // - level<k> where k is the level in a MultiIndex
-      const cssClass = [
-        `col_heading`,
-        `level${rowIndex}`,
-        `col${dataColumnIndex}`,
-      ].join(" ")
-
-      return {
-        type: DataFrameCellType.COLUMNS,
-        cssClass,
-        content: this._columnNames[rowIndex][dataColumnIndex],
-        // ArrowJS automatically converts "columns" cells to strings.
-        // Keep ArrowJS structure for consistency.
-        contentType: {
-          pandas_type: "unicode",
-          numpy_type: "object",
-        },
-      }
-    }
-
-    const dataRowIndex = rowIndex - numHeaderRows
     const dataColumnIndex = columnIndex - numIndexColumns
-
-    const cssId = this._styler?.cssId
-      ? `${this._styler.cssId}row${dataRowIndex}_col${dataColumnIndex}`
-      : undefined
-
-    // Data cells include `data`.
-    const cssClass = [
-      "data",
-      `row${dataRowIndex}`,
-      `col${dataColumnIndex}`,
-    ].join(" ")
-
-    const contentType = this._columnTypes.data[dataColumnIndex]
+    const contentType = this.columnTypes.data[dataColumnIndex]
     const field = this._fields[String(dataColumnIndex)]
-    const content = this.getDataValue(dataRowIndex, dataColumnIndex)
-    const displayContent = this._styler?.displayValues
-      ? (this._styler.displayValues.getCell(rowIndex, columnIndex)
-          .content as string)
-      : undefined
+    const content = this.getDataValue(rowIndex, dataColumnIndex)
 
     return {
       type: DataFrameCellType.DATA,
-      cssId,
-      cssClass,
       content,
       contentType,
-      displayContent,
       field,
     }
-  }
-
-  /**
-   * Returns a row-major matrix of styled DataFrame index & column header names.
-   * This is a matrix (multidimensional array) to support multi-level headers.
-   *
-   * This contains styling information for the headers.
-   */
-  public getStyledHeaders(): StyledHeader[][] {
-    const { numHeaderRows, numIndexColumns } = this.dimensions
-
-    // Create a matrix to hold all headers
-    const headers: StyledHeader[][] = []
-
-    // For each header row
-    for (let rowIndex = 0; rowIndex < numHeaderRows; rowIndex++) {
-      const headerRow: StyledHeader[] = []
-
-      // Add blank cells for index columns in header rows
-      for (let colIndex = 0; colIndex < numIndexColumns; colIndex++) {
-        const cssClass = ["blank", "index_name"]
-        if (colIndex > 0) {
-          cssClass.push(`level${rowIndex}`)
-        }
-        headerRow.push({
-          name: "",
-          cssClass: cssClass.join(" "),
-        })
-      }
-
-      // Add data column headers
-      for (
-        let colIndex = 0;
-        colIndex < this.columnNames[rowIndex]?.length || 0;
-        colIndex++
-      ) {
-        // Column label cells include:
-        // - col_heading
-        // - col<n> where n is the numeric position of the column
-        // - level<k> where k is the level in a MultiIndex
-        headerRow.push({
-          name: this.columnNames[rowIndex][colIndex],
-          cssClass: `col_heading level${rowIndex} col${colIndex}`,
-        })
-      }
-
-      headers.push(headerRow)
-    }
-
-    return headers
   }
 
   /** Get the raw value of an index cell. */

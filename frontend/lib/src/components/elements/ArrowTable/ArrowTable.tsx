@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import range from "lodash/range"
 
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
+import {
+  getStyledCell,
+  getStyledHeaders,
+} from "@streamlit/lib/src/dataframes/pandasStylerUtils"
 import { format as formatArrowCell } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
 import { isNumericType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 
@@ -38,10 +42,8 @@ export interface TableProps {
 export function ArrowTable(props: Readonly<TableProps>): ReactElement {
   const table = props.element
   const { cssId, cssStyles, caption } = table.styler ?? {}
-  const { numHeaderRows, numRows, numColumns } = table.dimensions
-  const allRowIndices = range(numRows)
-  const columnHeaderIndices = allRowIndices.slice(0, numHeaderRows)
-  const dataRowIndices = allRowIndices.slice(numHeaderRows)
+  const { numHeaderRows, numDataRows, numColumns } = table.dimensions
+  const dataRowIndices = range(numDataRows)
 
   return (
     <StyledTableContainer className="stTable" data-testid="stTable">
@@ -50,23 +52,7 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
       the entire table when scrolling horizontally. See also `styled-components.ts`. */}
       <StyledTableBorder>
         <StyledTable id={cssId} data-testid="stTableStyledTable">
-          {columnHeaderIndices.length > 0 && (
-            <thead>
-              {table.getStyledHeaders().map((headerRow, rowIndex) => (
-                <tr key={rowIndex}>
-                  {headerRow.map((header, colIndex) => (
-                    <StyledTableCellHeader
-                      key={colIndex}
-                      className={header.cssClass}
-                      scope="col"
-                    >
-                      {header.name || "\u00A0"}
-                    </StyledTableCellHeader>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-          )}
+          {numHeaderRows > 0 && generateTableHeader(table)}
           <tbody>
             {dataRowIndices.length === 0 ? (
               <tr>
@@ -97,6 +83,26 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
   )
 }
 
+function generateTableHeader(table: Quiver): ReactElement {
+  return (
+    <thead>
+      {getStyledHeaders(table).map((headerRow, rowIndex) => (
+        <tr key={rowIndex}>
+          {headerRow.map((header, colIndex) => (
+            <StyledTableCellHeader
+              key={colIndex}
+              className={header.cssClass}
+              scope="col"
+            >
+              {header.name || "\u00A0"}
+            </StyledTableCellHeader>
+          ))}
+        </tr>
+      ))}
+    </thead>
+  )
+}
+
 function generateTableRow(
   table: Quiver,
   rowIndex: number,
@@ -116,18 +122,14 @@ function generateTableCell(
   rowIndex: number,
   columnIndex: number
 ): ReactElement {
-  const {
-    type,
-    cssId,
-    cssClass,
-    content,
-    contentType,
-    displayContent,
-    field,
-  } = table.getCell(rowIndex, columnIndex)
+  const { type, content, contentType, field } = table.getCell(
+    rowIndex,
+    columnIndex
+  )
+  const styledCell = getStyledCell(table, rowIndex, columnIndex)
 
   const formattedContent =
-    displayContent || formatArrowCell(content, contentType, field)
+    styledCell?.displayContent || formatArrowCell(content, contentType, field)
 
   const style: React.CSSProperties = {
     textAlign: isNumericType(contentType) ? "right" : "left",
@@ -139,8 +141,8 @@ function generateTableCell(
         <StyledTableCellHeader
           key={columnIndex}
           scope="row"
-          id={cssId}
-          className={cssClass}
+          id={styledCell?.cssId}
+          className={styledCell?.cssClass}
         >
           {formattedContent}
         </StyledTableCellHeader>
@@ -150,8 +152,8 @@ function generateTableCell(
       return (
         <StyledTableCell
           key={columnIndex}
-          id={cssId}
-          className={cssClass}
+          id={styledCell?.cssId}
+          className={styledCell?.cssClass}
           style={style}
         >
           {formattedContent}
@@ -164,4 +166,4 @@ function generateTableCell(
   }
 }
 
-export default ArrowTable
+export default memo(ArrowTable)

@@ -24,6 +24,7 @@ import {
   getErrorCell,
 } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
 import EditingState from "@streamlit/lib/src/components/widgets/DataFrame/EditingState"
+import { getStyledCell } from "@streamlit/lib/src/dataframes/pandasStylerUtils"
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 import { notNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
@@ -89,11 +90,15 @@ function useDataLoader(
       try {
         // We skip all header rows to get to to the actual data rows.
         // in th Arrow data.
-        const arrowCell = data.getCell(
-          originalRow + numHeaderRows,
-          originalCol
+        const arrowCell = data.getCell(originalRow, originalCol)
+        const styledCell = getStyledCell(data, originalRow, originalCol)
+
+        return getCellFromArrow(
+          column,
+          arrowCell,
+          styledCell,
+          data.styler?.cssStyles
         )
-        return getCellFromArrow(column, arrowCell, data.styler?.cssStyles)
       } catch (error) {
         return getErrorCell(
           "Error during cell creation",

@@ -40,6 +40,7 @@ import {
   UNICODE,
 } from "@streamlit/lib/src/mocks/arrow"
 import { arrayFromVector } from "@streamlit/lib/src/test_util"
+import { getStyledCell } from "./pandasStylerUtils"
 
 describe("Quiver", () => {
   describe("Public methods", () => {
@@ -704,10 +705,10 @@ describe("Quiver", () => {
           ],
         })
         // Check display values.
-        expect(q.getCell(1, 1).displayContent).toEqual("1")
-        expect(q.getCell(1, 2).displayContent).toEqual("2")
-        expect(q.getCell(2, 1).displayContent).toEqual("3")
-        expect(q.getCell(2, 2).displayContent).toEqual("4")
+        expect(getStyledCell(q, 1, 1)?.displayContent).toEqual("1")
+        expect(getStyledCell(q, 1, 2)?.displayContent).toEqual("2")
+        expect(getStyledCell(q, 2, 1)?.displayContent).toEqual("3")
+        expect(getStyledCell(q, 2, 2)?.displayContent).toEqual("4")
       })
     })
   })
