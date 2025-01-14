@@ -25,6 +25,7 @@ import {
   INTERVAL_FLOAT64,
   INTERVAL_INT64,
   INTERVAL_UINT64,
+  PERIOD,
   TIMEDELTA,
   UINT64,
 } from "@streamlit/lib/src/mocks/arrow"
@@ -243,60 +244,67 @@ describe("format", () => {
     expect(format(content, contentType, field)).toEqual(`{"a":1,"b":2}`)
   })
 
-  // test("period", () => {
-  //   const mockElement = { data: PERIOD }
-  //   const q = new Quiver(mockElement)
-  //   const { numRows, numColumns } = q.dimensions
-  //   const table: Record<string, string[]> = {}
-  //   for (let columnIndex = 1; columnIndex < numColumns; columnIndex++) {
-  //     const column = []
-  //     for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-  //       const { content, contentType, field } = q.getCell(
-  //         rowIndex,
-  //         columnIndex
-  //       )
-  //       const cellValue = format(content, contentType, field)
-  //       column.push(cellValue)
-  //     }
-  //     table[column[0]] = [column[1], column[2]]
-  //   }
+  test("period", () => {
+    const mockElement = { data: PERIOD }
+    const q = new Quiver(mockElement)
+    const { numDataRows, numColumns } = q.dimensions
+    const table: Record<string, string[]> = {}
 
-  //   expect(table).toEqual({
-  //     A: ["2012", "1970"],
-  //     M: ["2012-02", "1970-01"],
-  //     Y: ["2012", "1970"],
-  //     h: ["2012-02-14 00:00", "1970-01-01 00:00"],
-  //     min: ["2012-02-14 00:00", "1970-01-01 00:00"],
-  //     ms: ["2012-02-14 00:00:00.000", "1970-01-01 00:00:00.000"],
-  //     s: ["2012-02-14 00:00:00", "1970-01-01 00:00:00"],
-  //     L: ["2012-02-14 00:00:00.000", "1970-01-01 00:00:00.000"],
-  //     S: ["2012-02-14 00:00:00", "1970-01-01 00:00:00"],
-  //     T: ["2012-02-14 00:00", "1970-01-01 00:00"],
-  //     H: ["2012-02-14 00:00", "1970-01-01 00:00"],
-  //     D: ["2012-02-14", "1970-01-01"],
-  //     W: ["2012-02-13/2012-02-19", "1969-12-29/1970-01-04"],
-  //     "W-SUN": ["2012-02-13/2012-02-19", "1969-12-29/1970-01-04"],
-  //     "W-MON": ["2012-02-14/2012-02-20", "1969-12-30/1970-01-05"],
-  //     "W-TUE": ["2012-02-08/2012-02-14", "1969-12-31/1970-01-06"],
-  //     "W-WED": ["2012-02-09/2012-02-15", "1970-01-01/1970-01-07"],
-  //     "W-THU": ["2012-02-10/2012-02-16", "1969-12-26/1970-01-01"],
-  //     "W-FRI": ["2012-02-11/2012-02-17", "1969-12-27/1970-01-02"],
-  //     "W-SAT": ["2012-02-12/2012-02-18", "1969-12-28/1970-01-03"],
-  //     Q: ["2012Q1", "1970Q1"],
-  //     "Q-JAN": ["2013Q1", "1970Q4"],
-  //     "Q-FEB": ["2012Q4", "1970Q4"],
-  //     "Q-MAR": ["2012Q4", "1970Q4"],
-  //     "Q-APR": ["2012Q4", "1970Q3"],
-  //     "Q-MAY": ["2012Q3", "1970Q3"],
-  //     "Q-JUN": ["2012Q3", "1970Q3"],
-  //     "Q-JUL": ["2012Q3", "1970Q2"],
-  //     "Q-AUG": ["2012Q2", "1970Q2"],
-  //     "Q-SEP": ["2012Q2", "1970Q2"],
-  //     "Q-OCT": ["2012Q2", "1970Q1"],
-  //     "Q-NOV": ["2012Q1", "1970Q1"],
-  //     "Q-DEC": ["2012Q1", "1970Q1"],
-  //   })
-  // })
+    // Get column names
+    const headers = q.columnNames[0]
+
+    // Start from index 1 to skip the index column
+    for (let columnIndex = 1; columnIndex < numColumns; columnIndex++) {
+      const values = []
+      // Iterate through data rows
+      for (let rowIndex = 0; rowIndex < numDataRows; rowIndex++) {
+        const { content, contentType, field } = q.getCell(
+          rowIndex,
+          columnIndex
+        )
+        const cellValue = format(content, contentType, field)
+        values.push(cellValue)
+      }
+      // add it via the header name key:
+      table[headers[columnIndex - 1]] = values
+    }
+
+    expect(table).toEqual({
+      A: ["2012", "1970"],
+      M: ["2012-02", "1970-01"],
+      Y: ["2012", "1970"],
+      h: ["2012-02-14 00:00", "1970-01-01 00:00"],
+      min: ["2012-02-14 00:00", "1970-01-01 00:00"],
+      ms: ["2012-02-14 00:00:00.000", "1970-01-01 00:00:00.000"],
+      s: ["2012-02-14 00:00:00", "1970-01-01 00:00:00"],
+      L: ["2012-02-14 00:00:00.000", "1970-01-01 00:00:00.000"],
+      S: ["2012-02-14 00:00:00", "1970-01-01 00:00:00"],
+      T: ["2012-02-14 00:00", "1970-01-01 00:00"],
+      H: ["2012-02-14 00:00", "1970-01-01 00:00"],
+      D: ["2012-02-14", "1970-01-01"],
+      W: ["2012-02-13/2012-02-19", "1969-12-29/1970-01-04"],
+      "W-SUN": ["2012-02-13/2012-02-19", "1969-12-29/1970-01-04"],
+      "W-MON": ["2012-02-14/2012-02-20", "1969-12-30/1970-01-05"],
+      "W-TUE": ["2012-02-08/2012-02-14", "1969-12-31/1970-01-06"],
+      "W-WED": ["2012-02-09/2012-02-15", "1970-01-01/1970-01-07"],
+      "W-THU": ["2012-02-10/2012-02-16", "1969-12-26/1970-01-01"],
+      "W-FRI": ["2012-02-11/2012-02-17", "1969-12-27/1970-01-02"],
+      "W-SAT": ["2012-02-12/2012-02-18", "1969-12-28/1970-01-03"],
+      Q: ["2012Q1", "1970Q1"],
+      "Q-JAN": ["2013Q1", "1970Q4"],
+      "Q-FEB": ["2012Q4", "1970Q4"],
+      "Q-MAR": ["2012Q4", "1970Q4"],
+      "Q-APR": ["2012Q4", "1970Q3"],
+      "Q-MAY": ["2012Q3", "1970Q3"],
+      "Q-JUN": ["2012Q3", "1970Q3"],
+      "Q-JUL": ["2012Q3", "1970Q2"],
+      "Q-AUG": ["2012Q2", "1970Q2"],
+      "Q-SEP": ["2012Q2", "1970Q2"],
+      "Q-OCT": ["2012Q2", "1970Q1"],
+      "Q-NOV": ["2012Q1", "1970Q1"],
+      "Q-DEC": ["2012Q1", "1970Q1"],
+    })
+  })
 
   test("list[unicode]", () => {
     expect(
