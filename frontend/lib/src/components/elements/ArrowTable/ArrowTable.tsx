@@ -18,7 +18,10 @@ import React, { memo, ReactElement } from "react"
 
 import range from "lodash/range"
 
-import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
+import {
+  DataFrameCellType,
+  Quiver,
+} from "@streamlit/lib/src/dataframes/Quiver"
 import {
   getStyledCell,
   getStyledHeaders,
@@ -146,7 +149,7 @@ function generateTableCell(
   }
 
   switch (type) {
-    case "index": {
+    case DataFrameCellType.INDEX: {
       return (
         <StyledTableCellHeader
           key={columnIndex}
@@ -158,7 +161,7 @@ function generateTableCell(
         </StyledTableCellHeader>
       )
     }
-    case "data": {
+    case DataFrameCellType.DATA: {
       return (
         <StyledTableCell
           key={columnIndex}
