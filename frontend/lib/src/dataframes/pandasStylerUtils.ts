@@ -81,6 +81,7 @@ export function getStyledHeaders(data: Quiver): StyledHeader[][] {
       // - col_heading
       // - col<n> where n is the numeric position of the column
       // - level<k> where k is the level in a MultiIndex
+      // See: https://pandas.pydata.org/docs/user_guide/style.html#CSS-Classes-and-Ids
       headerRow.push({
         name: data.columnNames[rowIndex][colIndex],
         cssClass: `col_heading level${rowIndex} col${colIndex}`,
@@ -126,6 +127,7 @@ export function getStyledCell(
     // - row_heading
     // - row<n> where n is the numeric position of the row
     // - level<k> where k is the level in a MultiIndex
+    // See: https://pandas.pydata.org/docs/user_guide/style.html#CSS-Classes-and-Ids
     const cssClass = [
       `row_heading`,
       `level${columnIndex}`,
