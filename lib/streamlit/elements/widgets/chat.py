@@ -69,6 +69,9 @@ class ChatInputValue(Mapping[str, Any]):
     def __len__(self) -> int:
         return len(vars(self))
 
+    def __bool__(self):
+        return bool(self.text or self.files)
+
     def __iter__(self) -> Iterator[str]:
         return iter(vars(self))
 
@@ -198,6 +201,9 @@ class ChatInputSerde:
         ui_value: ChatInputValueProto | None,
         widget_id: str = "",
     ) -> str | ChatInputValue | None:
+        if self.accept_files and (ui_value is None or not ui_value.HasField("data")):
+            return ChatInputValue(text="", files=[])
+
         if ui_value is None or not ui_value.HasField("data"):
             return None
         if not self.accept_files:
