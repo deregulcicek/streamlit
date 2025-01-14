@@ -245,7 +245,12 @@ export class Quiver {
     return hashString(valuesToHash.join("-"))
   }
 
-  /** Return a single index or data cell from the DataFrame. */
+  /** Return a single index or data cell from the DataFrame.
+   *
+   * @param rowIndex - The row index of the cell (0 is the first data or index row excluding header rows)
+   * @param columnIndex - The column index of the cell (0 is the first data or index column)
+   * @returns The cell's content, type, and field.
+   */
   public getCell(rowIndex: number, columnIndex: number): DataFrameCell {
     const { numIndexColumns, numDataRows, numColumns } = this.dimensions
 
