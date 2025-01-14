@@ -337,7 +337,7 @@ export class Quiver {
    * Extra columns will not be created.
    */
   public addRows(other: Quiver): Quiver {
-    if (this._styler || other._styler) {
+    if (this.styler || other.styler) {
       throw new Error(`
 Unsupported operation. \`add_rows()\` does not support Pandas Styler objects.
 
