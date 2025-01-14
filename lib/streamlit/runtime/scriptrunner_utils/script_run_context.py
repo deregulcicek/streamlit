@@ -93,6 +93,9 @@ class ScriptRunContext:
     _set_page_config_allowed: bool = True
     _has_script_started: bool = False
     widget_ids_this_run: set[str] = field(default_factory=set)
+    delta_path_to_element_ids_this_run: dict[str, list[int]] = field(
+        default_factory=dict
+    )
     widget_user_keys_this_run: set[str] = field(default_factory=set)
     form_ids_this_run: set[str] = field(default_factory=set)
     cursors: dict[int, RunningCursor] = field(default_factory=dict)
@@ -143,6 +146,7 @@ class ScriptRunContext:
         self.cursors = {}
         self.widget_ids_this_run = set()
         self.widget_user_keys_this_run = set()
+        self.delta_path_to_element_ids_this_run = {}
         self.form_ids_this_run = set()
         self.query_string = query_string
         self.pages_manager.set_current_page_script_hash(page_script_hash)
