@@ -142,8 +142,11 @@ export function getStyledCell(
   }
 
   const dataColumnIndex = columnIndex - numIndexColumns
-
-  // Data cells include `data`.
+  // Data cells include:
+  // - data
+  // - row<n> where n is the numeric position of the row
+  // - col<n> where n is the numeric position of the column
+  // See: https://pandas.pydata.org/docs/user_guide/style.html#CSS-Classes-and-Ids
   const cssClass = ["data", `row${rowIndex}`, `col${dataColumnIndex}`].join(
     " "
   )
