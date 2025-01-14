@@ -52,9 +52,19 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
         <StyledTable id={cssId} data-testid="stTableStyledTable">
           {columnHeaderIndices.length > 0 && (
             <thead>
-              {columnHeaderIndices.map(rowIndex =>
-                generateTableRow(table, rowIndex, numColumns)
-              )}
+              {table.getStyledHeaders().map((headerRow, rowIndex) => (
+                <tr key={rowIndex}>
+                  {headerRow.map((header, colIndex) => (
+                    <StyledTableCellHeader
+                      key={colIndex}
+                      className={header.cssClass}
+                      scope="col"
+                    >
+                      {header.name || "\u00A0"}
+                    </StyledTableCellHeader>
+                  ))}
+                </tr>
+              ))}
             </thead>
           )}
           <tbody>
@@ -124,13 +134,6 @@ function generateTableCell(
   }
 
   switch (type) {
-    case "blank": {
-      return (
-        <StyledTableCellHeader key={columnIndex} className={cssClass}>
-          &nbsp;
-        </StyledTableCellHeader>
-      )
-    }
     case "index": {
       return (
         <StyledTableCellHeader
@@ -143,21 +146,14 @@ function generateTableCell(
         </StyledTableCellHeader>
       )
     }
-    case "columns": {
+    case "data": {
       return (
-        <StyledTableCellHeader
+        <StyledTableCell
           key={columnIndex}
-          scope="col"
+          id={cssId}
           className={cssClass}
           style={style}
         >
-          {formattedContent}
-        </StyledTableCellHeader>
-      )
-    }
-    case "data": {
-      return (
-        <StyledTableCell key={columnIndex} id={cssId} style={style}>
           {formattedContent}
         </StyledTableCell>
       )

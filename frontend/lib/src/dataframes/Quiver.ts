@@ -131,6 +131,11 @@ export interface DataFrameCell {
   displayContent?: string
 }
 
+interface StyledHeader {
+  name: string
+  cssClass: string
+}
+
 /**
  * Parses data from an Arrow table, and stores it in a row-major format
  * (which is more useful for our frontend display code than Arrow's columnar format).
@@ -388,6 +393,56 @@ export class Quiver {
       displayContent,
       field,
     }
+  }
+
+  /**
+   * Returns a row-major matrix of styled DataFrame index & column header names.
+   * This is a matrix (multidimensional array) to support multi-level headers.
+   *
+   * This contains styling information for the headers.
+   */
+  public getStyledHeaders(): StyledHeader[][] {
+    const { numHeaderRows, numIndexColumns } = this.dimensions
+
+    // Create a matrix to hold all headers
+    const headers: StyledHeader[][] = []
+
+    // For each header row
+    for (let rowIndex = 0; rowIndex < numHeaderRows; rowIndex++) {
+      const headerRow: StyledHeader[] = []
+
+      // Add blank cells for index columns in header rows
+      for (let colIndex = 0; colIndex < numIndexColumns; colIndex++) {
+        const cssClass = ["blank", "index_name"]
+        if (colIndex > 0) {
+          cssClass.push(`level${rowIndex}`)
+        }
+        headerRow.push({
+          name: "",
+          cssClass: cssClass.join(" "),
+        })
+      }
+
+      // Add data column headers
+      for (
+        let colIndex = 0;
+        colIndex < this.columnNames[rowIndex]?.length || 0;
+        colIndex++
+      ) {
+        // Column label cells include:
+        // - col_heading
+        // - col<n> where n is the numeric position of the column
+        // - level<k> where k is the level in a MultiIndex
+        headerRow.push({
+          name: this.columnNames[rowIndex][colIndex],
+          cssClass: `col_heading level${rowIndex} col${colIndex}`,
+        })
+      }
+
+      headers.push(headerRow)
+    }
+
+    return headers
   }
 
   /** Get the raw value of an index cell. */

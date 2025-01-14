@@ -180,3 +180,55 @@ def make_pretty(styler):
 styled_df = weather_df.style.pipe(make_pretty)
 
 st.table(styled_df)
+
+df = pd.DataFrame(
+    [[38.0, 2.0, 18.0, 22.0, 21, np.nan], [19, 439, 6, 452, 226, 232]],
+    index=pd.Index(
+        ["Tumour (Positive)", "Non-Tumour (Negative)"], name="Actual Label:"
+    ),
+    columns=pd.MultiIndex.from_product(
+        [["Decision Tree", "Regression", "Random"], ["Tumour", "Non-Tumour"]],
+        names=["Model:", "Predicted:"],
+    ),
+)
+
+cell_hover = {  # for row hover use <tr> instead of <td>
+    "selector": "td:hover",
+    "props": [("background-color", "#ffffb3")],
+}
+headers = {
+    "selector": "th",
+    "props": "background-color: #000066; color: white;",
+}
+styled_df = df.style
+styled_df.set_table_styles([cell_hover, headers])
+styled_df.set_table_styles(
+    {
+        ("Regression", "Tumour"): [
+            {"selector": "th", "props": "border-left: 1px solid white"},
+            {"selector": "td", "props": "border-left: 1px solid #000066"},
+        ]
+    },
+    overwrite=False,
+    axis=0,
+)
+styled_df.set_table_styles(
+    [  # create internal CSS classes
+        {"selector": ".true", "props": "background-color: #e6ffe6;"},
+        {"selector": ".false", "props": "background-color: #ffe6e6;"},
+    ],
+    overwrite=False,
+)
+cell_color = pd.DataFrame(
+    [["true ", "false ", "true ", "false "], ["false ", "true ", "false ", "true "]],
+    index=df.index,
+    columns=df.columns[:4],
+)
+styled_df.set_td_classes(cell_color)
+styled_df.set_caption(
+    "Confusion matrix for multiple cancer prediction models."
+).set_table_styles(
+    [{"selector": "caption", "props": "caption-side: bottom; font-size:1.25em;"}],
+    overwrite=False,
+)
+st.table(styled_df)
