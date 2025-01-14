@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Utility functions to get Pandas styler information from a Quiver object.
+ */
+
 import { Quiver } from "./Quiver"
 
 /**
