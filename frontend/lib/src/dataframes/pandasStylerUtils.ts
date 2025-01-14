@@ -16,15 +16,23 @@
 
 import { Quiver } from "./Quiver"
 
+/**
+ * A styled header object with information from Pandas Styler.
+ */
 export interface StyledHeader {
+  /** The column header name. */
   name: string
+  /** The CSS class to apply to the column header. */
   cssClass: string
 }
 
+/**
+ * A styled cell object with information from Pandas Styler.
+ */
 export interface StyledCell {
-  /** The cell's CSS id, if the DataFrame has Styler. */
+  /** CSS id to apply to the cell. */
   cssId: string
-  /** The cell's CSS class. */
+  /** CSS class to apply to the cell. */
   cssClass: string
   /** The cell's formatted content string, if the DataFrame was created with a Styler. */
   displayContent: string | undefined
@@ -81,6 +89,14 @@ export function getStyledHeaders(data: Quiver): StyledHeader[][] {
   return headers
 }
 
+/**
+ * Returns a styled cell object based on the cell data from the Quiver (Arrow) object.
+ *
+ * @param data - The Quiver object.
+ * @param rowIndex - The row index of the cell (0-indexed based on the first data row)
+ * @param columnIndex - The column index of the cell (0-indexed based on the first index or data column)
+ * @returns A styled cell object or undefined if the dataframe is not styled.
+ */
 export function getStyledCell(
   data: Quiver,
   rowIndex: number,
