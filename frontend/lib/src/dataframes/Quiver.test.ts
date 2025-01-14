@@ -40,6 +40,7 @@ import {
   UNICODE,
 } from "@streamlit/lib/src/mocks/arrow"
 import { arrayFromVector } from "@streamlit/lib/src/test_util"
+
 import { getStyledCell } from "./pandasStylerUtils"
 
 describe("Quiver", () => {
