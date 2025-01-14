@@ -475,7 +475,7 @@ describe("getCellFromArrow", () => {
     const data = new Quiver(element)
     const cell = getCellFromArrow(
       MOCK_TEXT_COLUMN,
-      data.getCell(1, 1),
+      data.getCell(0, 1),
       undefined,
       undefined
     )
@@ -516,7 +516,7 @@ describe("getCellFromArrow", () => {
     const data = new Quiver(element)
     const cell = getCellFromArrow(
       decimalColumn,
-      data.getCell(1, 1),
+      data.getCell(0, 1),
       undefined,
       undefined
     )
@@ -733,8 +733,8 @@ describe("getCellFromArrow", () => {
 
     const cell = getCellFromArrow(
       MOCK_NUMBER_COLUMN,
-      data.getCell(1, 1),
-      getStyledCell(data, 1, 1),
+      data.getCell(0, 1),
+      getStyledCell(data, 0, 1),
       undefined
     )
 
@@ -769,8 +769,8 @@ describe("getCellFromArrow", () => {
 
     const cell = getCellFromArrow(
       MOCK_NUMBER_COLUMN,
-      data.getCell(1, 1),
-      getStyledCell(data, 1, 1),
+      data.getCell(0, 1),
+      getStyledCell(data, 0, 1),
       element.styler.styles
     )
 
@@ -810,8 +810,8 @@ it("doesn't apply Pandas Styler CSS for editable columns", () => {
 
   const cell = getCellFromArrow(
     { ...MOCK_NUMBER_COLUMN, isEditable: true },
-    data.getCell(1, 1),
-    getStyledCell(data, 1, 1),
+    data.getCell(0, 1),
+    getStyledCell(data, 0, 1),
     element.styler.styles
   )
 
