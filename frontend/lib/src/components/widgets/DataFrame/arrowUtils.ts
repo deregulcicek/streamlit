@@ -438,7 +438,7 @@ export function getCellFromArrow(
 
   if (!column.isEditable) {
     // Only apply display content and css styles to non-editable cells.
-    if (styledCell && notNullOrUndefined(styledCell?.displayContent)) {
+    if (notNullOrUndefined(styledCell?.displayContent)) {
       const displayData = removeLineBreaks(styledCell.displayContent)
       // If the display content is set, use that instead of the content.
       // This is only supported for text, object, date, datetime, time and number cells.
