@@ -181,7 +181,9 @@ styled_df = weather_df.style.pipe(make_pretty)
 
 st.table(styled_df)
 
-df = pd.DataFrame(
+# Advanced styling example with styled headers, hovering and caption:
+
+styled_df = pd.DataFrame(
     [[38.0, 2.0, 18.0, 22.0, 21, np.nan], [19, 439, 6, 452, 226, 232]],
     index=pd.Index(
         ["Tumour (Positive)", "Non-Tumour (Negative)"], name="Actual Label:"
@@ -190,7 +192,7 @@ df = pd.DataFrame(
         [["Decision Tree", "Regression", "Random"], ["Tumour", "Non-Tumour"]],
         names=["Model:", "Predicted:"],
     ),
-)
+).style
 
 cell_hover = {  # for row hover use <tr> instead of <td>
     "selector": "td:hover",
@@ -200,7 +202,6 @@ headers = {
     "selector": "th",
     "props": "background-color: #000066; color: white;",
 }
-styled_df = df.style
 styled_df.set_table_styles([cell_hover, headers])
 styled_df.set_table_styles(
     {
@@ -212,23 +213,5 @@ styled_df.set_table_styles(
     overwrite=False,
     axis=0,
 )
-styled_df.set_table_styles(
-    [  # create internal CSS classes
-        {"selector": ".true", "props": "background-color: #e6ffe6;"},
-        {"selector": ".false", "props": "background-color: #ffe6e6;"},
-    ],
-    overwrite=False,
-)
-cell_color = pd.DataFrame(
-    [["true ", "false ", "true ", "false "], ["false ", "true ", "false ", "true "]],
-    index=df.index,
-    columns=df.columns[:4],
-)
-styled_df.set_td_classes(cell_color)
-styled_df.set_caption(
-    "Confusion matrix for multiple cancer prediction models."
-).set_table_styles(
-    [{"selector": "caption", "props": "caption-side: bottom; font-size:1.25em;"}],
-    overwrite=False,
-)
+styled_df.set_caption("Confusion matrix for multiple cancer prediction models.")
 st.table(styled_df)
