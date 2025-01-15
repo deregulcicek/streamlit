@@ -50,19 +50,19 @@ export interface StyledCell {
  * This is a matrix (multidimensional array) to support multi-level headers.
  */
 export function getStyledHeaders(data: Quiver): StyledHeader[][] {
-  const { numHeaderRows, numIndexColumns } = data.dimensions
+  const { numIndexColumns } = data.dimensions
 
   // Create a matrix to hold all headers
   const headers: StyledHeader[][] = []
 
   // For each header row
-  for (let rowIndex = 0; rowIndex < numHeaderRows; rowIndex++) {
+  for (let rowIndex = 0; rowIndex < data.columnNames.length; rowIndex++) {
     const headerRow: StyledHeader[] = []
 
     // For each column in current header row:
     for (
       let colIndex = 0;
-      colIndex < data.columnNames[rowIndex]?.length || 0;
+      colIndex < data.columnNames[rowIndex].length;
       colIndex++
     ) {
       // Add blank cells for index columns in header rows
@@ -79,7 +79,7 @@ export function getStyledHeaders(data: Quiver): StyledHeader[][] {
         // See: https://pandas.pydata.org/docs/user_guide/style.html#CSS-Classes-and-Ids
         cssClasses.push("col_heading")
         cssClasses.push(`level${rowIndex}`)
-        cssClasses.push(`col${colIndex}`)
+        cssClasses.push(`col${colIndex - numIndexColumns}`)
       }
 
       headerRow.push({
