@@ -325,12 +325,12 @@ st.add_rows(my_styler.data)
       indexTypes: newIndexTypes,
       dataTypes: newDataTypes,
     } = concat(
-      this._arrowIndexTypes,
       this._arrowDataTypes,
+      this._arrowIndexTypes,
       this._indexData,
       this._data,
-      other._arrowIndexTypes,
       other._arrowDataTypes,
+      other._arrowIndexTypes,
       other._indexData,
       other._data
     )
