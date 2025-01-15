@@ -257,7 +257,7 @@ export class Quiver {
     return hashString(valuesToHash.join("-"))
   }
 
-  /** Return a single index (from Pandas index columns) or data cell from the DataFrame.
+  /** Return a single cell from an (Pandas)index column or data column of the DataFrame.
    *
    * @param rowIndex - The row index of the cell (0 is the first data or index row excluding header rows)
    * @param columnIndex - The column index of the cell (0 is the first data or index column)
