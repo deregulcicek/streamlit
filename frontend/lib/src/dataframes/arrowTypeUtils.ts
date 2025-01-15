@@ -249,7 +249,7 @@ export function isObjectType(type?: ArrowType): boolean {
   }
   return (
     ArrowDataType.isStruct(type.arrowField.type) ||
-    // TODO: ArrowDataType.isMap(type.arrowField.type) ||
+    ArrowDataType.isMap(type.arrowField.type) ||
     getTypeName(type) === "object"
   )
 }
