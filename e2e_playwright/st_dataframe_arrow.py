@@ -16,13 +16,18 @@
 import random
 
 import numpy as np
+import pandas as pd
 import pyarrow as pa
 
 import streamlit as st
+from shared.data_mocks import BASE_TYPES_DF, NUMBER_TYPES_DF
 from streamlit import dataframe_util
 
 np.random.seed(0)
 random.seed(0)
+
+
+st.set_page_config(layout="wide")
 
 
 a = pa.array([1, 2, 3, 4])
@@ -71,3 +76,34 @@ data = {
     "creator": {"library": "pyarrow", "version": "16.1.0"},
     "pandas_version": "2.2.2",
 }
+
+
+st.subheader("Base types")
+st.dataframe(BASE_TYPES_DF.set_index(["string", "float64"]), use_container_width=True)
+
+df = pd.DataFrame(
+    {"x": [5, 2, 1, 9], "y": [4, 1, 5, 10], "z": [4, 1, 5, 0]},
+    index=["John", "Jacob", "Ally", "Simon"],
+)
+st.dataframe(df, use_container_width=True)
+
+st.dataframe(
+    pd.DataFrame(
+        np.random.randn(3, 6),
+        index=["A", "B", "C"],
+        columns=pd.MultiIndex.from_tuples(
+            [
+                ("a", "b", "c"),
+                ("a", "b", "d"),
+                ("e", "f", "c"),
+                ("g", "h", "d"),
+                ("", "h", "i"),
+                ("j", "", ""),
+            ],
+            names=["first", "second", "third"],
+        ),
+    )
+)
+
+NUMBER_TYPES_DF.index.name = "foo"
+st.dataframe(NUMBER_TYPES_DF, use_container_width=True)
