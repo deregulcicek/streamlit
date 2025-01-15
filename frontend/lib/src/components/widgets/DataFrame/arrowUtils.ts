@@ -30,8 +30,8 @@ import {
   convertTimeToDate,
   format as formatArrowCell,
 } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
+import { ArrowType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
 import {
-  PandasColumnType as ArrowType,
   isBooleanType,
   isBytesType,
   isCategoricalType,
@@ -188,6 +188,44 @@ export function getColumnTypeFromArrow(arrowType: ArrowType): ColumnCreator {
 }
 
 /**
+ * Parses the column header names into a group and title.
+ *
+ * @param columnHeaderNames - The column header names.
+ *
+ * @return the group and title.
+ */
+function parseColumnHeaderNames(columnHeaderNames: string[]): {
+  title: string
+  group: string | undefined
+} {
+  const title =
+    columnHeaderNames.length > 0
+      ? columnHeaderNames[columnHeaderNames.length - 1]
+      : ""
+
+  // If there are > 1 header columns, join all these headers with a "/"
+  // and use it as the group name, but ignore empty strings headers.
+  // This does not include the last column, which we use as the actual
+  // column name. E.g.
+  // columnHeaders = ["a", "b", "c"] -> group = "a / b" name: "c"
+  // columnHeaders = ["", "b", "c"] -> group = "b" name: "c"
+  // columnHeaders = ["a", "", ""] -> group = "a" name: ""
+
+  const group =
+    columnHeaderNames.length > 1
+      ? columnHeaderNames
+          .slice(0, -1)
+          .filter(column => column !== "")
+          .join(" / ")
+      : undefined
+
+  return {
+    title,
+    group,
+  }
+}
+
+/**
  * Creates the column props for an index column from the Arrow metadata.
  *
  * @param data - The Arrow data.
@@ -199,8 +237,15 @@ export function getIndexFromArrow(
   data: Quiver,
   indexPosition: number
 ): BaseColumnProps {
-  const arrowType = data.columnTypes.index[indexPosition]
-  const title = data.indexNames[indexPosition]
+  // columnNames a matrix of column names.
+  // Multi-level headers will have more than one row of column names.
+  const columnHeaderNames = data.columnNames.map(
+    column => column[indexPosition]
+  )
+  const { title, group } = parseColumnHeaderNames(columnHeaderNames)
+
+  const arrowType = data.columnTypes[indexPosition]
+
   let isEditable = true
 
   if (isRangeIndexType(arrowType)) {
@@ -212,6 +257,7 @@ export function getIndexFromArrow(
     id: `_index-${indexPosition}`,
     name: title,
     title,
+    group,
     isEditable,
     arrowType,
     isIndex: true,
@@ -238,48 +284,10 @@ export function getColumnFromArrow(
   const columnHeaderNames = data.columnNames.map(
     column => column[columnPosition]
   )
-  const title =
-    columnHeaderNames.length > 0
-      ? columnHeaderNames[columnHeaderNames.length - 1]
-      : ""
 
-  // If there are > 1 header columns, join all these headers with a "/"
-  // and use it as the group name, but ignore empty strings headers.
-  // This does not include the last column, which we use as the actual
-  // column name. E.g.
-  // columnHeaders = ["a", "b", "c"] -> group = "a / b" name: "c"
-  // columnHeaders = ["", "b", "c"] -> group = "b" name: "c"
-  // columnHeaders = ["a", "", ""] -> group = "a" name: ""
+  const { title, group } = parseColumnHeaderNames(columnHeaderNames)
 
-  const group =
-    columnHeaderNames.length > 1
-      ? columnHeaderNames
-          .slice(0, -1)
-          .filter(column => column !== "")
-          .join(" / ")
-      : undefined
-
-  let arrowType = data.columnTypes.data[columnPosition]
-
-  if (isNullOrUndefined(arrowType)) {
-    // Use empty column type as fallback
-    arrowType = {
-      meta: null,
-      numpy_type: "object",
-      pandas_type: "object",
-    } as ArrowType
-  }
-
-  let columnTypeOptions
-  if (isCategoricalType(arrowType)) {
-    // Get the available categories and use it in column type metadata
-    const options = data.getCategoricalOptions(columnPosition)
-    if (notNullOrUndefined(options)) {
-      columnTypeOptions = {
-        options,
-      }
-    }
-  }
+  const arrowType = data.columnTypes[columnPosition]
 
   return {
     id: `_column-${title}-${columnPosition}`,
@@ -287,7 +295,6 @@ export function getColumnFromArrow(
     title,
     isEditable: true,
     arrowType,
-    columnTypeOptions,
     isIndex: false,
     isPinned: false,
     isHidden: false,
@@ -342,7 +349,8 @@ export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
 
   for (let i = 0; i < numColumns; i++) {
     const column = {
-      ...getColumnFromArrow(data, i),
+      // TODO: clean-up
+      ...getColumnFromArrow(data, i + numIndices),
       indexNumber: i + numIndices,
     } as BaseColumnProps
 
@@ -378,11 +386,7 @@ export function getCellFromArrow(
     cellTemplate = column.getCell(
       notNullOrUndefined(arrowCell.content)
         ? removeLineBreaks(
-            formatArrowCell(
-              arrowCell.content,
-              arrowCell.contentType,
-              arrowCell.field
-            )
+            formatArrowCell(arrowCell.content, arrowCell.contentType)
           )
         : null
     )
@@ -421,11 +425,7 @@ export function getCellFromArrow(
     // field information is available in the arrowType.
     const decimalStr = isNullOrUndefined(arrowCell.content)
       ? null
-      : formatArrowCell(
-          arrowCell.content,
-          arrowCell.contentType,
-          arrowCell.field
-        )
+      : formatArrowCell(arrowCell.content, arrowCell.contentType)
     cellTemplate = column.getCell(decimalStr)
   } else {
     cellTemplate = column.getCell(arrowCell.content)

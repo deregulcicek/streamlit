@@ -38,6 +38,7 @@ import {
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
 
+import { ArrowType } from "./arrowParseUtils"
 import {
   DataType,
   isDatetimeType,
@@ -50,7 +51,6 @@ import {
   isObjectType,
   isPeriodType,
   isTimeType,
-  PandasColumnType,
 } from "./arrowTypeUtils"
 
 /**
@@ -491,37 +491,38 @@ function formatInterval(x: StructRow, field?: Field): string {
   // Serialization for pandas.Interval is provided by Arrow extensions
   // https://github.com/pandas-dev/pandas/blob/235d9009b571c21b353ab215e1e675b1924ae55c/
   // pandas/core/arrays/arrow/extension_types.py#L17
+  // TODO(lukasmasuch): Implement with new type
   const extensionName = field && field.metadata.get("ARROW:extension:name")
-  if (extensionName && extensionName === "pandas.interval") {
-    const extensionMetadata = JSON.parse(
-      field.metadata.get("ARROW:extension:metadata") as string
-    )
-    const { subtype, closed } = extensionMetadata
+  // if (extensionName && extensionName === "pandas.interval") {
+  //   const extensionMetadata = JSON.parse(
+  //     field.metadata.get("ARROW:extension:metadata") as string
+  //   )
+  //   const { subtype, closed } = extensionMetadata
 
-    const interval = (x as StructRow).toJSON() as PandasInterval
+  //   const interval = (x as StructRow).toJSON() as PandasInterval
 
-    const leftBracket = closed === "both" || closed === "left" ? "[" : "("
-    const rightBracket = closed === "both" || closed === "right" ? "]" : ")"
+  //   const leftBracket = closed === "both" || closed === "left" ? "[" : "("
+  //   const rightBracket = closed === "both" || closed === "right" ? "]" : ")"
 
-    const leftInterval = format(
-      interval.left,
-      {
-        pandas_type: subtype,
-        numpy_type: subtype,
-      },
-      (field.type as Struct)?.children?.[0]
-    )
-    const rightInterval = format(
-      interval.right,
-      {
-        pandas_type: subtype,
-        numpy_type: subtype,
-      },
-      (field.type as Struct)?.children?.[1]
-    )
+  //   const leftInterval = format(
+  //     interval.left,
+  //     {
+  //       pandas_type: subtype,
+  //       numpy_type: subtype,
+  //     },
+  //     (field.type as Struct)?.children?.[0]
+  //   )
+  //   const rightInterval = format(
+  //     interval.right,
+  //     {
+  //       pandas_type: subtype,
+  //       numpy_type: subtype,
+  //     },
+  //     (field.type as Struct)?.children?.[1]
+  //   )
 
-    return `${leftBracket + leftInterval}, ${rightInterval + rightBracket}`
-  }
+  //   return `${leftBracket + leftInterval}, ${rightInterval + rightBracket}`
+  // }
   return String(x)
 }
 
@@ -536,13 +537,9 @@ function formatInterval(x: StructRow, field?: Field): string {
  * @param field The field metadata from arrow containing metadata about the column.
  * @returns The formatted cell value.
  */
-export function format(
-  x: DataType,
-  pandasType?: PandasColumnType,
-  field?: Field
-): string {
-  const extensionName = field && field.metadata.get("ARROW:extension:name")
-  const fieldType = field?.type
+export function format(x: DataType, type: ArrowType): string {
+  const extensionName = type.arrowField.metadata.get("ARROW:extension:name")
+  const fieldType = type.arrowField.type
 
   if (isNullOrUndefined(x)) {
     return "<NA>"
@@ -550,48 +547,45 @@ export function format(
 
   // date
   const isDate = x instanceof Date || Number.isFinite(x)
-  if (isDate && isDateType(pandasType)) {
+  if (isDate && isDateType(type)) {
     return formatDate(x as Date | number)
   }
 
   // time
-  if (typeof x === "bigint" && isTimeType(pandasType)) {
-    return formatTime(Number(x), field)
+  if (typeof x === "bigint" && isTimeType(type)) {
+    return formatTime(Number(x), type.arrowField)
   }
 
   // datetimetz, datetime, datetime64, datetime64[ns], etc.
-  if (
-    isDate &&
-    (isDatetimeType(pandasType) || fieldType instanceof Timestamp)
-  ) {
-    return formatDatetime(x as Date | number, field)
+  if (isDate && (isDatetimeType(type) || fieldType instanceof Timestamp)) {
+    return formatDatetime(x as Date | number, type.arrowField)
   }
 
-  if (isPeriodType(pandasType) || extensionName === "pandas.period") {
-    return formatPeriod(x as bigint, field)
+  if (isPeriodType(type) || extensionName === "pandas.period") {
+    return formatPeriod(x as bigint, type.arrowField)
   }
 
-  if (isIntervalType(pandasType) || extensionName === "pandas.interval") {
-    return formatInterval(x as StructRow, field)
+  if (isIntervalType(type) || extensionName === "pandas.interval") {
+    return formatInterval(x as StructRow, type.arrowField)
   }
 
-  if (isDurationType(pandasType)) {
-    return formatDuration(x as number | bigint, field)
+  if (isDurationType(type)) {
+    return formatDuration(x as number | bigint, type.arrowField)
   }
 
-  if (isDecimalType(pandasType)) {
-    return formatDecimal(x as Uint32Array, field)
+  if (isDecimalType(type)) {
+    return formatDecimal(x as Uint32Array, type.arrowField)
   }
 
   if (
-    (isFloatType(pandasType) || fieldType instanceof Float) &&
+    (isFloatType(type) || fieldType instanceof Float) &&
     Number.isFinite(x)
   ) {
     return formatFloat(x as number)
   }
 
-  if (isObjectType(pandasType) || isListType(pandasType)) {
-    return formatObject(x, field)
+  if (isObjectType(type) || isListType(type)) {
+    return formatObject(x, type.arrowField)
   }
 
   return String(x)

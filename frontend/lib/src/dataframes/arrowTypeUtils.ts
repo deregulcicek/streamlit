@@ -18,6 +18,8 @@ import { Dictionary, Struct, StructRow, Vector } from "apache-arrow"
 
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
+import { ArrowType } from "./arrowParseUtils"
+
 /** Data types used by ArrowJS. */
 export type DataType =
   | null
@@ -76,23 +78,22 @@ export function convertVectorToList(vector: Vector<any>): string[] {
 }
 
 /** Returns type for a single-index column or data column. */
-export function getTypeName(type: PandasColumnType): string {
+export function getTypeName(type: ArrowType): string {
+  // TODO(lukasmasuch): Support raw arrow.
   // For `PeriodType` and `IntervalType` types are kept in `numpy_type`,
   // for the rest of the indexes in `pandas_type`.
-  return type.pandas_type === "object" ? type.numpy_type : type.pandas_type
+  return type.pandasType?.pandas_type ?? ""
 }
 
 /** Returns the timezone of the arrow type metadata. */
-export function getTimezone(arrowType: PandasColumnType): string | undefined {
-  // TODO(lukasmasuch): Use info from field instead:
-  // return arrowType?.field?.type?.timezone
-  return arrowType?.meta?.timezone
+export function getTimezone(type: ArrowType): string | undefined {
+  return type.arrowField?.type?.timezone ?? type.pandasType?.metadata?.timezone
 }
 
 /** True if the arrow type is an integer type.
  * For example: int8, int16, int32, int64, uint8, uint16, uint32, uint64, range
  */
-export function isIntegerType(type?: PandasColumnType): boolean {
+export function isIntegerType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -105,7 +106,7 @@ export function isIntegerType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is an unsigned integer type. */
-export function isUnsignedIntegerType(type?: PandasColumnType): boolean {
+export function isUnsignedIntegerType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -115,7 +116,7 @@ export function isUnsignedIntegerType(type?: PandasColumnType): boolean {
 /** True if the arrow type is a float type.
  * For example: float16, float32, float64, float96, float128
  */
-export function isFloatType(type?: PandasColumnType): boolean {
+export function isFloatType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -123,7 +124,7 @@ export function isFloatType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a decimal type. */
-export function isDecimalType(type?: PandasColumnType): boolean {
+export function isDecimalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -131,7 +132,7 @@ export function isDecimalType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a numeric type. */
-export function isNumericType(type?: PandasColumnType): boolean {
+export function isNumericType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -139,7 +140,7 @@ export function isNumericType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a boolean type. */
-export function isBooleanType(type?: PandasColumnType): boolean {
+export function isBooleanType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -147,7 +148,7 @@ export function isBooleanType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a duration type. */
-export function isDurationType(type?: PandasColumnType): boolean {
+export function isDurationType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -155,7 +156,7 @@ export function isDurationType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a period type. */
-export function isPeriodType(type?: PandasColumnType): boolean {
+export function isPeriodType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -163,7 +164,7 @@ export function isPeriodType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a datetime type. */
-export function isDatetimeType(type?: PandasColumnType): boolean {
+export function isDatetimeType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -171,7 +172,7 @@ export function isDatetimeType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a date type. */
-export function isDateType(type?: PandasColumnType): boolean {
+export function isDateType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -179,7 +180,7 @@ export function isDateType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a time type. */
-export function isTimeType(type?: PandasColumnType): boolean {
+export function isTimeType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -187,7 +188,7 @@ export function isTimeType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a categorical type. */
-export function isCategoricalType(type?: PandasColumnType): boolean {
+export function isCategoricalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -195,7 +196,7 @@ export function isCategoricalType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a list type. */
-export function isListType(type?: PandasColumnType): boolean {
+export function isListType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -203,7 +204,7 @@ export function isListType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is an object type. */
-export function isObjectType(type?: PandasColumnType): boolean {
+export function isObjectType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -211,7 +212,7 @@ export function isObjectType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a bytes type. */
-export function isBytesType(type?: PandasColumnType): boolean {
+export function isBytesType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -219,7 +220,7 @@ export function isBytesType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a string type. */
-export function isStringType(type?: PandasColumnType): boolean {
+export function isStringType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -227,7 +228,7 @@ export function isStringType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is an empty type. */
-export function isEmptyType(type?: PandasColumnType): boolean {
+export function isEmptyType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -235,7 +236,7 @@ export function isEmptyType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a interval type. */
-export function isIntervalType(type?: PandasColumnType): boolean {
+export function isIntervalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
@@ -243,7 +244,7 @@ export function isIntervalType(type?: PandasColumnType): boolean {
 }
 
 /** True if the arrow type is a range index type. */
-export function isRangeIndexType(type?: PandasColumnType): boolean {
+export function isRangeIndexType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
