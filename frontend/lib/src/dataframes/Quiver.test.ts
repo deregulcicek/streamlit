@@ -965,7 +965,7 @@ describe("Quiver", () => {
         expect(q1q2.getCell(3, 1).content).toEqual("qux")
         expect(q1q2.getCell(3, 2).content).toEqual("2")
 
-        expect(q1q2.columnNames).toEqual([["c1", "c2"]])
+        expect(q1q2.columnNames).toEqual([["", "c1", "c2"]])
         expect(q1q2.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1055,7 +1055,7 @@ describe("Quiver", () => {
         expect(q1q2.getCell(2, 1).content).toEqual("foo")
         expect(q1q2.getCell(3, 1).content).toEqual("bar")
 
-        expect(q1q2.columnNames).toEqual([["c1"]])
+        expect(q1q2.columnNames).toEqual([["", "c1"]])
         expect(q1q2.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1155,7 +1155,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual("bar")
         expect(qq.getCell(3, 2).content).toEqual(BigInt(200))
 
-        expect(qq.columnNames).toEqual([["c1", "c2"]])
+        expect(qq.columnNames).toEqual([["", "c1", "c2"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1238,7 +1238,7 @@ describe("Quiver", () => {
         )
 
         expect(qq.columnNames).toEqual([
-          ["2000-12-31 00:00:00", "2001-12-31 00:00:00"],
+          ["", "2000-12-31 00:00:00", "2001-12-31 00:00:00"],
         ])
         expect(qq.columnTypes).toEqual([
           {
@@ -1302,7 +1302,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual(1.4)
         expect(qq.getCell(3, 2).content).toEqual(1.5)
 
-        expect(qq.columnNames).toEqual([["1.24", "2.35"]])
+        expect(qq.columnNames).toEqual([["", "1.24", "2.35"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1365,7 +1365,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual(BigInt(2))
         expect(qq.getCell(3, 2).content).toEqual(BigInt(3))
 
-        expect(qq.columnNames).toEqual([["1", "2"]])
+        expect(qq.columnNames).toEqual([["", "1", "2"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1726,20 +1726,20 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual("bar")
         expect(qq.getCell(3, 2).content).toEqual("2")
 
-        expect(qq.columnNames).toEqual([["0", "1"]])
+        expect(qq.columnNames).toEqual([["", "0", "1"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "__index_level_0__",
-              name: null,
+              field_name: "",
+              name: "",
               pandas_type: "range",
               numpy_type: "range",
               metadata: {
                 start: 0,
                 step: 1,
-                stop: 4,
+                stop: 2,
                 kind: "range",
                 name: null,
               },
@@ -1795,7 +1795,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual(BigInt(3))
         expect(qq.getCell(3, 2).content).toEqual(BigInt(4))
 
-        expect(qq.columnNames).toEqual([["1", "2"]])
+        expect(qq.columnNames).toEqual([["", "1", "2"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1813,8 +1813,8 @@ describe("Quiver", () => {
             type: DataFrameCellType.DATA,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "c1",
-              name: "c1",
+              field_name: "1",
+              name: "1",
               pandas_type: "int64",
               numpy_type: "int64",
               metadata: null,
@@ -1825,8 +1825,8 @@ describe("Quiver", () => {
             type: DataFrameCellType.DATA,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "c2",
-              name: "c2",
+              field_name: "2",
+              name: "2",
               pandas_type: "int64",
               numpy_type: "int64",
               metadata: null,
@@ -1858,7 +1858,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual("bar")
         expect(qq.getCell(3, 2).content).toEqual("2")
 
-        expect(qq.columnNames).toEqual([["c1", "c2"]])
+        expect(qq.columnNames).toEqual([["", "c1", "c2"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1928,16 +1928,16 @@ describe("Quiver", () => {
         expect(qq.getCell(1, 3).content).toEqual("2")
 
         expect(qq.columnNames).toEqual([
-          ["1", "2"],
-          ["red", "blue"],
+          ["", "", "1", "2"],
+          ["number", "color", "red", "blue"],
         ])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "__index_level_0__",
-              name: null,
+              field_name: "number",
+              name: "number",
               pandas_type: "int64",
               numpy_type: "int64",
               metadata: null,
@@ -1945,11 +1945,11 @@ describe("Quiver", () => {
             categoricalOptions: undefined,
           },
           {
-            type: DataFrameCellType.DATA,
+            type: DataFrameCellType.INDEX,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "c1",
-              name: "c1",
+              field_name: "color",
+              name: "color",
               pandas_type: "unicode",
               numpy_type: "object",
               metadata: null,
@@ -1960,8 +1960,8 @@ describe("Quiver", () => {
             type: DataFrameCellType.DATA,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "c2",
-              name: "c2",
+              field_name: "('1', 'red')",
+              name: "('1', 'red')",
               pandas_type: "unicode",
               numpy_type: "object",
               metadata: null,
@@ -1972,8 +1972,8 @@ describe("Quiver", () => {
             type: DataFrameCellType.DATA,
             arrowField: expect.any(Field),
             pandasType: {
-              field_name: "c1",
-              name: "c1",
+              field_name: "('2', 'blue')",
+              name: "('2', 'blue')",
               pandas_type: "unicode",
               numpy_type: "object",
               metadata: null,
@@ -2007,7 +2007,7 @@ describe("Quiver", () => {
         expect(q1q2.getCell(3, 1).content).toEqual("qux")
         expect(q1q2.getCell(3, 2).content).toEqual("2")
 
-        expect(q1q2.columnNames).toEqual([["c1", "c2"]])
+        expect(q1q2.columnNames).toEqual([["", "c1", "c2"]])
         expect(q1q2.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -2097,7 +2097,7 @@ describe("Quiver", () => {
         expect(q1q2.getCell(2, 1).content).toEqual("foo")
         expect(q1q2.getCell(3, 1).content).toEqual("bar")
 
-        expect(q1q2.columnNames).toEqual([["c1"]])
+        expect(q1q2.columnNames).toEqual([["", "c1"]])
         expect(q1q2.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
