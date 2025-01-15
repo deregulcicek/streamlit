@@ -23,6 +23,7 @@ import {
   UriCell,
 } from "@glideapps/glide-data-grid"
 import { DatePickerType } from "@glideapps/glide-data-grid-cells"
+import { Field, Null } from "apache-arrow"
 import moment from "moment"
 
 import { DataFrameCell, Quiver } from "@streamlit/lib/src/dataframes/Quiver"
@@ -30,7 +31,10 @@ import {
   convertTimeToDate,
   format as formatArrowCell,
 } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
-import { ArrowType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
+import {
+  ArrowType,
+  DataFrameCellType,
+} from "@streamlit/lib/src/dataframes/arrowParseUtils"
 import {
   isBooleanType,
   isBytesType,
@@ -255,6 +259,7 @@ export function getIndexFromArrow(
 
   return {
     id: `_index-${indexPosition}`,
+    indexNumber: indexPosition,
     name: title,
     title,
     group,
@@ -263,7 +268,8 @@ export function getIndexFromArrow(
     isIndex: true,
     isPinned: true,
     isHidden: false,
-  } as BaseColumnProps
+    isStretched: false,
+  }
 }
 
 /**
@@ -291,6 +297,7 @@ export function getColumnFromArrow(
 
   return {
     id: `_column-${title}-${columnPosition}`,
+    indexNumber: columnPosition,
     name: title,
     title,
     isEditable: true,
@@ -298,8 +305,9 @@ export function getColumnFromArrow(
     isIndex: false,
     isPinned: false,
     isHidden: false,
+    isStretched: false,
     group,
-  } as BaseColumnProps
+  }
 }
 
 /**
@@ -310,12 +318,21 @@ export function getColumnFromArrow(
 export function getEmptyIndexColumn(): BaseColumnProps {
   return {
     id: `_empty-index`,
-    title: "",
     indexNumber: 0,
+    title: "",
+    name: "",
     isEditable: false,
     isIndex: true,
     isPinned: true,
-  } as BaseColumnProps
+    isHidden: false,
+    isStretched: false,
+    group: undefined,
+    arrowType: {
+      type: DataFrameCellType.INDEX,
+      arrowField: new Field("", new Null(), true),
+      pandasType: undefined,
+    },
+  }
 }
 
 /**
@@ -339,22 +356,11 @@ export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
   }
 
   for (let i = 0; i < numIndices; i++) {
-    const column = {
-      ...getIndexFromArrow(data, i),
-      indexNumber: i,
-    } as BaseColumnProps
-
-    columns.push(column)
+    columns.push(getIndexFromArrow(data, i))
   }
 
   for (let i = 0; i < numColumns; i++) {
-    const column = {
-      // TODO: clean-up
-      ...getColumnFromArrow(data, i + numIndices),
-      indexNumber: i + numIndices,
-    } as BaseColumnProps
-
-    columns.push(column)
+    columns.push(getColumnFromArrow(data, i + numIndices))
   }
   return columns
 }

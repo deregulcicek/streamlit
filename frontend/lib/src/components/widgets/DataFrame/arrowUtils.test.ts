@@ -21,6 +21,7 @@ import {
   Float64,
   Int,
   Int64,
+  Null,
   Struct,
   Timestamp,
   TimeUnit,
@@ -276,6 +277,7 @@ describe("getIndexFromArrow", () => {
     const indexColumn = getIndexFromArrow(data, 0)
     expect(indexColumn).toEqual({
       id: `_index-0`,
+      indexNumber: 0,
       isEditable: true,
       name: "",
       title: "",
@@ -293,6 +295,7 @@ describe("getIndexFromArrow", () => {
       isIndex: true,
       isPinned: true,
       isHidden: false,
+      isStretched: false,
     })
   })
 
@@ -305,6 +308,7 @@ describe("getIndexFromArrow", () => {
     const indexColumn1 = getIndexFromArrow(data, 0)
     expect(indexColumn1).toEqual({
       id: `_index-0`,
+      indexNumber: 0,
       isEditable: true,
       name: "number",
       title: "number",
@@ -323,11 +327,13 @@ describe("getIndexFromArrow", () => {
       isIndex: true,
       isPinned: true,
       isHidden: false,
+      isStretched: false,
     })
 
     const indexColumn2 = getIndexFromArrow(data, 1)
     expect(indexColumn2).toEqual({
       id: `_index-1`,
+      indexNumber: 1,
       isEditable: true,
       name: "color",
       title: "color",
@@ -346,6 +352,7 @@ describe("getIndexFromArrow", () => {
       isIndex: true,
       isPinned: true,
       isHidden: false,
+      isStretched: false,
     })
   })
 })
@@ -360,6 +367,7 @@ describe("getColumnFromArrow", () => {
     const column = getColumnFromArrow(data, 1)
     expect(column).toEqual({
       id: "_column-c1-1",
+      indexNumber: 1,
       name: "c1",
       title: "c1",
       isEditable: true,
@@ -377,6 +385,7 @@ describe("getColumnFromArrow", () => {
       isIndex: false,
       isPinned: false,
       isHidden: false,
+      isStretched: false,
     })
   })
 
@@ -389,6 +398,7 @@ describe("getColumnFromArrow", () => {
     const column = getColumnFromArrow(data, 2)
     expect(column).toEqual({
       id: "_column-red-2",
+      indexNumber: 2,
       name: "red",
       title: "red",
       isEditable: true,
@@ -407,6 +417,7 @@ describe("getColumnFromArrow", () => {
       isIndex: false,
       isPinned: false,
       isHidden: false,
+      isStretched: false,
       group: "1",
     })
   })
@@ -417,26 +428,32 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 0)
+    const column = getColumnFromArrow(data, 1)
     expect(column).toEqual({
-      id: "_column-c1-0",
+      id: "_column-c1-1",
+      indexNumber: 1,
       name: "c1",
       title: "c1",
       isEditable: true,
       arrowType: {
-        meta: {
-          num_categories: 2,
-          ordered: false,
+        type: DataFrameCellType.DATA,
+        arrowField: expect.any(Field),
+        pandasType: {
+          field_name: "c1",
+          name: "c1",
+          pandas_type: "categorical",
+          numpy_type: "int8",
+          metadata: {
+            num_categories: 2,
+            ordered: false,
+          },
         },
-        numpy_type: "int8",
-        pandas_type: "categorical",
+        categoricalOptions: ["bar", "foo"],
       },
       isIndex: false,
       isPinned: false,
       isHidden: false,
-      columnTypeOptions: {
-        options: ["bar", "foo"],
-      },
+      isStretched: false,
     })
   })
 })
@@ -451,9 +468,15 @@ describe("getAllColumnsFromArrow", () => {
     expect(columns).toEqual([
       {
         arrowType: {
-          meta: null,
-          numpy_type: "object",
-          pandas_type: "unicode",
+          type: DataFrameCellType.INDEX,
+          arrowField: new Field("__index_level_0__", new Utf8(), true),
+          pandasType: {
+            field_name: "__index_level_0__",
+            metadata: null,
+            name: null,
+            numpy_type: "object",
+            pandas_type: "unicode",
+          },
         },
         id: "_index-0",
         indexNumber: 0,
@@ -461,46 +484,62 @@ describe("getAllColumnsFromArrow", () => {
         isHidden: false,
         isIndex: true,
         isPinned: true,
+        isStretched: false,
         name: "",
         title: "",
       },
       {
         arrowType: {
-          meta: null,
-          numpy_type: "object",
-          pandas_type: "unicode",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field("c1", new Utf8(), true),
+          pandasType: {
+            field_name: "c1",
+            name: "c1",
+            pandas_type: "unicode",
+            numpy_type: "object",
+            metadata: null,
+          },
         },
         columnTypeOptions: undefined,
-        id: "_column-c1-0",
+        id: "_column-c1-1",
         indexNumber: 1,
         isEditable: true,
         isHidden: false,
         isIndex: false,
         isPinned: false,
+        isStretched: false,
         name: "c1",
         title: "c1",
+        group: undefined,
       },
       {
         arrowType: {
-          meta: null,
-          numpy_type: "object",
-          pandas_type: "unicode",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field("c2", new Utf8(), true),
+          pandasType: {
+            field_name: "c2",
+            name: "c2",
+            pandas_type: "unicode",
+            numpy_type: "object",
+            metadata: null,
+          },
         },
         columnTypeOptions: undefined,
-        id: "_column-c2-1",
+        id: "_column-c2-2",
         indexNumber: 2,
         isEditable: true,
         isHidden: false,
         isIndex: false,
         isPinned: false,
+        isStretched: false,
         name: "c2",
         title: "c2",
+        group: undefined,
       },
     ])
   })
 
   it("handles empty dataframes correctly", () => {
-    // TODO: is this correct
     const element = ArrowProto.create({
       data: EMPTY,
     })
@@ -510,9 +549,15 @@ describe("getAllColumnsFromArrow", () => {
     expect(columns).toEqual([
       {
         arrowType: {
-          meta: null,
-          numpy_type: "object",
-          pandas_type: "empty",
+          type: DataFrameCellType.INDEX,
+          arrowField: new Field("__index_level_0__", new Null(), true),
+          pandasType: {
+            field_name: "__index_level_0__",
+            metadata: null,
+            name: null,
+            numpy_type: "object",
+            pandas_type: "empty",
+          },
         },
         id: "_index-0",
         indexNumber: 0,
@@ -520,6 +565,7 @@ describe("getAllColumnsFromArrow", () => {
         isHidden: false,
         isIndex: true,
         isPinned: true,
+        isStretched: false,
         name: "",
         title: "",
       },
