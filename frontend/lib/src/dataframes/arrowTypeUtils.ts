@@ -110,7 +110,8 @@ export function isIntegerType(type?: ArrowType): boolean {
   }
   const typeName = getTypeName(type) ?? ""
   return (
-    ArrowDataType.isInt(type.arrowField.type) ||
+    // Period types are integers with an extra extension name
+    (ArrowDataType.isInt(type.arrowField.type) && !isPeriodType(type)) ||
     (typeName.startsWith("int") && !isIntervalType(type)) ||
     isRangeIndexType(type) ||
     isUnsignedIntegerType(type)
