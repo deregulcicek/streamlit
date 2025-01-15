@@ -2108,7 +2108,6 @@ describe("Quiver", () => {
         const mockElement2 = { data: FEWER_COLUMNS }
         const q1 = new Quiver(mockElement1)
         const q2 = new Quiver(mockElement2)
-        q1.addRows(q2)
 
         expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
       })

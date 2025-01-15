@@ -36,6 +36,12 @@ import {
  * than t1 but not the other way around.
  */
 function sameDataTypes(t1: ArrowType[], t2: ArrowType[]): boolean {
+  // Make sure both datasets have same number of data columns.
+  if (t1.length !== t2.length) {
+    return false
+  }
+
+  // Make sure both datasets have same data types.
   return t1.every(
     (type: ArrowType, index: number) =>
       getTypeName(type) === getTypeName(t2[index])
