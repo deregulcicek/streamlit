@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  Bool as BoolType,
+  Decimal,
+  Field,
+  Float64,
+  Int,
+  Timestamp,
+  TimeUnit,
+  Utf8,
+} from "apache-arrow"
 
-import { PandasColumnType as ArrowType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
+import {
+  ArrowType,
+  DataFrameCellType,
+} from "@streamlit/lib/src/dataframes/arrowParseUtils"
 import {
   getStyledCell,
   StyledCell,
@@ -43,13 +56,10 @@ import {
 import {
   CheckboxColumn,
   ColumnCreator,
-  DateColumn,
   DateTimeColumn,
   getTextCell,
-  ListColumn,
   NumberColumn,
   ObjectColumn,
-  SelectboxColumn,
   TextColumn,
   TimeColumn,
 } from "./columns"
@@ -65,8 +75,15 @@ const MOCK_TEXT_COLUMN = TextColumn({
   isPinned: false,
   isStretched: false,
   arrowType: {
-    pandas_type: "unicode",
-    numpy_type: "object",
+    type: DataFrameCellType.DATA,
+    arrowField: new Field("text_column", new Utf8(), true),
+    pandasType: {
+      field_name: "text_column",
+      name: "text_column",
+      pandas_type: "unicode",
+      numpy_type: "object",
+      metadata: null,
+    },
   },
 })
 
@@ -81,8 +98,15 @@ const MOCK_NUMBER_COLUMN = NumberColumn({
   isStretched: false,
   isPinned: false,
   arrowType: {
-    pandas_type: "int64",
-    numpy_type: "int64",
+    type: DataFrameCellType.DATA,
+    arrowField: new Field("number_column", new Int(true, 64), true),
+    pandasType: {
+      field_name: "number_column",
+      name: "number_column",
+      pandas_type: "int64",
+      numpy_type: "int64",
+      metadata: null,
+    },
   },
 })
 
@@ -253,9 +277,15 @@ describe("getIndexFromArrow", () => {
       name: "",
       title: "",
       arrowType: {
-        meta: null,
-        numpy_type: "object",
-        pandas_type: "unicode",
+        type: DataFrameCellType.DATA,
+        arrowField: expect.any(Field),
+        pandasType: {
+          field_name: "index_column",
+          name: "index_column",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
       },
       isIndex: true,
       isPinned: true,
@@ -504,9 +534,15 @@ describe("getCellFromArrow", () => {
       isPinned: false,
       isStretched: false,
       arrowType: {
-        pandas_type: "decimal",
-        numpy_type: "object",
-        meta: { precision: 6, scale: 1 },
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("decimal_column", new Decimal(6, 1), true),
+        pandasType: {
+          field_name: "decimal_column",
+          name: "decimal_column",
+          pandas_type: "decimal",
+          numpy_type: "object",
+          metadata: { precision: 6, scale: 1 },
+        },
       },
     })
 
@@ -550,8 +586,19 @@ describe("getCellFromArrow", () => {
         isPinned: false,
         isStretched: false,
         arrowType: {
-          pandas_type: "time",
-          numpy_type: "object",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field(
+            "time_column",
+            new Timestamp(TimeUnit.SECOND),
+            true
+          ),
+          pandasType: {
+            field_name: "time_column",
+            name: "time_column",
+            pandas_type: "time",
+            numpy_type: "object",
+            metadata: null,
+          },
         },
       }),
     }
@@ -602,8 +649,19 @@ describe("getCellFromArrow", () => {
           format: "YYYY",
         },
         arrowType: {
-          pandas_type: "time",
-          numpy_type: "object",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field(
+            "time_column",
+            new Timestamp(TimeUnit.SECOND),
+            true
+          ),
+          pandasType: {
+            field_name: "time_column",
+            name: "time_column",
+            pandas_type: "time",
+            numpy_type: "object",
+            metadata: null,
+          },
         },
       }),
     }
@@ -648,8 +706,19 @@ describe("getCellFromArrow", () => {
         isPinned: false,
         isStretched: false,
         arrowType: {
-          pandas_type: "time",
-          numpy_type: "object",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field(
+            "time_column",
+            new Timestamp(TimeUnit.SECOND),
+            true
+          ),
+          pandasType: {
+            field_name: "time_column",
+            name: "time_column",
+            pandas_type: "time",
+            numpy_type: "object",
+            metadata: null,
+          },
         },
       }),
       getCell: vi.fn().mockReturnValue(getTextCell(false, false)),
@@ -691,8 +760,19 @@ describe("getCellFromArrow", () => {
         isPinned: false,
         isStretched: false,
         arrowType: {
-          pandas_type: "datetime",
-          numpy_type: "datetime64[ns]",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field(
+            "datetime_column",
+            new Timestamp(TimeUnit.SECOND),
+            true
+          ),
+          pandasType: {
+            field_name: "datetime_column",
+            name: "datetime_column",
+            pandas_type: "datetime",
+            numpy_type: "datetime64[ns]",
+            metadata: null,
+          },
         },
       }),
       getCell: vi.fn().mockReturnValue(getTextCell(false, false)),
@@ -835,134 +915,110 @@ describe("getColumnTypeFromArrow", () => {
   it.each([
     [
       {
-        pandas_type: "float64",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       NumberColumn,
     ],
     [
       {
-        pandas_type: "int64",
-        numpy_type: "int64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int(true, 64), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       NumberColumn,
     ],
     [
       {
-        pandas_type: "uint64",
-        numpy_type: "uint64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int(false, 64), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "uint64",
+          numpy_type: "uint64",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       NumberColumn,
     ],
     [
       {
-        pandas_type: "unicode",
-        numpy_type: "object",
-      },
-      TextColumn,
-    ],
-    [
-      {
-        pandas_type: "unicode",
-        numpy_type: "string",
-      },
-      TextColumn,
-    ],
-    [
-      {
-        pandas_type: "bool",
-        numpy_type: "bool",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new BoolType(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bool",
+          numpy_type: "bool",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       CheckboxColumn,
     ],
     [
       {
-        pandas_type: "bool",
-        numpy_type: "boolean",
-      },
-      CheckboxColumn,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "int8",
-      },
-      SelectboxColumn,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "list[unicode]",
-      },
-      ListColumn,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "object",
-      },
-      ObjectColumn,
-    ],
-    [
-      {
-        pandas_type: "decimal",
-        numpy_type: "object",
-      },
-      NumberColumn,
-    ],
-    [
-      {
-        pandas_type: "empty",
-        numpy_type: "object",
-      },
-      TextColumn,
-    ],
-    [
-      {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Timestamp(TimeUnit.NANOSECOND),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       DateTimeColumn,
     ],
     [
       {
-        pandas_type: "datetimetz",
-        numpy_type: "datetime64[ns]",
-      },
-      DateTimeColumn,
-    ],
-    [
-      {
-        pandas_type: "time",
-        numpy_type: "object",
-      },
-      TimeColumn,
-    ],
-    [
-      {
-        pandas_type: "date",
-        numpy_type: "object",
-      },
-      DateColumn,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "period[H]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "interval[int64, both]",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       ObjectColumn,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "interval[int64, both]",
-      },
-      ObjectColumn,
-    ],
-    [
-      {
-        pandas_type: "bytes",
-        numpy_type: "object",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bytes",
+          numpy_type: "object",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       ObjectColumn,
     ],
