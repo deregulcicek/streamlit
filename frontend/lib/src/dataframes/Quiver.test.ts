@@ -425,14 +425,12 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         // Check index cells
-        expect(q.getCell(0, 0).content).toEqual({
-          left: 1483228800000,
-          right: 1483315200000,
-        })
-        expect(q.getCell(1, 0).content).toEqual({
-          left: 1483315200000,
-          right: 1483401600000,
-        })
+        expect(q.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 1483228800000, "right": 1483315200000}'
+        )
+        expect(q.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1483315200000, "right": 1483401600000}'
+        )
 
         // Check data cells
         expect(q.getCell(0, 1).content).toEqual("foo")
@@ -441,7 +439,7 @@ describe("Quiver", () => {
         expect(q.getCell(1, 2).content).toEqual(BigInt(200))
 
         expect(q.columnNames).toEqual([
-          ["(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
+          ["", "(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
         ])
         expect(q.columnTypes).toEqual([
           {
@@ -488,14 +486,12 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         // Check index cells
-        expect(q.getCell(0, 0).content).toEqual({
-          left: 0,
-          right: 1.5,
-        })
-        expect(q.getCell(1, 0).content).toEqual({
-          left: 1.5,
-          right: 3,
-        })
+        expect(q.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1.5}'
+        )
+        expect(q.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1.5, "right": 3}'
+        )
 
         // Check data cells
         expect(q.getCell(0, 1).content).toEqual("foo")
@@ -503,7 +499,7 @@ describe("Quiver", () => {
         expect(q.getCell(1, 1).content).toEqual("bar")
         expect(q.getCell(1, 2).content).toEqual(BigInt(200))
 
-        expect(q.columnNames).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
+        expect(q.columnNames).toEqual([["", "(0.0, 1.5]", "(1.5, 3.0]"]])
         expect(q.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -549,14 +545,12 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         // Check index cells
-        expect(q.getCell(0, 0).content).toEqual({
-          left: 0,
-          right: 1,
-        })
-        expect(q.getCell(1, 0).content).toEqual({
-          left: 1,
-          right: 2,
-        })
+        expect(q.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(q.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
 
         // Check data cells
         expect(q.getCell(0, 1).content).toEqual("foo")
@@ -564,7 +558,7 @@ describe("Quiver", () => {
         expect(q.getCell(1, 1).content).toEqual("bar")
         expect(q.getCell(1, 2).content).toEqual(BigInt(200))
 
-        expect(q.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(q.columnNames).toEqual([["", "(0, 1]", "(1, 2]"]])
         expect(q.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -610,14 +604,12 @@ describe("Quiver", () => {
         const q = new Quiver(mockElement)
 
         // Check index cells
-        expect(q.getCell(0, 0).content).toEqual({
-          left: BigInt(0),
-          right: BigInt(1),
-        })
-        expect(q.getCell(1, 0).content).toEqual({
-          left: BigInt(1),
-          right: BigInt(2),
-        })
+        expect(q.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(q.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
 
         // Check data cells
         expect(q.getCell(0, 1).content).toEqual("foo")
@@ -625,7 +617,7 @@ describe("Quiver", () => {
         expect(q.getCell(1, 1).content).toEqual("bar")
         expect(q.getCell(1, 2).content).toEqual(BigInt(200))
 
-        expect(q.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(q.columnNames).toEqual([["", "(0, 1]", "(1, 2]"]])
         expect(q.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1413,22 +1405,19 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         // Check index cells
-        expect(qq.getCell(0, 0).content).toEqual({
-          left: 1483228800000,
-          right: 1483315200000,
-        })
-        expect(qq.getCell(1, 0).content).toEqual({
-          left: 1483315200000,
-          right: 1483401600000,
-        })
-        expect(qq.getCell(2, 0).content).toEqual({
-          left: 1483228800000,
-          right: 1483315200000,
-        })
-        expect(qq.getCell(3, 0).content).toEqual({
-          left: 1483315200000,
-          right: 1483401600000,
-        })
+
+        expect(qq.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 1483228800000, "right": 1483315200000}'
+        )
+        expect(qq.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1483315200000, "right": 1483401600000}'
+        )
+        expect(qq.getCell(2, 0).content?.toString()).toEqual(
+          '{"left": 1483228800000, "right": 1483315200000}'
+        )
+        expect(qq.getCell(3, 0).content?.toString()).toEqual(
+          '{"left": 1483315200000, "right": 1483401600000}'
+        )
 
         // Check data cells
         expect(qq.getCell(0, 1).content).toEqual("foo")
@@ -1441,7 +1430,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 2).content).toEqual(BigInt(200))
 
         expect(qq.columnNames).toEqual([
-          ["(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
+          ["", "(2017-01-01, 2017-01-02]", "(2017-01-02, 2017-01-03]"],
         ])
         expect(qq.columnTypes).toEqual([
           {
@@ -1490,22 +1479,18 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         // Check index cells
-        expect(qq.getCell(0, 0).content).toEqual({
-          left: 0,
-          right: 1.5,
-        })
-        expect(qq.getCell(1, 0).content).toEqual({
-          left: 1.5,
-          right: 3,
-        })
-        expect(qq.getCell(2, 0).content).toEqual({
-          left: 0,
-          right: 1.5,
-        })
-        expect(qq.getCell(3, 0).content).toEqual({
-          left: 1.5,
-          right: 3,
-        })
+        expect(qq.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1.5}'
+        )
+        expect(qq.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1.5, "right": 3}'
+        )
+        expect(qq.getCell(2, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1.5}'
+        )
+        expect(qq.getCell(3, 0).content?.toString()).toEqual(
+          '{"left": 1.5, "right": 3}'
+        )
 
         // Check data cells
         expect(qq.getCell(0, 1).content).toEqual("foo")
@@ -1517,7 +1502,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual("bar")
         expect(qq.getCell(3, 2).content).toEqual(BigInt(200))
 
-        expect(qq.columnNames).toEqual([["(0.0, 1.5]", "(1.5, 3.0]"]])
+        expect(qq.columnNames).toEqual([["", "(0.0, 1.5]", "(1.5, 3.0]"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1565,22 +1550,18 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         // Check index cells
-        expect(qq.getCell(0, 0).content).toEqual({
-          left: 0,
-          right: 1,
-        })
-        expect(qq.getCell(1, 0).content).toEqual({
-          left: 1,
-          right: 2,
-        })
-        expect(qq.getCell(2, 0).content).toEqual({
-          left: 0,
-          right: 1,
-        })
-        expect(qq.getCell(3, 0).content).toEqual({
-          left: 1,
-          right: 2,
-        })
+        expect(qq.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(qq.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
+        expect(qq.getCell(2, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(qq.getCell(3, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
 
         // Check data cells
         expect(qq.getCell(0, 1).content).toEqual("foo")
@@ -1588,7 +1569,7 @@ describe("Quiver", () => {
         expect(qq.getCell(2, 1).content).toEqual("foo")
         expect(qq.getCell(3, 1).content).toEqual("bar")
 
-        expect(qq.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(qq.columnNames).toEqual([["", "(0, 1]", "(1, 2]"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1636,22 +1617,18 @@ describe("Quiver", () => {
         const qq = q.addRows(q)
 
         // Check index cells
-        expect(qq.getCell(0, 0).content).toEqual({
-          left: 0,
-          right: 1,
-        })
-        expect(qq.getCell(1, 0).content).toEqual({
-          left: 1,
-          right: 2,
-        })
-        expect(qq.getCell(2, 0).content).toEqual({
-          left: 0,
-          right: 1,
-        })
-        expect(qq.getCell(3, 0).content).toEqual({
-          left: 1,
-          right: 2,
-        })
+        expect(qq.getCell(0, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(qq.getCell(1, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
+        expect(qq.getCell(2, 0).content?.toString()).toEqual(
+          '{"left": 0, "right": 1}'
+        )
+        expect(qq.getCell(3, 0).content?.toString()).toEqual(
+          '{"left": 1, "right": 2}'
+        )
 
         // Check data cells
         expect(qq.getCell(0, 1).content).toEqual("foo")
@@ -1663,7 +1640,7 @@ describe("Quiver", () => {
         expect(qq.getCell(3, 1).content).toEqual("bar")
         expect(qq.getCell(3, 2).content).toEqual(BigInt(200))
 
-        expect(qq.columnNames).toEqual([["(0, 1]", "(1, 2]"]])
+        expect(qq.columnNames).toEqual([["", "(0, 1]", "(1, 2]"]])
         expect(qq.columnTypes).toEqual([
           {
             type: DataFrameCellType.INDEX,
@@ -1739,7 +1716,7 @@ describe("Quiver", () => {
               metadata: {
                 start: 0,
                 step: 1,
-                stop: 2,
+                stop: 4,
                 kind: "range",
                 name: null,
               },
@@ -2131,6 +2108,7 @@ describe("Quiver", () => {
         const mockElement2 = { data: FEWER_COLUMNS }
         const q1 = new Quiver(mockElement1)
         const q2 = new Quiver(mockElement2)
+        q1.addRows(q2)
 
         expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
       })

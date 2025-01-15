@@ -202,8 +202,8 @@ but was expecting \`${JSON.stringify(expectedIndexTypes)}\`.
   return baseIndexTypes.map(indexType => {
     // NOTE: "range" index cannot be a part of a multi-index, i.e.
     // if the index type is "range", there will only be one element in the index array.
-    if (isRangeIndexType(indexType)) {
-      const { stop, step } = indexType.pandasType?.metadata as PandasRangeIndex
+    if (isRangeIndexType(indexType) && indexType.pandasType) {
+      const { stop, step } = indexType.pandasType.metadata as PandasRangeIndex
       const {
         start: appendStart,
         stop: appendStop,
@@ -213,9 +213,12 @@ but was expecting \`${JSON.stringify(expectedIndexTypes)}\`.
       const newStop = stop + appendRangeIndexLength * step
       return {
         ...indexType,
-        meta: {
-          ...indexType.pandasType?.metadata,
-          stop: newStop,
+        pandasType: {
+          ...indexType.pandasType,
+          metadata: {
+            ...indexType.pandasType.metadata,
+            stop: newStop,
+          },
         },
       }
     }
