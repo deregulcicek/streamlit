@@ -23,6 +23,7 @@ import { immerable, produce } from "immer"
 import { IArrow, Styler as StylerProto } from "@streamlit/lib/src/proto"
 import { hashString } from "@streamlit/lib/src/util/utils"
 
+import { concat } from "./arrowConcatUtils"
 import {
   ArrowType,
   ColumnNames,
@@ -306,27 +307,29 @@ st.add_rows(my_styler.data)
       return produce(other, (draft: Quiver) => draft)
     }
 
-    // TODO(lukasmasuch): Fix add rows
-    return produce(other, (draft: Quiver) => draft)
-    // const {
-    //   index: newIndex,
-    //   data: newData,
-    //   types: newTypes,
-    // } = concat(
-    //   this._columnTypes,
-    //   this._indexData,
-    //   this._data,
-    //   other._columnTypes,
-    //   other._indexData,
-    //   other._data
-    // )
+    const {
+      index: newIndex,
+      data: newData,
+      indexTypes: newIndexTypes,
+      dataTypes: newDataTypes,
+    } = concat(
+      this._arrowIndexTypes,
+      this._arrowDataTypes,
+      this._indexData,
+      this._data,
+      other._arrowIndexTypes,
+      other._arrowDataTypes,
+      other._indexData,
+      other._data
+    )
 
-    // // If we get here, then we had no concatenation errors.
-    // return produce(this, (draft: Quiver) => {
-    //   draft._indexData = newIndex
-    //   draft._data = newData
-    //   draft._columnTypes = newTypes
-    // })
+    // If we get here, then we had no concatenation errors.
+    return produce(this, (draft: Quiver) => {
+      draft._indexData = newIndex
+      draft._data = newData
+      draft._arrowIndexTypes = newIndexTypes
+      draft._arrowDataTypes = newDataTypes
+    })
   }
 }
 

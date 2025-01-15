@@ -38,7 +38,7 @@ import {
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
 
-import { ArrowType } from "./arrowParseUtils"
+import { ArrowType, DataFrameCellType } from "./arrowParseUtils"
 import {
   DataType,
   isDatetimeType,
@@ -491,38 +491,45 @@ function formatInterval(x: StructRow, field?: Field): string {
   // Serialization for pandas.Interval is provided by Arrow extensions
   // https://github.com/pandas-dev/pandas/blob/235d9009b571c21b353ab215e1e675b1924ae55c/
   // pandas/core/arrays/arrow/extension_types.py#L17
-  // TODO(lukasmasuch): Implement with new type
   const extensionName = field && field.metadata.get("ARROW:extension:name")
-  // if (extensionName && extensionName === "pandas.interval") {
-  //   const extensionMetadata = JSON.parse(
-  //     field.metadata.get("ARROW:extension:metadata") as string
-  //   )
-  //   const { subtype, closed } = extensionMetadata
+  if (extensionName && extensionName === "pandas.interval") {
+    const extensionMetadata = JSON.parse(
+      field.metadata.get("ARROW:extension:metadata") as string
+    )
+    const { subtype, closed } = extensionMetadata
 
-  //   const interval = (x as StructRow).toJSON() as PandasInterval
+    const interval = (x as StructRow).toJSON() as PandasInterval
 
-  //   const leftBracket = closed === "both" || closed === "left" ? "[" : "("
-  //   const rightBracket = closed === "both" || closed === "right" ? "]" : ")"
+    const leftBracket = closed === "both" || closed === "left" ? "[" : "("
+    const rightBracket = closed === "both" || closed === "right" ? "]" : ")"
 
-  //   const leftInterval = format(
-  //     interval.left,
-  //     {
-  //       pandas_type: subtype,
-  //       numpy_type: subtype,
-  //     },
-  //     (field.type as Struct)?.children?.[0]
-  //   )
-  //   const rightInterval = format(
-  //     interval.right,
-  //     {
-  //       pandas_type: subtype,
-  //       numpy_type: subtype,
-  //     },
-  //     (field.type as Struct)?.children?.[1]
-  //   )
+    const leftInterval = format(interval.left, {
+      // Construct a arrow type for the left interval
+      type: DataFrameCellType.DATA,
+      pandasType: {
+        pandas_type: subtype,
+        numpy_type: subtype,
+        field_name: "",
+        name: "",
+        metadata: null,
+      },
+      arrowField: (field.type as Struct)?.children?.[0],
+    })
+    const rightInterval = format(interval.right, {
+      // Construct a arrow type for the right interval
+      type: DataFrameCellType.DATA,
+      pandasType: {
+        pandas_type: subtype,
+        numpy_type: subtype,
+        field_name: "",
+        name: "",
+        metadata: null,
+      },
+      arrowField: (field.type as Struct)?.children?.[1],
+    })
 
-  //   return `${leftBracket + leftInterval}, ${rightInterval + rightBracket}`
-  // }
+    return `${leftBracket + leftInterval}, ${rightInterval + rightBracket}`
+  }
   return String(x)
 }
 
