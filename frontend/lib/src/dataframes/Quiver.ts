@@ -117,13 +117,19 @@ export class Quiver {
   /** Index & data column names (matrix of column names to support multi-level headers). */
   private _columnNames: ColumnNames
 
-  /** Arrow types for the index columns (there can be multiple index columns). */
+  /** Arrow types for the (Pandas) index columns (there can be multiple index columns).
+   *
+   * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
+   */
   private _arrowIndexTypes: ArrowType[]
 
   /** Arrow types for the data columns. */
   private _arrowDataTypes: ArrowType[]
 
-  /** Cell values of the index columns (there can be multiple index columns). */
+  /** Cell values of the (Pandas) index columns (there can be multiple index columns).
+   *
+   *  Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
+   */
   private _indexData: IndexData
 
   /** Cell values of the data columns. */
@@ -155,7 +161,10 @@ export class Quiver {
     this._num_bytes = element.data?.length ?? 0
   }
 
-  /** Cell values of the index columns (there can be multiple index columns). */
+  /** Cell values of the (Pandas) index columns (there can be multiple index columns).
+   *
+   * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
+   */
   public get indexData(): IndexData {
     return this._indexData
   }
@@ -222,7 +231,7 @@ export class Quiver {
     return hashString(valuesToHash.join("-"))
   }
 
-  /** Return a single index or data cell from the DataFrame.
+  /** Return a single cell from an (Pandas)index column or data column of the DataFrame.
    *
    * @param rowIndex - The row index of the cell (0 is the first data or index row excluding header rows)
    * @param columnIndex - The column index of the cell (0 is the first data or index column)
@@ -264,7 +273,10 @@ export class Quiver {
     }
   }
 
-  /** Get the raw value of an index cell. */
+  /** Get the raw value of an index cell.
+   *
+   * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
+   */
   private getIndexValue(rowIndex: number, columnIndex: number): any {
     const index = this._indexData[columnIndex]
     const value =

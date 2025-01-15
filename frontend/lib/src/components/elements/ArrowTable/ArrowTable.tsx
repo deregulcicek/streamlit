@@ -126,7 +126,7 @@ function generateTableRow(
 }
 
 /**
- * Generate a table index or data cell from a Quiver object.
+ * Generate a table cell from a Quiver object.
  */
 function generateTableCell(
   table: Quiver,
@@ -144,6 +144,8 @@ function generateTableCell(
   }
 
   switch (type) {
+    // Index cells are from index columns which only exist if the DataFrame was created
+    // based on a Pandas DataFrame.
     case DataFrameCellType.INDEX: {
       return (
         <StyledTableCellHeader
