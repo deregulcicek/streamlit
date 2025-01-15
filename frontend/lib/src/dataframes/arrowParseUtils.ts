@@ -20,7 +20,6 @@
 
 import {
   Schema as ArrowSchema,
-  DataType,
   Dictionary,
   Field,
   Int,
@@ -343,12 +342,6 @@ function parseDataArrowTypes(
   )
 
   const arrowDataTypes: ArrowType[] = dataFields.map(field => {
-    console.log(
-      "field",
-      field,
-      DataType.isUtf8(field.type),
-      DataType.isInterval(field.type)
-    )
     return {
       type: DataFrameCellType.DATA,
       arrowField: field,
@@ -421,10 +414,6 @@ export function parseArrowIpcBytes(
     arrowIndexTypes,
     pandasSchema
   )
-
-  console.log("categoricalOptions", categoricalOptions)
-  console.log("arrowDataTypes", arrowDataTypes)
-  console.log("data", data)
 
   return {
     indexData,

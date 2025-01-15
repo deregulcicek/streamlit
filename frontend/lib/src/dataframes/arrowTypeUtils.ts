@@ -85,10 +85,15 @@ export function convertVectorToList(vector: Vector<any>): string[] {
 
 /** Returns type for a single-index column or data column. */
 export function getTypeName(type: ArrowType): string {
-  // TODO(lukasmasuch): Support raw arrow.
+  if (isNullOrUndefined(type.pandasType)) {
+    // TODO(lukasmasuch): What to do here?
+    return ""
+  }
   // For `PeriodType` and `IntervalType` types are kept in `numpy_type`,
   // for the rest of the indexes in `pandas_type`.
-  return type.pandasType?.pandas_type ?? ""
+  return type.pandasType.pandas_type === "object"
+    ? type.pandasType.numpy_type
+    : type.pandasType.pandas_type
 }
 
 /** Returns the timezone of the arrow type metadata. */

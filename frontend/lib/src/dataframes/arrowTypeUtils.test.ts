@@ -66,7 +66,7 @@ describe("getTypeName", () => {
     test("period", () => {
       const mockElement = { data: PERIOD }
       const q = new Quiver(mockElement)
-      const dataType = q.columnTypes.data[0]
+      const dataType = q.columnTypes[1]
 
       expect(getTypeName(dataType)).toEqual("period[Y-DEC]")
     })
@@ -74,7 +74,7 @@ describe("getTypeName", () => {
     test("decimal", () => {
       const mockElement = { data: DECIMAL }
       const q = new Quiver(mockElement)
-      const firstColumnType = q.columnTypes.data[0]
+      const firstColumnType = q.columnTypes[1]
 
       expect(getTypeName(firstColumnType)).toEqual("decimal")
     })
@@ -82,7 +82,7 @@ describe("getTypeName", () => {
     test("timedelta", () => {
       const mockElement = { data: TIMEDELTA }
       const q = new Quiver(mockElement)
-      const firstColumnType = q.columnTypes.data[0]
+      const firstColumnType = q.columnTypes[1]
 
       expect(getTypeName(firstColumnType)).toEqual("timedelta64[ns]")
     })
@@ -90,7 +90,7 @@ describe("getTypeName", () => {
     test("dictionary", () => {
       const mockElement = { data: DICTIONARY }
       const q = new Quiver(mockElement)
-      const firstColumnType = q.columnTypes.data[0]
+      const firstColumnType = q.columnTypes[1]
 
       expect(getTypeName(firstColumnType)).toEqual("object")
     })
@@ -98,7 +98,7 @@ describe("getTypeName", () => {
     test("interval datetime64[ns]", () => {
       const mockElement = { data: INTERVAL_DATETIME64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("interval[datetime64[ns], right]")
     })
@@ -106,7 +106,7 @@ describe("getTypeName", () => {
     test("interval float64", () => {
       const mockElement = { data: INTERVAL_FLOAT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("interval[float64, right]")
     })
@@ -114,7 +114,7 @@ describe("getTypeName", () => {
     test("interval int64", () => {
       const mockElement = { data: INTERVAL_INT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("interval[int64, right]")
     })
@@ -122,7 +122,7 @@ describe("getTypeName", () => {
     test("interval uint64", () => {
       const mockElement = { data: INTERVAL_UINT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("interval[uint64, right]")
     })
@@ -132,7 +132,7 @@ describe("getTypeName", () => {
     test("categorical", () => {
       const mockElement = { data: CATEGORICAL }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("categorical")
     })
@@ -140,7 +140,7 @@ describe("getTypeName", () => {
     test("date", () => {
       const mockElement = { data: DATE }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("datetime")
     })
@@ -148,7 +148,7 @@ describe("getTypeName", () => {
     test("float64", () => {
       const mockElement = { data: FLOAT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("float64")
     })
@@ -156,7 +156,7 @@ describe("getTypeName", () => {
     test("int64", () => {
       const mockElement = { data: INT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("int64")
     })
@@ -164,7 +164,7 @@ describe("getTypeName", () => {
     test("range", () => {
       const mockElement = { data: RANGE }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("range")
     })
@@ -172,7 +172,7 @@ describe("getTypeName", () => {
     test("uint64", () => {
       const mockElement = { data: UINT64 }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("uint64")
     })
@@ -180,7 +180,7 @@ describe("getTypeName", () => {
     test("unicode", () => {
       const mockElement = { data: UNICODE }
       const q = new Quiver(mockElement)
-      const indexType = q.columnTypes.index[0]
+      const indexType = q.columnTypes[0]
 
       expect(getTypeName(indexType)).toEqual("unicode")
     })
