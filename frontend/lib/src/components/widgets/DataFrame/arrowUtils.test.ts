@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import {
+  Binary,
   Bool as BoolType,
   Decimal,
   Field,
   Float64,
   Int,
+  Int64,
+  Struct,
   Timestamp,
   TimeUnit,
   Utf8,
@@ -277,11 +280,11 @@ describe("getIndexFromArrow", () => {
       name: "",
       title: "",
       arrowType: {
-        type: DataFrameCellType.DATA,
+        type: DataFrameCellType.INDEX,
         arrowField: expect.any(Field),
         pandasType: {
-          field_name: "index_column",
-          name: "index_column",
+          field_name: "__index_level_0__",
+          name: null,
           pandas_type: "unicode",
           numpy_type: "object",
           metadata: null,
@@ -306,10 +309,17 @@ describe("getIndexFromArrow", () => {
       name: "number",
       title: "number",
       arrowType: {
-        meta: null,
-        numpy_type: "int64",
-        pandas_type: "int64",
+        type: DataFrameCellType.INDEX,
+        arrowField: expect.any(Field),
+        pandasType: {
+          field_name: "number",
+          name: "number",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
       },
+      group: "",
       isIndex: true,
       isPinned: true,
       isHidden: false,
@@ -322,10 +332,17 @@ describe("getIndexFromArrow", () => {
       name: "color",
       title: "color",
       arrowType: {
-        meta: null,
-        numpy_type: "object",
-        pandas_type: "unicode",
+        type: DataFrameCellType.INDEX,
+        arrowField: expect.any(Field),
+        pandasType: {
+          field_name: "color",
+          name: "color",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
       },
+      group: "",
       isIndex: true,
       isPinned: true,
       isHidden: false,
@@ -340,16 +357,22 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 0)
+    const column = getColumnFromArrow(data, 1)
     expect(column).toEqual({
-      id: "_column-c1-0",
+      id: "_column-c1-1",
       name: "c1",
       title: "c1",
       isEditable: true,
       arrowType: {
-        meta: null,
-        numpy_type: "object",
-        pandas_type: "unicode",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("c1", new Utf8(), true),
+        pandasType: {
+          field_name: "c1",
+          name: "c1",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
       },
       isIndex: false,
       isPinned: false,
@@ -363,16 +386,23 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 0)
+    const column = getColumnFromArrow(data, 2)
     expect(column).toEqual({
-      id: "_column-red-0",
+      id: "_column-red-2",
       name: "red",
       title: "red",
       isEditable: true,
       arrowType: {
-        meta: null,
-        numpy_type: "object",
-        pandas_type: "unicode",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("('1', 'red')", new Utf8(), true),
+        pandasType: {
+          field_name: "('1', 'red')",
+          name: "('1', 'red')",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
+        categoricalOptions: undefined,
       },
       isIndex: false,
       isPinned: false,
@@ -995,7 +1025,14 @@ describe("getColumnTypeFromArrow", () => {
     [
       {
         type: DataFrameCellType.DATA,
-        arrowField: new Field("test", new Utf8(), true),
+        arrowField: new Field(
+          "test",
+          new Struct([
+            new Field("left", new Int64(), true),
+            new Field("right", new Int64(), true),
+          ]),
+          true
+        ),
         pandasType: {
           field_name: "test",
           name: "test",
@@ -1010,7 +1047,7 @@ describe("getColumnTypeFromArrow", () => {
     [
       {
         type: DataFrameCellType.DATA,
-        arrowField: new Field("test", new Utf8(), true),
+        arrowField: new Field("test", new Binary(), true),
         pandasType: {
           field_name: "test",
           name: "test",
@@ -1023,7 +1060,7 @@ describe("getColumnTypeFromArrow", () => {
       ObjectColumn,
     ],
   ])(
-    "interprets %p as column type: %p",
+    "interprets %s as column type: %s",
     (arrowType: ArrowType, expectedType: ColumnCreator) => {
       expect(getColumnTypeFromArrow(arrowType)).toEqual(expectedType)
     }

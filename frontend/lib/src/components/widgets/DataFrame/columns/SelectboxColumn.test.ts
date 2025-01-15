@@ -16,22 +16,38 @@
 
 import { GridCellKind } from "@glideapps/glide-data-grid"
 import { DropdownCellType } from "@glideapps/glide-data-grid-cells"
+import { Bool, Field, Int8 } from "apache-arrow"
 
-import { PandasColumnType as ArrowType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
+import {
+  ArrowType,
+  DataFrameCellType,
+} from "@streamlit/lib/src/dataframes/arrowParseUtils"
 
-import { Field, Int8 } from "apache-arrow"
-import { DataFrameCellType } from "src/dataframes/arrowParseUtils"
 import SelectboxColumn, { SelectboxColumnParams } from "./SelectboxColumn"
 import { BaseColumnProps, isErrorCell, isMissingValueCell } from "./utils"
 
 const MOCK_CATEGORICAL_TYPE: ArrowType = {
-  pandas_type: "int8",
-  numpy_type: "categorical",
+  type: DataFrameCellType.DATA,
+  arrowField: new Field("selectbox_column", new Int8(), true),
+  pandasType: {
+    field_name: "selectbox_column",
+    name: "selectbox_column",
+    pandas_type: "int8",
+    numpy_type: "int8",
+    metadata: null,
+  },
 }
 
 const MOCK_BOOLEAN_ARROW_TYPE: ArrowType = {
-  pandas_type: "bool",
-  numpy_type: "bool",
+  type: DataFrameCellType.DATA,
+  arrowField: new Field("selectbox_column", new Bool(), true),
+  pandasType: {
+    field_name: "selectbox_column",
+    name: "selectbox_column",
+    pandas_type: "bool",
+    numpy_type: "bool",
+    metadata: null,
+  },
 }
 
 const SELECTBOX_COLUMN_TEMPLATE: Partial<BaseColumnProps> = {
@@ -54,17 +70,7 @@ function getSelectboxColumn(
   return SelectboxColumn({
     ...SELECTBOX_COLUMN_TEMPLATE,
     ...column_props_overwrites,
-    arrowType: {
-      type: DataFrameCellType.DATA,
-      arrowField: new Field("selectbox_column", new Int8(), true),
-      pandasType: {
-        field_name: "selectbox_column",
-        name: "selectbox_column",
-        pandas_type: "int8",
-        numpy_type: "int8",
-        metadata: null,
-      },
-    },
+    arrowType,
     columnTypeOptions: params,
   } as BaseColumnProps)
 }
