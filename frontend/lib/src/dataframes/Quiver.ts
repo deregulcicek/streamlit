@@ -165,12 +165,12 @@ export class Quiver {
    *
    * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
-  public get indexData(): IndexData {
+  private get indexData(): IndexData {
     return this._indexData
   }
 
   /** Cell values of the data columns. */
-  public get data(): Data {
+  private get data(): Data {
     return this._data
   }
 
