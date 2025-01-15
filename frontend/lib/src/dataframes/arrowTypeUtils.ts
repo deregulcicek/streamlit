@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { Dictionary, Struct, StructRow, Vector } from "apache-arrow"
+import {
+  DataType as ArrowDataType,
+  Dictionary,
+  Struct,
+  StructRow,
+  Vector,
+} from "apache-arrow"
 
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
@@ -99,6 +105,7 @@ export function isIntegerType(type?: ArrowType): boolean {
   }
   const typeName = getTypeName(type) ?? ""
   return (
+    ArrowDataType.isInt(type.arrowField.type) ||
     (typeName.startsWith("int") && !isIntervalType(type)) ||
     isRangeIndexType(type) ||
     isUnsignedIntegerType(type)
@@ -110,7 +117,11 @@ export function isUnsignedIntegerType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("uint")
+  return (
+    (ArrowDataType.isInt(type.arrowField.type) &&
+      type.arrowField.type.isSigned === false) ||
+    getTypeName(type)?.startsWith("uint")
+  )
 }
 
 /** True if the arrow type is a float type.
@@ -120,7 +131,10 @@ export function isFloatType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("float")
+  return (
+    ArrowDataType.isFloat(type.arrowField.type) ||
+    getTypeName(type)?.startsWith("float")
+  )
 }
 
 /** True if the arrow type is a decimal type. */
@@ -128,7 +142,10 @@ export function isDecimalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "decimal"
+  return (
+    ArrowDataType.isDecimal(type.arrowField.type) ||
+    getTypeName(type) === "decimal"
+  )
 }
 
 /** True if the arrow type is a numeric type. */
@@ -144,7 +161,9 @@ export function isBooleanType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "bool"
+  return (
+    ArrowDataType.isBool(type.arrowField.type) || getTypeName(type) === "bool"
+  )
 }
 
 /** True if the arrow type is a duration type. */
@@ -152,7 +171,10 @@ export function isDurationType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("timedelta")
+  return (
+    ArrowDataType.isDuration(type.arrowField.type) ||
+    getTypeName(type)?.startsWith("timedelta")
+  )
 }
 
 /** True if the arrow type is a period type. */
@@ -160,7 +182,10 @@ export function isPeriodType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("period")
+  return (
+    type.arrowField.metadata.get("ARROW:extension:name") === "period" ||
+    getTypeName(type)?.startsWith("period")
+  )
 }
 
 /** True if the arrow type is a datetime type. */
@@ -168,7 +193,10 @@ export function isDatetimeType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("datetime")
+  return (
+    ArrowDataType.isTimestamp(type.arrowField.type) ||
+    getTypeName(type)?.startsWith("datetime")
+  )
 }
 
 /** True if the arrow type is a date type. */
@@ -176,7 +204,9 @@ export function isDateType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "date"
+  return (
+    ArrowDataType.isDate(type.arrowField.type) || getTypeName(type) === "date"
+  )
 }
 
 /** True if the arrow type is a time type. */
@@ -184,7 +214,9 @@ export function isTimeType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "time"
+  return (
+    ArrowDataType.isTime(type.arrowField.type) || getTypeName(type) === "time"
+  )
 }
 
 /** True if the arrow type is a categorical type. */
@@ -192,7 +224,10 @@ export function isCategoricalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "categorical"
+  return (
+    ArrowDataType.isDictionary(type.arrowField.type) ||
+    getTypeName(type) === "categorical"
+  )
 }
 
 /** True if the arrow type is a list type. */
@@ -200,7 +235,11 @@ export function isListType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("list")
+  return (
+    ArrowDataType.isList(type.arrowField.type) ||
+    ArrowDataType.isFixedSizeList(type.arrowField.type) ||
+    getTypeName(type)?.startsWith("list")
+  )
 }
 
 /** True if the arrow type is an object type. */
@@ -208,7 +247,11 @@ export function isObjectType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "object"
+  return (
+    ArrowDataType.isStruct(type.arrowField.type) ||
+    // TODO: ArrowDataType.isMap(type.arrowField.type) ||
+    getTypeName(type) === "object"
+  )
 }
 
 /** True if the arrow type is a bytes type. */
@@ -216,7 +259,11 @@ export function isBytesType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "bytes"
+  return (
+    ArrowDataType.isBinary(type.arrowField.type) ||
+    ArrowDataType.isLargeBinary(type.arrowField.type) ||
+    getTypeName(type) === "bytes"
+  )
 }
 
 /** True if the arrow type is a string type. */
@@ -224,7 +271,11 @@ export function isStringType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return ["unicode", "large_string[pyarrow]"].includes(getTypeName(type))
+  return (
+    ArrowDataType.isUtf8(type.arrowField.type) ||
+    ArrowDataType.isLargeUtf8(type.arrowField.type) ||
+    ["unicode", "large_string[pyarrow]"].includes(getTypeName(type))
+  )
 }
 
 /** True if the arrow type is an empty type. */
@@ -232,7 +283,9 @@ export function isEmptyType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === "empty"
+  return (
+    ArrowDataType.isNull(type.arrowField.type) || getTypeName(type) === "empty"
+  )
 }
 
 /** True if the arrow type is a interval type. */
@@ -240,7 +293,11 @@ export function isIntervalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type)?.startsWith("interval")
+  return (
+    //TODO: ArrowDataType.isInterval(type.arrowField.type) ||
+    type.arrowField.metadata.get("ARROW:extension:name") === "interval" ||
+    getTypeName(type)?.startsWith("interval")
+  )
 }
 
 /** True if the arrow type is a range index type. */

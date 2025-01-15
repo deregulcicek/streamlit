@@ -19,15 +19,7 @@
  * a human-readable format.
  */
 
-import {
-  Field,
-  Float,
-  Struct,
-  StructRow,
-  Timestamp,
-  TimeUnit,
-  util,
-} from "apache-arrow"
+import { Field, Struct, StructRow, TimeUnit, util } from "apache-arrow"
 import trimEnd from "lodash/trimEnd"
 import moment from "moment-timezone"
 import numbro from "numbro"
@@ -545,34 +537,28 @@ function formatInterval(x: StructRow, field?: Field): string {
  * @returns The formatted cell value.
  */
 export function format(x: DataType, type: ArrowType): string {
-  const extensionName = type.arrowField.metadata.get("ARROW:extension:name")
-  const fieldType = type.arrowField.type
-
   if (isNullOrUndefined(x)) {
     return "<NA>"
   }
 
-  // date
   const isDate = x instanceof Date || Number.isFinite(x)
   if (isDate && isDateType(type)) {
     return formatDate(x as Date | number)
   }
 
-  // time
   if (typeof x === "bigint" && isTimeType(type)) {
     return formatTime(Number(x), type.arrowField)
   }
 
-  // datetimetz, datetime, datetime64, datetime64[ns], etc.
-  if (isDate && (isDatetimeType(type) || fieldType instanceof Timestamp)) {
+  if (isDate && isDatetimeType(type)) {
     return formatDatetime(x as Date | number, type.arrowField)
   }
 
-  if (isPeriodType(type) || extensionName === "pandas.period") {
+  if (isPeriodType(type)) {
     return formatPeriod(x as bigint, type.arrowField)
   }
 
-  if (isIntervalType(type) || extensionName === "pandas.interval") {
+  if (isIntervalType(type)) {
     return formatInterval(x as StructRow, type.arrowField)
   }
 
@@ -584,10 +570,7 @@ export function format(x: DataType, type: ArrowType): string {
     return formatDecimal(x as Uint32Array, type.arrowField)
   }
 
-  if (
-    (isFloatType(type) || fieldType instanceof Float) &&
-    Number.isFinite(x)
-  ) {
+  if (isFloatType(type) && Number.isFinite(x)) {
     return formatFloat(x as number)
   }
 

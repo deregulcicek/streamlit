@@ -20,6 +20,7 @@
 
 import {
   Schema as ArrowSchema,
+  DataType,
   Dictionary,
   Field,
   Int,
@@ -341,14 +342,22 @@ function parseDataArrowTypes(
     pandasSchema ? !pandasSchema.index_columns.includes(field.name) : true
   )
 
-  const arrowDataTypes: ArrowType[] = dataFields.map(field => ({
-    type: DataFrameCellType.DATA,
-    arrowField: field,
-    pandasType: pandasSchema?.columns.find(
-      column => column.field_name === field.name
-    ),
-    categoricalOptions: categoricalOptions[field.name],
-  }))
+  const arrowDataTypes: ArrowType[] = dataFields.map(field => {
+    console.log(
+      "field",
+      field,
+      DataType.isUtf8(field.type),
+      DataType.isInterval(field.type)
+    )
+    return {
+      type: DataFrameCellType.DATA,
+      arrowField: field,
+      pandasType: pandasSchema?.columns.find(
+        column => column.field_name === field.name
+      ),
+      categoricalOptions: categoricalOptions[field.name],
+    }
+  })
 
   return arrowDataTypes
 }
