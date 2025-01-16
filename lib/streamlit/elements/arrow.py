@@ -562,9 +562,9 @@ class ArrowMixin:
 
         proto.editing_mode = ArrowProto.EditingMode.READ_ONLY
 
-        if isinstance(data, pa.Table):
+        if isinstance(data, pa.Table) or dataframe_util.is_polars_dataframe(data):
             # For pyarrow tables, we can just serialize the table directly
-            proto.data = dataframe_util.convert_arrow_table_to_arrow_bytes(data)
+            proto.data = dataframe_util.convert_anything_to_arrow_bytes(data)
         else:
             # For all other data formats, we need to convert them to a pandas.DataFrame
             # thereby, we also apply some data specific configs

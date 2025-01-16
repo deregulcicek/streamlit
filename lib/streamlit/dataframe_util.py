@@ -58,6 +58,7 @@ from streamlit.type_util import (
 
 if TYPE_CHECKING:
     import numpy as np
+    import polars as pl
     import pyarrow as pa
     from pandas import DataFrame, Index, Series
     from pandas.core.indexing import _iLocIndexer
@@ -763,6 +764,17 @@ Offending object:
         ) from ex
 
 
+def convert_polars_df_to_arrow_bytes(df: pl.DataFrame) -> bytes:
+    import io
+
+    from polars import CompatLevel
+
+    buffer = io.BytesIO()
+    df.write_ipc(buffer, compat_level=CompatLevel.oldest())
+    buffer.seek(0)
+    return buffer.read()
+
+
 def convert_arrow_table_to_arrow_bytes(table: pa.Table) -> bytes:
     """Serialize pyarrow.Table to Arrow IPC bytes.
 
@@ -888,6 +900,9 @@ def convert_anything_to_arrow_bytes(
 
     if isinstance(data, pa.Table):
         return convert_arrow_table_to_arrow_bytes(data)
+
+    if is_polars_dataframe(data):
+        return convert_arrow_table_to_arrow_bytes(data.to_arrow())
 
     # TODO(lukasmasuch): Add direct conversion to Arrow for supported formats here
 
