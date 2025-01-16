@@ -17,14 +17,17 @@ import {
   Binary,
   Bool as BoolType,
   Decimal,
+  Dictionary,
   Field,
   Float64,
   Int,
   Int64,
+  List,
   Null,
   Struct,
   Timestamp,
   TimeUnit,
+  Uint8,
   Utf8,
 } from "apache-arrow"
 
@@ -62,8 +65,10 @@ import {
   ColumnCreator,
   DateTimeColumn,
   getTextCell,
+  ListColumn,
   NumberColumn,
   ObjectColumn,
+  SelectboxColumn,
   TextColumn,
   TimeColumn,
 } from "./columns"
@@ -267,7 +272,7 @@ describe("applyPandasStylerCss", () => {
   })
 })
 
-describe("getIndexFromArrow", () => {
+describe("initIndexFromArrow", () => {
   it("returns a valid index", () => {
     const element = ArrowProto.create({
       data: UNICODE,
@@ -357,7 +362,7 @@ describe("getIndexFromArrow", () => {
   })
 })
 
-describe("getColumnFromArrow", () => {
+describe("initColumnFromArrow", () => {
   it("returns a valid column", () => {
     const element = ArrowProto.create({
       data: UNICODE,
@@ -457,7 +462,7 @@ describe("getColumnFromArrow", () => {
     })
   })
 })
-describe("getAllColumnsFromArrow", () => {
+describe("initAllColumnsFromArrow", () => {
   it("extracts all columns", () => {
     const element = ArrowProto.create({
       data: UNICODE,
@@ -1067,6 +1072,56 @@ describe("getColumnTypeFromArrow", () => {
         categoricalOptions: undefined,
       },
       DateTimeColumn,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new List(new Field("test", new Int64(), true)),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "list[int64]",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      ListColumn,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Struct([]), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      ObjectColumn,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Dictionary(new Utf8(), new Uint8()),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "categorical",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      SelectboxColumn,
     ],
     [
       {
