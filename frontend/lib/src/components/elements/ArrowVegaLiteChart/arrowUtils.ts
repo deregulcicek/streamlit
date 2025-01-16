@@ -144,9 +144,8 @@ export function getDataArray(
   const { numDataRows, numDataColumns, numIndexColumns } =
     quiverData.dimensions
 
-  // This currently only works with a single index column.
-  // Supporting multiple index columns would require some
-  // changes to this logic:
+  // This currently only implemented to work with a single index column.
+  // If the dataframe is multi-index, the remaining index columns will be ignored.
   const firstIndexColumnType = quiverData.columnTypes[0] ?? undefined
   const hasSupportedIndex =
     firstIndexColumnType &&
@@ -167,7 +166,9 @@ export function getDataArray(
     }
 
     for (let colIndex = 0; colIndex < numDataColumns; colIndex++) {
-      // Calculate the column position by adding the number of index columns
+      // The underlying dataframe expects the column position to start at 0 with
+      // the index columns first. Therefore, we need to adjust the position
+      // to account for the index columns.
       const colPos = colIndex + numIndexColumns
       const { content: dataValue, contentType: dataType } = quiverData.getCell(
         rowIndex,

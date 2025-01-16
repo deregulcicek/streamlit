@@ -190,9 +190,9 @@ export function getColumnTypeFromArrow(arrowType: ArrowType): ColumnCreator {
 }
 
 /**
- * Parses the header names of a column into a group and title.
+ * Parses the header names of a single column into a group and title.
  *
- * The group is only filled if there are more than one headers for the column
+ * The group is only filled if there are more than one header for the column
  * (multi-level headers).
  *
  * @param columnHeaderNames - The column header names.
@@ -242,8 +242,10 @@ export function getIndexFromArrow(
   data: Quiver,
   indexPosition: number
 ): BaseColumnProps {
-  // columnNames a matrix of column names.
+  // columnNames is a matrix of column names.
   // Multi-level headers will have more than one row of column names.
+  // We need to extract the list of header names for this given index column
+  // and subsequently parse it into a title and group.
   const columnHeaderNames = data.columnNames.map(
     column => column[indexPosition]
   )
@@ -286,8 +288,10 @@ export function getColumnFromArrow(
   data: Quiver,
   columnPosition: number
 ): BaseColumnProps {
-  // columnNames a matrix of column names.
+  // columnNames is a matrix of column names.
   // Multi-level headers will have more than one row of column names.
+  // We need to extract the list of header names for this given index column
+  // and subsequently parse it into a title and group.
   const columnHeaderNames = data.columnNames.map(
     column => column[columnPosition]
   )

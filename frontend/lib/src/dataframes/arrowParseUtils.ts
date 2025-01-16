@@ -86,7 +86,7 @@ function parsePandasSchema(table: Table): PandasSchema | undefined {
   const schema = table.schema.metadata.get("pandas")
   if (isNullOrUndefined(schema)) {
     // No Pandas schema found. This happens if the dataset
-    // did not touched Pandas during serialization.
+    // did not touch Pandas during serialization.
     return undefined
   }
   return JSON.parse(schema)
@@ -96,7 +96,7 @@ function parsePandasSchema(table: Table): PandasSchema | undefined {
 function parseIndexData(table: Table, pandasSchema?: PandasSchema): IndexData {
   if (!pandasSchema) {
     // No Pandas schema found. This happens if the dataset
-    // did not touche Pandas during serialization.
+    // did not touch Pandas during serialization.
     return []
   }
 

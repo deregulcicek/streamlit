@@ -104,6 +104,7 @@ describe("ElementNode.quiverElement", () => {
     const q = node.quiverElement
     expect(q.columnNames).toEqual([["", "c1", "c2"]])
     expect(q.getCell(0, 0).content).toEqual("i1")
+    expect(q.getCell(0, 1).content).toEqual("i2")
   })
 
   it("returns a quiverElement (arrowDataFrame)", () => {
@@ -111,6 +112,7 @@ describe("ElementNode.quiverElement", () => {
     const q = node.quiverElement
     expect(q.columnNames).toEqual([["", "c1", "c2"]])
     expect(q.getCell(0, 0).content).toEqual("i1")
+    expect(q.getCell(0, 1).content).toEqual("i2")
   })
 
   it("does not recompute its value (arrowTable)", () => {
