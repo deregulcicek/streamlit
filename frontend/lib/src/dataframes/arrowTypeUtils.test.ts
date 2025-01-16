@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import { Bool, Field, Float64, Int64, makeVector, Utf8 } from "apache-arrow"
+import {
+  Bool,
+  Decimal,
+  Field,
+  Float64,
+  Int64,
+  List,
+  makeVector,
+  Time,
+  Timestamp,
+  TimeUnit,
+  Utf8,
+} from "apache-arrow"
 
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 import {
@@ -41,22 +53,12 @@ import {
   getTimezone,
   getTypeName,
   isBooleanType,
-  isBytesType,
-  isCategoricalType,
   isDatetimeType,
-  isDateType,
   isDecimalType,
-  isDurationType,
-  isEmptyType,
   isFloatType,
   isIntegerType,
-  isIntervalType,
   isListType,
   isNumericType,
-  isObjectType,
-  isPeriodType,
-  isRangeIndexType,
-  isStringType,
   isTimeType,
   isUnsignedIntegerType,
 } from "./arrowTypeUtils"
@@ -354,6 +356,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "float64",
           numpy_type: "float64",
+          metadata: null,
         },
       },
       false,
@@ -367,6 +370,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "int64",
           numpy_type: "int64",
+          metadata: null,
         },
       },
       false,
@@ -380,6 +384,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "uint64",
           numpy_type: "uint64",
+          metadata: null,
         },
       },
       true,
@@ -393,6 +398,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "object",
           numpy_type: "uint16",
+          metadata: null,
         },
       },
       true,
@@ -406,6 +412,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "unicode",
           numpy_type: "object",
+          metadata: null,
         },
       },
       false,
@@ -419,6 +426,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "bool",
           numpy_type: "bool",
+          metadata: null,
         },
       },
       false,
@@ -432,6 +440,7 @@ describe("isUnsignedIntegerType", () => {
           name: "test",
           pandas_type: "categorical",
           numpy_type: "uint8",
+          metadata: null,
         },
       },
       false,
@@ -449,42 +458,63 @@ describe("isBooleanType", () => {
     [undefined, false],
     [
       {
-        pandas_type: "bool",
-        numpy_type: "bool",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Bool(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bool",
+          numpy_type: "bool",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "bool",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Bool(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "bool",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "int64",
-        numpy_type: "int64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
       },
       false,
     ],
     [
       {
-        pandas_type: "categorical",
-        numpy_type: "bool",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "float64",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as boolean type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isBooleanType(arrowType)).toEqual(expected)
     }
   )
@@ -494,38 +524,85 @@ describe("getTimezone", () => {
   it.each([
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-        meta: { timezone: "UTC" },
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Timestamp(TimeUnit.SECOND, "UTC"),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: { timezone: "UTC" },
+        },
       },
       "UTC",
     ],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-        meta: { timezone: "America/New_York" },
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: { timezone: "America/New_York" },
+        },
       },
       "America/New_York",
     ],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-        meta: {},
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Timestamp(TimeUnit.SECOND, "America/New_York"),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: null,
+        },
+      },
+      "America/New_York",
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: {},
+        },
       },
       undefined,
     ],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: {},
+        },
       },
       undefined,
     ],
   ])(
     "returns correct timezone for %o",
-    (arrowType: PandasColumnType, expected: string | undefined) => {
+    (arrowType: ArrowType, expected: string | undefined) => {
       expect(getTimezone(arrowType)).toEqual(expected)
     }
   )
@@ -536,42 +613,77 @@ describe("isFloatType", () => {
     [undefined, false],
     [
       {
-        pandas_type: "float64",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "float32",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "float32",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "int64",
-        numpy_type: "int64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
       },
       false,
     ],
     [
       {
-        pandas_type: "categorical",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
       },
       false,
     ],
     [
       {
-        pandas_type: "bool",
-        numpy_type: "bool",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Bool(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bool",
+          numpy_type: "bool",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as float type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isFloatType(arrowType)).toEqual(expected)
     }
   )
@@ -582,111 +694,144 @@ describe("isDecimalType", () => {
     [undefined, false],
     [
       {
-        pandas_type: "object",
-        numpy_type: "decimal",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Decimal(10, 2), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "decimal",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "float64",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
       },
       false,
     ],
     [
       {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "decimal",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as decimal type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isDecimalType(arrowType)).toEqual(expected)
     }
   )
 })
 
 describe("isNumericType", () => {
-  it("returns true for numeric types", () => {
-    const arrowType: ArrowType = {
-      type: DataFrameCellType.DATA,
-      arrowField: expect.any(Field),
-      pandasType: {
-        field_name: "c1",
-        name: "c1",
-        pandas_type: "int64",
-        numpy_type: "int64",
-        metadata: null,
-      },
-      categoricalOptions: undefined,
-    }
-    expect(isNumericType(arrowType)).toBe(true)
-  })
-
   it.each([
     [undefined, false],
     [
       {
-        pandas_type: "float64",
-        numpy_type: "float64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "int64",
-        numpy_type: "int64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "decimal",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Decimal(10, 2), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "decimal",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "uint64",
-        numpy_type: "uint64",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "uint64",
+          numpy_type: "uint64",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "bool",
-        numpy_type: "bool",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Bool(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bool",
+          numpy_type: "bool",
+          metadata: null,
+        },
       },
       false,
     ],
     [
       {
-        pandas_type: "categorical",
-        numpy_type: "float64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "unicode",
-        numpy_type: "object",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as numeric type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isNumericType(arrowType)).toEqual(expected)
     }
   )
@@ -700,158 +845,55 @@ describe("convertVectorToList", () => {
   })
 })
 
-describe("isDurationType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "timedelta64[ns]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "timedelta64[s]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "float64",
-        numpy_type: "float64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "timedelta64[ns]",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as duration type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isDurationType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isPeriodType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "period[Y-DEC]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "period[M]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "float64",
-        numpy_type: "float64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "period[Y]",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as period type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isPeriodType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
 describe("isDatetimeType", () => {
   it.each([
     [undefined, false],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "datetime64[s]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[s]",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "float64",
-        numpy_type: "float64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "datetime64[ns]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as datetime type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isDatetimeType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isDateType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "date",
-        numpy_type: "date",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "date",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "date",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as date type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isDateType(arrowType)).toEqual(expected)
     }
   )
 })
@@ -861,75 +903,50 @@ describe("isTimeType", () => {
     [undefined, false],
     [
       {
-        pandas_type: "time",
-        numpy_type: "time",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Time(TimeUnit.SECOND, 64), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "time",
+          numpy_type: "time",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "time",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Time(TimeUnit.SECOND, 64), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "time",
+          numpy_type: "time",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "time",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as time type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isTimeType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isCategoricalType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "category",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "categorical",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as categorical type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isCategoricalType(arrowType)).toEqual(expected)
     }
   )
 })
@@ -939,284 +956,58 @@ describe("isListType", () => {
     [undefined, false],
     [
       {
-        pandas_type: "object",
-        numpy_type: "list[int64]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new List(new Field("test", new Int64(), true)),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "list[int64]",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "object",
-        numpy_type: "list[str]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new List(new Field("test", new Utf8(), true)),
+          true
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "object",
+          numpy_type: "list[str]",
+          metadata: null,
+        },
       },
       true,
     ],
     [
       {
-        pandas_type: "datetime",
-        numpy_type: "datetime64[ns]",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "list[int64]",
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Timestamp(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "datetime",
+          numpy_type: "datetime64[ns]",
+          metadata: null,
+        },
       },
       false,
     ],
   ])(
     "interprets %s as list type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
+    (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isListType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isObjectType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "object",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "dict",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "object",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as object type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isObjectType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isBytesType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "bytes",
-        numpy_type: "bytes",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "bytes",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "unicode",
-        numpy_type: "object",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "bytes",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as bytes type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isBytesType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isStringType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "unicode",
-        numpy_type: "object",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "large_string[pyarrow]",
-        numpy_type: "object",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "string",
-        numpy_type: "object",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "unicode",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "object",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as string type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isStringType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isEmptyType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "empty",
-        numpy_type: "object",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "empty",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "null",
-        numpy_type: "object",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "empty",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as empty type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isEmptyType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isIntervalType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "interval[datetime64[ns], right]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "interval[int64, both]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "interval[float64, left]",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "interval[int64, right]",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as interval type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isIntervalType(arrowType)).toEqual(expected)
-    }
-  )
-})
-
-describe("isRangeIndexType", () => {
-  it.each([
-    [undefined, false],
-    [
-      {
-        pandas_type: "range",
-        numpy_type: "range",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "object",
-        numpy_type: "range",
-      },
-      true,
-    ],
-    [
-      {
-        pandas_type: "int64",
-        numpy_type: "int64",
-      },
-      false,
-    ],
-    [
-      {
-        pandas_type: "categorical",
-        numpy_type: "range",
-      },
-      false,
-    ],
-  ])(
-    "interprets %s as range index type: %s",
-    (arrowType: PandasColumnType | undefined, expected: boolean) => {
-      expect(isRangeIndexType(arrowType)).toEqual(expected)
     }
   )
 })
