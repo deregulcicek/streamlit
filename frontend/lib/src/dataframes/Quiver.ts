@@ -119,7 +119,7 @@ export class Quiver {
    *
    * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
-  private _indexColumnTypes: ArrowType[]
+  private _pandasIndexColumnTypes: ArrowType[]
 
   /** Column type information for the data columns. */
   private _dataColumnTypes: ArrowType[]
@@ -128,7 +128,7 @@ export class Quiver {
    *
    *  Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
-  private _indexData: IndexData
+  private _pandasIndexData: IndexData
 
   /** Cell values of the data columns. */
   private _data: Data
@@ -140,8 +140,13 @@ export class Quiver {
   private _num_bytes: number
 
   constructor(element: IArrow) {
-    const { indexData, columnNames, data, dataColumnTypes, indexColumnTypes } =
-      parseArrowIpcBytes(element.data)
+    const {
+      pandasIndexData,
+      columnNames,
+      data,
+      dataColumnTypes,
+      pandasIndexColumnTypes,
+    } = parseArrowIpcBytes(element.data)
 
     // Load styler data (if provided):
     const styler = element.styler
@@ -150,11 +155,11 @@ export class Quiver {
 
     // The assignment is done below to avoid partially populating the instance
     // if an error is thrown.
-    this._indexData = indexData
+    this._pandasIndexData = pandasIndexData
     this._columnNames = columnNames
     this._data = data
     this._dataColumnTypes = dataColumnTypes
-    this._indexColumnTypes = indexColumnTypes
+    this._pandasIndexColumnTypes = pandasIndexColumnTypes
     this._styler = styler
     this._num_bytes = element.data?.length ?? 0
   }
@@ -170,7 +175,7 @@ export class Quiver {
 
   /** List of column types for every index- & data-column. */
   public get columnTypes(): ArrowType[] {
-    return this._indexColumnTypes.concat(this._dataColumnTypes)
+    return this._pandasIndexColumnTypes.concat(this._dataColumnTypes)
   }
 
   /** Pandas Styler data. This will only be defined if the user styled the dataframe
@@ -182,7 +187,7 @@ export class Quiver {
 
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
-    const numIndexColumns = this._indexColumnTypes.length || 0
+    const numIndexColumns = this._pandasIndexColumnTypes.length || 0
     const numHeaderRows = this._columnNames.length || 1
     const numDataRows = this._data.numRows || 0
     const numDataColumns = this._dataColumnTypes.length || 0
@@ -242,7 +247,7 @@ export class Quiver {
     const isIndexCell = columnIndex < numIndexColumns
 
     if (isIndexCell) {
-      const contentType = this._indexColumnTypes[columnIndex]
+      const contentType = this._pandasIndexColumnTypes[columnIndex]
       const content = this.getIndexValue(rowIndex, columnIndex)
 
       return {
@@ -270,7 +275,7 @@ export class Quiver {
    * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
   private getIndexValue(rowIndex: number, columnIndex: number): any {
-    const index = this._indexData[columnIndex]
+    const index = this._pandasIndexData[columnIndex]
     const value =
       index instanceof Vector ? index.get(rowIndex) : index[rowIndex]
     return value
@@ -318,20 +323,20 @@ st.add_rows(my_styler.data)
       dataTypes: newDataTypes,
     } = concat(
       this._dataColumnTypes,
-      this._indexColumnTypes,
-      this._indexData,
+      this._pandasIndexColumnTypes,
+      this._pandasIndexData,
       this._data,
       other._dataColumnTypes,
-      other._indexColumnTypes,
-      other._indexData,
+      other._pandasIndexColumnTypes,
+      other._pandasIndexData,
       other._data
     )
 
     // If we get here, then we had no concatenation errors.
     return produce(this, (draft: Quiver) => {
-      draft._indexData = newIndex
+      draft._pandasIndexData = newIndex
       draft._data = newData
-      draft._indexColumnTypes = newIndexTypes
+      draft._pandasIndexColumnTypes = newIndexTypes
       draft._dataColumnTypes = newDataTypes
     })
   }

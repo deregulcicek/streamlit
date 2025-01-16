@@ -93,7 +93,10 @@ function parsePandasSchema(table: Table): PandasSchema | undefined {
 }
 
 /** Parse DataFrame's index data values. */
-function parseIndexData(table: Table, pandasSchema?: PandasSchema): IndexData {
+function parsePandasIndexData(
+  table: Table,
+  pandasSchema?: PandasSchema
+): IndexData {
   if (!pandasSchema) {
     // No Pandas schema found. This happens if the dataset
     // did not touch Pandas during serialization.
@@ -151,16 +154,16 @@ function parseHeaderName(name: string, numLevels: number): string[] {
  * column names. Multi-level headers will have more than one row of column names.
  *
  * @param dataColumnTypes - Type information for data columns.
- * @param indexColumnTypes - Type information for index columns.
+ * @param pandasIndexColumnTypes - Type information for index columns.
  * @param pandasSchema - Pandas schema (if available).
  * @returns - Matrix of column names.
  */
 function parseColumnNames(
   dataColumnTypes: ArrowType[],
-  indexColumnTypes: ArrowType[],
+  pandasIndexColumnTypes: ArrowType[],
   pandasSchema?: PandasSchema
 ): ColumnNames {
-  const allArrowTypes = indexColumnTypes.concat(dataColumnTypes)
+  const allArrowTypes = pandasIndexColumnTypes.concat(dataColumnTypes)
 
   // Perform the following transformation:
   // ["('1','foo')", "('2','bar')", "('3','baz')"] -> ... -> [["1", "2", "3"], ["foo", "bar", "baz"]]
@@ -192,8 +195,11 @@ function parseData(table: Table, dataColumnTypes: ArrowType[]): Data {
 
 /** Parsed Arrow table split into different components for easier access. */
 interface ParsedTable {
-  /** All index data cells. */
-  indexData: IndexData
+  /** All index data cells.
+   *
+   * If the table was not processed through Pandas, this will be an empty array.
+   */
+  pandasIndexData: IndexData
 
   /** All data cells. */
   data: Data
@@ -202,7 +208,7 @@ interface ParsedTable {
   columnNames: ColumnNames
 
   /** Type information for index columns. */
-  indexColumnTypes: ArrowType[]
+  pandasIndexColumnTypes: ArrowType[]
 
   /** Type information for data columns. */
   dataColumnTypes: ArrowType[]
@@ -223,7 +229,7 @@ interface ParsedTable {
  *
  * @returns - Type information for index columns.
  */
-function parseIndexColumnTypes(
+function parsePandasIndexColumnTypes(
   arrowSchema: ArrowSchema,
   pandasSchema: PandasSchema | undefined,
   categoricalOptions: Record<string, string[]>
@@ -233,7 +239,7 @@ function parseIndexColumnTypes(
     return []
   }
 
-  const indexColumnTypes: ArrowType[] = pandasSchema.index_columns.map(
+  const pandasIndexColumnTypes: ArrowType[] = pandasSchema.index_columns.map(
     indexCol => {
       if (isPandasRangeIndex(indexCol)) {
         // Range indices are not part of the arrow schema, so we need to
@@ -271,7 +277,7 @@ function parseIndexColumnTypes(
     }
   )
 
-  return indexColumnTypes
+  return pandasIndexColumnTypes
 }
 
 /**
@@ -368,7 +374,7 @@ export function parseArrowIpcBytes(
   // https://pandas.pydata.org/docs/user_guide/indexing.html
   // Therefore, index columns are only present if the
   // table was processed through Pandas.
-  const indexColumnTypes = parseIndexColumnTypes(
+  const pandasIndexColumnTypes = parsePandasIndexColumnTypes(
     arrowSchema,
     pandasSchema,
     categoricalOptions
@@ -386,21 +392,21 @@ export function parseArrowIpcBytes(
 
   // Load all cell data for index columns.
   // Will be empty if the table was not processed through Pandas.
-  const indexData = parseIndexData(table, pandasSchema)
+  const pandasIndexData = parsePandasIndexData(table, pandasSchema)
 
   // Load all index- & data-column names as a matrix.
   // This is a matrix (multidimensional array) to support multi-level headers.
   const columnNames = parseColumnNames(
     dataColumnTypes,
-    indexColumnTypes,
+    pandasIndexColumnTypes,
     pandasSchema
   )
 
   return {
-    indexData,
+    pandasIndexData,
     data,
     columnNames,
-    indexColumnTypes,
+    pandasIndexColumnTypes,
     dataColumnTypes,
   }
 }
