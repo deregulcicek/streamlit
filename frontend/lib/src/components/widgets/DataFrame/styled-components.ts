@@ -47,6 +47,14 @@ export const StyledResizableContainer =
   )
 
 /**
+ * A styled menu list component.
+ */
+export const StyledMenuList = styled.div(({ theme }) => ({
+  paddingTop: theme.spacing.xs,
+  paddingBottom: theme.spacing.xs,
+}))
+
+/**
  * A styled menu list item component.
  */
 export const StyledMenuListItem = styled.div(({ theme }) => ({

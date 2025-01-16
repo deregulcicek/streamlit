@@ -1026,6 +1026,8 @@ function DataFrame({
         ></Tooltip>
       )}
       {showMenu && (
+        // A context menu that provides interactive features (sorting, pinning, show/hide)
+        // for a grid column.
         <ColumnMenu
           top={showMenu.bounds.y + showMenu.bounds.height}
           left={showMenu.bounds.x + showMenu.bounds.width}

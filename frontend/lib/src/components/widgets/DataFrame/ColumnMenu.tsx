@@ -25,7 +25,7 @@ import {
 } from "@streamlit/lib/src/theme"
 import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
 
-import { StyledMenuListItem } from "./styled-components"
+import { StyledMenuList, StyledMenuListItem } from "./styled-components"
 
 export interface ColumnMenuProps {
   // The top position of the menu
@@ -80,12 +80,7 @@ function ColumnMenu({
     <Popover
       autoFocus
       content={
-        <div
-          style={{
-            paddingTop: theme.spacing.xs,
-            paddingBottom: theme.spacing.xs,
-          }}
-        >
+        <StyledMenuList>
           <StyledMenuListItem
             onClick={() => {
               sortColumn("asc")
@@ -114,7 +109,7 @@ function ColumnMenu({
             />
             Sort descending
           </StyledMenuListItem>
-        </div>
+        </StyledMenuList>
       }
       placement={PLACEMENT.bottomRight}
       accessibilityType={ACCESSIBILITY_TYPE.menu}
