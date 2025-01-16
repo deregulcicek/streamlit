@@ -70,12 +70,7 @@ import {
   useTableSizer,
   useTooltips,
 } from "./hooks"
-import {
-  BaseColumn,
-  getTextCell,
-  ImageCellEditor,
-  toGlideColumn,
-} from "./columns"
+import { getTextCell, ImageCellEditor, toGlideColumn } from "./columns"
 import Tooltip from "./Tooltip"
 import { StyledResizableContainer } from "./styled-components"
 
@@ -1035,20 +1030,6 @@ function DataFrame({
           top={showMenu.bounds.y + showMenu.bounds.height}
           left={showMenu.bounds.x + showMenu.bounds.width}
           menuClosed={() => setShowMenu(undefined)}
-          isPinned={
-            columns.filter(
-              (col: BaseColumn) =>
-                col.id === originalColumns[showMenu.col].id && col.isPinned
-            ).length > 0
-          }
-          unpinColumn={() => {
-            const selectedColumn = originalColumns[showMenu.col]
-            unpinColumn(selectedColumn.id)
-          }}
-          pinColumn={() => {
-            const selectedColumn = originalColumns[showMenu.col]
-            pinColumn(selectedColumn.id)
-          }}
           sortColumn={direction => sortColumn(showMenu.col, direction, true)}
         ></ColumnMenu>
       )}
