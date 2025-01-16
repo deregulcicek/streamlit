@@ -293,10 +293,10 @@ interface ParsedTable {
   columnNames: ColumnNames
 
   /** Type information for index columns. */
-  arrowIndexTypes: ArrowType[]
+  indexColumnTypes: ArrowType[]
 
   /** Type information for data columns. */
-  arrowDataTypes: ArrowType[]
+  dataColumnTypes: ArrowType[]
 }
 
 /** Parse type information for index columns.
@@ -412,29 +412,29 @@ export function parseArrowIpcBytes(
   const categoricalOptions = parseCategoricalOptions(table)
 
   // Load Arrow types for index columns:
-  const arrowIndexTypes = parseIndexColumnTypes(
+  const indexColumnTypes = parseIndexColumnTypes(
     table.schema,
     pandasSchema,
     categoricalOptions
   )
 
   // Load Arrow types for data columns:
-  const arrowDataTypes = parseDataColumnTypes(
+  const dataColumnTypes = parseDataColumnTypes(
     table.schema,
     pandasSchema,
     categoricalOptions
   )
 
   // Load all non-index data cells:
-  const data = parseData(table, arrowDataTypes)
+  const data = parseData(table, dataColumnTypes)
 
   // Load all index data cells:
   const indexData = parseIndexData(table, pandasSchema)
 
   // Load all index & data column names as a matrix:
   const columnNames = parseColumnNames(
-    arrowDataTypes,
-    arrowIndexTypes,
+    dataColumnTypes,
+    indexColumnTypes,
     pandasSchema
   )
 
@@ -442,7 +442,7 @@ export function parseArrowIpcBytes(
     indexData,
     data,
     columnNames,
-    arrowIndexTypes,
-    arrowDataTypes,
+    indexColumnTypes,
+    dataColumnTypes,
   }
 }

@@ -117,16 +117,16 @@ export class Quiver {
   /** Index & data column names (matrix of column names to support multi-level headers). */
   private _columnNames: ColumnNames
 
-  /** Arrow types for the (Pandas) index columns (there can be multiple index columns).
+  /** Column type information for the (Pandas) index columns.
    *
    * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
-  private _arrowIndexTypes: ArrowType[]
+  private _indexColumnTypes: ArrowType[]
 
-  /** Arrow types for the data columns. */
-  private _arrowDataTypes: ArrowType[]
+  /** Column type information for the data columns. */
+  private _dataColumnTypes: ArrowType[]
 
-  /** Cell values of the (Pandas) index columns (there can be multiple index columns).
+  /** Cell values of the (Pandas) index columns.
    *
    *  Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
@@ -142,7 +142,7 @@ export class Quiver {
   private _num_bytes: number
 
   constructor(element: IArrow) {
-    const { indexData, columnNames, data, arrowDataTypes, arrowIndexTypes } =
+    const { indexData, columnNames, data, dataColumnTypes, indexColumnTypes } =
       parseArrowIpcBytes(element.data)
 
     // Load styler data (if provided):
@@ -155,8 +155,8 @@ export class Quiver {
     this._indexData = indexData
     this._columnNames = columnNames
     this._data = data
-    this._arrowDataTypes = arrowDataTypes
-    this._arrowIndexTypes = arrowIndexTypes
+    this._dataColumnTypes = dataColumnTypes
+    this._indexColumnTypes = indexColumnTypes
     this._styler = styler
     this._num_bytes = element.data?.length ?? 0
   }
@@ -172,7 +172,7 @@ export class Quiver {
 
   /** List of column types for every index- & data-column. */
   public get columnTypes(): ArrowType[] {
-    return this._arrowIndexTypes.concat(this._arrowDataTypes)
+    return this._indexColumnTypes.concat(this._dataColumnTypes)
   }
 
   /** Pandas Styler data. This will only be defined if the user styled the dataframe
@@ -184,10 +184,10 @@ export class Quiver {
 
   /** Dimensions of the DataFrame. */
   public get dimensions(): DataFrameDimensions {
-    const numIndexColumns = this._arrowIndexTypes.length || 0
+    const numIndexColumns = this._indexColumnTypes.length || 0
     const numHeaderRows = this._columnNames.length || 1
     const numDataRows = this._data.numRows || 0
-    const numDataColumns = this._arrowDataTypes.length || 0
+    const numDataColumns = this._dataColumnTypes.length || 0
 
     const numRows = numHeaderRows + numDataRows
     const numColumns = numIndexColumns + numDataColumns
@@ -244,7 +244,7 @@ export class Quiver {
     const isIndexCell = columnIndex < numIndexColumns
 
     if (isIndexCell) {
-      const contentType = this._arrowIndexTypes[columnIndex]
+      const contentType = this._indexColumnTypes[columnIndex]
       const content = this.getIndexValue(rowIndex, columnIndex)
 
       return {
@@ -256,7 +256,7 @@ export class Quiver {
     }
 
     const dataColumnIndex = columnIndex - numIndexColumns
-    const contentType = this._arrowDataTypes[dataColumnIndex]
+    const contentType = this._dataColumnTypes[dataColumnIndex]
     const content = this.getDataValue(rowIndex, dataColumnIndex)
 
     return {
@@ -319,12 +319,12 @@ st.add_rows(my_styler.data)
       indexTypes: newIndexTypes,
       dataTypes: newDataTypes,
     } = concat(
-      this._arrowDataTypes,
-      this._arrowIndexTypes,
+      this._dataColumnTypes,
+      this._indexColumnTypes,
       this._indexData,
       this._data,
-      other._arrowDataTypes,
-      other._arrowIndexTypes,
+      other._dataColumnTypes,
+      other._indexColumnTypes,
       other._indexData,
       other._data
     )
@@ -333,8 +333,8 @@ st.add_rows(my_styler.data)
     return produce(this, (draft: Quiver) => {
       draft._indexData = newIndex
       draft._data = newData
-      draft._arrowIndexTypes = newIndexTypes
-      draft._arrowDataTypes = newDataTypes
+      draft._indexColumnTypes = newIndexTypes
+      draft._dataColumnTypes = newDataTypes
     })
   }
 }
