@@ -358,7 +358,9 @@ export function parseArrowIpcBytes(
   // Pandas schema only exists if the table was processed through Pandas.
   const pandasSchema = parsePandasSchema(table)
 
-  // Load categorical options for each column that has a categorical type:
+  // Load categorical options for each column that has a categorical type.
+  // This is a mapping of column names to categorical options that is
+  // used in a later step to attach to the column type information.
   const categoricalOptions = parseCategoricalOptionsForColumns(table)
 
   // Load the type information for index columns.
