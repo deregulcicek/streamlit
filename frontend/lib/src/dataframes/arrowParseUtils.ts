@@ -349,7 +349,7 @@ export function parseArrowIpcBytes(
   // The arrow schema contains type information for all columns
   // that are part of the table. This doesn't include range indices
   // which are only part of the pandas schema and need to be parsed
-  // separately.
+  // separately below.
   const arrowSchema = table.schema
 
   // Load pandas schema from metadata (if it exists):
