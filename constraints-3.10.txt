@@ -16,7 +16,7 @@ cryptography==44.0.0
 cycler==0.12.1
 distlib==0.3.9
 docutils==0.21.2
-emoji==2.14.0
+emoji==2.14.1
 exceptiongroup==1.2.2
 execnet==2.1.1
 filelock==3.16.1
@@ -25,7 +25,7 @@ gitdb==4.0.12
 GitPython==3.1.44
 graphviz==0.20.3
 greenlet==3.1.1
-hypothesis==6.123.17
+hypothesis==6.124.0
 identify==2.6.5
 idna==3.10
 importlib_metadata==8.5.0
@@ -63,7 +63,7 @@ plotly==5.24.1
 pluggy==1.5.0
 pre_commit==4.0.1
 protobuf==5.29.3
-pyarrow==18.1.0
+pyarrow==19.0.0
 pycparser==2.22
 pydeck==0.9.1
 pyee==12.0.0
@@ -114,8 +114,8 @@ types-typed-ast==1.5.8.7
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.3.0
-uv==0.5.18
+uv==0.5.20
 vega-datasets==0.9.0
-virtualenv==20.28.1
+virtualenv==20.29.0
 watchdog==6.0.0
 zipp==3.21.0
