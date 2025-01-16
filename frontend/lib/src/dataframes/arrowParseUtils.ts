@@ -343,7 +343,9 @@ function parseCategoricalOptionsForColumns(
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
 ): ParsedTable {
-  // Load arrow table object from Arrow IPC bytes:
+  // Load arrow table object from Arrow IPC bytes.
+  // The table contains all the cell data, the arrow schema
+  // and the pandas schema (if processed through Pandas).
   const table = tableFromIPC(ipcBytes)
 
   // The arrow schema contains type information for all columns
