@@ -84,10 +84,9 @@ export function convertVectorToList(vector: Vector<any>): string[] {
 }
 
 /** Returns type for a single-index column or data column. */
-export function getTypeName(type: ArrowType): string {
+export function getPandasTypeName(type: ArrowType): string | undefined {
   if (isNullOrUndefined(type.pandasType)) {
-    // TODO(lukasmasuch): What to do here?
-    return ""
+    return undefined
   }
   // For `PeriodType` and `IntervalType` types are kept in `numpy_type`,
   // for the rest of the indexes in `pandas_type`.
@@ -108,7 +107,7 @@ export function isIntegerType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  const typeName = getTypeName(type) ?? ""
+  const typeName = getPandasTypeName(type) ?? ""
   return (
     // Period types are integers with an extra extension name
     (ArrowDataType.isInt(type.arrowField.type) && !isPeriodType(type)) ||
@@ -126,7 +125,7 @@ export function isUnsignedIntegerType(type?: ArrowType): boolean {
   return (
     (ArrowDataType.isInt(type.arrowField.type) &&
       type.arrowField.type.isSigned === false) ||
-    getTypeName(type)?.startsWith("uint")
+    (getPandasTypeName(type)?.startsWith("uint") ?? false)
   )
 }
 
@@ -138,8 +137,9 @@ export function isFloatType(type?: ArrowType): boolean {
     return false
   }
   return (
-    ArrowDataType.isFloat(type.arrowField.type) ||
-    getTypeName(type)?.startsWith("float")
+    (ArrowDataType.isFloat(type.arrowField.type) ||
+      getPandasTypeName(type)?.startsWith("float")) ??
+    false
   )
 }
 
@@ -150,7 +150,7 @@ export function isDecimalType(type?: ArrowType): boolean {
   }
   return (
     ArrowDataType.isDecimal(type.arrowField.type) ||
-    getTypeName(type) === "decimal"
+    getPandasTypeName(type) === "decimal"
   )
 }
 
@@ -168,7 +168,8 @@ export function isBooleanType(type?: ArrowType): boolean {
     return false
   }
   return (
-    ArrowDataType.isBool(type.arrowField.type) || getTypeName(type) === "bool"
+    ArrowDataType.isBool(type.arrowField.type) ||
+    getPandasTypeName(type) === "bool"
   )
 }
 
@@ -179,7 +180,7 @@ export function isDurationType(type?: ArrowType): boolean {
   }
   return (
     ArrowDataType.isDuration(type.arrowField.type) ||
-    getTypeName(type)?.startsWith("timedelta")
+    (getPandasTypeName(type)?.startsWith("timedelta") ?? false)
   )
 }
 
@@ -190,7 +191,7 @@ export function isPeriodType(type?: ArrowType): boolean {
   }
   return (
     type.arrowField.metadata.get("ARROW:extension:name") === "period" ||
-    getTypeName(type)?.startsWith("period")
+    (getPandasTypeName(type)?.startsWith("period") ?? false)
   )
 }
 
@@ -201,7 +202,7 @@ export function isDatetimeType(type?: ArrowType): boolean {
   }
   return (
     ArrowDataType.isTimestamp(type.arrowField.type) ||
-    getTypeName(type)?.startsWith("datetime")
+    (getPandasTypeName(type)?.startsWith("datetime") ?? false)
   )
 }
 
@@ -211,7 +212,8 @@ export function isDateType(type?: ArrowType): boolean {
     return false
   }
   return (
-    ArrowDataType.isDate(type.arrowField.type) || getTypeName(type) === "date"
+    ArrowDataType.isDate(type.arrowField.type) ||
+    getPandasTypeName(type) === "date"
   )
 }
 
@@ -221,7 +223,8 @@ export function isTimeType(type?: ArrowType): boolean {
     return false
   }
   return (
-    ArrowDataType.isTime(type.arrowField.type) || getTypeName(type) === "time"
+    ArrowDataType.isTime(type.arrowField.type) ||
+    getPandasTypeName(type) === "time"
   )
 }
 
@@ -232,7 +235,7 @@ export function isCategoricalType(type?: ArrowType): boolean {
   }
   return (
     ArrowDataType.isDictionary(type.arrowField.type) ||
-    getTypeName(type) === "categorical"
+    getPandasTypeName(type) === "categorical"
   )
 }
 
@@ -244,7 +247,7 @@ export function isListType(type?: ArrowType): boolean {
   return (
     ArrowDataType.isList(type.arrowField.type) ||
     ArrowDataType.isFixedSizeList(type.arrowField.type) ||
-    getTypeName(type)?.startsWith("list")
+    (getPandasTypeName(type)?.startsWith("list") ?? false)
   )
 }
 
@@ -256,7 +259,7 @@ export function isObjectType(type?: ArrowType): boolean {
   return (
     ArrowDataType.isStruct(type.arrowField.type) ||
     ArrowDataType.isMap(type.arrowField.type) ||
-    getTypeName(type) === "object"
+    getPandasTypeName(type) === "object"
   )
 }
 
@@ -268,7 +271,7 @@ export function isBytesType(type?: ArrowType): boolean {
   return (
     ArrowDataType.isBinary(type.arrowField.type) ||
     ArrowDataType.isLargeBinary(type.arrowField.type) ||
-    getTypeName(type) === "bytes"
+    getPandasTypeName(type) === "bytes"
   )
 }
 
@@ -280,7 +283,9 @@ export function isStringType(type?: ArrowType): boolean {
   return (
     ArrowDataType.isUtf8(type.arrowField.type) ||
     ArrowDataType.isLargeUtf8(type.arrowField.type) ||
-    ["unicode", "large_string[pyarrow]"].includes(getTypeName(type))
+    ["unicode", "large_string[pyarrow]"].includes(
+      getPandasTypeName(type) ?? ""
+    )
   )
 }
 
@@ -290,7 +295,8 @@ export function isEmptyType(type?: ArrowType): boolean {
     return false
   }
   return (
-    ArrowDataType.isNull(type.arrowField.type) || getTypeName(type) === "empty"
+    ArrowDataType.isNull(type.arrowField.type) ||
+    getPandasTypeName(type) === "empty"
   )
 }
 
@@ -300,9 +306,9 @@ export function isIntervalType(type?: ArrowType): boolean {
     return false
   }
   return (
-    //TODO: ArrowDataType.isInterval(type.arrowField.type) ||
+    //TODO: Does not seem to work: ArrowDataType.isInterval(type.arrowField.type) ||
     type.arrowField.metadata.get("ARROW:extension:name") === "interval" ||
-    getTypeName(type)?.startsWith("interval")
+    (getPandasTypeName(type)?.startsWith("interval") ?? false)
   )
 }
 
@@ -311,5 +317,5 @@ export function isRangeIndexType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
-  return getTypeName(type) === PandasRangeIndexType
+  return getPandasTypeName(type) === PandasRangeIndexType
 }

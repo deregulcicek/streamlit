@@ -24,7 +24,7 @@ import zip from "lodash/zip"
 
 import { ArrowType, Data, IndexData } from "./arrowParseUtils"
 import {
-  getTypeName,
+  getPandasTypeName,
   isRangeIndexType,
   PandasRangeIndex,
 } from "./arrowTypeUtils"
@@ -54,7 +54,8 @@ function sameIndexTypes(t1: ArrowType[], t2: ArrowType[]): boolean {
 
   return t1.every(
     (type: ArrowType, index: number) =>
-      index < t2.length && getTypeName(type) === getTypeName(t2[index])
+      index < t2.length &&
+      getPandasTypeName(type) === getPandasTypeName(t2[index])
   )
 }
 
@@ -77,9 +78,11 @@ function concatIndexes(
   // Make sure indexes have same types.
   if (!sameIndexTypes(baseIndexTypes, appendIndexTypes)) {
     const receivedIndexTypes = appendIndexTypes.map(index =>
-      getTypeName(index)
+      getPandasTypeName(index)
     )
-    const expectedIndexTypes = baseIndexTypes.map(index => getTypeName(index))
+    const expectedIndexTypes = baseIndexTypes.map(index =>
+      getPandasTypeName(index)
+    )
 
     throw new Error(`
 Unsupported operation. The data passed into \`add_rows()\` must have the same
@@ -188,9 +191,11 @@ function concatIndexTypes(
   // Make sure indexes have same types.
   if (!sameIndexTypes(baseIndexTypes, appendIndexTypes)) {
     const receivedIndexTypes = appendIndexTypes.map(index =>
-      getTypeName(index)
+      getPandasTypeName(index)
     )
-    const expectedIndexTypes = baseIndexTypes.map(index => getTypeName(index))
+    const expectedIndexTypes = baseIndexTypes.map(index =>
+      getPandasTypeName(index)
+    )
 
     throw new Error(`
 Unsupported operation. The data passed into \`add_rows()\` must have the same
