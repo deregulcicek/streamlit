@@ -231,6 +231,33 @@ function parseColumnHeaderNames(columnHeaderNames: string[]): {
 }
 
 /**
+ * Initialize the column props with default values.
+ *
+ * @param columnProps - The column props.
+ *
+ * @return the column props.
+ */
+function initColumn(
+  columnProps: Partial<BaseColumnProps> & {
+    id: BaseColumnProps["id"]
+    indexNumber: BaseColumnProps["indexNumber"]
+    name: BaseColumnProps["name"]
+    title: BaseColumnProps["title"]
+    arrowType: BaseColumnProps["arrowType"]
+  }
+): BaseColumnProps {
+  return {
+    group: undefined,
+    isEditable: true,
+    isIndex: false,
+    isPinned: false,
+    isHidden: false,
+    isStretched: false,
+    ...columnProps,
+  }
+}
+
+/**
  * Initialize an index column from the Arrow metadata.
  *
  * @param data - The Arrow data.
@@ -260,7 +287,7 @@ export function initIndexFromArrow(
     isEditable = false
   }
 
-  return {
+  return initColumn({
     id: `_index-${indexPosition}`,
     indexNumber: indexPosition,
     name: title,
@@ -270,9 +297,7 @@ export function initIndexFromArrow(
     arrowType,
     isIndex: true,
     isPinned: true,
-    isHidden: false,
-    isStretched: false,
-  }
+  })
 }
 
 /**
@@ -300,19 +325,14 @@ export function initColumnFromArrow(
 
   const arrowType = data.columnTypes[columnPosition]
 
-  return {
+  return initColumn({
     id: `_column-${title}-${columnPosition}`,
     indexNumber: columnPosition,
     name: title,
     title,
-    isEditable: true,
     arrowType,
-    isIndex: false,
-    isPinned: false,
-    isHidden: false,
-    isStretched: false,
     group,
-  }
+  })
 }
 
 /**
@@ -321,7 +341,7 @@ export function initColumnFromArrow(
  * At least one column is required for glide.
  */
 export function initEmptyIndexColumn(): BaseColumnProps {
-  return {
+  return initColumn({
     id: `_empty-index`,
     indexNumber: 0,
     title: "",
@@ -329,15 +349,12 @@ export function initEmptyIndexColumn(): BaseColumnProps {
     isEditable: false,
     isIndex: true,
     isPinned: true,
-    isHidden: false,
-    isStretched: false,
-    group: undefined,
     arrowType: {
       type: DataFrameCellType.INDEX,
       arrowField: new Field("", new Null(), true),
       pandasType: undefined,
     },
-  }
+  })
 }
 
 /**
@@ -356,7 +373,7 @@ export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
   if (numIndices === 0 && numColumns === 0) {
     // Tables that don't have any columns cause an exception in glide-data-grid.
     // As a workaround, we are adding an empty index column in this case.
-    columns.push(getEmptyIndexColumn())
+    columns.push(initEmptyIndexColumn())
     return columns
   }
 
