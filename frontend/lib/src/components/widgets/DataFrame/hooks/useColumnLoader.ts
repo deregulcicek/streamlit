@@ -23,8 +23,8 @@ import mergeWith from "lodash/mergeWith"
 
 import {
   getColumnTypeFromArrow,
-  getEmptyIndexColumn,
   initAllColumnsFromArrow,
+  initEmptyIndexColumn,
 } from "@streamlit/lib/src/components/widgets/DataFrame/arrowUtils"
 import {
   BaseColumn,
@@ -403,7 +403,7 @@ function useColumnLoader(
     // to prevent errors from glide-data-grid.
     return orderedColumns.length > 0
       ? orderedColumns
-      : [ObjectColumn(getEmptyIndexColumn())]
+      : [ObjectColumn(initEmptyIndexColumn())]
   }, [
     data,
     columnConfigMapping,
