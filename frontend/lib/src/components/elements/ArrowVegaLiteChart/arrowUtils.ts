@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
 import {
+  DataFrameCellType,
   getTimezone,
   isDatetimeType,
   isDateType,

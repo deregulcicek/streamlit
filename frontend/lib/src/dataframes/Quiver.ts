@@ -25,14 +25,12 @@ import { hashString } from "@streamlit/lib/src/util/utils"
 
 import { concat } from "./arrowConcatUtils"
 import {
-  ArrowType,
   ColumnNames,
   Data,
-  DataFrameCellType,
   IndexData,
   parseArrowIpcBytes,
 } from "./arrowParseUtils"
-import { DataType } from "./arrowTypeUtils"
+import { ArrowType, DataFrameCellType, DataType } from "./arrowTypeUtils"
 
 /**
  * Pandas Styler data from proto message.

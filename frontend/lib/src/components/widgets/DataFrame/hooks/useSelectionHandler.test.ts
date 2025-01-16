@@ -19,7 +19,7 @@ import { act, renderHook } from "@testing-library/react-hooks"
 import { Field, Utf8 } from "apache-arrow"
 
 import { TextColumn } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 
 import useSelectionHandler from "./useSelectionHandler"

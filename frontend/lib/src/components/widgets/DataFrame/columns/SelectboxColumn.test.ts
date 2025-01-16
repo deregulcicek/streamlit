@@ -21,7 +21,7 @@ import { Bool, Field, Int8 } from "apache-arrow"
 import {
   ArrowType,
   DataFrameCellType,
-} from "@streamlit/lib/src/dataframes/arrowParseUtils"
+} from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 
 import SelectboxColumn, { SelectboxColumnParams } from "./SelectboxColumn"
 import { BaseColumnProps, isErrorCell, isMissingValueCell } from "./utils"

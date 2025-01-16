@@ -28,7 +28,7 @@ import {
   TextColumn,
 } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
 import EditingState from "@streamlit/lib/src/components/widgets/DataFrame/EditingState"
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { notNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
 import useDataEditor from "./useDataEditor"

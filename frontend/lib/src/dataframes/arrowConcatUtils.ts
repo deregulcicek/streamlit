@@ -22,8 +22,9 @@
 import range from "lodash/range"
 import zip from "lodash/zip"
 
-import { ArrowType, Data, IndexData } from "./arrowParseUtils"
+import { Data, IndexData } from "./arrowParseUtils"
 import {
+  ArrowType,
   getPandasTypeName,
   isRangeIndexType,
   PandasRangeIndex,

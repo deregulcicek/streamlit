@@ -30,8 +30,9 @@ import {
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
 
-import { ArrowType, DataFrameCellType } from "./arrowParseUtils"
 import {
+  ArrowType,
+  DataFrameCellType,
   DataType,
   isDatetimeType,
   isDateType,

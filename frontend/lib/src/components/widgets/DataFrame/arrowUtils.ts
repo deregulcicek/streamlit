@@ -34,8 +34,6 @@ import {
 import {
   ArrowType,
   DataFrameCellType,
-} from "@streamlit/lib/src/dataframes/arrowParseUtils"
-import {
   isBooleanType,
   isBytesType,
   isCategoricalType,

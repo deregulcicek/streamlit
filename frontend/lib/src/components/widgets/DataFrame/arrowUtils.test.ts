@@ -31,7 +31,7 @@ import {
 import {
   ArrowType,
   DataFrameCellType,
-} from "@streamlit/lib/src/dataframes/arrowParseUtils"
+} from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import {
   getStyledCell,
   StyledCell,

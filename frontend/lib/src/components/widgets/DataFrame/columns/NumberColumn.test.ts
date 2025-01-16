@@ -21,8 +21,8 @@ import { Field, Float64, Int64, Uint64 } from "apache-arrow"
 import {
   ArrowType,
   DataFrameCellType,
-} from "@streamlit/lib/src/dataframes/arrowParseUtils"
-import { DataType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
+  DataType,
+} from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 
 import NumberColumn, { NumberColumnParams } from "./NumberColumn"
 import { BaseColumnProps, ErrorCell, isErrorCell } from "./utils"

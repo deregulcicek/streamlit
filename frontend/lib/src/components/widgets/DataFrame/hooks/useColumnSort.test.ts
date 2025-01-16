@@ -23,7 +23,7 @@ import {
   NumberColumn,
   TextColumn,
 } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 
 import useColumnSort from "./useColumnSort"
 

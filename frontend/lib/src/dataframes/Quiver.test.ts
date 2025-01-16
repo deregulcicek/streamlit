@@ -18,7 +18,6 @@ import { Field } from "apache-arrow"
 import cloneDeep from "lodash/cloneDeep"
 
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
 import {
   CATEGORICAL,
   DATE,
@@ -39,6 +38,8 @@ import {
   UINT64,
   UNICODE,
 } from "@streamlit/lib/src/mocks/arrow"
+
+import { DataFrameCellType } from "./arrowTypeUtils"
 
 describe("Quiver", () => {
   describe("Public methods", () => {

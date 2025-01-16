@@ -27,7 +27,7 @@ import {
   SelectboxColumn,
   TextColumn,
 } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
-import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowParseUtils"
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
 import { UNICODE } from "@streamlit/lib/src/mocks/arrow"
 import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"

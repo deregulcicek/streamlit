@@ -52,9 +52,10 @@ import {
   UNICODE,
 } from "@streamlit/lib/src/mocks/arrow"
 
-import { ArrowType, DataFrameCellType } from "./arrowParseUtils"
 import {
+  ArrowType,
   convertVectorToList,
+  DataFrameCellType,
   getPandasTypeName,
   getTimezone,
   isBooleanType,

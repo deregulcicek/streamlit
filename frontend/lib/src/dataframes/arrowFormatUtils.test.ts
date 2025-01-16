@@ -48,7 +48,7 @@ import {
   format,
   formatPeriodFromFreq,
 } from "./arrowFormatUtils"
-import { DataFrameCellType } from "./arrowParseUtils"
+import { DataFrameCellType } from "./arrowTypeUtils"
 
 describe("format", () => {
   test("null", () => {

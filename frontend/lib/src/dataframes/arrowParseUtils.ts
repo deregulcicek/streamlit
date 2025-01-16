@@ -37,10 +37,12 @@ import {
 } from "@streamlit/lib/src/util/utils"
 
 import {
+  ArrowType,
   convertVectorToList,
-  PandasColumnType,
+  DataFrameCellType,
   PandasRangeIndex,
   PandasRangeIndexType,
+  PandasSchema,
 } from "./arrowTypeUtils"
 
 /**
@@ -65,83 +67,6 @@ export type ColumnNames = string[][]
  * A row-major grid of DataFrame data.
  */
 export type Data = Table
-
-/** A DataFrame's index and data column (pandas) types. */
-export interface PandasColumnTypes {
-  /** Types for each index column. */
-  index: PandasColumnType[]
-
-  /** Types for each data column. */
-  data: PandasColumnType[]
-}
-
-/**
- * Pandas metadata extracted from an Arrow table.
- * This describes a single column (either index or data column).
- * It needs to exactly match the structure used in the JSON
- * representation of the Pandas schema in the Arrow table.
- */
-interface PandasColumnMetadata {
-  /**
-   * The fieldName of the column.
-   * For a single-index column, this is just the name of the column (e.g. "foo").
-   * For a multi-index column, this is a stringified tuple (e.g. "('1','foo')")
-   */
-  field_name: string
-
-  /**
-   * Column-specific metadata. Only used by certain column types
-   * (e.g. CategoricalIndex has `num_categories`.)
-   */
-  metadata: Record<string, any> | null
-
-  /** The name of the column. */
-  name: string | null
-
-  /**
-   * The type of the column. When `pandas_type == "object"`, `numpy_type`
-   * will have a more specific type.
-   */
-  pandas_type: string
-
-  /**
-   * When `pandas_type === "object"`, this field contains the object type.
-   * If pandas_type has another value, numpy_type is ignored.
-   */
-  numpy_type: string
-}
-
-/**
- * The Pandas schema extracted from an Arrow table.
- * Arrow stores the schema as a JSON string, and we parse it into this typed object.
- * The Pandas schema is only present if the Arrow table was processed through Pandas.
- */
-interface PandasSchema {
-  /**
-   * The DataFrame's index names (either provided by user or generated,
-   * guaranteed unique). It is used to fetch the index data. Each DataFrame has
-   * at least 1 index. There are many different index types; for most of them
-   * the index name is stored as a string, but for the "range" index a `RangeIndex`
-   * object is used. A `RangeIndex` is only ever by itself, never as part of a
-   * multi-index. The length represents the dimensions of the DataFrame's index grid.
-   *
-   * Example:
-   * Range index: [{ kind: "range", name: null, start: 1, step: 1, stop: 5 }]
-   * Other index types: ["__index_level_0__", "foo", "bar"]
-   */
-  index_columns: (string | PandasRangeIndex)[]
-
-  /**
-   * Schemas for each column (index *and* data columns) in the DataFrame.
-   */
-  columns: PandasColumnMetadata[]
-
-  /**
-   * DataFrame column headers.
-   * The length represents the dimensions of the DataFrame's columns grid.
-   */
-  column_indexes: PandasColumnMetadata[]
-}
 
 /** True if the index name represents a "range" index.
  *
@@ -254,31 +179,6 @@ function parseData(table: Table, arrowDataTypes: ArrowType[]): Data {
   }
   const dataColumnNames = arrowDataTypes.map(type => type.arrowField.name)
   return table.select(dataColumnNames)
-}
-
-/** The type of the cell. */
-export enum DataFrameCellType {
-  // Index cells
-  INDEX = "index",
-  // Data cells
-  DATA = "data",
-}
-
-/** Metadata for a single column in a DataFrame. */
-export interface ArrowType {
-  /** The cell's type (index or data). */
-  type: DataFrameCellType
-
-  /** The Arrow field metadata of the column. */
-  arrowField: Field
-
-  /** The pandas type metadata of the column. */
-  pandasType: PandasColumnMetadata | undefined
-
-  /** If the column is categorical, this contains a list of categorical
-   * options. Otherwise, it is undefined.
-   */
-  categoricalOptions?: string[]
 }
 
 /** Parsed Arrow table split into different components for easier access. */
