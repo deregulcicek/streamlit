@@ -53,9 +53,9 @@ import {
   extractCssProperty,
   getAllColumnsFromArrow,
   getCellFromArrow,
-  getColumnFromArrow,
   getColumnTypeFromArrow,
-  getIndexFromArrow,
+  initColumnFromArrow,
+  initIndexFromArrow,
 } from "./arrowUtils"
 import {
   CheckboxColumn,
@@ -274,7 +274,7 @@ describe("getIndexFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const indexColumn = getIndexFromArrow(data, 0)
+    const indexColumn = initIndexFromArrow(data, 0)
     expect(indexColumn).toEqual({
       id: `_index-0`,
       indexNumber: 0,
@@ -305,7 +305,7 @@ describe("getIndexFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const indexColumn1 = getIndexFromArrow(data, 0)
+    const indexColumn1 = initIndexFromArrow(data, 0)
     expect(indexColumn1).toEqual({
       id: `_index-0`,
       indexNumber: 0,
@@ -330,7 +330,7 @@ describe("getIndexFromArrow", () => {
       isStretched: false,
     })
 
-    const indexColumn2 = getIndexFromArrow(data, 1)
+    const indexColumn2 = initIndexFromArrow(data, 1)
     expect(indexColumn2).toEqual({
       id: `_index-1`,
       indexNumber: 1,
@@ -364,7 +364,7 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 1)
+    const column = initColumnFromArrow(data, 1)
     expect(column).toEqual({
       id: "_column-c1-1",
       indexNumber: 1,
@@ -395,7 +395,7 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 2)
+    const column = initColumnFromArrow(data, 2)
     expect(column).toEqual({
       id: "_column-red-2",
       indexNumber: 2,
@@ -428,7 +428,7 @@ describe("getColumnFromArrow", () => {
     })
     const data = new Quiver(element)
 
-    const column = getColumnFromArrow(data, 1)
+    const column = initColumnFromArrow(data, 1)
     expect(column).toEqual({
       id: "_column-c1-1",
       indexNumber: 1,

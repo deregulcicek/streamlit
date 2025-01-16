@@ -231,14 +231,14 @@ function parseColumnHeaderNames(columnHeaderNames: string[]): {
 }
 
 /**
- * Creates the column props for an index column from the Arrow metadata.
+ * Initialize an index column from the Arrow metadata.
  *
  * @param data - The Arrow data.
  * @param indexPosition - The numeric position of the index column.
  *
  * @return the column props for the index column.
  */
-export function getIndexFromArrow(
+export function initIndexFromArrow(
   data: Quiver,
   indexPosition: number
 ): BaseColumnProps {
@@ -276,7 +276,7 @@ export function getIndexFromArrow(
 }
 
 /**
- * Creates the column props for a data column from the Arrow metadata.
+ * Initialize a data column from the Arrow metadata.
  *
  * @param data - The Arrow data.
  * @param columnPosition - The numeric position of the data column.
@@ -284,7 +284,7 @@ export function getIndexFromArrow(
  *
  * @return the column props for the data column.
  */
-export function getColumnFromArrow(
+export function initColumnFromArrow(
   data: Quiver,
   columnPosition: number
 ): BaseColumnProps {
@@ -316,11 +316,11 @@ export function getColumnFromArrow(
 }
 
 /**
- * Creates the column props for an empty index column.
+ * Initialize an empty index column.
  * This is used for DataFrames that don't have any index.
  * At least one column is required for glide.
  */
-export function getEmptyIndexColumn(): BaseColumnProps {
+export function initEmptyIndexColumn(): BaseColumnProps {
   return {
     id: `_empty-index`,
     indexNumber: 0,
@@ -361,11 +361,11 @@ export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
   }
 
   for (let i = 0; i < numIndices; i++) {
-    columns.push(getIndexFromArrow(data, i))
+    columns.push(initIndexFromArrow(data, i))
   }
 
   for (let i = 0; i < numColumns; i++) {
-    columns.push(getColumnFromArrow(data, i + numIndices))
+    columns.push(initColumnFromArrow(data, i + numIndices))
   }
   return columns
 }
