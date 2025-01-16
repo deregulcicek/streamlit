@@ -932,194 +932,6 @@ describe("Quiver", () => {
           },
         ])
       })
-
-      test("DataFrames with different column types", () => {
-        const mockElement1 = { data: UNICODE }
-        const mockElement2 = { data: DIFFERENT_COLUMN_TYPES }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        const q1q2 = q1.addRows(q2)
-
-        // Check index cells
-        expect(q1q2.getCell(0, 0).content).toEqual("i1")
-        expect(q1q2.getCell(1, 0).content).toEqual("i2")
-        expect(q1q2.getCell(2, 0).content).toEqual("i1")
-        expect(q1q2.getCell(3, 0).content).toEqual("i2")
-
-        // Check data cells
-        expect(q1q2.getCell(0, 1).content).toEqual("foo")
-        expect(q1q2.getCell(0, 2).content).toEqual("1")
-        expect(q1q2.getCell(1, 1).content).toEqual("bar")
-        expect(q1q2.getCell(1, 2).content).toEqual("2")
-        expect(q1q2.getCell(2, 1).content).toEqual("baz")
-        expect(q1q2.getCell(2, 2).content).toEqual("1")
-        expect(q1q2.getCell(3, 1).content).toEqual("qux")
-        expect(q1q2.getCell(3, 2).content).toEqual("2")
-
-        expect(q1q2.columnNames).toEqual([["", "c1", "c2"]])
-        expect(q1q2.columnTypes).toEqual([
-          {
-            type: DataFrameCellType.INDEX,
-            arrowField: expect.any(Field),
-            pandasType: {
-              field_name: "__index_level_0__",
-              name: null,
-              pandas_type: "unicode",
-              numpy_type: "object",
-              metadata: null,
-            },
-            categoricalOptions: undefined,
-          },
-          {
-            type: DataFrameCellType.DATA,
-            arrowField: expect.any(Field),
-            pandasType: {
-              field_name: "c1",
-              name: "c1",
-              pandas_type: "unicode",
-              numpy_type: "object",
-              metadata: null,
-            },
-            categoricalOptions: undefined,
-          },
-          {
-            type: DataFrameCellType.DATA,
-            arrowField: expect.any(Field),
-            pandasType: {
-              field_name: "c2",
-              name: "c2",
-              pandas_type: "unicode",
-              numpy_type: "object",
-              metadata: null,
-            },
-            categoricalOptions: undefined,
-          },
-        ])
-      })
-
-      it("shows df2 if df1 is empty", () => {
-        const mockElement1 = { data: EMPTY }
-        const mockElement2 = { data: UNICODE }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        const q1q2 = q1.addRows(q2)
-        expect(q1q2).toEqual(q2)
-      })
-
-      it("shows df1 if df2 is empty", () => {
-        const mockElement1 = { data: EMPTY }
-        const mockElement2 = { data: UNICODE }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        const q2q1 = q2.addRows(q1)
-        expect(q2q1).toEqual(q2)
-      })
-
-      it("shows an empty DataFrame if both df1 and df2 are empty", () => {
-        const mockElement = { data: EMPTY }
-        const q1 = new Quiver(mockElement)
-        const q2 = new Quiver(mockElement)
-
-        const q1q2 = q1.addRows(q2)
-        expect(q1q2.dimensions.numDataRows).toBe(0)
-      })
-
-      it("uses df1 columns if df2 has more columns than df1", () => {
-        const mockElement1 = { data: FEWER_COLUMNS }
-        const mockElement2 = { data: UNICODE }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        const q1q2 = q1.addRows(q2)
-
-        // Check index cells
-        expect(q1q2.getCell(0, 0).content).toEqual("i1")
-        expect(q1q2.getCell(1, 0).content).toEqual("i2")
-        expect(q1q2.getCell(2, 0).content).toEqual("i1")
-        expect(q1q2.getCell(3, 0).content).toEqual("i2")
-
-        // Check data cells
-        expect(q1q2.getCell(0, 1).content).toEqual("foo")
-        expect(q1q2.getCell(1, 1).content).toEqual("bar")
-        expect(q1q2.getCell(2, 1).content).toEqual("foo")
-        expect(q1q2.getCell(3, 1).content).toEqual("bar")
-
-        expect(q1q2.columnNames).toEqual([["", "c1"]])
-        expect(q1q2.columnTypes).toEqual([
-          {
-            type: DataFrameCellType.INDEX,
-            arrowField: expect.any(Field),
-            pandasType: {
-              field_name: "__index_level_0__",
-              name: null,
-              pandas_type: "unicode",
-              numpy_type: "object",
-              metadata: null,
-            },
-            categoricalOptions: undefined,
-          },
-          {
-            type: DataFrameCellType.DATA,
-            arrowField: expect.any(Field),
-            pandasType: {
-              field_name: "c1",
-              name: "c1",
-              pandas_type: "unicode",
-              numpy_type: "object",
-              metadata: null,
-            },
-            categoricalOptions: undefined,
-          },
-        ])
-      })
-
-      it("throws an error if df1 has more columns than df2", () => {
-        const mockElement1 = { data: UNICODE }
-        const mockElement2 = { data: FEWER_COLUMNS }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
-      })
-
-      it("throws an error if one of the DataFrames has Styler", () => {
-        const mockElement1 = {
-          data: STYLER,
-          styler: {
-            uuid: "FAKE_UUID",
-            styles: "FAKE_CSS",
-            caption: "FAKE_CAPTION",
-            displayValues: DISPLAY_VALUES,
-          },
-        }
-        const mockElement2 = { data: UNICODE }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
-        expect(() => q2.addRows(q1)).toThrowErrorMatchingSnapshot()
-      })
-
-      it("throws an error if DataFrames have different index types", () => {
-        const mockElement1 = { data: UNICODE }
-        const mockElement2 = { data: RANGE }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
-      })
-
-      it("throws an error if DataFrames have different data types", () => {
-        const mockElement1 = { data: UNICODE }
-        const mockElement2 = { data: INT64 }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
-      })
     })
   })
 
@@ -2103,15 +1915,6 @@ describe("Quiver", () => {
         ])
       })
 
-      it("throws an error if df1 has more columns than df2", () => {
-        const mockElement1 = { data: UNICODE }
-        const mockElement2 = { data: FEWER_COLUMNS }
-        const q1 = new Quiver(mockElement1)
-        const q2 = new Quiver(mockElement2)
-
-        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
-      })
-
       it("throws an error if one of the DataFrames has Styler", () => {
         const mockElement1 = {
           data: STYLER,
@@ -2128,6 +1931,15 @@ describe("Quiver", () => {
 
         expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
         expect(() => q2.addRows(q1)).toThrowErrorMatchingSnapshot()
+      })
+
+      it("throws an error if df1 has more columns than df2", () => {
+        const mockElement1 = { data: UNICODE }
+        const mockElement2 = { data: FEWER_COLUMNS }
+        const q1 = new Quiver(mockElement1)
+        const q2 = new Quiver(mockElement2)
+
+        expect(() => q1.addRows(q2)).toThrowErrorMatchingSnapshot()
       })
 
       it("throws an error if DataFrames have different index types", () => {
