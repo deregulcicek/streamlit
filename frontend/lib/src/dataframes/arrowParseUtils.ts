@@ -196,7 +196,17 @@ function parseIndexData(table: Table, pandasSchema?: PandasSchema): IndexData {
     )
 }
 
-function nameToArray(name: string, numLevels: number): string[] {
+/**
+ * Parse a header name into a list of strings
+ *
+ * For a single-level header, the name is returned as a list with a single string.
+ * For a multi-level header, the name is parsed into a list of strings.
+ *
+ * Example:
+ * "('1','foo')" -> ["1", "foo"]
+ * "foo" -> ["foo"]
+ */
+function parseHeaderName(name: string, numLevels: number): string[] {
   if (numLevels === 1) {
     return [name]
   }
@@ -230,7 +240,7 @@ function parseColumnNames(
       .map(fieldName =>
         // If DataFrame `columns` has multi-level indexing, the length of
         // `column_indexes` will show how many levels there are.
-        nameToArray(fieldName, pandasSchema?.column_indexes.length ?? 1)
+        parseHeaderName(fieldName, pandasSchema?.column_indexes.length ?? 1)
       )
   )
 }
@@ -271,16 +281,29 @@ export interface ArrowType {
   categoricalOptions?: string[]
 }
 
+/** Parsed Arrow table split into different components for easier access. */
 interface ParsedTable {
+  /** All index data cells. */
   indexData: IndexData
+
+  /** All data cells. */
   data: Data
+
+  /** All column names. */
   columnNames: ColumnNames
+
+  /** Type information for index columns. */
   arrowIndexTypes: ArrowType[]
+
+  /** Type information for data columns. */
   arrowDataTypes: ArrowType[]
 }
 
-/** Parse Arrow types for index columns. */
-function parseIndexArrowTypes(
+/** Parse type information for index columns.
+ *
+ * Index columns are only present if the dataframe was processed through Pandas.
+ */
+function parseIndexColumnTypes(
   schema: ArrowSchema,
   pandasSchema: PandasSchema | undefined,
   categoricalOptions: Record<string, string[]>
@@ -331,8 +354,8 @@ function parseIndexArrowTypes(
   return arrowIndexTypes
 }
 
-/** Parse Arrow types for data columns. */
-function parseDataArrowTypes(
+/** Parse type information for data columns. */
+function parseDataColumnTypes(
   schema: ArrowSchema,
   pandasSchema: PandasSchema | undefined,
   categoricalOptions: Record<string, string[]>
@@ -389,14 +412,14 @@ export function parseArrowIpcBytes(
   const categoricalOptions = parseCategoricalOptions(table)
 
   // Load Arrow types for index columns:
-  const arrowIndexTypes = parseIndexArrowTypes(
+  const arrowIndexTypes = parseIndexColumnTypes(
     table.schema,
     pandasSchema,
     categoricalOptions
   )
 
   // Load Arrow types for data columns:
-  const arrowDataTypes = parseDataArrowTypes(
+  const arrowDataTypes = parseDataColumnTypes(
     table.schema,
     pandasSchema,
     categoricalOptions
