@@ -161,29 +161,23 @@ export class Quiver {
     this._num_bytes = element.data?.length ?? 0
   }
 
-  /** Cell values of the (Pandas) index columns (there can be multiple index columns).
+  /** Matrix of column names of the index- & data-columns.
    *
+   * This is a matrix to support multi-level headers.
    * Index columns only exist if the DataFrame was created based on a Pandas DataFrame.
    */
-  private get indexData(): IndexData {
-    return this._indexData
-  }
-
-  /** Cell values of the data columns. */
-  private get data(): Data {
-    return this._data
-  }
-
-  /** Column names of the index & data columns (there can be multiple data columns). */
   public get columnNames(): ColumnNames {
     return this._columnNames
   }
 
-  /** Arrow types for the index and data columns. */
+  /** List of column types for every index- & data-column. */
   public get columnTypes(): ArrowType[] {
     return this._arrowIndexTypes.concat(this._arrowDataTypes)
   }
 
+  /** Pandas Styler data. This will only be defined if the user styled the dataframe
+   * via Pandas Styler.
+   */
   public get styler(): PandasStylerData | undefined {
     return this._styler
   }
@@ -231,7 +225,7 @@ export class Quiver {
     return hashString(valuesToHash.join("-"))
   }
 
-  /** Return a single cell from an (Pandas)index column or data column of the DataFrame.
+  /** Return a single cell from an (Pandas) index- or data-column of the DataFrame.
    *
    * @param rowIndex - The row index of the cell (0 is the first data or index row excluding header rows)
    * @param columnIndex - The column index of the cell (0 is the first data or index column)
