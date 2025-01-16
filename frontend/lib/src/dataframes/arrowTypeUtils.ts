@@ -282,7 +282,8 @@ export function isPeriodType(type?: ArrowType): boolean {
     return false
   }
   return (
-    type.arrowField.metadata.get("ARROW:extension:name") === "period" ||
+    (ArrowDataType.isInt(type.arrowField.type) &&
+      type.arrowField.metadata.get("ARROW:extension:name") === "period") ||
     (getPandasTypeName(type)?.startsWith("period") ?? false)
   )
 }
@@ -397,9 +398,11 @@ export function isIntervalType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
+  // ArrowDataType.isInterval checks for a different (unsupported) type and not related
+  // to the pandas interval extension type.
   return (
-    //TODO: Does not seem to work: ArrowDataType.isInterval(type.arrowField.type) ||
-    type.arrowField.metadata.get("ARROW:extension:name") === "interval" ||
+    (ArrowDataType.isStruct(type.arrowField.type) &&
+      type.arrowField.metadata.get("ARROW:extension:name") === "interval") ||
     (getPandasTypeName(type)?.startsWith("interval") ?? false)
   )
 }
@@ -409,5 +412,7 @@ export function isRangeIndexType(type?: ArrowType): boolean {
   if (isNullOrUndefined(type)) {
     return false
   }
+  // Range index can only exist if the table was processed through Pandas.
+  // So, we don't need to check the arrow type here.
   return getPandasTypeName(type) === PandasRangeIndexType
 }
