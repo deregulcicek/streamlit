@@ -364,10 +364,10 @@ export function parseArrowIpcBytes(
     categoricalOptions
   )
 
-  // Load all non-index data cells:
+  // Load all cell data for data columns:
   const data = parseData(table, dataColumnTypes)
 
-  // Load all index data cells:
+  // Load all cell data for index columns:
   const indexData = parseIndexData(table, pandasSchema)
 
   // Load all index & data column names as a matrix:
