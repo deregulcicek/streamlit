@@ -15,13 +15,18 @@
  */
 
 import {
+  Binary,
   Bool,
   Decimal,
+  Duration,
   Field,
   Float64,
   Int64,
+  LargeBinary,
+  LargeUtf8,
   List,
   makeVector,
+  Null,
   Time,
   Timestamp,
   TimeUnit,
@@ -53,12 +58,19 @@ import {
   getTimezone,
   getTypeName,
   isBooleanType,
+  isBytesType,
   isDatetimeType,
   isDecimalType,
+  isDurationType,
+  isEmptyType,
   isFloatType,
   isIntegerType,
+  isIntervalType,
   isListType,
   isNumericType,
+  isPeriodType,
+  isRangeIndexType,
+  isStringType,
   isTimeType,
   isUnsignedIntegerType,
 } from "./arrowTypeUtils"
@@ -1008,6 +1020,317 @@ describe("isListType", () => {
     "interprets %s as list type: %s",
     (arrowType: ArrowType | undefined, expected: boolean) => {
       expect(isListType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isDurationType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Duration(TimeUnit.SECOND), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "timedelta",
+          numpy_type: "timedelta64[ns]",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Float64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "float64",
+          numpy_type: "float64",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as duration type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isDurationType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isPeriodType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Int64(),
+          true,
+          new Map([["ARROW:extension:name", "period"]])
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "period[M]",
+          numpy_type: "period[M]",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as period type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isPeriodType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isBytesType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Binary(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bytes",
+          numpy_type: "bytes",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new LargeBinary(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bytes",
+          numpy_type: "bytes",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as bytes type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isBytesType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isStringType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new LargeUtf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "large_string[pyarrow]",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Binary(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "bytes",
+          numpy_type: "bytes",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as string type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isStringType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isEmptyType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Null(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "empty",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Utf8(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "unicode",
+          numpy_type: "object",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as empty type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isEmptyType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isIntervalType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field(
+          "test",
+          new Int64(),
+          true,
+          new Map([["ARROW:extension:name", "interval"]])
+        ),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "interval",
+          numpy_type: "interval[int64]",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as interval type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isIntervalType(arrowType)).toEqual(expected)
+    }
+  )
+})
+
+describe("isRangeIndexType", () => {
+  it.each([
+    [undefined, false],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "range",
+          numpy_type: "range",
+          metadata: null,
+        },
+      },
+      true,
+    ],
+    [
+      {
+        type: DataFrameCellType.DATA,
+        arrowField: new Field("test", new Int64(), true),
+        pandasType: {
+          field_name: "test",
+          name: "test",
+          pandas_type: "int64",
+          numpy_type: "int64",
+          metadata: null,
+        },
+      },
+      false,
+    ],
+  ])(
+    "interprets %s as range index type: %s",
+    (arrowType: ArrowType | undefined, expected: boolean) => {
+      expect(isRangeIndexType(arrowType)).toEqual(expected)
     }
   )
 })
