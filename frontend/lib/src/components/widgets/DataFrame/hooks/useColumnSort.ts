@@ -64,9 +64,13 @@ function updateSortingHeader(
   })
 }
 
-type ColumnSortReturn = {
+export type ColumnSortReturn = {
   columns: BaseColumn[]
-  sortColumn: (index: number) => void
+  sortColumn: (
+    index: number,
+    direction?: "asc" | "desc" | "auto",
+    autoReset?: boolean
+  ) => void
   getOriginalIndex: (index: number) => number
 } & Pick<DataEditorProps, "getCellContent">
 
@@ -102,27 +106,41 @@ function useColumnSort(
   }, [columns, sort])
 
   const sortColumn = React.useCallback(
-    (index: number) => {
-      let sortDirection = "asc"
+    (
+      index: number,
+      direction?: "asc" | "desc" | "auto",
+      autoReset?: boolean
+    ) => {
       const clickedColumn = updatedColumns[index]
+      let sortDirection: "asc" | "desc" | undefined
 
-      if (sort && sort.column.id === clickedColumn.id) {
-        // The clicked column is already sorted
-        if (sort.direction === "asc") {
-          // Sort column descending
-          sortDirection = "desc"
-        } else {
-          // Remove sorting of column
-          setSort(undefined)
-          return
+      if (direction === "auto") {
+        sortDirection = "asc"
+        if (sort && sort.column.id === clickedColumn.id) {
+          // The clicked column is already sorted
+          if (sort.direction === "asc") {
+            // Sort column descending
+            sortDirection = "desc"
+          } else {
+            // Remove sorting of column
+            sortDirection = undefined
+          }
         }
+      } else {
+        sortDirection = direction
       }
 
-      setSort({
-        column: toGlideColumn(clickedColumn),
-        direction: sortDirection,
-        mode: clickedColumn.sortMode,
-      } as ColumnSortConfig)
+      if (sortDirection === undefined) {
+        setSort(undefined)
+      } else if (autoReset && sortDirection === sort?.direction) {
+        setSort(undefined)
+      } else {
+        setSort({
+          column: toGlideColumn(clickedColumn),
+          direction: sortDirection,
+          mode: clickedColumn.sortMode,
+        } as ColumnSortConfig)
+      }
     },
     [sort, updatedColumns]
   )

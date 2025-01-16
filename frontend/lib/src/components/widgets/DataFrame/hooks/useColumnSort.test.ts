@@ -106,7 +106,7 @@ describe("useColumnSort hook", () => {
     // Sort the first time for ascending order
     act(() => {
       const { sortColumn } = result.current
-      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber)
+      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber, "auto")
     })
 
     // Column header should contain ascending sort icon
@@ -144,7 +144,7 @@ describe("useColumnSort hook", () => {
     // Sort again for descending order
     act(() => {
       const { sortColumn } = result.current
-      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber)
+      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber, "auto")
     })
 
     // Column header should contain descending sort icon
@@ -179,7 +179,7 @@ describe("useColumnSort hook", () => {
     // Sort the first time for ascending order
     act(() => {
       const { sortColumn } = result.current
-      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber)
+      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber, "auto")
     })
 
     // Column header should contain ascending sort icon
@@ -202,7 +202,7 @@ describe("useColumnSort hook", () => {
     // Sort again for descending order
     act(() => {
       const { sortColumn } = result.current
-      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber)
+      sortColumn?.(MOCK_COLUMNS[SELECTED_COLUMN].indexNumber, "auto")
     })
 
     // Column header should contain descending sort icon

@@ -24,6 +24,7 @@ import {
   Item as GridCellPosition,
   GridMouseEventArgs,
   GridSelection,
+  Rectangle,
 } from "@glideapps/glide-data-grid"
 import { Resizable } from "re-resizable"
 import {
@@ -51,6 +52,7 @@ import { ElementFullscreenContext } from "@streamlit/lib/src/components/shared/E
 import { useRequiredContext } from "@streamlit/lib/src/hooks/useRequiredContext"
 import { useDebouncedCallback } from "@streamlit/lib/src/hooks/useDebouncedCallback"
 
+import ColumnMenu from "./ColumnMenu"
 import EditingState, { getColumnName } from "./EditingState"
 import {
   useColumnLoader,
@@ -68,7 +70,12 @@ import {
   useTableSizer,
   useTooltips,
 } from "./hooks"
-import { getTextCell, ImageCellEditor, toGlideColumn } from "./columns"
+import {
+  BaseColumn,
+  getTextCell,
+  ImageCellEditor,
+  toGlideColumn,
+} from "./columns"
 import Tooltip from "./Tooltip"
 import { StyledResizableContainer } from "./styled-components"
 
@@ -151,6 +158,10 @@ function DataFrame({
     React.useState<boolean>(false)
   const [hasHorizontalScroll, setHasHorizontalScroll] =
     React.useState<boolean>(false)
+  const [showMenu, setShowMenu] = React.useState<{
+    col: number
+    bounds: Rectangle
+  }>()
 
   // Determine if the device is primary using touch as input:
   const isTouchDevice = React.useMemo<boolean>(
@@ -865,7 +876,7 @@ function DataFrame({
               // to the new index of the selected row which adds complexity.
               clearSelection()
             }
-            sortColumn(colIndex)
+            sortColumn(colIndex, "auto")
           }}
           gridSelection={gridSelection}
           // We don't have to react to "onSelectionCleared" since
@@ -924,6 +935,13 @@ function DataFrame({
           headerIcons={gridTheme.headerIcons}
           // Add support for user input validation:
           validateCell={validateCell}
+          // Open column context menu:
+          onHeaderMenuClick={(colIdx, screenPosition) => {
+            setShowMenu({
+              col: colIdx,
+              bounds: screenPosition,
+            })
+          }}
           // The default setup is read only, and therefore we deactivate paste here:
           onPaste={false}
           // Activate features required for row selection:
@@ -1011,6 +1029,28 @@ function DataFrame({
           content={tooltip.content}
           clearTooltip={clearTooltip}
         ></Tooltip>
+      )}
+      {showMenu && (
+        <ColumnMenu
+          top={showMenu.bounds.y + showMenu.bounds.height}
+          left={showMenu.bounds.x + showMenu.bounds.width}
+          menuClosed={() => setShowMenu(undefined)}
+          isPinned={
+            columns.filter(
+              (col: BaseColumn) =>
+                col.id === originalColumns[showMenu.col].id && col.isPinned
+            ).length > 0
+          }
+          unpinColumn={() => {
+            const selectedColumn = originalColumns[showMenu.col]
+            unpinColumn(selectedColumn.id)
+          }}
+          pinColumn={() => {
+            const selectedColumn = originalColumns[showMenu.col]
+            pinColumn(selectedColumn.id)
+          }}
+          sortColumn={direction => sortColumn(showMenu.col, direction, true)}
+        ></ColumnMenu>
       )}
     </StyledResizableContainer>
   )
