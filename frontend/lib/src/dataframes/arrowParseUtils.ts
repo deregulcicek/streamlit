@@ -354,7 +354,7 @@ export function parseArrowIpcBytes(
   // separately below.
   const arrowSchema = table.schema
 
-  // Load pandas schema from metadata (if it exists):
+  // Load pandas schema from metadata.
   // Pandas schema only exists if the table was processed through Pandas.
   const pandasSchema = parsePandasSchema(table)
 
