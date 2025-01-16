@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect } from "react"
+import React, { memo, ReactElement, useEffect } from "react"
 
 import { useTheme } from "@emotion/react"
 import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
@@ -28,9 +28,9 @@ import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
 import { StyledMenuListItem } from "./styled-components"
 
 export interface ColumnMenuProps {
-  // The top position of the menu.
+  // The top position of the menu
   top: number
-  // The left position of the menu.
+  // The left position of the menu
   left: number
   // Callback to close the menu
   menuClosed: () => void
@@ -38,6 +38,9 @@ export interface ColumnMenuProps {
   sortColumn: (direction: "asc" | "desc" | "auto" | undefined) => void
 }
 
+/**
+ * A column context menu that provides interactive features for a grid column.
+ */
 function ColumnMenu({
   top,
   left,
@@ -176,4 +179,4 @@ function ColumnMenu({
   )
 }
 
-export default ColumnMenu
+export default memo(ColumnMenu)
