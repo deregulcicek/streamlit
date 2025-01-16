@@ -364,7 +364,10 @@ export function parseArrowIpcBytes(
   const categoricalOptions = parseCategoricalOptionsForColumns(table)
 
   // Load the type information for index columns.
-  // Index columns are only present if the table was processed through Pandas.
+  // Index columns refer to the row index (row labels) of a Pandas DataFrame:
+  // https://pandas.pydata.org/docs/user_guide/indexing.html
+  // Therefore, index columns are only present if the
+  // table was processed through Pandas.
   const indexColumnTypes = parseIndexColumnTypes(
     arrowSchema,
     pandasSchema,
