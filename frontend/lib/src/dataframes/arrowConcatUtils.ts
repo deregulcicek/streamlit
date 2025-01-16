@@ -36,15 +36,10 @@ import {
  * than t1 but not the other way around.
  */
 function sameDataTypes(t1: ArrowType[], t2: ArrowType[]): boolean {
-  // Make sure both datasets have same number of data columns.
-  if (t1.length !== t2.length) {
-    return false
-  }
-
   // Make sure both datasets have same data types.
   return t1.every(
     (type: ArrowType, index: number) =>
-      getTypeName(type) === getTypeName(t2[index])
+      type.pandasType?.pandas_type === t2[index]?.pandasType?.pandas_type
   )
 }
 
@@ -144,8 +139,10 @@ function concatData(
 
   // Make sure `data` arrays have the same types.
   if (!sameDataTypes(baseDataType, appendDataType)) {
-    const receivedDataTypes = appendDataType.map(t => getTypeName(t))
-    const expectedDataTypes = baseDataType.map(t => getTypeName(t))
+    const receivedDataTypes = appendDataType.map(
+      t => t.pandasType?.pandas_type
+    )
+    const expectedDataTypes = baseDataType.map(t => t.pandasType?.pandas_type)
 
     throw new Error(`
 Unsupported operation. The data passed into \`add_rows()\` must have the same
