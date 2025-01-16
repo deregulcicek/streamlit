@@ -192,7 +192,10 @@ export function getColumnTypeFromArrow(arrowType: ArrowType): ColumnCreator {
 }
 
 /**
- * Parses the column header names into a group and title.
+ * Parses the header names of a column into a group and title.
+ *
+ * The group is only filled if there are more than one headers for the column
+ * (multi-level headers).
  *
  * @param columnHeaderNames - The column header names.
  *
