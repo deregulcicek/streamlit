@@ -248,7 +248,7 @@ function initColumn(
 ): BaseColumnProps {
   return {
     group: undefined,
-    isEditable: true,
+    isEditable: false,
     isIndex: false,
     isPinned: false,
     isHidden: false,
@@ -329,6 +329,7 @@ export function initColumnFromArrow(
     id: `_column-${title}-${columnPosition}`,
     indexNumber: columnPosition,
     name: title,
+    isEditable: true,
     title,
     arrowType,
     group,
