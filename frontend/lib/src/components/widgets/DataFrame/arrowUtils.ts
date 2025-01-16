@@ -258,7 +258,9 @@ function initColumn(
 }
 
 /**
- * Initialize an index column from the Arrow metadata.
+ * Initialize an index column from the Arrow data.
+ *
+ * Index columns only exist if the data got processed by Pandas.
  *
  * @param data - The Arrow data.
  * @param indexPosition - The numeric position of the index column.
@@ -301,7 +303,7 @@ export function initIndexFromArrow(
 }
 
 /**
- * Initialize a data column from the Arrow metadata.
+ * Initialize a data column from the Arrow data.
  *
  * @param data - The Arrow data.
  * @param columnPosition - The numeric position of the data column.
@@ -359,12 +361,12 @@ export function initEmptyIndexColumn(): BaseColumnProps {
 }
 
 /**
- * Creates the column props for all columns from the Arrow metadata.
+ * Creates the column props for all columns from the Arrow data.
  *
  * @param data - The Arrow data.
  * @return the column props for all columns.
  */
-export function getAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
+export function initAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
   const columns: BaseColumnProps[] = []
 
   const { dimensions } = data

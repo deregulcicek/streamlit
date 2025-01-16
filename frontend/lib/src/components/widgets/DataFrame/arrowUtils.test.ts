@@ -51,9 +51,9 @@ import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 import {
   applyPandasStylerCss,
   extractCssProperty,
-  getAllColumnsFromArrow,
   getCellFromArrow,
   getColumnTypeFromArrow,
+  initAllColumnsFromArrow,
   initColumnFromArrow,
   initIndexFromArrow,
 } from "./arrowUtils"
@@ -463,7 +463,7 @@ describe("getAllColumnsFromArrow", () => {
       data: UNICODE,
     })
     const data = new Quiver(element)
-    const columns = getAllColumnsFromArrow(data)
+    const columns = initAllColumnsFromArrow(data)
 
     expect(columns).toEqual([
       {
@@ -544,7 +544,7 @@ describe("getAllColumnsFromArrow", () => {
       data: EMPTY,
     })
     const data = new Quiver(element)
-    const columns = getAllColumnsFromArrow(data)
+    const columns = initAllColumnsFromArrow(data)
 
     expect(columns).toEqual([
       {
