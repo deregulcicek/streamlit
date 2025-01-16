@@ -145,13 +145,22 @@ function parseHeaderName(name: string, numLevels: number): string[] {
     return [...Array(numLevels - 1).fill(""), name]
   }
 }
-/** Parse DataFrame's column header names. */
+/** Parse DataFrame's column header names.
+ *
+ * This function is used to parse the column header names into a matrix of
+ * column names. Multi-level headers will have more than one row of column names.
+ *
+ * @param dataColumnTypes - Type information for data columns.
+ * @param indexColumnTypes - Type information for index columns.
+ * @param pandasSchema - Pandas schema (if available).
+ * @returns - Matrix of column names.
+ */
 function parseColumnNames(
-  arrowDataTypes: ArrowType[],
-  arrowIndexTypes: ArrowType[],
+  dataColumnTypes: ArrowType[],
+  indexColumnTypes: ArrowType[],
   pandasSchema?: PandasSchema
 ): ColumnNames {
-  const allArrowTypes = arrowIndexTypes.concat(arrowDataTypes)
+  const allArrowTypes = indexColumnTypes.concat(dataColumnTypes)
 
   // Perform the following transformation:
   // ["('1','foo')", "('2','bar')", "('3','baz')"] -> ... -> [["1", "2", "3"], ["foo", "bar", "baz"]]
@@ -171,13 +180,13 @@ function parseColumnNames(
 }
 
 /** Parse DataFrame's non-index data into a Table object. */
-function parseData(table: Table, arrowDataTypes: ArrowType[]): Data {
+function parseData(table: Table, dataColumnTypes: ArrowType[]): Data {
   const numDataRows = table.numRows
-  const numDataColumns = arrowDataTypes.length
+  const numDataColumns = dataColumnTypes.length
   if (numDataRows === 0 || numDataColumns === 0) {
     return table.select([])
   }
-  const dataColumnNames = arrowDataTypes.map(type => type.arrowField.name)
+  const dataColumnNames = dataColumnTypes.map(type => type.arrowField.name)
   return table.select(dataColumnNames)
 }
 
@@ -199,12 +208,23 @@ interface ParsedTable {
   dataColumnTypes: ArrowType[]
 }
 
-/** Parse type information for index columns.
+/**
+ * Parse type information for index columns from arrow and pandas schema.
  *
  * Index columns are only present if the dataframe was processed through Pandas.
+ * The information about index columns is extracted from the pandas Schema.
+ * For range indices, we need to create a new field with the correct type information
+ * manually since range index columns are not part of the arrow schema. Arrow field
+ * information for other index columns is extracted from the arrow schema.
+ *
+ * @param arrowSchema - Arrow schema to parse the index column types from.
+ * @param pandasSchema - Pandas schema (if available).
+ * @param categoricalOptions - Mapping of column names to categorical options.
+ *
+ * @returns - Type information for index columns.
  */
 function parseIndexColumnTypes(
-  schema: ArrowSchema,
+  arrowSchema: ArrowSchema,
   pandasSchema: PandasSchema | undefined,
   categoricalOptions: Record<string, string[]>
 ): ArrowType[] {
@@ -213,7 +233,7 @@ function parseIndexColumnTypes(
     return []
   }
 
-  const arrowIndexTypes: ArrowType[] = pandasSchema.index_columns.map(
+  const indexColumnTypes: ArrowType[] = pandasSchema.index_columns.map(
     indexCol => {
       if (isPandasRangeIndex(indexCol)) {
         // Range indices are not part of the arrow schema, so we need to
@@ -233,7 +253,7 @@ function parseIndexColumnTypes(
       }
 
       // Find the corresponding field in the arrow schema
-      const field = schema.fields.find(f => f.name === indexCol)
+      const field = arrowSchema.fields.find(f => f.name === indexCol)
       if (!field) {
         // This should never happen since the arrow schema should always contain
         // the index fields
@@ -251,20 +271,31 @@ function parseIndexColumnTypes(
     }
   )
 
-  return arrowIndexTypes
+  return indexColumnTypes
 }
 
-/** Parse type information for data columns. */
+/**
+ * Parse type information for data columns.
+ *
+ * Data columns are all columns that are not part of the index.
+ * The information about data columns is extracted from the pandas and arrow schema.
+ *
+ * @param arrowSchema - Arrow schema to parse the data column types from.
+ * @param pandasSchema - Pandas schema (if available).
+ * @param categoricalOptions - Mapping of column names to categorical options.
+ *
+ * @returns - Type information for data columns.
+ */
 function parseDataColumnTypes(
-  schema: ArrowSchema,
+  arrowSchema: ArrowSchema,
   pandasSchema: PandasSchema | undefined,
   categoricalOptions: Record<string, string[]>
 ): ArrowType[] {
-  const dataFields = schema.fields.filter(field =>
+  const dataFields = arrowSchema.fields.filter(field =>
     pandasSchema ? !pandasSchema.index_columns.includes(field.name) : true
   )
 
-  const arrowDataTypes: ArrowType[] = dataFields.map(field => {
+  const dataColumnTypes: ArrowType[] = dataFields.map(field => {
     return {
       type: DataFrameCellType.DATA,
       arrowField: field,
@@ -275,10 +306,18 @@ function parseDataColumnTypes(
     }
   })
 
-  return arrowDataTypes
+  return dataColumnTypes
 }
 
-/** Parse categorical options for each column that has a categorical type. */
+/**
+ * Parse categorical options for each column that has a categorical type
+ *
+ * We need to use table as parameter here since parsing the categorical options
+ * requires access to the arrow schema and the arrow data.
+ *
+ * @param table - Arrow table to parse the categorical options from.
+ * @returns - Categorical options for each column.
+ */
 function parseCategoricalOptions(table: Table): Record<string, string[]> {
   const categoricalOptions: Record<string, string[]> = {}
   table.schema.fields.forEach((field, index) => {
@@ -293,11 +332,11 @@ function parseCategoricalOptions(table: Table): Record<string, string[]> {
 }
 
 /**
- * Parse Arrow bytes (IPC format).
+ * Parse Arrow bytes (IPC format) into a couple of components
+ * that allow easier and more efficient access to the data.
  *
  * @param ipcBytes - Arrow bytes (IPC format)
- * @returns - Parsed Arrow table split into different
- *  components for easier access: columnNames, fields, indexData, indexNames, data, columnTypes.
+ * @returns - Parsed table components.
  */
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
@@ -311,14 +350,14 @@ export function parseArrowIpcBytes(
   // Load categorical options for each column that has a categorical type:
   const categoricalOptions = parseCategoricalOptions(table)
 
-  // Load Arrow types for index columns:
+  // Load the type information for index columns.
   const indexColumnTypes = parseIndexColumnTypes(
     table.schema,
     pandasSchema,
     categoricalOptions
   )
 
-  // Load Arrow types for data columns:
+  // Load the type information for data columns:
   const dataColumnTypes = parseDataColumnTypes(
     table.schema,
     pandasSchema,
