@@ -318,7 +318,9 @@ function parseDataColumnTypes(
  * @param table - Arrow table to parse the categorical options from.
  * @returns - Categorical options for each column.
  */
-function parseCategoricalOptions(table: Table): Record<string, string[]> {
+function parseCategoricalOptionsForColumns(
+  table: Table
+): Record<string, string[]> {
   const categoricalOptions: Record<string, string[]> = {}
   table.schema.fields.forEach((field, index) => {
     if (field.type instanceof Dictionary) {
@@ -341,25 +343,33 @@ function parseCategoricalOptions(table: Table): Record<string, string[]> {
 export function parseArrowIpcBytes(
   ipcBytes: Uint8Array | null | undefined
 ): ParsedTable {
-  // Load arrow table object from IPC data
+  // Load arrow table object from Arrow IPC bytes:
   const table = tableFromIPC(ipcBytes)
 
+  // The arrow schema contains type information for all columns
+  // that are part of the table. This doesn't include range indices
+  // which are only part of the pandas schema and need to be parsed
+  // separately.
+  const arrowSchema = table.schema
+
   // Load pandas schema from metadata (if it exists):
+  // Pandas schema only exists if the table was processed through Pandas.
   const pandasSchema = parsePandasSchema(table)
 
   // Load categorical options for each column that has a categorical type:
-  const categoricalOptions = parseCategoricalOptions(table)
+  const categoricalOptions = parseCategoricalOptionsForColumns(table)
 
   // Load the type information for index columns.
+  // Index columns are only present if the table was processed through Pandas.
   const indexColumnTypes = parseIndexColumnTypes(
-    table.schema,
+    arrowSchema,
     pandasSchema,
     categoricalOptions
   )
 
   // Load the type information for data columns:
   const dataColumnTypes = parseDataColumnTypes(
-    table.schema,
+    arrowSchema,
     pandasSchema,
     categoricalOptions
   )
@@ -367,10 +377,12 @@ export function parseArrowIpcBytes(
   // Load all cell data for data columns:
   const data = parseData(table, dataColumnTypes)
 
-  // Load all cell data for index columns:
+  // Load all cell data for index columns.
+  // Will be empty if the table was not processed through Pandas.
   const indexData = parseIndexData(table, pandasSchema)
 
-  // Load all index & data column names as a matrix:
+  // Load all index- & data-column names as a matrix.
+  // This is a matrix (multidimensional array) to support multi-level headers.
   const columnNames = parseColumnNames(
     dataColumnTypes,
     indexColumnTypes,
