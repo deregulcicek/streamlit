@@ -34,9 +34,15 @@ export interface ColumnMenuProps {
   left: number
   // Callback to close the menu
   menuClosed: () => void
-  // Callback to sort column
+  // Callback to sort the column
   // If undefined, the sort menu item will not be shown
   sortColumn: ((direction: "asc" | "desc") => void) | undefined
+  // Whether the column is pinned
+  isPinned: boolean
+  // Callback to pin the column
+  pinColumn: () => void
+  // Callback to unpin the column
+  unpinColumn: () => void
 }
 
 /**
@@ -47,6 +53,9 @@ function ColumnMenu({
   left,
   menuClosed,
   sortColumn,
+  isPinned,
+  pinColumn,
+  unpinColumn,
 }: ColumnMenuProps): ReactElement {
   const [open, setOpen] = React.useState(true)
   const theme: EmotionTheme = useTheme()
@@ -120,7 +129,47 @@ function ColumnMenu({
                 />
                 Sort descending
               </StyledMenuListItem>
+              <div
+                style={{
+                  height: theme.sizes.borderWidth,
+                  backgroundColor: theme.colors.borderColor,
+                  marginTop: theme.spacing.xs,
+                  marginBottom: theme.spacing.xs,
+                }}
+              />
             </>
+          )}
+          {isPinned && (
+            <StyledMenuListItem
+              onClick={() => {
+                unpinColumn()
+                closeMenu()
+              }}
+            >
+              <DynamicIcon
+                size={"base"}
+                margin="0"
+                color="inherit"
+                iconValue=":material/keep_off:"
+              />
+              Unpin column
+            </StyledMenuListItem>
+          )}
+          {!isPinned && (
+            <StyledMenuListItem
+              onClick={() => {
+                pinColumn()
+                closeMenu()
+              }}
+            >
+              <DynamicIcon
+                size={"base"}
+                margin="0"
+                color="inherit"
+                iconValue=":material/keep:"
+              />
+              Pin column
+            </StyledMenuListItem>
           )}
         </StyledMenuList>
       }
