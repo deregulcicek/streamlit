@@ -49,7 +49,7 @@ INSTALL_REQUIRES = [
     "rich>=10.14.0, <14",
     "tenacity>=8.1.0, <10",
     "toml>=0.10.1, <2",
-    "typing-extensions>=4.3.0, <5",
+    "typing-extensions>=4.4.0, <5",
     # Don't require watchdog on MacOS, since it'll fail without xcode tools.
     # Without watchdog, we fallback to a polling file watcher to check for app changes.
     "watchdog>=2.1.5, <7; platform_system != 'Darwin'",
@@ -72,7 +72,7 @@ if not os.getenv("SNOWPARK_CONDA_BUILD"):
 EXTRA_REQUIRES = {
     "snowflake": [
         "snowflake-snowpark-python[modin]>=1.17.0; python_version<'3.12'",
-        "snowflake-connector-python>=2.8.0; python_version<'3.12'",
+        "snowflake-connector-python>=3.3.0; python_version<'3.12'",
     ]
 }
 

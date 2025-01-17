@@ -180,3 +180,74 @@ def make_pretty(styler):
 styled_df = weather_df.style.pipe(make_pretty)
 
 st.table(styled_df)
+
+# Advanced styling example with styled headers, hovering and caption:
+styled_df = pd.DataFrame(
+    [[38.0, 2.0, 18.0, 22.0, 21, np.nan], [19, 439, 6, 452, 226, 232]],
+    index=pd.Index(
+        ["Tumour (Positive)", "Non-Tumour (Negative)"], name="Actual Label:"
+    ),
+    columns=pd.MultiIndex.from_product(
+        [["Decision Tree", "Regression", "Random"], ["Tumour", "Non-Tumour"]],
+        names=["Model:", "Predicted:"],
+    ),
+).style
+
+cell_hover = {  # for row hover use <tr> instead of <td>
+    "selector": "td:hover",
+    "props": [("background-color", "#ffffb3")],
+}
+headers = {
+    "selector": "th",
+    "props": "background-color: #000066; color: white;",
+}
+styled_df.set_table_styles([cell_hover, headers])
+styled_df.set_table_styles(
+    {
+        ("Regression", "Tumour"): [
+            {"selector": "th", "props": "border-left: 1px solid white"},
+            {"selector": "td", "props": "border-left: 1px solid #000066"},
+        ]
+    },
+    overwrite=False,
+    axis=0,
+)
+styled_df.set_caption("Confusion matrix for multiple cancer prediction models.")
+st.table(styled_df)
+
+
+st.header("Markdown Support")
+index = pd.Index(
+    [
+        ":material/check_circle: Row 1",
+        ":streamlit: Row 2",
+        "**Bold** Row 3",
+        "*Italic* Row 4",
+        "~Strikethrough~ Row 5",
+        "`Code Block` Row 6",
+    ]
+)
+
+data = pd.DataFrame(
+    {
+        "**Basic** Formatting": [
+            "**Bold** text",
+            "*Italic* text",
+            "~Strikethrough~ text",
+            "`Code Block` text",
+            "# Heading 1",
+            "> This is a blockquote",
+        ],
+        "*Advanced* Features": [
+            ":red[Red text] :red-background[Red background]",
+            "[Streamlit](https://streamlit.io)",
+            "![Image](app/static/cat.jpg)",
+            "| Table | Row |\n|---|---|\n| Cell | Cell |",
+            "```python\ndef code():\n    pass\n```",
+            "<- -> <-> -- >= <= ~=",
+        ],
+    },
+    index=index,
+)
+
+st.table(data)
