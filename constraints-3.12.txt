@@ -79,7 +79,7 @@ python-slugify==8.0.4
 pytz==2024.2
 PyYAML==6.0.2
 readme_renderer==44.0
-referencing==0.35.1
+referencing==0.36.1
 requests==2.32.3
 requests-mock==1.12.1
 requests-toolbelt==1.0.0
