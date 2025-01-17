@@ -67,4 +67,34 @@ describe("DataFrame ColumnMenu", () => {
     expect(defaultProps.sortColumn).toHaveBeenCalledWith("desc")
     expect(defaultProps.menuClosed).toHaveBeenCalled()
   })
+
+  it("should not render sort options when sortColumn is undefined", () => {
+    render(
+      <ColumnMenu
+        top={0}
+        left={0}
+        menuClosed={() => {}}
+        sortColumn={undefined}
+      />
+    )
+
+    // Verify sort options are not present
+    expect(screen.queryByText("Sort ascending")).not.toBeInTheDocument()
+    expect(screen.queryByText("Sort descending")).not.toBeInTheDocument()
+  })
+
+  it("should render sort options when sortColumn is defined", () => {
+    render(
+      <ColumnMenu
+        top={0}
+        left={0}
+        menuClosed={() => {}}
+        sortColumn={() => {}}
+      />
+    )
+
+    // Verify sort options are present
+    expect(screen.getByText("Sort ascending")).toBeInTheDocument()
+    expect(screen.getByText("Sort descending")).toBeInTheDocument()
+  })
 })
