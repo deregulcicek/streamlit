@@ -25,7 +25,11 @@ import {
 } from "@streamlit/lib/src/theme"
 import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
 
-import { StyledMenuList, StyledMenuListItem } from "./styled-components"
+import {
+  StyledMenuDivider,
+  StyledMenuList,
+  StyledMenuListItem,
+} from "./styled-components"
 
 export interface ColumnMenuProps {
   // The top position of the menu
@@ -129,14 +133,7 @@ function ColumnMenu({
                 />
                 Sort descending
               </StyledMenuListItem>
-              <div
-                style={{
-                  height: theme.sizes.borderWidth,
-                  backgroundColor: theme.colors.borderColor,
-                  marginTop: theme.spacing.xs,
-                  marginBottom: theme.spacing.xs,
-                }}
-              />
+              <StyledMenuDivider />
             </>
           )}
           {isPinned && (

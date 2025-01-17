@@ -71,3 +71,10 @@ export const StyledMenuListItem = styled.div(({ theme }) => ({
   },
   minWidth: theme.sizes.minMenuWidth,
 }))
+
+export const StyledMenuDivider = styled.div(({ theme }) => ({
+  height: theme.sizes.borderWidth,
+  backgroundColor: theme.colors.borderColor,
+  marginTop: theme.spacing.xs,
+  marginBottom: theme.spacing.xs,
+}))
