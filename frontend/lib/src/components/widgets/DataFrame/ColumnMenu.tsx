@@ -87,6 +87,7 @@ function ColumnMenu({
   return (
     <Popover
       autoFocus
+      aria-label="Dataframe column menu"
       content={
         <StyledMenuList>
           {sortColumn && (
