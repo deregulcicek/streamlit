@@ -54,23 +54,28 @@ function ColumnMenu({
   const theme: EmotionTheme = useTheme()
   const { colors, fontSizes, radii, fontWeights } = theme
 
-  // Disable scrolling by preventing defaults on wheel and touch events:
+  // Disable page scrolling while the menu is open to keep the menu und
+  // column header aligned.
+  // This is done by preventing defaults on wheel and touch events:
   useEffect(() => {
     function preventScroll(e: WheelEvent | TouchEvent): void {
       e.preventDefault()
+    }
+
+    const cleanup = (): void => {
+      document.removeEventListener("wheel", preventScroll)
+      document.removeEventListener("touchmove", preventScroll)
     }
 
     if (open) {
       document.addEventListener("wheel", preventScroll, { passive: false })
       document.addEventListener("touchmove", preventScroll, { passive: false })
     } else {
-      document.removeEventListener("wheel", preventScroll)
-      document.removeEventListener("touchmove", preventScroll)
+      cleanup()
     }
 
     return () => {
-      document.removeEventListener("wheel", preventScroll)
-      document.removeEventListener("touchmove", preventScroll)
+      cleanup()
     }
   }, [open])
 
