@@ -102,11 +102,30 @@ def open_column_menu(
     col_pos: int,
     column_width: Literal["small", "medium", "large"] = "small",
     has_row_marker_col: bool = False,
-):
+) -> None:
+    """Open the column menu for the specified column.
+
+    Parameters
+    ----------
+    dataframe_element : Locator
+        The dataframe element to open the column menu for.
+
+    col_pos : int
+        The column number to open the column menu for.
+
+    column_width : "small" | "medium" | "large"
+        The shared width setting of all columns. Can be "small", "medium" or "large".
+        This needs to be enforced in the dataframe via column config.
+
+    has_row_marker_col : bool
+        Whether the dataframe has a row marker column (used when row selections are
+        activated).
+    """
     column_middle_width_px, row_middle_height_px = calc_middle_cell_position(
         0, col_pos, column_width, has_row_marker_col
     )
     position: Position = {
+        # We need to click on the menu icon on the right side of the column header:
         "x": column_middle_width_px + (COLUMN_SIZE_MAPPING[column_width] / 2) - 4,
         "y": row_middle_height_px,
     }
