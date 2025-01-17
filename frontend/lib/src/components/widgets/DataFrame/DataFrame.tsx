@@ -885,6 +885,10 @@ function DataFrame({
               // the same row after sorting, hover that would require us to map the selection
               // to the new index of the selected row which adds complexity.
               clearSelection()
+            } else {
+              // Cell selection are kept on the old position,
+              // which can be confusing. So we clear all cell selections before sorting.
+              clearSelection(true, true)
             }
             sortColumn(colIndex, "auto")
           }}
@@ -1049,7 +1053,12 @@ function DataFrame({
           menuClosed={() => setShowMenu(undefined)}
           sortColumn={
             isSortingEnabled
-              ? direction => sortColumn(showMenu.col, direction, true)
+              ? (direction: "asc" | "desc" | undefined) => {
+                  // Cell selection are kept on the old position,
+                  // which can be confusing. So we clear all cell selections before sorting.
+                  clearSelection(true, true)
+                  sortColumn(showMenu.col, direction, true)
+                }
               : undefined
           }
         ></ColumnMenu>

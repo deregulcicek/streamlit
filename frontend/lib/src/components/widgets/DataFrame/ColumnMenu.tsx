@@ -36,9 +36,7 @@ export interface ColumnMenuProps {
   menuClosed: () => void
   // Callback to sort column
   // If undefined, the sort menu item will not be shown
-  sortColumn:
-    | ((direction: "asc" | "desc" | "auto" | undefined) => void)
-    | undefined
+  sortColumn: ((direction: "asc" | "desc") => void) | undefined
 }
 
 /**
@@ -97,6 +95,7 @@ function ColumnMenu({
                   sortColumn("asc")
                   closeMenu()
                 }}
+                role="menuitem"
               >
                 <DynamicIcon
                   size={"base"}
@@ -111,6 +110,7 @@ function ColumnMenu({
                   sortColumn("desc")
                   closeMenu()
                 }}
+                role="menuitem"
               >
                 <DynamicIcon
                   size={"base"}
@@ -132,6 +132,9 @@ function ColumnMenu({
       onEsc={closeMenu}
       overrides={{
         Body: {
+          props: {
+            "data-testid": "stDataFrameColumnMenu",
+          },
           style: {
             // This is annoying, but a bunch of warnings get logged when the
             // shorthand version `borderRadius` is used here since the long
@@ -171,7 +174,7 @@ function ColumnMenu({
       isOpen={open}
     >
       <div
-        data-testid="stDataFrameMenuTarget"
+        data-testid="stDataFrameColumnMenuTarget"
         style={{
           // This is an invisible div that's used to position the tooltip.
           // The position is provided from outside via the `top` and `left` properties.
@@ -181,6 +184,7 @@ function ColumnMenu({
           position: "fixed",
           top,
           left,
+          visibility: "hidden",
         }}
       ></div>
     </Popover>

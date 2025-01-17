@@ -38,7 +38,10 @@ describe("DataFrame ColumnMenu", () => {
   test("renders the column menu at the correct position", () => {
     render(<ColumnMenu {...defaultProps} />)
 
-    const menuTarget = screen.getByTestId("stDataFrameMenuTarget")
+    const menu = screen.getByTestId("stDataFrameColumnMenu")
+    expect(menu).toBeInTheDocument()
+
+    const menuTarget = screen.getByTestId("stDataFrameColumnMenuTarget")
     expect(menuTarget).toBeInTheDocument()
     expect(menuTarget).toHaveStyle("position: fixed")
     expect(menuTarget).toHaveStyle("top: 100px")
