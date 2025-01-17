@@ -595,7 +595,7 @@ def test_opening_column_menu(themed_app: Page, assert_snapshot: ImageCompareFunc
     expect_canvas_to_be_visible(df)
 
     open_column_menu(df, 2, "small")
-    expect(df.get_by_test_id("stDataFrameColumnMenu")).to_be_visible()
+    expect(themed_app.get_by_test_id("stDataFrameColumnMenu")).to_be_visible()
     assert_snapshot(df, name="st_dataframe-column_menu")
 
 
