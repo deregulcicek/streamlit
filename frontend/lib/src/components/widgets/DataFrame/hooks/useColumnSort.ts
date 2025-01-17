@@ -68,7 +68,11 @@ export type ColumnSortReturn = {
   columns: BaseColumn[]
   sortColumn: (
     index: number,
+    // If undefined, the sorting will be removed
+    // If "auto", the sorting will toggle from asc -> desc -> remove
     direction?: "asc" | "desc" | "auto",
+    // If true, the sorting will be removed if the sortColumn is called
+    // with the same direction as the current sorting direction
     autoReset?: boolean
   ) => void
   getOriginalIndex: (index: number) => number
@@ -79,6 +83,7 @@ export type ColumnSortReturn = {
  *
  * @param numRows - The number of rows in the table.
  * @param columns - The columns of the table.
+ * @param getCellContent - A function that returns the content of the cell at the given column and row indices.
  *
  * @returns An object containing the following properties:
  * - `columns`: The updated list of columns.
@@ -115,6 +120,7 @@ function useColumnSort(
       let sortDirection: "asc" | "desc" | undefined
 
       if (direction === "auto") {
+        // Toggle from asc -> desc -> remove
         sortDirection = "asc"
         if (sort && sort.column.id === clickedColumn.id) {
           // The clicked column is already sorted
@@ -131,10 +137,14 @@ function useColumnSort(
       }
 
       if (sortDirection === undefined) {
+        // Remove sorting:
         setSort(undefined)
       } else if (autoReset && sortDirection === sort?.direction) {
+        // Remove sorting if autoReset is true and the new
+        // sortDirection is the same as the current sorting direction
         setSort(undefined)
       } else {
+        // Set the new sorting direction:
         setSort({
           column: toGlideColumn(clickedColumn),
           direction: sortDirection,
