@@ -405,7 +405,7 @@ describe("toGlideColumn", () => {
       id: MOCK_TEXT_COLUMN_PROPS.id,
       title: MOCK_TEXT_COLUMN_PROPS.title,
       hasMenu: false,
-      menuIcons: "dots",
+      menuIcon: "dots",
       themeOverride: MOCK_TEXT_COLUMN_PROPS.themeOverride,
       grow: undefined,
       width: undefined,
