@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useEffect } from "react"
+import React, { memo, ReactElement, useEffect, useState } from "react"
 
 import { useTheme } from "@emotion/react"
-import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
+import {
+  ACCESSIBILITY_TYPE,
+  PLACEMENT,
+  Popover,
+  TRIGGER_TYPE,
+} from "baseui/popover"
 
 import {
   EmotionTheme,
@@ -31,11 +36,41 @@ import {
   StyledMenuListItem,
 } from "./styled-components"
 
+const COLUMN_KIND_FORMAT_MAPPING: Record<
+  string,
+  { format: string; label: string; icon: string }[]
+> = {
+  number: [
+    {
+      format: "",
+      label: "Number",
+      icon: ":material/123:",
+    },
+    {
+      format: "dollar",
+      label: "Dollar",
+      icon: ":material/attach_money:",
+    },
+    {
+      format: "euro",
+      label: "Euro",
+      icon: ":material/euro:",
+    },
+    {
+      format: "percent",
+      label: "Percent",
+      icon: ":material/percent:",
+    },
+  ],
+}
+
 export interface ColumnMenuProps {
   // The top position of the menu
   top: number
   // The left position of the menu
   left: number
+  // The kind of the column
+  columnKind: string
   // Callback to close the menu
   menuClosed: () => void
   // Callback to sort the column
@@ -47,6 +82,8 @@ export interface ColumnMenuProps {
   pinColumn: () => void
   // Callback to unpin the column
   unpinColumn: () => void
+  // Callback to change the column format
+  changeFormat?: (format: string) => void
 }
 
 /**
@@ -55,13 +92,16 @@ export interface ColumnMenuProps {
 function ColumnMenu({
   top,
   left,
+  columnKind,
   menuClosed,
   sortColumn,
   isPinned,
   pinColumn,
   unpinColumn,
+  changeFormat,
 }: ColumnMenuProps): ReactElement {
   const [open, setOpen] = React.useState(true)
+  const [formatMenuOpen, setFormatMenuOpen] = useState(false)
   const theme: EmotionTheme = useTheme()
   const { colors, fontSizes, radii, fontWeights } = theme
 
@@ -94,6 +134,8 @@ function ColumnMenu({
     setOpen(false)
     menuClosed()
   }, [setOpen, menuClosed])
+
+  const formats = COLUMN_KIND_FORMAT_MAPPING[columnKind] || []
 
   return (
     <Popover
@@ -136,6 +178,87 @@ function ColumnMenu({
               <StyledMenuDivider />
             </>
           )}
+          {changeFormat && formats.length > 0 && (
+            <>
+              <Popover
+                triggerType={TRIGGER_TYPE.hover}
+                returnFocus
+                autoFocus
+                focusLock
+                isOpen={formatMenuOpen}
+                onMouseEnter={() => setFormatMenuOpen(true)}
+                onMouseLeave={() => setFormatMenuOpen(false)}
+                content={
+                  <StyledMenuList>
+                    {formats.map(format => (
+                      <StyledMenuListItem
+                        key={format.format}
+                        onClick={() => {
+                          changeFormat(format.format)
+                          closeMenu()
+                        }}
+                        role="menuitem"
+                      >
+                        <DynamicIcon
+                          size={"base"}
+                          margin="0"
+                          color="inherit"
+                          iconValue={format.icon}
+                        />
+                        {format.label}
+                      </StyledMenuListItem>
+                    ))}
+                  </StyledMenuList>
+                }
+                placement={PLACEMENT.rightTop}
+                showArrow={false}
+                popoverMargin={2}
+                overrides={{
+                  Body: {
+                    style: {
+                      borderTopLeftRadius: radii.default,
+                      borderTopRightRadius: radii.default,
+                      borderBottomLeftRadius: radii.default,
+                      borderBottomRightRadius: radii.default,
+                      paddingTop: "0 !important",
+                      paddingBottom: "0 !important",
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                      backgroundColor: "transparent",
+                      border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+                    },
+                  },
+                  Inner: {
+                    style: {
+                      backgroundColor: hasLightBackgroundColor(theme)
+                        ? colors.bgColor
+                        : colors.secondaryBg,
+                      color: colors.bodyText,
+                      fontSize: fontSizes.sm,
+                      fontWeight: fontWeights.normal,
+                      paddingTop: "0 !important",
+                      paddingBottom: "0 !important",
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    },
+                  },
+                }}
+              >
+                <StyledMenuListItem
+                  onMouseEnter={() => setFormatMenuOpen(true)}
+                  onMouseLeave={() => setFormatMenuOpen(false)}
+                >
+                  <DynamicIcon
+                    size={"base"}
+                    margin="0"
+                    color="inherit"
+                    iconValue=":material/format_list_numbered:"
+                  />
+                  Change format
+                </StyledMenuListItem>
+              </Popover>
+            </>
+          )}
           {isPinned && (
             <StyledMenuListItem
               onClick={() => {
@@ -174,7 +297,7 @@ function ColumnMenu({
       accessibilityType={ACCESSIBILITY_TYPE.menu}
       showArrow={false}
       popoverMargin={5}
-      onClickOutside={closeMenu}
+      onClickOutside={!formatMenuOpen ? closeMenu : undefined}
       onEsc={closeMenu}
       overrides={{
         Body: {

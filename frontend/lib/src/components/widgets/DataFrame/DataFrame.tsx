@@ -647,6 +647,24 @@ function DataFrame({
     }, 1)
   }, [resizableSize, numRows, glideColumns])
 
+  const changeColumnFormat = React.useCallback(
+    (columnId: string, format: string) => {
+      setColumnConfigMapping(prevColumnConfigMapping => {
+        const newColumnConfigMapping = new Map(prevColumnConfigMapping)
+        const existingConfig = newColumnConfigMapping.get(columnId)
+        newColumnConfigMapping.set(columnId, {
+          ...(existingConfig || {}),
+          type_config: {
+            ...(existingConfig?.type_config || {}),
+            format: format,
+          },
+        })
+        return newColumnConfigMapping
+      })
+    },
+    [setColumnConfigMapping]
+  )
+
   return (
     <StyledResizableContainer
       className="stDataFrame"
@@ -1050,6 +1068,7 @@ function DataFrame({
         <ColumnMenu
           top={showMenu.bounds.y + showMenu.bounds.height}
           left={showMenu.bounds.x + showMenu.bounds.width}
+          columnKind={originalColumns[showMenu.col].kind}
           menuClosed={() => setShowMenu(undefined)}
           sortColumn={
             isSortingEnabled
@@ -1067,6 +1086,9 @@ function DataFrame({
           }}
           pinColumn={() => {
             pinColumn(originalColumns[showMenu.col].id)
+          }}
+          changeFormat={(format: string) => {
+            changeColumnFormat(originalColumns[showMenu.col].id, format)
           }}
         ></ColumnMenu>
       )}
