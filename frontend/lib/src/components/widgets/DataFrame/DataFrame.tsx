@@ -198,6 +198,8 @@ function DataFrame({
 
   // For large tables, we apply some optimizations to handle large data
   const isLargeTable = originalNumRows > LARGE_TABLE_ROWS_THRESHOLD
+  const isSortingEnabled =
+    !isLargeTable && !isEmptyTable && element.editingMode !== DYNAMIC
 
   const editingState = React.useRef<EditingState>(
     new EditingState(originalNumRows)
@@ -857,7 +859,7 @@ function DataFrame({
           }}
           // Header click is used for column sorting:
           onHeaderClicked={(colIndex: number, _event) => {
-            if (isEmptyTable || isLargeTable || isColumnSelectionActivated) {
+            if (!isSortingEnabled || isColumnSelectionActivated) {
               // Deactivate sorting for empty state, for large dataframes, or
               // when column selection is activated.
               return
@@ -1032,7 +1034,11 @@ function DataFrame({
           top={showMenu.bounds.y + showMenu.bounds.height}
           left={showMenu.bounds.x + showMenu.bounds.width}
           menuClosed={() => setShowMenu(undefined)}
-          sortColumn={direction => sortColumn(showMenu.col, direction, true)}
+          sortColumn={
+            isSortingEnabled
+              ? direction => sortColumn(showMenu.col, direction, true)
+              : undefined
+          }
         ></ColumnMenu>
       )}
     </StyledResizableContainer>

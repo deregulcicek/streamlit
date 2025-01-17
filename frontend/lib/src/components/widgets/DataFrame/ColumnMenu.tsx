@@ -35,7 +35,10 @@ export interface ColumnMenuProps {
   // Callback to close the menu
   menuClosed: () => void
   // Callback to sort column
-  sortColumn: (direction: "asc" | "desc" | "auto" | undefined) => void
+  // If undefined, the sort menu item will not be shown
+  sortColumn:
+    | ((direction: "asc" | "desc" | "auto" | undefined) => void)
+    | undefined
 }
 
 /**
@@ -81,34 +84,38 @@ function ColumnMenu({
       autoFocus
       content={
         <StyledMenuList>
-          <StyledMenuListItem
-            onClick={() => {
-              sortColumn("asc")
-              closeMenu()
-            }}
-          >
-            <DynamicIcon
-              size={"base"}
-              margin="0"
-              color="inherit"
-              iconValue=":material/arrow_upward:"
-            />
-            Sort ascending
-          </StyledMenuListItem>
-          <StyledMenuListItem
-            onClick={() => {
-              sortColumn("desc")
-              closeMenu()
-            }}
-          >
-            <DynamicIcon
-              size={"base"}
-              margin="0"
-              color="inherit"
-              iconValue=":material/arrow_downward:"
-            />
-            Sort descending
-          </StyledMenuListItem>
+          {sortColumn && (
+            <>
+              <StyledMenuListItem
+                onClick={() => {
+                  sortColumn("asc")
+                  closeMenu()
+                }}
+              >
+                <DynamicIcon
+                  size={"base"}
+                  margin="0"
+                  color="inherit"
+                  iconValue=":material/arrow_upward:"
+                />
+                Sort ascending
+              </StyledMenuListItem>
+              <StyledMenuListItem
+                onClick={() => {
+                  sortColumn("desc")
+                  closeMenu()
+                }}
+              >
+                <DynamicIcon
+                  size={"base"}
+                  margin="0"
+                  color="inherit"
+                  iconValue=":material/arrow_downward:"
+                />
+                Sort descending
+              </StyledMenuListItem>
+            </>
+          )}
         </StyledMenuList>
       }
       placement={PLACEMENT.bottomRight}
