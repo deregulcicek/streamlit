@@ -123,7 +123,8 @@ export const StyledVerticalDivider = styled.div<StyledVerticalDividerProps>(
     return {
       height: theme.spacing.xl,
       width: theme.sizes.borderWidth,
-      marginRight: theme.spacing.xs,
+      marginLeft: `-${theme.spacing.twoXS}`,
+      marginRight: theme.spacing.twoXS,
       backgroundColor: color ?? theme.colors.fadedText20,
     }
   }
