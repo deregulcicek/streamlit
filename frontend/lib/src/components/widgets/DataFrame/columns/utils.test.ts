@@ -404,7 +404,7 @@ describe("toGlideColumn", () => {
     expect(glideColumn).toEqual({
       id: MOCK_TEXT_COLUMN_PROPS.id,
       title: MOCK_TEXT_COLUMN_PROPS.title,
-      hasMenu: true,
+      hasMenu: false,
       menuIcons: "dots",
       themeOverride: MOCK_TEXT_COLUMN_PROPS.themeOverride,
       grow: undefined,
