@@ -67,7 +67,7 @@ export const StyledMenuListItem = styled.div(({ theme }) => ({
   paddingBottom: theme.spacing.twoXS,
   cursor: "pointer",
   "&:hover": {
-    backgroundColor: theme.colors.secondaryBg,
+    backgroundColor: theme.colors.darkenedBgMix15,
   },
   minWidth: theme.sizes.minMenuWidth,
 }))
