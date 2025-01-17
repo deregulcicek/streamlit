@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useCallback } from "react"
 
 import {
   CompactSelection,
@@ -22,6 +22,7 @@ import {
   DataEditor as GlideDataEditor,
   GridCell,
   Item as GridCellPosition,
+  GridColumn,
   GridMouseEventArgs,
   GridSelection,
   Rectangle,
@@ -530,9 +531,21 @@ function DataFrame({
 
   const { drawCell, customRenderers } = useCustomRenderer(columns)
 
+  // Callback that can be used to configure the column menu for the columns
+  const configureColumnMenu = useCallback(
+    (column: GridColumn): GridColumn => {
+      return {
+        ...column,
+        hasMenu: !isEmptyTable,
+      }
+    },
+    [isEmptyTable]
+  )
+
+  // Convert columns from our structure into the glide-data-grid compatible structure
   const transformedColumns = React.useMemo(
-    () => columns.map(column => toGlideColumn(column)),
-    [columns]
+    () => columns.map(column => configureColumnMenu(toGlideColumn(column))),
+    [columns, configureColumnMenu]
   )
   const { columns: glideColumns, onColumnResize } =
     useColumnSizer(transformedColumns)
