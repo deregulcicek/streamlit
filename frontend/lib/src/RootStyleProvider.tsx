@@ -47,7 +47,7 @@ export function RootStyleProvider(
   return (
     <BaseProvider
       theme={theme.basewebTheme}
-      zIndex={theme.emotion.zIndices.popupMenu}
+      zIndex={theme.emotion.zIndices.popup}
     >
       <CacheProvider value={cache}>
         <EmotionThemeProvider theme={theme.emotion}>

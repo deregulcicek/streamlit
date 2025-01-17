@@ -69,5 +69,5 @@ export const StyledMenuListItem = styled.div(({ theme }) => ({
   "&:hover": {
     backgroundColor: theme.colors.secondaryBg,
   },
-  minWidth: "8rem",
+  minWidth: theme.sizes.minMenuWidth,
 }))
