@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -293,7 +293,7 @@ class ForwardMsgQueueTest(unittest.TestCase):
 
         expected_new_finished_message = ForwardMsg()
         expected_new_finished_message.script_finished = (
-            ForwardMsg.ScriptFinishedStatus.FINISHED_EARLY_FOR_RERUN
+            ForwardMsg.ScriptFinishedStatus.FINISHED_SUCCESSFULLY
         )
 
         fmq.clear(
@@ -315,3 +315,48 @@ class ForwardMsgQueueTest(unittest.TestCase):
 
         fmq.clear()
         assert fmq._queue == []
+
+    def test_on_before_enqueue_msg(self):
+        count = 0
+
+        def increase_counter(_msg):
+            nonlocal count
+            count += 1
+
+        ForwardMsgQueue.on_before_enqueue_msg(increase_counter)
+        fmq = ForwardMsgQueue()
+
+        assert count == 0
+
+        fmq.enqueue(NEW_SESSION_MSG)
+
+        TEXT_DELTA_MSG1.metadata.delta_path[:] = make_delta_path(
+            RootContainer.MAIN, (), 0
+        )
+        fmq.enqueue(TEXT_DELTA_MSG1)
+
+        TEXT_DELTA_MSG2.metadata.delta_path[:] = make_delta_path(
+            RootContainer.MAIN, (), 1
+        )
+        fmq.enqueue(TEXT_DELTA_MSG2)
+
+        assert count == 3
+
+        count = 0
+
+        ForwardMsgQueue.on_before_enqueue_msg(None)
+        fmq.clear()
+
+        fmq.enqueue(NEW_SESSION_MSG)
+
+        TEXT_DELTA_MSG1.metadata.delta_path[:] = make_delta_path(
+            RootContainer.MAIN, (), 0
+        )
+        fmq.enqueue(TEXT_DELTA_MSG1)
+
+        TEXT_DELTA_MSG2.metadata.delta_path[:] = make_delta_path(
+            RootContainer.MAIN, (), 1
+        )
+        fmq.enqueue(TEXT_DELTA_MSG2)
+
+        assert count == 0

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -129,6 +129,11 @@ def test_fragment():
 
 
 test_fragment()
+
+st.select_slider(
+    "Label 12 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
+    options=np.array([1, 2, 3, 4, 5]),
+)
 
 if "runs" not in st.session_state:
     st.session_state.runs = 0

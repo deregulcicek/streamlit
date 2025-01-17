@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 import { Writer } from "protobufjs"
 import { MockInstance } from "vitest"
 
-import { arrayFromVector } from "@streamlit/lib/src/test_util"
 import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
 
 import { AppNode, AppRoot, BlockNode, ElementNode } from "./AppNode"
-import { IndexTypeName } from "./dataframes/arrowTypeUtils"
 import { UNICODE } from "./mocks/arrow"
 import {
   ArrowNamedDataSet,
@@ -104,67 +102,15 @@ describe("ElementNode.quiverElement", () => {
   it("returns a quiverElement (arrowTable)", () => {
     const node = arrowTable()
     const q = node.quiverElement
-
-    expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-    expect(q.columns).toEqual([["c1", "c2"]])
-    expect(q.data.toArray().map(a => a?.toArray())).toEqual([
-      ["foo", "1"],
-      ["bar", "2"],
-    ])
-    expect(q.types).toEqual({
-      index: [
-        {
-          pandas_type: IndexTypeName.UnicodeIndex,
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-      data: [
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-    })
+    expect(q.columnNames).toEqual([["", "c1", "c2"]])
+    expect(q.getCell(0, 0).content).toEqual("i1")
   })
 
   it("returns a quiverElement (arrowDataFrame)", () => {
     const node = arrowDataFrame()
     const q = node.quiverElement
-
-    expect(arrayFromVector(q.index)).toEqual([["i1", "i2"]])
-    expect(q.columns).toEqual([["c1", "c2"]])
-    expect(q.data.toArray().map(a => a?.toArray())).toEqual([
-      ["foo", "1"],
-      ["bar", "2"],
-    ])
-    expect(q.types).toEqual({
-      index: [
-        {
-          pandas_type: IndexTypeName.UnicodeIndex,
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-      data: [
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-    })
+    expect(q.columnNames).toEqual([["", "c1", "c2"]])
+    expect(q.getCell(0, 0).content).toEqual("i1")
   })
 
   it("does not recompute its value (arrowTable)", () => {
@@ -210,33 +156,8 @@ describe("ElementNode.vegaLiteChartElement", () => {
     expect(element.spec).toEqual(MOCK_VEGA_LITE_CHART.spec)
 
     // data
-    expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-    expect(element.data?.columns).toEqual([["c1", "c2"]])
-    expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-      ["foo", "1"],
-      ["bar", "2"],
-    ])
-    expect(element.data?.types).toEqual({
-      index: [
-        {
-          pandas_type: IndexTypeName.UnicodeIndex,
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-      data: [
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-    })
+    expect(element.data?.columnNames).toEqual([["", "c1", "c2"]])
+    expect(element.data?.getCell(0, 0).content).toEqual("i1")
 
     // datasets
     expect(element.datasets.length).toEqual(0)
@@ -278,37 +199,8 @@ describe("ElementNode.vegaLiteChartElement", () => {
     expect(element.datasets[0].name).toEqual(
       MOCK_VEGA_LITE_CHART.datasets[0].name
     )
-    expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
-      ["i1", "i2"],
-    ])
-    expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
-    expect(
-      element.datasets[0].data.data.toArray().map(a => a?.toArray())
-    ).toEqual([
-      ["foo", "1"],
-      ["bar", "2"],
-    ])
-    expect(element.datasets[0].data.types).toEqual({
-      index: [
-        {
-          pandas_type: IndexTypeName.UnicodeIndex,
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-      data: [
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-        {
-          pandas_type: "unicode",
-          numpy_type: "object",
-          meta: null,
-        },
-      ],
-    })
+    expect(element.datasets[0].data.columnNames).toEqual([["", "c1", "c2"]])
+    expect(element.datasets[0].data.getCell(0, 0).content).toEqual("i1")
 
     // use container width
     expect(element.useContainerWidth).toEqual(
@@ -367,35 +259,12 @@ describe("ElementNode.arrowAddRows", () => {
       const newNode = node.arrowAddRows(MOCK_UNNAMED_DATASET, NO_SCRIPT_RUN_ID)
       const q = newNode.quiverElement
 
-      expect(arrayFromVector(q.index)).toEqual([["i1", "i2", "i1", "i2"]])
-      expect(q.columns).toEqual([["c1", "c2"]])
-      expect(q.data.toArray().map(a => a?.toArray())).toEqual([
-        ["foo", "1"],
-        ["bar", "2"],
-        ["foo", "1"],
-        ["bar", "2"],
-      ])
-      expect(q.types).toEqual({
-        index: [
-          {
-            pandas_type: IndexTypeName.UnicodeIndex,
-            numpy_type: "object",
-            meta: null,
-          },
-        ],
-        data: [
-          {
-            pandas_type: "unicode",
-            numpy_type: "object",
-            meta: null,
-          },
-          {
-            pandas_type: "unicode",
-            numpy_type: "object",
-            meta: null,
-          },
-        ],
-      })
+      expect(q.columnNames).toEqual([["", "c1", "c2"]])
+      expect(q.dimensions.numDataRows).toEqual(4)
+      expect(q.getCell(0, 0).content).toEqual("i1")
+      expect(q.getCell(2, 0).content).toEqual("i1")
+      expect(q.getCell(0, 1).content).toEqual("foo")
+      expect(q.getCell(2, 1).content).toEqual("foo")
     })
 
     test("addRows throws an error when called with a named dataset", () => {
@@ -414,35 +283,12 @@ describe("ElementNode.arrowAddRows", () => {
       const newNode = node.arrowAddRows(MOCK_UNNAMED_DATASET, NO_SCRIPT_RUN_ID)
       const q = newNode.quiverElement
 
-      expect(arrayFromVector(q.index)).toEqual([["i1", "i2", "i1", "i2"]])
-      expect(q.columns).toEqual([["c1", "c2"]])
-      expect(q.data.toArray().map(a => a?.toArray())).toEqual([
-        ["foo", "1"],
-        ["bar", "2"],
-        ["foo", "1"],
-        ["bar", "2"],
-      ])
-      expect(q.types).toEqual({
-        index: [
-          {
-            pandas_type: IndexTypeName.UnicodeIndex,
-            numpy_type: "object",
-            meta: null,
-          },
-        ],
-        data: [
-          {
-            pandas_type: "unicode",
-            numpy_type: "object",
-            meta: null,
-          },
-          {
-            pandas_type: "unicode",
-            numpy_type: "object",
-            meta: null,
-          },
-        ],
-      })
+      expect(q.columnNames).toEqual([["", "c1", "c2"]])
+      expect(q.dimensions.numDataRows).toEqual(4)
+      expect(q.getCell(0, 0).content).toEqual("i1")
+      expect(q.getCell(2, 0).content).toEqual("i1")
+      expect(q.getCell(0, 1).content).toEqual("foo")
+      expect(q.getCell(2, 1).content).toEqual("foo")
     })
 
     test("addRows throws an error when called with a named dataset", () => {
@@ -482,39 +328,14 @@ describe("ElementNode.arrowAddRows", () => {
         const newNode = node.arrowAddRows(MOCK_NAMED_DATASET, NO_SCRIPT_RUN_ID)
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
-          ["i1", "i2", "i1", "i2"],
-        ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
-        expect(
-          element.datasets[0].data.data.toArray().map(a => a?.toArray())
-        ).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.datasets[0].data.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.datasets[0].data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(4)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
+        expect(quiverData?.getCell(2, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(2, 1).content).toEqual("foo")
       })
 
       test("element has a dataset with the given name -> append new rows to that dataset", () => {
@@ -524,39 +345,14 @@ describe("ElementNode.arrowAddRows", () => {
         const newNode = node.arrowAddRows(MOCK_NAMED_DATASET, NO_SCRIPT_RUN_ID)
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
-          ["i1", "i2", "i1", "i2"],
-        ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
-        expect(
-          element.datasets[0].data.data.toArray().map(a => a?.toArray())
-        ).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.datasets[0].data.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.datasets[0].data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(4)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
+        expect(quiverData?.getCell(2, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(2, 1).content).toEqual("foo")
       })
 
       test("element doesn't have a matched dataset, but has data -> append new rows to data", () => {
@@ -564,37 +360,14 @@ describe("ElementNode.arrowAddRows", () => {
         const newNode = node.arrowAddRows(MOCK_NAMED_DATASET, NO_SCRIPT_RUN_ID)
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.data?.index)).toEqual([
-          ["i1", "i2", "i1", "i2"],
-        ])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
-        expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.data?.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(4)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
+        expect(quiverData?.getCell(2, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(2, 1).content).toEqual("foo")
       })
 
       test("element doesn't have a matched dataset or data -> use new rows as data", () => {
@@ -607,33 +380,12 @@ describe("ElementNode.arrowAddRows", () => {
         const newNode = node.arrowAddRows(MOCK_NAMED_DATASET, NO_SCRIPT_RUN_ID)
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
-        expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.data?.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(2)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
       })
 
       test("element doesn't have any datasets or data -> use new rows as data", () => {
@@ -641,33 +393,12 @@ describe("ElementNode.arrowAddRows", () => {
         const newNode = node.arrowAddRows(MOCK_NAMED_DATASET, NO_SCRIPT_RUN_ID)
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
-        expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.data?.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(2)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
       })
     })
 
@@ -680,39 +411,14 @@ describe("ElementNode.arrowAddRows", () => {
         )
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.datasets[0].data.index)).toEqual([
-          ["i1", "i2", "i1", "i2"],
-        ])
-        expect(element.datasets[0].data.columns).toEqual([["c1", "c2"]])
-        expect(
-          element.datasets[0].data.data.toArray().map(a => a?.toArray())
-        ).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.datasets[0].data.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.datasets[0].data
+        expect(quiverData.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(4)
+
+        expect(quiverData.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData.getCell(2, 0).content).toEqual("i1")
+        expect(quiverData.getCell(0, 1).content).toEqual("foo")
+        expect(quiverData.getCell(2, 1).content).toEqual("foo")
       })
 
       test("element has data -> append new rows to data", () => {
@@ -723,37 +429,14 @@ describe("ElementNode.arrowAddRows", () => {
         )
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.data?.index)).toEqual([
-          ["i1", "i2", "i1", "i2"],
-        ])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
-        expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.data?.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(4)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(2, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
+        expect(quiverData?.getCell(2, 1).content).toEqual("foo")
       })
 
       test("element doesn't have any datasets or data -> use new rows as data", () => {
@@ -764,33 +447,12 @@ describe("ElementNode.arrowAddRows", () => {
         )
         const element = newNode.vegaLiteChartElement
 
-        expect(arrayFromVector(element.data?.index)).toEqual([["i1", "i2"]])
-        expect(element.data?.columns).toEqual([["c1", "c2"]])
-        expect(element.data?.data.toArray().map(a => a?.toArray())).toEqual([
-          ["foo", "1"],
-          ["bar", "2"],
-        ])
-        expect(element.data?.types).toEqual({
-          index: [
-            {
-              pandas_type: IndexTypeName.UnicodeIndex,
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-          data: [
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-            {
-              pandas_type: "unicode",
-              numpy_type: "object",
-              meta: null,
-            },
-          ],
-        })
+        const quiverData = element.data
+        expect(quiverData?.columnNames).toEqual([["", "c1", "c2"]])
+        expect(quiverData?.dimensions.numDataRows).toEqual(2)
+
+        expect(quiverData?.getCell(0, 0).content).toEqual("i1")
+        expect(quiverData?.getCell(0, 1).content).toEqual("foo")
       })
     })
   })

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -231,4 +231,8 @@ st.image(
     [img, img, img, img, img],
     caption=[f"Overflow {i}" for i in range(5)],
     width=200,
+)
+
+st.container(key="image_with_markdown_caption").image(
+    img, caption="-> :material/check: :rainbow[Fancy] _**markdown** `label` _support_"
 )

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -116,6 +116,8 @@ def test_file_fragment():
 
 
 test_file_fragment()
+
+st.file_uploader(":material/check: :rainbow[Fancy] _**markdown** `label` _support_")
 
 if "runs" not in st.session_state:
     st.session_state.runs = 0

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -183,4 +183,8 @@ st.slider(
     min_value=1e6 + 0,
     max_value=1e6 + 100,
     value=(1e6 + 48, 1e6 + 52),
+)
+
+st.slider(
+    "Label 18 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_"
 )

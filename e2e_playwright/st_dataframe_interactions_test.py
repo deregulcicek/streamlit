@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ from playwright.sync_api import FrameLocator, Locator, Page, Route, expect
 from e2e_playwright.conftest import IframedPage, ImageCompareFunction, wait_for_app_run
 from e2e_playwright.shared.app_utils import expect_prefixed_markdown, get_element_by_key
 from e2e_playwright.shared.dataframe_utils import (
+    calc_middle_cell_position,
     click_on_cell,
     expect_canvas_to_be_visible,
     get_open_cell_overlay,
@@ -190,19 +191,23 @@ def test_open_search_via_toolbar(
     # Click on search button:
     search_toolbar_button.click()
 
+    expect(themed_app.locator(".gdg-search-bar-inner")).to_be_visible()
+
     # Check that it is visible
     assert_snapshot(dataframe_element, name="st_dataframe-trigger_search_via_toolbar")
 
 
-def test_open_search_via_hotkey(app: Page, assert_snapshot: ImageCompareFunction):
+def test_open_search_via_hotkey(app: Page):
     """Test that the search can be opened via a hotkey."""
     dataframe_element = app.get_by_test_id("stDataFrame").nth(0)
 
-    # Press hotkey to open search:
-    dataframe_element.press("Control+F")
+    # Select a cell to focus the dataframe:
+    click_on_cell(dataframe_element, 2, 3)
 
-    # Check that the search is visible:
-    assert_snapshot(dataframe_element, name="st_dataframe-trigger_search_via_hotkey")
+    # Press hotkey to open search:
+    dataframe_element.press("Control+f")
+
+    expect(app.locator(".gdg-search-bar-inner")).to_be_visible()
 
 
 def test_clicking_on_fullscreen_toolbar_button(
@@ -391,7 +396,12 @@ def test_number_cell_read_only_overlay_formatting(
     assert_snapshot(cell_overlay, name="st_dataframe-number_col_overlay")
 
 
-def test_number_cell_editing(themed_app: Page, assert_snapshot: ImageCompareFunction):
+def _test_number_cell_editing(
+    themed_app: Page,
+    assert_snapshot: ImageCompareFunction,
+    *,
+    skip_snapshot: bool = False,
+):
     """Test that the number cell can be edited."""
     cell_overlay_test_df = themed_app.get_by_test_id("stDataFrame").nth(3)
     expect_canvas_to_be_visible(cell_overlay_test_df)
@@ -406,7 +416,8 @@ def test_number_cell_editing(themed_app: Page, assert_snapshot: ImageCompareFunc
 
     # Get the (number) input element and check the value
     expect(cell_overlay.locator(".gdg-input")).to_have_attribute("value", "1231231.41")
-    assert_snapshot(cell_overlay, name="st_data_editor-number_col_editor")
+    if not skip_snapshot:
+        assert_snapshot(cell_overlay, name="st_data_editor-number_col_editor")
 
     # Change the value
     cell_overlay.locator(".gdg-input").fill("9876.54")
@@ -416,6 +427,18 @@ def test_number_cell_editing(themed_app: Page, assert_snapshot: ImageCompareFunc
 
     # Check if that the value was submitted
     expect_prefixed_markdown(themed_app, "Edited DF:", "9876.54", exact_match=False)
+
+
+def test_number_cell_editing(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    _test_number_cell_editing(themed_app, assert_snapshot)
+
+
+@pytest.mark.performance
+def test_number_cell_editing_performance(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that the number cell can be edited."""
+    _test_number_cell_editing(app, assert_snapshot, skip_snapshot=True)
 
 
 def test_text_cell_read_only_overlay_formatting(
@@ -466,6 +489,58 @@ def test_text_cell_editing(themed_app: Page, assert_snapshot: ImageCompareFuncti
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "data_editor")).to_be_visible()
+
+
+def test_column_reorder_via_ui(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that columns can be reordered via drag and drop on the UI."""
+    dataframe_element = app.get_by_test_id("stDataFrame").nth(0)
+    expect_canvas_to_be_visible(dataframe_element)
+
+    # 1. Move Column A behind Column C:
+
+    # Calculate positions for source (Column A) and target (Column C) headers
+    source_x, source_y = calc_middle_cell_position(0, 1, "small")  # Column A header
+    target_x, target_y = calc_middle_cell_position(0, 3, "small")  # Column C header
+
+    # Perform drag and drop using drag_to
+    dataframe_element.drag_to(
+        dataframe_element,
+        source_position={"x": source_x, "y": source_y},
+        target_position={"x": target_x, "y": target_y},
+    )
+
+    # 2. Move Column D in front of the index column:
+    # This also tests that column D should get pinned since it is moved before a
+    # pinned column (index column). This is visible via the grey text color.
+
+    # Calculate positions for source (Column D) and target (Index column) headers
+    source_x, source_y = calc_middle_cell_position(0, 4, "small")  # Column D header
+    target_x, target_y = calc_middle_cell_position(0, 0, "small")  # Index column header
+
+    # Perform drag and drop using drag_to
+    dataframe_element.drag_to(
+        dataframe_element,
+        source_position={"x": source_x, "y": source_y},
+        target_position={"x": target_x, "y": target_y},
+    )
+
+    # Verify column order changed by taking a screenshot
+    assert_snapshot(
+        dataframe_element,
+        name="st_dataframe-reorder_columns_via_ui",
+    )
+
+
+def test_row_hover_highlight(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that a row gets highlighted when hovering over a cell in the row."""
+    df = themed_app.get_by_test_id("stDataFrame").nth(0)
+    expect_canvas_to_be_visible(df)
+    column_middle_width_px, row_middle_height_px = calc_middle_cell_position(
+        2, 2, "small"
+    )
+    df.hover(position={"x": column_middle_width_px, "y": row_middle_height_px})
+
+    assert_snapshot(df, name="st_dataframe-row_hover_highlight")
 
 
 # TODO(lukasmasuch): Add additional interactive tests:

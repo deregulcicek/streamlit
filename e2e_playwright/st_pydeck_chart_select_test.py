@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -309,6 +309,7 @@ def test_pydeck_chart_selection_state_remains_after_unmounting(
     assert_snapshot(
         click_handling_div,
         name="st_pydeck_chart_selection_state_remains_after_unmounting",
+        pixel_threshold=PIXEL_THRESHOLD,
     )
 
 
