@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import styled from "@emotion/styled"
+import { Theme } from "@emotion/react"
 
 import { hasLightBackgroundColor } from "@streamlit/lib/src/theme"
+
+const chatBorderRadius = (theme: Theme): string => theme.radii.xxxl
 
 export interface StyledChatInputContainerProps {
   width: number
@@ -24,28 +27,27 @@ export interface StyledChatInputContainerProps {
 export const StyledChatInputContainer =
   styled.div<StyledChatInputContainerProps>(({ theme, width }) => {
     return {
-      borderRadius: theme.radii.xxxl,
+      border: `${theme.sizes.borderWidth} solid`,
+      borderColor: theme.colors.transparent,
+      borderRadius: chatBorderRadius(theme),
       display: "flex",
       backgroundColor:
         theme.colors.widgetBackgroundColor ?? theme.colors.secondaryBg,
       width: `${width}px`,
+      overflow: "hidden",
+
+      ":focus-within": {
+        borderColor: theme.colors.primary,
+      },
     }
   })
 
-export const StyledChatInput = styled.div(({ theme }) => {
+export const StyledChatInput = styled.div(({}) => {
   return {
-    backgroundColor: theme.colors.transparent,
     position: "relative",
     flexGrow: 1,
-    borderRadius: theme.radii.xxxl,
     display: "flex",
     alignItems: "center",
-    border: `${theme.sizes.borderWidth} solid`,
-    borderColor: theme.colors.transparent,
-
-    ":focus-within": {
-      borderColor: theme.colors.primary,
-    },
   }
 })
 
@@ -63,9 +65,9 @@ export const StyledSendIconButton = styled.button<StyledSendIconButtonProps>(
     return {
       border: "none",
       backgroundColor: theme.colors.transparent,
-      borderTopRightRadius: extended ? "0" : theme.radii.xxxl,
+      borderTopRightRadius: extended ? "0" : chatBorderRadius(theme),
       borderTopLeftRadius: extended ? theme.radii.default : "0",
-      borderBottomRightRadius: theme.radii.xxxl,
+      borderBottomRightRadius: chatBorderRadius(theme),
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",

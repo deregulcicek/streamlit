@@ -410,18 +410,6 @@ function ChatInput({
     return scrollHeight
   }
 
-  const getTextAreaBorderStyle = (): React.CSSProperties =>
-    acceptFile !== AcceptFileValue.None
-      ? { border: "none" }
-      : {
-          borderRadius: theme.radii.xxxl,
-          // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-          borderLeftWidth: theme.sizes.borderWidth,
-          borderRightWidth: theme.sizes.borderWidth,
-          borderTopWidth: theme.sizes.borderWidth,
-          borderBottomWidth: theme.sizes.borderWidth,
-        }
-
   const handleSubmit = (): void => {
     // We want the chat input to always be in focus
     // even if the user clicks the submit button
@@ -557,13 +545,7 @@ function ChatInput({
                 style: {
                   minHeight: theme.sizes.minElementHeight,
                   outline: "none",
-                  backgroundColor: theme.colors.transparent,
-                  ...getTextAreaBorderStyle(),
-                },
-              },
-              InputContainer: {
-                style: {
-                  backgroundColor: theme.colors.transparent,
+                  border: "none",
                 },
               },
               Input: {
@@ -572,7 +554,6 @@ function ChatInput({
                 },
                 style: {
                   lineHeight: theme.lineHeights.inputWidget,
-                  backgroundColor: theme.colors.transparent,
                   "::placeholder": {
                     opacity: "0.7",
                   },
