@@ -86,7 +86,7 @@ function ExceptionMessage({
 function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
   // Build the stack trace display, if we got a stack trace.
   return (
-    <div>
+    <>
       <StyledStackTraceTitle>Traceback:</StyledStackTraceTitle>
       <StyledStackTrace>
         <StyledStackTraceContent>
@@ -102,7 +102,7 @@ function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
           </StyledCode>
         </StyledStackTraceContent>
       </StyledStackTrace>
-    </div>
+    </>
   )
 }
 
