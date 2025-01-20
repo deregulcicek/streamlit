@@ -669,6 +669,10 @@ class RuntimeTest(RuntimeTestCase):
                     "Another full run clears the cache.",
                 )
 
+        # TODO: As part of the forward message cache refactoring (Q1FY26) we may
+        # remove some of these tests. If we don't, we should move the
+        # caching tests into a separate test file and make these functions
+        # into separate test cases.
         await test_standard_message_caching()
         await test_fragment_run_message_caching()
         await test_fragment_run_message_caching_with_fragment_counting()
