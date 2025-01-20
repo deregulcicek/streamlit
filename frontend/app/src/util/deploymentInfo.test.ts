@@ -39,22 +39,17 @@ describe("isLocalhost", () => {
     expect(isLocalhost()).toBe(true)
   })
 
-  it("returns true given other", () => {
+  it("returns false given other", () => {
     window.location.hostname = "190.1.1.1"
     expect(isLocalhost()).toBe(false)
   })
 
-  it("returns true given other ", () => {
-    window.location.hostname = "190.1.1.1"
-    expect(isLocalhost()).toBe(false)
-  })
-
-  it("returns true given null", () => {
+  it("returns false given null", () => {
     window.location.hostname = null
     expect(isLocalhost()).toBe(false)
   })
 
-  it("returns true given undefined", () => {
+  it("returns false given undefined", () => {
     window.location.hostname = undefined
     expect(isLocalhost()).toBe(false)
   })
