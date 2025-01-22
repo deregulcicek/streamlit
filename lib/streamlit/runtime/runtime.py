@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import asyncio
+import threading
 import time
 import traceback
 from dataclasses import dataclass, field
@@ -153,6 +154,17 @@ class Runtime:
     _instance: Runtime | None = None
 
     @classmethod
+    def amend_python_APIs(cls) -> None:
+        original_init = threading.Thread.__init__
+
+        def new_init(self, *args, **kwargs):
+            current_thread = threading.current_thread()
+            original_init(self, *args, **kwargs)
+            self._parent_thread = current_thread
+
+        threading.Thread.__init__ = new_init
+
+    @classmethod
     def instance(cls) -> Runtime:
         """Return the singleton Runtime instance. Raise an Error if the
         Runtime hasn't been created yet.
@@ -185,6 +197,9 @@ class Runtime:
         """
         if Runtime._instance is not None:
             raise RuntimeError("Runtime instance already exists!")
+
+        Runtime.amend_python_APIs()
+
         Runtime._instance = self
 
         # Will be created when we start.

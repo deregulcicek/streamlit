@@ -255,8 +255,16 @@ def get_script_run_ctx(suppress_warning: bool = False) -> ScriptRunContext | Non
         The current thread's ScriptRunContext, or None if it doesn't have one.
 
     """
-    thread = threading.current_thread()
-    ctx: ScriptRunContext | None = getattr(thread, SCRIPT_RUN_CONTEXT_ATTR_NAME, None)
+
+    current_thread = threading.current_thread()
+    current_thread_ctx = getattr(current_thread, SCRIPT_RUN_CONTEXT_ATTR_NAME, None)
+
+    thread = current_thread
+    ctx = current_thread_ctx
+    while ctx is None and hasattr(thread, "_parent_thread"):
+        thread = thread._parent_thread
+        ctx = getattr(thread, SCRIPT_RUN_CONTEXT_ATTR_NAME, None)
+
     if ctx is None and not suppress_warning:
         # Only warn about a missing ScriptRunContext if suppress_warning is False, and
         # we were started via `streamlit run`. Otherwise, the user is likely running a
@@ -267,6 +275,10 @@ def get_script_run_ctx(suppress_warning: bool = False) -> ScriptRunContext | Non
             "running in bare mode.",
             thread.name,
         )
+
+    # Add this to the thread so that we can access it later without following the chain
+    if current_thread_ctx is None:
+        add_script_run_ctx(current_thread, ctx)
 
     return ctx
 
