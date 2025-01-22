@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD
 import React, { memo, ReactElement, useEffect, useState } from "react"
 
 import { useTheme } from "@emotion/react"
@@ -23,6 +24,12 @@ import {
   Popover,
   TRIGGER_TYPE,
 } from "baseui/popover"
+=======
+import React, { memo, ReactElement, useEffect } from "react"
+
+import { useTheme } from "@emotion/react"
+import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
+>>>>>>> upstream/develop
 
 import {
   EmotionTheme,
@@ -71,19 +78,20 @@ export interface ColumnMenuProps {
   left: number
   // The kind of the column
   columnKind: string
-  // Callback to close the menu
-  menuClosed: () => void
-  // Callback to sort the column
+  // Callback used to instruct the parent to close the menu
+  onCloseMenu: () => void
+  // Callback to sort column
   // If undefined, the sort menu item will not be shown
-  sortColumn: ((direction: "asc" | "desc") => void) | undefined
+  onSortColumn: ((direction: "asc" | "desc") => void) | undefined
   // Whether the column is pinned
-  isPinned: boolean
+  isColumnPinned: boolean
   // Callback to pin the column
-  pinColumn: () => void
+  onPinColumn: () => void
   // Callback to unpin the column
-  unpinColumn: () => void
+  onUnpinColumn: () => void
   // Callback to change the column format
   changeFormat?: (format: string) => void
+
 }
 
 /**
@@ -93,16 +101,15 @@ function ColumnMenu({
   top,
   left,
   columnKind,
-  menuClosed,
-  sortColumn,
-  isPinned,
-  pinColumn,
-  unpinColumn,
+  isColumnPinned,
+  onPinColumn,
+  onUnpinColumn,
+  onCloseMenu,
+  onSortColumn,
   changeFormat,
 }: ColumnMenuProps): ReactElement {
-  const [open, setOpen] = React.useState(true)
-  const [formatMenuOpen, setFormatMenuOpen] = useState(false)
   const theme: EmotionTheme = useTheme()
+  const [formatMenuOpen, setFormatMenuOpen] = useState(false)
   const { colors, fontSizes, radii, fontWeights } = theme
 
   // Disable page scrolling while the menu is open to keep the menu und
@@ -118,22 +125,17 @@ function ColumnMenu({
       document.removeEventListener("touchmove", preventScroll)
     }
 
-    if (open) {
-      document.addEventListener("wheel", preventScroll, { passive: false })
-      document.addEventListener("touchmove", preventScroll, { passive: false })
-    } else {
-      cleanup()
-    }
+    document.addEventListener("wheel", preventScroll, { passive: false })
+    document.addEventListener("touchmove", preventScroll, { passive: false })
 
     return () => {
       cleanup()
     }
-  }, [open])
+  }, [])
 
   const closeMenu = React.useCallback((): void => {
-    setOpen(false)
-    menuClosed()
-  }, [setOpen, menuClosed])
+    onCloseMenu()
+  }, [onCloseMenu])
 
   const formats = COLUMN_KIND_FORMAT_MAPPING[columnKind] || []
 
@@ -143,11 +145,11 @@ function ColumnMenu({
       aria-label="Dataframe column menu"
       content={
         <StyledMenuList>
-          {sortColumn && (
+          {onSortColumn && (
             <>
               <StyledMenuListItem
                 onClick={() => {
-                  sortColumn("asc")
+                  onSortColumn("asc")
                   closeMenu()
                 }}
                 role="menuitem"
@@ -162,7 +164,7 @@ function ColumnMenu({
               </StyledMenuListItem>
               <StyledMenuListItem
                 onClick={() => {
-                  sortColumn("desc")
+                  onSortColumn("desc")
                   closeMenu()
                 }}
                 role="menuitem"
@@ -259,10 +261,10 @@ function ColumnMenu({
               </Popover>
             </>
           )}
-          {isPinned && (
+          {isColumnPinned && (
             <StyledMenuListItem
               onClick={() => {
-                unpinColumn()
+                onUnpinColumn()
                 closeMenu()
               }}
             >
@@ -275,10 +277,10 @@ function ColumnMenu({
               Unpin column
             </StyledMenuListItem>
           )}
-          {!isPinned && (
+          {!isColumnPinned && (
             <StyledMenuListItem
               onClick={() => {
-                pinColumn()
+                onPinColumn()
                 closeMenu()
               }}
             >
@@ -340,7 +342,9 @@ function ColumnMenu({
           },
         },
       }}
-      isOpen={open}
+      // We can always set the menu to open here since the dataframe
+      // component controls if its open or not by adding it to the DOM or not.
+      isOpen={true}
     >
       <div
         data-testid="stDataFrameColumnMenuTarget"

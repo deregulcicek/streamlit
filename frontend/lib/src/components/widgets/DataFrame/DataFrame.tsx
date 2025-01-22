@@ -155,8 +155,10 @@ function DataFrame({
   const [hasHorizontalScroll, setHasHorizontalScroll] =
     React.useState<boolean>(false)
   const [showMenu, setShowMenu] = React.useState<{
-    col: number
-    bounds: Rectangle
+    // The index number of the column that the menu is shown for:
+    columnIdx: number
+    // The bounds of the column header:
+    headerBounds: Rectangle
   }>()
 
   // Determine if the device is primary using touch as input:
@@ -889,7 +891,7 @@ function DataFrame({
             clearTooltip()
           }}
           // Header click is used for column sorting:
-          onHeaderClicked={(colIndex: number, _event) => {
+          onHeaderClicked={(columnIdx: number, _event) => {
             if (!isSortingEnabled || isColumnSelectionActivated) {
               // Deactivate sorting for empty state, for large dataframes, or
               // when column selection is activated.
@@ -908,7 +910,7 @@ function DataFrame({
               // which can be confusing. So we clear all cell selections before sorting.
               clearSelection(true, true)
             }
-            sortColumn(colIndex, "auto")
+            sortColumn(columnIdx, "auto")
           }}
           gridSelection={gridSelection}
           // We don't have to react to "onSelectionCleared" since
@@ -968,10 +970,10 @@ function DataFrame({
           // Add support for user input validation:
           validateCell={validateCell}
           // Open column context menu:
-          onHeaderMenuClick={(colIdx, screenPosition) => {
+          onHeaderMenuClick={(columnIdx, screenPosition) => {
             setShowMenu({
-              col: colIdx,
-              bounds: screenPosition,
+              columnIdx,
+              headerBounds: screenPosition,
             })
           }}
           // The default setup is read only, and therefore we deactivate paste here:
@@ -1066,29 +1068,29 @@ function DataFrame({
         // A context menu that provides interactive features (sorting, pinning, show/hide)
         // for a grid column.
         <ColumnMenu
-          top={showMenu.bounds.y + showMenu.bounds.height}
-          left={showMenu.bounds.x + showMenu.bounds.width}
-          columnKind={originalColumns[showMenu.col].kind}
-          menuClosed={() => setShowMenu(undefined)}
-          sortColumn={
+          top={showMenu.headerBounds.y + showMenu.headerBounds.height}
+          left={showMenu.headerBounds.x + showMenu.headerBounds.width}
+          columnKind={originalColumns[showMenu.columnIdx].kind}
+          onCloseMenu={() => setShowMenu(undefined)}
+          onSortColumn={
             isSortingEnabled
               ? (direction: "asc" | "desc" | undefined) => {
                   // Cell selection are kept on the old position,
                   // which can be confusing. So we clear all cell selections before sorting.
                   clearSelection(true, true)
-                  sortColumn(showMenu.col, direction, true)
+                  sortColumn(showMenu.columnIdx, direction, true)
                 }
               : undefined
           }
-          isPinned={originalColumns[showMenu.col].isPinned}
-          unpinColumn={() => {
-            unpinColumn(originalColumns[showMenu.col].id)
+          isColumnPinned={originalColumns[showMenu.columnIdx].isPinned}
+          onUnpinColumn={() => {
+            unpinColumn(originalColumns[showMenu.columnIdx].id)
           }}
-          pinColumn={() => {
-            pinColumn(originalColumns[showMenu.col].id)
+          onPinColumn={() => {
+            pinColumn(originalColumns[showMenu.columnIdx].id)
           }}
           changeFormat={(format: string) => {
-            changeColumnFormat(originalColumns[showMenu.col].id, format)
+            changeColumnFormat(originalColumns[showMenu.columnIdx].id, format)
           }}
         ></ColumnMenu>
       )}

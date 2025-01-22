@@ -103,18 +103,19 @@ import {
   WidgetStates,
 } from "@streamlit/lib"
 import getBrowserInfo from "@streamlit/app/src/util/getBrowserInfo"
+import { isLocalhost } from "@streamlit/app/src/util/deploymentInfo"
 import { AppContext } from "@streamlit/app/src/components/AppContext"
 import AppView from "@streamlit/app/src/components/AppView"
 import StatusWidget from "@streamlit/app/src/components/StatusWidget"
-import MainMenu, { isLocalhost } from "@streamlit/app/src/components/MainMenu"
+import MainMenu from "@streamlit/app/src/components/MainMenu"
 import ToolbarActions from "@streamlit/app/src/components/ToolbarActions"
 import DeployButton from "@streamlit/app/src/components/DeployButton"
 import Header from "@streamlit/app/src/components/Header"
 import {
   DialogProps,
-  DialogType,
   StreamlitDialog,
 } from "@streamlit/app/src/components/StreamlitDialog"
+import { DialogType } from "@streamlit/app/src/components/StreamlitDialog/constants"
 import { ConnectionManager } from "@streamlit/app/src/connection/ConnectionManager"
 import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 import { SessionEventDispatcher } from "@streamlit/app/src/SessionEventDispatcher"

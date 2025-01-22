@@ -47,6 +47,10 @@ export function RootStyleProvider(
   return (
     <BaseProvider
       theme={theme.basewebTheme}
+      // This zIndex is required for modals/dialog. However,
+      // it would be good to do some investigation
+      // and find a better way to configure the zIndex
+      // for the modals/dialogs.
       zIndex={theme.emotion.zIndices.popup}
     >
       <CacheProvider value={cache}>

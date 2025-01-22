@@ -223,7 +223,7 @@ describe("useColumnSort hook", () => {
     )
   })
 
-  it("should respect explicit direction parameter when sorting", () => {
+  it("should sort in descending order when direction is set to desc", () => {
     const { result } = renderHook(() =>
       useColumnSort(
         MOCK_PROPS.numRows,
@@ -260,6 +260,17 @@ describe("useColumnSort hook", () => {
         })
         .reverse()
     )
+  })
+
+  it("should sort in ascending order when direction is set to asc", () => {
+    const { result } = renderHook(() =>
+      useColumnSort(
+        MOCK_PROPS.numRows,
+        MOCK_PROPS.columns,
+        MOCK_PROPS.getCellContent
+      )
+    )
+    const SELECTED_COLUMN = 0
 
     // Change to ascending explicitly
     act(() => {
@@ -269,6 +280,23 @@ describe("useColumnSort hook", () => {
 
     // Column header should contain ascending sort icon
     expect(result.current.columns[SELECTED_COLUMN].title).toContain("↑")
+
+    const sortedDataAsc = []
+    for (let i = 0; i < MOCK_PROPS.numRows; i++) {
+      sortedDataAsc.push(
+        (result.current.getCellContent([SELECTED_COLUMN, i]) as NumberCell)
+          .data
+      )
+    }
+
+    // Verify data is sorted in ascending order
+    expect(Array.from(sortedDataAsc)).toEqual(
+      Array.from(sortedDataAsc).sort((a, b) => {
+        if (a === undefined) return -1
+        if (b === undefined) return 1
+        return a - b
+      })
+    )
   })
 
   it("should respect autoReset parameter when sorting", () => {

@@ -599,7 +599,7 @@ def test_opening_column_menu(themed_app: Page, assert_snapshot: ImageCompareFunc
     assert_snapshot(df, name="st_dataframe-column_menu")
 
 
-def test_column_pinning(app: Page, assert_snapshot: ImageCompareFunction):
+def test_column_pinning_via_ui(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that a column can be pinned via the column menu."""
 
     df = app.get_by_test_id("stDataFrame").nth(0)

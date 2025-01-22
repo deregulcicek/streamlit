@@ -47,7 +47,7 @@ export const StyledResizableContainer =
   )
 
 /**
- * A styled menu list component.
+ * A styled menu list component used by the column menu.
  */
 export const StyledMenuList = styled.div(({ theme }) => ({
   paddingTop: theme.spacing.xs,
@@ -55,7 +55,7 @@ export const StyledMenuList = styled.div(({ theme }) => ({
 }))
 
 /**
- * A styled menu list item component.
+ * A styled menu list item component used by the column menu.
  */
 export const StyledMenuListItem = styled.div(({ theme }) => ({
   display: "flex",
@@ -72,6 +72,9 @@ export const StyledMenuListItem = styled.div(({ theme }) => ({
   minWidth: theme.sizes.minMenuWidth,
 }))
 
+/**
+ * A styled menu divider used by the column menu.
+ */
 export const StyledMenuDivider = styled.div(({ theme }) => ({
   height: theme.sizes.borderWidth,
   backgroundColor: theme.colors.borderColor,

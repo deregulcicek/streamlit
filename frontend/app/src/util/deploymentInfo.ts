@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DeployDialog } from "./DeployDialog"
-export type { DeployDialogProps } from "./DeployDialog"
+
+export const isLocalhost = (): boolean => {
+  return (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  )
+}
