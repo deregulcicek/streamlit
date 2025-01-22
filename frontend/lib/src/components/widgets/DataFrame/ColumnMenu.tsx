@@ -172,6 +172,38 @@ function ColumnMenu({
               <StyledMenuDivider />
             </>
           )}
+          {isColumnPinned && (
+            <StyledMenuListItem
+              onClick={() => {
+                onUnpinColumn()
+                closeMenu()
+              }}
+            >
+              <DynamicIcon
+                size={"base"}
+                margin="0"
+                color="inherit"
+                iconValue=":material/keep_off:"
+              />
+              Unpin column
+            </StyledMenuListItem>
+          )}
+          {!isColumnPinned && (
+            <StyledMenuListItem
+              onClick={() => {
+                onPinColumn()
+                closeMenu()
+              }}
+            >
+              <DynamicIcon
+                size={"base"}
+                margin="0"
+                color="inherit"
+                iconValue=":material/keep:"
+              />
+              Pin column
+            </StyledMenuListItem>
+          )}
           {changeFormat && formats.length > 0 && (
             <>
               <Popover
@@ -252,38 +284,6 @@ function ColumnMenu({
                 </StyledMenuListItem>
               </Popover>
             </>
-          )}
-          {isColumnPinned && (
-            <StyledMenuListItem
-              onClick={() => {
-                onUnpinColumn()
-                closeMenu()
-              }}
-            >
-              <DynamicIcon
-                size={"base"}
-                margin="0"
-                color="inherit"
-                iconValue=":material/keep_off:"
-              />
-              Unpin column
-            </StyledMenuListItem>
-          )}
-          {!isColumnPinned && (
-            <StyledMenuListItem
-              onClick={() => {
-                onPinColumn()
-                closeMenu()
-              }}
-            >
-              <DynamicIcon
-                size={"base"}
-                margin="0"
-                color="inherit"
-                iconValue=":material/keep:"
-              />
-              Pin column
-            </StyledMenuListItem>
           )}
         </StyledMenuList>
       }
