@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ def measure_performance(
         parsed_captured_traces = json.loads(captured_traces)
 
         performance_results_dir = os.path.join(
-            get_git_root(), "e2e_playwright", "performance-results"
+            get_git_root(), ".benchmarks", "playwright"
         )
 
         # Ensure the directory exists

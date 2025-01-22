@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ export const StyledVegaLiteChartTooltips = (
     maxWidth: theme.sizes.maxChartTooltipWidth,
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
     borderRadius: theme.radii.default,
-    zIndex: theme.zIndices.vegaTooltips,
+    zIndex: theme.zIndices.popup,
 
     "&.visible": {
       visibility: "visible",
@@ -129,7 +129,7 @@ export const StyledVegaLiteChartContainer =
           flexDirection: "column",
           paddingBottom: theme.spacing.sm,
           paddingTop: theme.spacing.sm,
-          zIndex: theme.zIndices.popupMenu,
+          zIndex: theme.zIndices.popup,
           // Position under the menu button. The size of the menu button
           // iconSizes.md + padding (2 * spacing.xs)
           //+ some additional spacing (spacing.xs)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,11 @@ import React, {
 import { useTheme } from "@emotion/react"
 import { ButtonGroup as BasewebButtonGroup, MODE } from "baseui/button-group"
 
-import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown"
 import BaseButton, {
   BaseButtonKind,
   BaseButtonSize,
+  DynamicButtonLabel,
 } from "@streamlit/lib/src/components/shared/BaseButton"
-import { DynamicIcon } from "@streamlit/lib/src/components/shared/Icon"
 import { EmotionTheme } from "@streamlit/lib/src/theme"
 import {
   ButtonGroup as ButtonGroupProto,
@@ -121,10 +120,7 @@ export function getContentElement(
 
   return {
     element: (
-      <>
-        {icon && <DynamicIcon size={iconSize} iconValue={icon} />}
-        {content && <StreamlitMarkdown source={content} allowHTML={false} />}
-      </>
+      <DynamicButtonLabel icon={icon} label={content} iconSize={iconSize} />
     ),
     kind: kind,
     size: size,

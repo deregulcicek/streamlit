@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,3 +87,8 @@ i12 = multiple_cols[0].multiselect(
     "multiselect 12", ["A long option"], default="A long option"
 )
 st.text(f"value 12: {i12}")
+
+st.multiselect(
+    "multiselect 13 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
+    options=options,
+)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,10 @@ function TimeInput({
             style: () => ({
               paddingTop: theme.spacing.none,
               paddingBottom: theme.spacing.none,
+              // Somehow this adds an additional shadow, even though we already have
+              // one on the popover, so we need to remove it here.
+              boxShadow: "none",
+              maxHeight: theme.sizes.maxDropdownHeight,
             }),
           },
 

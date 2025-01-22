@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
+import { Field, Utf8 } from "apache-arrow"
 import moment, { Moment } from "moment-timezone"
 
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { withTimezones } from "@streamlit/lib/src/util/withTimezones"
 
 import {
@@ -48,8 +50,15 @@ const MOCK_TEXT_COLUMN_PROPS = {
   title: "column_1",
   indexNumber: 0,
   arrowType: {
-    pandas_type: "unicode",
-    numpy_type: "object",
+    type: DataFrameCellType.DATA,
+    arrowField: new Field("test", new Utf8(), true),
+    pandasType: {
+      field_name: "test",
+      name: "test",
+      pandas_type: "unicode",
+      numpy_type: "object",
+      metadata: null,
+    },
   },
   isEditable: false,
   isHidden: false,
@@ -292,16 +301,6 @@ describe("formatNumber", () => {
     [123456789, "scientific", "1.235E8"],
     [1000, "engineering", "1E3"],
     [123456789, "engineering", "123.457E6"],
-    [10, "duration[ns]", "a few seconds"],
-    [1234567891234, "duration[ns]", "21 minutes"],
-    [10, "period[ms]", "1970-01-01 00:00:00.010"],
-    [10, "period[s]", "1970-01-01 00:00:10"],
-    [10, "period[min]", "1970-01-01 00:10"],
-    [10, "period[h]", "1970-01-01 10:00"],
-    [10, "period[D]", "1970-01-11"],
-    [10, "period[M]", "1970-11"],
-    [10, "period[Y]", "1980"],
-    [10, "period[Q]", "1972Q3"],
     // sprintf format
     [10.123, "%d", "10"],
     [10.123, "%i", "10"],
@@ -406,6 +405,7 @@ describe("toGlideColumn", () => {
       id: MOCK_TEXT_COLUMN_PROPS.id,
       title: MOCK_TEXT_COLUMN_PROPS.title,
       hasMenu: false,
+      menuIcon: "dots",
       themeOverride: MOCK_TEXT_COLUMN_PROPS.themeOverride,
       grow: undefined,
       width: undefined,

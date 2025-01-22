@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -178,7 +178,8 @@ class LocalSourcesWatcherTest(unittest.TestCase):
         fob.assert_called_once()  # Just __init__.py
 
         patched_logger.warning.assert_called_once_with(
-            "Examining the path of MisbehavedModule raised: Oh noes!"
+            "Examining the path of MisbehavedModule raised:",
+            exc_info=True,
         )
 
     @patch("streamlit.watcher.local_sources_watcher.PathWatcher")

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,3 +34,15 @@ with st.expander("Expander", expanded=True):
 sidebar_tab1, sidebar_tab2 = st.sidebar.tabs(["Foo", "Bar"])
 sidebar_tab1.write("I am in the sidebar")
 sidebar_tab2.write("I'm also in the sidebar")
+
+st.tabs(
+    [
+        "**Bold Text**",
+        "*Italicized*",
+        "~Strikethough~",
+        "`Code Block`",
+        "🐶",
+        ":joy:",
+        ":material/check_circle: Icon",
+    ]
+)

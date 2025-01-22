@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -322,7 +322,16 @@ export const StyledSidebarOpenContainer =
       alignItems: "center",
 
       [`@media print`]: {
-        position: "static",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        marginTop: 0,
+
+        [`& > ${StyledLogo}`]: {
+          // Add more space to the actual app content by moving the logo a little bit more to the top.
+          // margin-bottom wouldn't work here to push the content down because the logo is absolutely positioned.
+          marginTop: 0,
+        },
       },
     })
   )

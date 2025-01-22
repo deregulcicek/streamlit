@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 import { CompactSelection } from "@glideapps/glide-data-grid"
 import { act, renderHook } from "@testing-library/react-hooks"
+import { Field, Utf8 } from "apache-arrow"
 
 import { TextColumn } from "@streamlit/lib/src/components/widgets/DataFrame/columns"
+import { DataFrameCellType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
 import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
 
 import useSelectionHandler from "./useSelectionHandler"
@@ -556,9 +558,15 @@ describe("useSelectionHandler hook", () => {
           // Configure 1 index column
           TextColumn({
             arrowType: {
-              meta: null,
-              numpy_type: "object",
-              pandas_type: "unicode",
+              type: DataFrameCellType.DATA,
+              arrowField: new Field("index-0", new Utf8(), true),
+              pandasType: {
+                field_name: "index-0",
+                name: "index-0",
+                pandas_type: "unicode",
+                numpy_type: "unicode",
+                metadata: null,
+              },
             },
             id: "index-0",
             name: "",

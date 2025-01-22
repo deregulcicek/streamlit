@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,3 +45,29 @@ export const StyledResizableContainer =
       },
     })
   )
+
+/**
+ * A styled menu list component.
+ */
+export const StyledMenuList = styled.div(({ theme }) => ({
+  paddingTop: theme.spacing.xs,
+  paddingBottom: theme.spacing.xs,
+}))
+
+/**
+ * A styled menu list item component.
+ */
+export const StyledMenuListItem = styled.div(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing.sm,
+  paddingLeft: theme.spacing.sm,
+  paddingRight: theme.spacing.sm,
+  paddingTop: theme.spacing.twoXS,
+  paddingBottom: theme.spacing.twoXS,
+  cursor: "pointer",
+  "&:hover": {
+    backgroundColor: theme.colors.darkenedBgMix15,
+  },
+  minWidth: theme.sizes.minMenuWidth,
+}))

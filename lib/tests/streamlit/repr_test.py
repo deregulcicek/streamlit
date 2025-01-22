@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 # limitations under the License.
 
 from __future__ import annotations
+
+import pytest
 
 import streamlit.util as util
 
@@ -46,3 +48,8 @@ def test_repr_thread_class():
     thread = threading.current_thread()
     # This should return a non empty string and not raise an exception.
     assert str(thread) is not None
+
+
+@pytest.mark.usefixtures("benchmark")
+def test_repr_dict_class_performance(benchmark):
+    benchmark(test_repr_dict_class)

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,10 @@ import { exec, execSync } from "child_process"
 import { MODES } from "./constants.mjs"
 
 const PATHNAME = new URL(".", import.meta.url).pathname
-const REPORTS_DIRECTORY = path.resolve(PATHNAME, "./reports")
+const REPORTS_DIRECTORY = path.resolve(
+  PATHNAME,
+  "../../../../.benchmarks/lighthouse"
+)
 
 /**
  * This class is responsible for managing the lifecycle of a headless Chrome

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,10 @@ function FixedSizeListItem(props: FixedSizeListItemProps): ReactElement {
 const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
   const theme = useTheme()
   const children = React.Children.toArray(props.children) as ReactElement[]
+  const listRef = React.useRef<FixedSizeList>(null)
+
+  // Get initial scroll offset from props
+  const initialScrollOffset = props.$menuListProps?.initialScrollOffset || 0
 
   if (!children[0] || !children[0].props.item) {
     const childrenProps = children[0] ? children[0].props : {}
@@ -73,6 +77,9 @@ const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          // Somehow this adds an additional shadow, even though we already have
+          // one on the popover, so we need to remove it here.
+          boxShadow: "none",
         }}
         ref={ref}
         data-testid="stSelectboxVirtualDropdownEmpty"
@@ -99,10 +106,17 @@ const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
   return (
     <StyledList
       ref={ref}
-      $style={{ paddingTop: 0, paddingBottom: 0 }}
+      $style={{
+        paddingTop: 0,
+        paddingBottom: 0,
+        // Somehow this adds an additional shadow, even though we already have
+        // one on the popover, so we need to remove it here.
+        boxShadow: "none",
+      }}
       data-testid="stSelectboxVirtualDropdown"
     >
       <FixedSizeList
+        ref={listRef}
         width="100%"
         height={height}
         itemCount={children.length}
@@ -111,6 +125,13 @@ const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
           data[index].props.item.value
         }
         itemSize={convertRemToPx(theme.sizes.dropdownItemHeight)}
+        initialScrollOffset={initialScrollOffset}
+        onScroll={({ scrollOffset }) => {
+          // Pass scroll position back through props
+          if (props.$menuListProps?.onScroll) {
+            props.$menuListProps.onScroll(scrollOffset)
+          }
+        }}
       >
         {FixedSizeListItem}
       </FixedSizeList>

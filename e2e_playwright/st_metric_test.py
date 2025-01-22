@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,6 +100,15 @@ def test_label_visibility_set_to_collapse(
     assert_snapshot(
         themed_app.get_by_test_id("stMetric").nth(5),
         name="st_metric-label_collapse",
+    )
+
+
+def test_markdown_label_support(
+    themed_app: Page, assert_snapshot: ImageCompareFunction
+):
+    assert_snapshot(
+        themed_app.get_by_test_id("stMetric").nth(11),
+        name="st_metric-markdown_label",
     )
 
 

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -101,3 +101,8 @@ v14 = st.date_input(
     key="date_input_14",
 )
 st.write("Value 14:", v14)
+
+st.date_input(
+    "date input 15 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
+    date(1970, 1, 1),
+)

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,6 +84,10 @@ form_value = (
 )
 st.write("text input 13 (value from form) - value: ", form_value)
 
+
+st.text_input(
+    "text input 14 -> :material/check: :rainbow[Fancy] **markdown** `label` _support_"
+)
 
 if "rerun_counter" not in st.session_state:
     st.session_state.rerun_counter = 0

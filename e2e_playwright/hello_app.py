@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import numpy as np
 
+import streamlit as st
 from streamlit import runtime
 from streamlit.hello import streamlit_app
 
 # Set random seed to always get the same results in the plotting demo
+STATIC_ASSETS_DIR = Path(__file__).parent / "static"
+
 np.random.seed(0)
 if runtime.exists():
     streamlit_app.run()
+    st.logo(STATIC_ASSETS_DIR / "streamlit-logo.png", size="large")

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+ * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,11 @@ export function RootStyleProvider(
   return (
     <BaseProvider
       theme={theme.basewebTheme}
-      zIndex={theme.emotion.zIndices.popupMenu}
+      // This zIndex is required for modals/dialog. However,
+      // it would be good to do some investigation
+      // and find a better way to configure the zIndex
+      // for the modals/dialogs.
+      zIndex={theme.emotion.zIndices.popup}
     >
       <CacheProvider value={cache}>
         <EmotionThemeProvider theme={theme.emotion}>

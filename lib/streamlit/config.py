@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -417,6 +417,20 @@ _create_option(
     """,
     visibility="hidden",
     default_val=True,
+    type_=bool,
+)
+
+_create_option(
+    "global.includeFragmentRunsInForwardMessageCacheCount",
+    description="""
+        If True, the server will include fragment runs in the count for the
+        forward message cache. The implication is that apps with fragments may
+        see messages being removed from the cache faster. This aligns the server
+        count with the frontend count. This is a temporary fix while we assess the
+        design of the cache.
+    """,
+    visibility="hidden",
+    default_val=False,
     type_=bool,
 )
 
@@ -1244,7 +1258,8 @@ def _set_option(key: str, value: Any, where_defined: str) -> None:
         LOGGER = get_logger(__name__)
 
         LOGGER.warning(
-            f'"{key}" is not a valid config option. If you previously had this config option set, it may have been removed.'
+            f'"{key}" is not a valid config option. If you previously had this config '
+            "option set, it may have been removed."
         )
 
     else:
@@ -1315,7 +1330,7 @@ def _maybe_read_env_variable(value: Any) -> Any:
 
             LOGGER = get_logger(__name__)
 
-            LOGGER.error("No environment variable called %s" % var_name)
+            LOGGER.error("No environment variable called %s", var_name)
         else:
             return _maybe_convert_to_number(env_var)
 

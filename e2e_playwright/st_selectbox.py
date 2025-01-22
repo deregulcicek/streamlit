@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,3 +100,8 @@ v12 = st.selectbox(
     "selectbox 12 (empty, value from state)", options, index=None, key="selectbox_12"
 )
 st.write("value 12:", v12)
+
+st.selectbox(
+    "selectbox 13 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
+    options=options,
+)

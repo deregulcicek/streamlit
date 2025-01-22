@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -128,6 +128,13 @@ class DataframeUtilTest(unittest.TestCase):
         converted_df["integer"] = [4, 5, 6]
         # The original dataframe should be changed here since ensure_copy is False
         self.assertEqual(orginal_df["integer"].to_list(), [4, 5, 6])
+
+    @pytest.mark.usefixtures("benchmark")
+    def test_convert_anything_to_pandas_df_ensure_copy_performance(self):
+        """Performance test for `convert_anything_to_pandas_df` with `ensure_copy`."""
+        self.benchmark(
+            DataframeUtilTest.test_convert_anything_to_pandas_df_ensure_copy, self
+        )
 
     def test_convert_anything_to_pandas_df_supports_key_value_dicts(self):
         """Test that `convert_anything_to_pandas_df` correctly converts

@@ -1,4 +1,4 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2024)
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -94,3 +94,7 @@ form_value = (
     st.session_state["text_area_14"] if "text_area_14" in st.session_state else None
 )
 st.write("text area 14 (value from form) - value: ", form_value)
+
+st.text_area(
+    "text area 15 -> :material/check: :rainbow[Fancy] **markdown** `label` _support_"
+)
