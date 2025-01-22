@@ -5,6 +5,9 @@ snowflake-connector-python>=3.3.0
 # Required for testing the langchain integration
 langchain>=0.2.0
 langchain-community>=0.2.0
+# Langsmith 0.3 adds a pytest integration that is incompatible with
+# playwright pytest since it uses the same --outputs argument.
+langsmith<0.3.0
 
 # Additional dataframe formats for testing:
 polars
