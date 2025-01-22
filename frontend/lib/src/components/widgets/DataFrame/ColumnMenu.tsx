@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-<<<<<<< HEAD
 import React, { memo, ReactElement, useEffect, useState } from "react"
 
 import { useTheme } from "@emotion/react"
@@ -24,12 +23,6 @@ import {
   Popover,
   TRIGGER_TYPE,
 } from "baseui/popover"
-=======
-import React, { memo, ReactElement, useEffect } from "react"
-
-import { useTheme } from "@emotion/react"
-import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
->>>>>>> upstream/develop
 
 import {
   EmotionTheme,
@@ -91,7 +84,6 @@ export interface ColumnMenuProps {
   onUnpinColumn: () => void
   // Callback to change the column format
   changeFormat?: (format: string) => void
-
 }
 
 /**
