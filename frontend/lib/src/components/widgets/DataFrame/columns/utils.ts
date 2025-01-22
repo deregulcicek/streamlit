@@ -472,7 +472,7 @@ export function formatNumber(
       }
 
       return numbro(value).format({
-        thousandSeparated: true,
+        thousandSeparated: false,
         mantissa: maxPrecision,
         trimMantissa: false,
       })
@@ -480,16 +480,33 @@ export function formatNumber(
 
     // Use a default format if no precision is given
     return numbro(value).format({
-      thousandSeparated: true,
+      thousandSeparated: false,
       mantissa: determineDefaultMantissa(value),
       trimMantissa: true,
     })
   }
 
-  if (format === "percent") {
+  if (format === "plain") {
+    return value.toString()
+  } else if (format === "locale") {
+    return new Intl.NumberFormat().format(value)
+  } else if (format === "percent") {
     return new Intl.NumberFormat(undefined, {
       style: "percent",
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  } else if (format === "dollar") {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: "USD",
+      currencyDisplay: "narrowSymbol",
+      maximumFractionDigits: 2,
+    }).format(value)
+  } else if (format === "euro") {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: "EUR",
       maximumFractionDigits: 2,
     }).format(value)
   } else if (["compact", "scientific", "engineering"].includes(format)) {
