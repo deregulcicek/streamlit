@@ -15,13 +15,21 @@
  */
 
 import camelcase from "camelcase"
-import { darken, getLuminance, lighten, parseToRgba, toHex } from "color2k"
+import {
+  darken,
+  getLuminance,
+  lighten,
+  parseToRgba,
+  toHex,
+  transparentize,
+} from "color2k"
 import decamelize from "decamelize"
 import cloneDeep from "lodash/cloneDeep"
 import isObject from "lodash/isObject"
 import merge from "lodash/merge"
 import once from "lodash/once"
 
+import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 import {
   CustomThemeConfig,
   ICustomThemeConfig,
@@ -45,7 +53,6 @@ import {
   isLightThemeInQueryParams,
   notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
-import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
@@ -246,6 +253,10 @@ export const createEmotionTheme = (
 
   if (borderColor) {
     conditionalOverrides.colors.borderColor = borderColor
+    conditionalOverrides.colors.borderColorLight = transparentize(
+      borderColor,
+      0.7
+    )
   }
 
   if (inputFieldBorder && !widgetBorderColor) {
