@@ -61,6 +61,65 @@ const COLUMN_KIND_FORMAT_MAPPING: Record<
       label: "Percent",
       icon: ":material/percent:",
     },
+    {
+      format: "compact",
+      label: "Compact",
+      icon: ":material/speed_1_2:",
+    },
+    {
+      format: "scientific",
+      label: "Scientific",
+      icon: ":material/experiment:",
+    },
+    {
+      format: "locale",
+      label: "Locale",
+      icon: ":material/translate:",
+    },
+  ],
+  datetime: [
+    {
+      format: "",
+      label: "default",
+      icon: ":material/schedule:",
+    },
+    {
+      format: "locale",
+      label: "Locale",
+      icon: ":material/translate:",
+    },
+    {
+      format: "distance",
+      label: "Distance",
+      icon: ":material/search_activity:",
+    },
+    {
+      format: "relative",
+      label: "Relative",
+      icon: ":material/today:",
+    },
+  ],
+  date: [
+    {
+      format: "",
+      label: "default",
+      icon: ":material/schedule:",
+    },
+    {
+      format: "locale",
+      label: "Locale",
+      icon: ":material/translate:",
+    },
+    {
+      format: "distance",
+      label: "Distance",
+      icon: ":material/search_activity:",
+    },
+    {
+      format: "relative",
+      label: "Relative",
+      icon: ":material/today:",
+    },
   ],
 }
 
