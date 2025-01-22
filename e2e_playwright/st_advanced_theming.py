@@ -19,17 +19,86 @@ def page2():
     pass
 
 
-st.navigation([st.Page(page1), st.Page(page2)])
+st.navigation(
+    [
+        st.Page(page1, title="Page 1", icon=":material/home:"),
+        st.Page(page2, title="Page 2", icon=":material/settings:"),
+    ]
+)
 
-st.set_page_config("Mega tester app", "🎈", initial_sidebar_state="collapsed")
+st.set_page_config("Advanced theming demo", "🎈", initial_sidebar_state="collapsed")
 
 st.sidebar.header("Hello Sidebar")
 
 st.sidebar.text_input("text input")
 st.sidebar.success("Wohooo")
 
+with st.expander("Instructions"):
+    st.write(
+        """
+Welcome to the demo app for advanced theming in Streamlit. 👋
 
-with st.popover("Theme Editor"):
+You can try advanced theming in two ways:
+
+1. Use the interactive theme editor below to tweak the theme live. You need to
+    click "Apply theme" at the bottom to apply your changes.Note that
+    this theme is saved globally, so changes from other users will overwrite your
+    changes.
+2. Download the [wheel file](https://core-previews.s3-us-west-2.amazonaws.com/pr-9724/streamlit-1.40.1-py2.py3-none-any.whl),
+    use it for your own app, and add a file `.streamlit/config.toml` to the app
+    directory. You can then add the following items to the file:
+
+    ```toml
+    [theme]
+    base = "dark"  # dark or light
+
+    primaryColor="#1BD760"
+    backgroundColor="#181818"
+    secondaryBackgroundColor="#2C2C2C"
+    textColor="#FFFFFF"
+    linkColor = "#1BD760"
+
+    sidebarBackgroundColor = "#FFFFFF"
+    sidebarSecondaryBackgroundColor = "#f0f2f6"
+    sidebarTextColor = "#000000"
+    sidebarShadow = true
+
+    roundedness = 0.2  # from 0 to 1
+
+    fontSize = 16  # in px
+    bodyFont = '"Signika", sans-serif'  # need to define the font face, see below
+    headingFont = '"Playwrite", cursive'  # need to define the font face, see below
+    codeFont = '"Source Code Pro", monospace'  # need to define the font face, see below
+
+    [client]
+    hideTopDecoration = true  # hides the red-yellow line at the top
+    ```
+
+    To use custom fonts, you currently need to manually add the font faces to the
+    `.streamlit/config.toml` file (we'll simplify this later):
+
+    ```toml
+    [[theme.fontFaces]]
+    url = "https://fonts.gstatic.com/s/playwritegbs/v5/oPWW_kFkk-s1Xclhmlemy7jsNR5ybH6ezg.woff2"
+    family = "Playwrite"
+    style = "normal"
+
+    [[theme.fontFaces]]
+    url = "https://fonts.gstatic.com/s/signika/v25/vEFO2_JTCgwQ5ejvMV0Ox_Kg1UwJ0tKfX6bBjM7-f7e0.woff2"
+    weight = 200
+    family = "Signika"
+    style = "normal"
+    ```
+
+    To get the font faces for a font from Google Fonts, just go to the font's page
+    (e.g. for [Inter](https://fonts.google.com/specimen/Inter)), click on "Get font",
+    then on "Get embed code", then copy/paste the font link that's shown in the embed
+    code on the right (starts with `https://fonts.googleapis.com/css2?family=`) into your
+    browser's address bar, and that should give you the code for the font faces.
+        """
+    )
+
+with st.popover("Interactive theme editor"):
     with st.form("theme_editor", border=False):
         base_theme = st.selectbox(
             "Base theme",
@@ -69,6 +138,10 @@ with st.popover("Theme Editor"):
             secondary_color = st.color_picker(
                 "Secondary color",
                 value=get_option("theme.secondaryColor") or "#1BD760",
+            )
+            border_color = st.color_picker(
+                "Border color",
+                value=get_option("theme.borderColor") or "#31333F",
             )
         with col2:
             secondary_background_color = st.color_picker(
@@ -173,45 +246,71 @@ with st.popover("Theme Editor"):
             set_option("theme.codeFont", code_font)
             set_option("theme.inputFieldBorder", show_input_field_border)
             set_option("theme.secondaryColor", secondary_color)
+            set_option("theme.borderColor", border_color)
             st.rerun()
 
 # st.html("app_styles.html")
 st.logo(
-    "https://upload.wikimedia.org/wikipedia/commons/2/26/Spotify_logo_with_text.svg",
+    "https://streamlit.io/images/brand/streamlit-mark-color.png",
     size="medium",
 )
 
 
-st.title("🎈 Mega tester app")
+st.title("🎈 Advanced theming demo")
 
-st.write(
-    "This app tests all Streamlit commands in one app. It uses `streamlit-nightly`, so "
-    "you always see the latest state of Streamlit's `develop` branch."
-)
 
 "## Write and magic"
-st.write("hello from st.write")
-"hello from magic"
+st.write("st.write")
+"magic"
 
 
 "## Text elements"
-st.markdown("hello from st.markdown")
-st.title("hello from st.title")
-st.header("hello from st.header")
-st.subheader("hello from st.subheader")
-st.caption("hello from st.caption")
-st.code("# hello from st.code\na = 1234")
-# with st.echo():
-#     st.write("hello from st.echo")
-st.text("hello from st.text")
+st.markdown("st.markdown")
+st.markdown("st.markdown with help", help="Hello!")
+st.markdown(
+    "Markdown features: **bold** *italic* ~strikethrough~ `code` $a=b$ 🐶 :cat: :material/home:"
+)
+st.markdown("""
+Text colors:
+
+:blue[blue] :green[green] :orange[orange] :red[red] :violet[violet] :gray[gray] :rainbow[rainbow]
+
+:blue-background[blue] :green-background[green] :orange-background[orange] :red-background[red] :violet-background[violet] :gray-background[gray] :rainbow-background[rainbow]
+
+:blue-background[:blue[blue]] :green-background[:green[green]] :orange-background[:orange[orange]] :red-background[:red[red]] :violet-background[:violet[violet]] :gray-background[:gray[gray]] :rainbow-background[:rainbow[rainbow]]
+""")
+st.title("st.title", help="Hello!")
+st.title("st.title with help", help="Hello!")
+st.header("st.header")
+st.header("st.header with help", help="Hello!")
+st.header("st.header with blue divider", divider="blue")
+st.header("st.header with green divider", divider="green")
+st.header("st.header with orange divider", divider="orange")
+st.header("st.header with red divider", divider="red")
+st.header("st.header with violet divider", divider="violet")
+st.header("st.header with gray divider", divider="gray")
+st.header("st.header with rainbow divider", divider="rainbow")
+st.subheader("st.subheader")
+st.subheader("st.subheader with help", help="Hello!")
+st.caption("st.caption")
+st.caption("st.caption with help", help="Hello!")
+st.code("# st.code\na = 1234")
+st.code("# st.code with line numbers\na = 1234", line_numbers=True)
+st.code(
+    '# st.code with line wrapping\na = "This is a very very very very very very very very very very very very long string"',
+    wrap_lines=True,
+)
+with st.echo():
+    st.write("st.echo")
 st.latex(r"\int a x^2 \,dx")
+st.latex(r"\int a x^2 \,dx", help="Hello!")
+st.text("st.text")
+st.text("st.text with help", help="Hello!")
 st.divider()
 
-st.write(
-    "Here's a [link](https://streamlit.io) and here is :blue[blue], :green[green], :red[red], :violet[violet], and :orange[orange] and here is :blue-background[blue background], :green-background[green background], :red-background[red background], :violet-background[violet background], and :orange-background[orange background]"
-)
 
 "## Data elements"
+np.random.seed(42)
 data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
 
 "st.dataframe"
@@ -277,22 +376,49 @@ st.data_editor(
 "st.table"
 st.table(data.iloc[0:5])
 
-st.metric("st.metric", 42, 2)
+col1, col2 = st.columns(2)
+col1.metric("st.metric positive", 42, 2)
+col2.metric("st.metric negative", 42, -2)
 
 "st.json"
-st.json(data.iloc[0:2].to_dict())
+st.json(
+    {
+        "foo": "bar",
+        "numbers": [
+            123,
+            4.56,
+        ],
+        "level1": {"level2": {"level3": {"a": "b"}}},
+    },
+    expanded=2,
+)
 
 
 "## Chart elements"
 data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
 "st.area_chart"
-st.area_chart(data)
-"st.line_chart"
-st.line_chart(data)
+stack = st.radio(
+    "stack",
+    [None, True, False, "normalize", "center"],
+    horizontal=True,
+    key="area_chart_stack",
+)
+st.area_chart(data, x_label="x label", y_label="y label", stack=stack)
 "st.bar_chart"
-st.bar_chart(data)
+horizontal = st.toggle("horizontal", False)
+stack = st.radio(
+    "stack",
+    [None, True, False, "normalize", "center"],
+    horizontal=True,
+    key="bar_chart_stack",
+)
+st.bar_chart(
+    data, x_label="x label", y_label="y label", horizontal=horizontal, stack=stack
+)
+"st.line_chart"
+st.line_chart(data, x_label="x label", y_label="y label")
 "st.scatter_chart"
-st.scatter_chart(data)
+st.scatter_chart(data, x_label="x label", y_label="y label")
 
 "st.map"
 df = pd.DataFrame(
@@ -409,8 +535,13 @@ st.graphviz_chart(
 
 
 "## Input widgets"
-button_input = st.button("st.button")
-if button_input:
+if st.button("st.button"):
+    st.write("You pressed the button!")
+
+if st.button("st.button primary", type="primary"):
+    st.write("You pressed the button!")
+
+if st.button("st.button with icon", icon=":material/home:"):
     st.write("You pressed the button!")
 
 text_contents = "This is some text"
@@ -421,6 +552,8 @@ st.feedback()
 
 st.link_button("st.link_button", "https://streamlit.io")
 
+st.page_link("https://streamlit.io", label="st.page_link", icon=":material/home:")
+
 checkbox_input = st.checkbox("st.checkbox")
 st.write(f"Your checkbox input is {checkbox_input}!")
 
@@ -428,6 +561,9 @@ toggle_input = st.toggle("st.toggle")
 st.write(f"Your toggle input is {toggle_input}!")
 
 radio_input = st.radio("st.radio", ["cat", "dog"])
+st.write(f"Your radio input is {radio_input}!")
+
+radio_input = st.radio("st.radio horizontal", ["cat", "dog"], horizontal=True)
 st.write(f"Your radio input is {radio_input}!")
 
 selectbox_input = st.selectbox("st.selectbox", ["cat", "dog"])
@@ -460,6 +596,9 @@ st.write(f"Your text input is {text_input}!")
 text_area_input = st.text_area("st.text_area")
 st.write(f"Your text_area input is {text_area_input}!")
 
+audio_input = st.audio_input("st.audio_input")
+st.write(f"Your audio input is {audio_input}!")
+
 file_input = st.file_uploader("st.file_input")
 
 if st.toggle("Show camera input (requires camera permission)", False):
@@ -489,11 +628,8 @@ a, b = st.columns(2)
 a.write("column 1")
 b.write("column 2")
 
-st.container().write("st.container")
-st.container(border=True).write("st.container with border")
-st.container(height=150).write(
-    "st.container with fixed height\n\n1\n\n2\n\n3\n\n4\n\n5"
-)
+c = st.container()
+c.write("st.container")
 
 
 @st.dialog("Test dialog")
@@ -515,6 +651,7 @@ with st.expander("st.expander"):
 with st.popover("st.popover"):
     st.write("works!")
 
+st.sidebar.write("st.sidebar")
 
 "st.tabs"
 tab_a, tab_b = st.tabs(["tab 1", "tab 2"])
@@ -531,7 +668,6 @@ else:
     st.container().chat_input()
 
 "st.chat_message"
-st.chat_message("user").write("Hello!")
 st.chat_message("assistant").write("Hello there!")
 
 if st.button("Start st.status"):
@@ -560,6 +696,7 @@ if st.button("st.progress"):
     my_bar = st.progress(0)
     for percent_complete in range(100):
         my_bar.progress(percent_complete + 1)
+        time.sleep(0.05)
 
 if st.button("st.spinner"):
     with st.spinner("Wait!"):
@@ -576,9 +713,13 @@ if st.button("st.snow"):
     st.snow()
 
 st.success("st.success")
+st.success("st.success with icon", icon=":material/home:")
 st.info("st.info")
+st.info("st.info with icon", icon=":material/home:")
 st.warning("st.warning")
+st.warning("st.warning with icon", icon=":material/home:")
 st.error("st.error")
+st.error("st.error with icon", icon=":material/home:")
 st.exception(RuntimeError("st.exception"))
 
 
