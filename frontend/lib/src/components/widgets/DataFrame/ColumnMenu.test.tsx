@@ -32,6 +32,8 @@ describe("DataFrame ColumnMenu", () => {
     onUnpinColumn: vi.fn(),
     onCloseMenu: vi.fn(),
     onSortColumn: vi.fn(),
+    columnKind: "number",
+    changeFormat: vi.fn(),
   }
 
   beforeEach(() => {
