@@ -41,7 +41,6 @@ export interface ToastProps {
   theme: EmotionTheme
   body: string
   icon?: string
-  width: number
 }
 
 function generateToastOverrides(theme: EmotionTheme): ToastOverrides {
@@ -116,7 +115,6 @@ export function Toast({
   theme,
   body,
   icon,
-  width,
 }: Readonly<ToastProps>): ReactElement {
   const displayMessage = shortenMessage(body)
   const shortened = body !== displayMessage
@@ -202,7 +200,6 @@ export function Toast({
       kind={Kind.ERROR}
       body="Streamlit API Error: `st.toast` cannot be called directly on the sidebar with `st.sidebar.toast`.
         See our `st.toast` API [docs](https://docs.streamlit.io/develop/api-reference/status/st.toast) for more information."
-      width={width}
     />
   )
   return (

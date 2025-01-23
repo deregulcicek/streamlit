@@ -40,6 +40,7 @@ import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { COMMUNITY_URL, COMPONENT_DEVELOPER_URL } from "~lib/urls"
 import { ensureError } from "~lib/util/ErrorHandling"
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import { ComponentRegistry } from "./ComponentRegistry"
 import {
@@ -65,7 +66,7 @@ export interface Props {
   widgetMgr: WidgetStateManager
   disabled: boolean
   element: ComponentInstanceProto
-  width: number
+  width?: number
   theme: EmotionTheme
   fragmentId?: string
 }
@@ -369,7 +370,6 @@ function ComponentInstance(props: Props): ReactElement {
     // eslint-disable-next-line react-compiler/react-compiler
     !isReadyRef.current && isReadyTimeout ? (
       <AlertElement
-        width={width}
         body={getWarnMessage(componentName, url)}
         kind={Kind.WARNING}
       />
@@ -413,4 +413,4 @@ function ComponentInstance(props: Props): ReactElement {
   )
 }
 
-export default withTheme(ComponentInstance)
+export default withCalculatedWidth(withTheme(ComponentInstance))

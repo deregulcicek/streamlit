@@ -19,6 +19,7 @@ import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -51,6 +52,7 @@ import {
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "~lib/FileUploadClient"
 import { getAccept } from "~lib/components/widgets/FileUploader/FileDropzone"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   StyledChatInput,
@@ -68,7 +70,6 @@ export interface Props {
   disabled: boolean
   element: ChatInputProto
   widgetMgr: WidgetStateManager
-  width: number
   uploadClient: FileUploadClient
   fragmentId?: string
 }
@@ -92,7 +93,6 @@ const getFile = (
 ): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
 
 function ChatInput({
-  width,
   element,
   widgetMgr,
   fragmentId,
@@ -103,6 +103,11 @@ function ChatInput({
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
   const counterRef = useRef(0)
   const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
+
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   // True if the user-specified state.value has not yet been synced to the WidgetStateManager.
   const [dirty, setDirty] = useState(false)
@@ -405,7 +410,7 @@ function ChatInput({
           showDropzone ? `${containerClass} dropzone` : containerClass
         }
         data-testid="stChatInput"
-        width={width}
+        ref={elementRef}
       >
         <StyledChatInput>
           {acceptFile === AcceptFileValue.None ? null : (

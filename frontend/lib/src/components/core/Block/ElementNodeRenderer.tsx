@@ -87,6 +87,7 @@ import { FormSubmitContent } from "~lib/components/widgets/Form"
 import Heading from "~lib/components/shared/StreamlitMarkdown/Heading"
 import { LibContext } from "~lib/components/core/LibContext"
 import { getElementId } from "~lib/util/utils"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import {
   BaseBlockProps,
@@ -95,7 +96,7 @@ import {
   isComponentStale,
   shouldComponentBeEnabled,
 } from "./utils"
-import { StyledElementContainer } from "./styled-components"
+import { StyledElementContainerLayoutWrapper } from "./StyledElementContainerLayoutWrapper"
 
 // Lazy-load elements.
 const Audio = React.lazy(() => import("~lib/components/elements/Audio"))
@@ -118,7 +119,9 @@ const BokehChart = React.lazy(
 
 // RTL ESLint triggers a false positive on this render function
 // eslint-disable-next-line testing-library/render-result-naming-convention
-const DebouncedBokehChart = debounceRender(BokehChart, 100)
+const DebouncedBokehChart = withCalculatedWidth(
+  debounceRender(BokehChart, 100)
+)
 
 const DeckGlJsonChart = React.lazy(
   () => import("~lib/components/elements/DeckGlJsonChart")
@@ -187,7 +190,7 @@ const StreamlitSyntaxHighlighter = React.lazy(
 
 export interface ElementNodeRendererProps extends BaseBlockProps {
   node: ElementNode
-  width: number
+  width: React.CSSProperties["width"]
 }
 
 interface RawElementNodeRendererProps extends ElementNodeRendererProps {
@@ -209,7 +212,6 @@ const RawElementNodeRenderer = (
   }
 
   const elementProps = {
-    width: props.width,
     disableFullscreenMode: props.disableFullscreenMode,
   }
 
@@ -720,9 +722,10 @@ const ElementNodeRenderer = (
   props: ElementNodeRendererProps
 ): ReactElement => {
   const { isFullScreen, fragmentIdsThisRun } = React.useContext(LibContext)
-  const { node, width } = props
+  const { node, width: propsWidth } = props
 
   const elementType = node.element.type || ""
+
   const enable = shouldComponentBeEnabled(elementType, props.scriptRunState)
   const isStale = isComponentStale(
     enable,
@@ -742,7 +745,7 @@ const ElementNodeRenderer = (
 
   return (
     <Maybe enable={enable}>
-      <StyledElementContainer
+      <StyledElementContainerLayoutWrapper
         className={classNames(
           "stElementContainer",
           "element-container",
@@ -753,10 +756,11 @@ const ElementNodeRenderer = (
         // Applying stale opacity in fullscreen mode
         // causes the fullscreen overlay to be transparent.
         isStale={isStale && !isFullScreen}
-        width={width}
+        width={propsWidth}
         elementType={elementType}
+        node={node}
       >
-        <ErrorBoundary width={width}>
+        <ErrorBoundary>
           <Suspense
             fallback={
               <Skeleton
@@ -769,7 +773,7 @@ const ElementNodeRenderer = (
             <RawElementNodeRenderer {...props} isStale={isStale} />
           </Suspense>
         </ErrorBoundary>
-      </StyledElementContainer>
+      </StyledElementContainerLayoutWrapper>
     </Maybe>
   )
 }

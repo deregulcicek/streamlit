@@ -26,7 +26,6 @@ import {
 import { StyledText } from "./styled-components"
 
 export interface TextProps {
-  width: number
   element: TextProto
 }
 
@@ -34,16 +33,10 @@ export interface TextProps {
  * Functional element representing preformatted (plain) text.
  */
 export default function TextElement({
-  width,
   element,
 }: Readonly<TextProps>): ReactElement {
-  const styleProp = { width }
   return (
-    <StyledLabelHelpWrapper
-      style={styleProp}
-      className="stText"
-      data-testid="stText"
-    >
+    <StyledLabelHelpWrapper className="stText" data-testid="stText">
       <StyledText>{element.body}</StyledText>
       {element.help && <InlineTooltipIcon content={element.help} />}
     </StyledLabelHelpWrapper>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback, useState } from "react"
+import React, { ReactElement, useCallback, useMemo, useState } from "react"
 
 import uniqueId from "lodash/uniqueId"
 import { Input as UIInput } from "baseui/input"
@@ -38,6 +38,7 @@ import {
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
 import { isInForm, labelVisibilityProtoValueToEnum } from "~lib/util/utils"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import { StyledTextInput } from "./styled-components"
 
@@ -45,7 +46,6 @@ export interface Props {
   disabled: boolean
   element: TextInputProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -53,7 +53,6 @@ function TextInput({
   disabled,
   element,
   widgetMgr,
-  width,
   fragmentId,
 }: Props): ReactElement {
   /**
@@ -63,6 +62,11 @@ function TextInput({
   const [uiValue, setUiValue] = useState<string | null>(
     getStateFromWidgetMgr(widgetMgr, element) ?? null
   )
+
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   /**
    * True if the user-specified state.value has not yet been synced to the WidgetStateManager.
@@ -144,7 +148,7 @@ function TextInput({
     <StyledTextInput
       className="stTextInput"
       data-testid="stTextInput"
-      width={width}
+      ref={elementRef}
     >
       <WidgetLabel
         label={element.label}

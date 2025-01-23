@@ -44,7 +44,6 @@ const getProps = (
     options: [],
     ...elementProps,
   }),
-  width: 600,
   disabled: false,
   widgetMgr: new WidgetStateManager({
     sendRerunBackMsg: vi.fn(),

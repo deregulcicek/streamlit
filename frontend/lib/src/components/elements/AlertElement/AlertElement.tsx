@@ -46,7 +46,6 @@ export interface AlertElementProps {
   body: string
   icon?: string
   kind: Kind
-  width: number
 }
 
 /**
@@ -56,7 +55,6 @@ export default function AlertElement({
   icon,
   body,
   kind,
-  width,
 }: Readonly<AlertElementProps>): ReactElement {
   const theme: EmotionTheme = useTheme()
   const markdownWidth = {
@@ -68,7 +66,7 @@ export default function AlertElement({
 
   return (
     <div className="stAlert" data-testid="stAlert">
-      <AlertContainer width={width} kind={kind}>
+      <AlertContainer kind={kind}>
         <StyledAlertContent>
           {icon && (
             <DynamicIcon

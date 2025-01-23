@@ -26,6 +26,7 @@ import {
 import { render } from "~lib/test_util"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { mockTheme } from "~lib/mocks/mockTheme"
+import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 
 import {
   canDecrement,
@@ -43,7 +44,6 @@ const getProps = (elementProps: Partial<NumberInputProto> = {}): Props => ({
     hasMax: false,
     ...elementProps,
   }),
-  width: 300,
   disabled: false,
   theme: mockTheme.emotion,
   widgetMgr: new WidgetStateManager({
@@ -75,6 +75,14 @@ const getFloatProps = (
 }
 
 describe("NumberInput widget", () => {
+  beforeEach(() => {
+    vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+      elementRef: React.createRef(),
+      forceRecalculate: vitest.fn(),
+      values: [250],
+    })
+  })
+
   it("renders without crashing", () => {
     const props = getIntProps()
     render(<NumberInput {...props} />)
@@ -609,8 +617,14 @@ describe("NumberInput widget", () => {
     })
 
     it("hides stepUp and stepDown buttons when width is smaller than 120px", () => {
+      vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+        elementRef: React.createRef(),
+        forceRecalculate: vitest.fn(),
+        values: [100],
+      })
+
       const props = getIntProps({ default: 1, step: 1, max: 2, hasMax: true })
-      render(<NumberInput {...props} width={100} />)
+      render(<NumberInput {...props} />)
 
       expect(
         screen.queryByTestId("stNumberInputStepUp")
@@ -622,16 +636,22 @@ describe("NumberInput widget", () => {
 
     it("shows stepUp and stepDown buttons when width is bigger than 120px", () => {
       const props = getIntProps({ default: 1, step: 1, max: 2, hasMax: true })
-      render(<NumberInput {...props} width={185} />)
+      render(<NumberInput {...props} />)
 
       expect(screen.getByTestId("stNumberInputStepUp")).toBeInTheDocument()
       expect(screen.getByTestId("stNumberInputStepDown")).toBeInTheDocument()
     })
 
     it("hides Please enter to apply text when width is smaller than 120px", async () => {
+      vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+        elementRef: React.createRef(),
+        forceRecalculate: vitest.fn(),
+        values: [100],
+      })
+
       const user = userEvent.setup()
       const props = getIntProps({ default: 1, step: 1, max: 20, hasMax: true })
-      render(<NumberInput {...props} width={100} />)
+      render(<NumberInput {...props} />)
       const numberInput = screen.getByTestId("stNumberInputField")
 
       // userEvent necessary to trigger dirty state
@@ -644,7 +664,7 @@ describe("NumberInput widget", () => {
     it("shows Please enter to apply text when width is bigger than 120px", async () => {
       const user = userEvent.setup()
       const props = getIntProps({ default: 1, step: 1, max: 20, hasMax: true })
-      render(<NumberInput {...props} width={185} />)
+      render(<NumberInput {...props} />)
       const numberInput = screen.getByTestId("stNumberInputField")
 
       // userEvent necessary to trigger dirty state

@@ -18,6 +18,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -48,6 +49,7 @@ import {
   WidgetLabel,
 } from "~lib/components/widgets/BaseWidget"
 import { EmotionTheme } from "~lib/theme"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   StyledInputContainer,
@@ -166,7 +168,6 @@ export interface Props {
   disabled: boolean
   element: NumberInputProto
   widgetMgr: WidgetStateManager
-  width: number
   theme: EmotionTheme
   fragmentId?: string
 }
@@ -175,7 +176,6 @@ export const NumberInput: React.FC<Props> = ({
   disabled,
   element,
   widgetMgr,
-  width,
   theme,
   fragmentId,
 }: Props): ReactElement => {
@@ -188,6 +188,11 @@ export const NumberInput: React.FC<Props> = ({
   } = element
   const min = element.hasMin ? element.min : -Infinity
   const max = element.hasMax ? element.max : +Infinity
+
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const [step, setStep] = useState<number>(getStep(element))
   const initialValue = getInitialValue({ element, widgetMgr })
@@ -401,7 +406,7 @@ export const NumberInput: React.FC<Props> = ({
     <div
       className="stNumberInput"
       data-testid="stNumberInput"
-      style={{ width }}
+      ref={elementRef}
     >
       <WidgetLabel
         label={element.label}

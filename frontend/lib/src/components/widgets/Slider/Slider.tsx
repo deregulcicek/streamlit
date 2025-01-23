@@ -57,7 +57,6 @@ export interface Props {
   disabled: boolean
   element: SliderProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -65,7 +64,6 @@ function Slider({
   disabled,
   element,
   widgetMgr,
-  width,
   fragmentId,
 }: Props): ReactElement {
   const [value, setValueWithSource] = useBasicWidgetState<
@@ -95,7 +93,6 @@ function Slider({
   >([])
 
   const { colors, fonts, fontSizes, spacing } = useTheme()
-  const style = { width }
 
   const formattedValueArr = uiValue.map(v => formatValue(v, element))
   const formattedMinValue = formatValue(element.min, element)
@@ -240,12 +237,7 @@ function Slider({
   )
 
   return (
-    <div
-      ref={sliderRef}
-      className="stSlider"
-      data-testid="stSlider"
-      style={style}
-    >
+    <div ref={sliderRef} className="stSlider" data-testid="stSlider">
       <WidgetLabel
         label={element.label}
         disabled={disabled}

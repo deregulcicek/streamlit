@@ -55,7 +55,6 @@ const getProps = (
     ...mockTheme.emotion,
     ...themeProps,
   },
-  width: 0,
   ...elementProps,
 })
 
