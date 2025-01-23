@@ -27,8 +27,6 @@ import {
   getHostSpecifiedTheme,
   ICustomThemeConfig,
   isPresetTheme,
-  removeCachedTheme,
-  setCachedTheme,
   ThemeConfig,
 } from "@streamlit/lib"
 
@@ -57,14 +55,6 @@ export function useThemeManager(): [ThemeManager, object[]] {
     (newTheme: ThemeConfig): void => {
       if (newTheme !== theme) {
         setTheme(newTheme)
-
-        // Only save to localStorage if it is not Auto since auto is the default.
-        // Important to not save since it can change depending on time of day.
-        if (newTheme.name === AUTO_THEME_NAME) {
-          removeCachedTheme()
-        } else {
-          setCachedTheme(newTheme)
-        }
       }
     },
     [setTheme, theme]
