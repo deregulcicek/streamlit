@@ -38,6 +38,8 @@ import ChatMessage from "~lib/components/elements/ChatMessage"
 import Dialog from "~lib/components/elements/Dialog"
 import Expander from "~lib/components/elements/Expander"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
+import { FlexContextProvider } from "~lib/components/core/Flex/FlexContext"
 
 import {
   assignDividerColor,
@@ -195,6 +197,25 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return <Tabs {...tabsProps} />
   }
 
+  if (notNullOrUndefined(node.deltaBlock.horizontal?.direction)) {
+    return <FlexContextProvider direction="row">{child}</FlexContextProvider>
+  }
+
+  if (notNullOrUndefined(node.deltaBlock.vertical?.direction)) {
+    return (
+      <FlexContextProvider direction="column">{child}</FlexContextProvider>
+    )
+  }
+
+  if (
+    notNullOrUndefined(node.deltaBlock.vertical) ||
+    notNullOrUndefined(node.deltaBlock.horizontal)
+  ) {
+    // If we are creating a new container, we need to set the flex direction
+    // context to null to preserve existing measurement functionality.
+    return <FlexContextProvider direction={null}>{child}</FlexContextProvider>
+  }
+
   return child
 }
 
@@ -289,7 +310,7 @@ function ScrollToBottomVerticalBlockWrapper(
 // Python side.
 const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
   const wrapperElement = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = React.useState(-1)
+  const [calculatedWidth, setCalculatedWidth] = React.useState(-1)
 
   const observer = useMemo(
     () =>
@@ -303,14 +324,24 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
 
           // The width should never be set to 0 since it can cause
           // flickering effects.
-          setWidth(entry.target.getBoundingClientRect().width || -1)
+          setCalculatedWidth(entry.target.getBoundingClientRect().width || -1)
         })
       }),
-    [setWidth]
+    [setCalculatedWidth]
   )
 
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined
+  const gap = props.node.deltaBlock.vertical?.gap ?? null
+  const verticalAlignment =
+    props.node.deltaBlock.vertical?.verticalAlignment ?? null
+  const horizontalAlignment =
+    props.node.deltaBlock.vertical?.horizontalAlignment ?? null
+  const wrap =
+    props.node.deltaBlock.vertical?.wrap ??
+    // "true" is the current behavior today and preserves it when there is no
+    // explicit flex value.
+    true
 
   const activateScrollToBottom =
     height &&
@@ -341,12 +372,18 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     ? ScrollToBottomVerticalBlockWrapper
     : StyledVerticalBlockBorderWrapper
 
-  const propsWithNewWidth = {
-    ...props,
-    ...{ width },
-  }
   // Extract the user-specified key from the block ID (if provided):
   const userKey = getKeyFromId(props.node.deltaBlock.id)
+  const { width } = useLayoutStyles({ width: calculatedWidth })
+
+  const propsWithNewWidth = {
+    ...props,
+    // TODO: CASTING TO `number` IS A HACK TO GET AROUND THE TYPE SYSTEM FOR NOW
+    // All downstream components expect a number. But in this world, we are only
+    // providing number | undefined to let it size itself. Any real solution will
+    // update the type system everywhere, but this is just a prototype.
+    ...{ width: width as number },
+  }
 
   // Widths of children autosizes to container width (and therefore window width).
   // StyledVerticalBlocks are the only things that calculate their own widths. They should never use
@@ -364,6 +401,10 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
       <StyledVerticalBlockWrapper ref={wrapperElement}>
         <StyledVerticalBlock
           width={width}
+          gap={gap}
+          verticalAlignment={verticalAlignment}
+          horizontalAlignment={horizontalAlignment}
+          wrap={wrap}
           className={classNames(
             "stVerticalBlock",
             convertKeyToClassName(userKey)
@@ -382,10 +423,18 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   // The children are always columns, but this is not checked. We just trust the Python side to
   // do the right thing, then we ask ChildRenderer to handle it.
   const gap = props.node.deltaBlock.horizontal?.gap ?? ""
+  const verticalAlignment =
+    props.node.deltaBlock.horizontal?.verticalAlignment ?? null
+  const horizontalAlignment =
+    props.node.deltaBlock.horizontal?.horizontalAlignment ?? null
+  const wrap = props.node.deltaBlock.horizontal?.wrap ?? false
 
   return (
     <StyledHorizontalBlock
       gap={gap}
+      verticalAlignment={verticalAlignment}
+      horizontalAlignment={horizontalAlignment}
+      wrap={wrap}
       className="stHorizontalBlock"
       data-testid="stHorizontalBlock"
     >

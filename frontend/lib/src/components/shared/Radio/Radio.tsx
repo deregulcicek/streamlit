@@ -33,6 +33,7 @@ import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { LabelVisibilityOptions } from "~lib/util/utils"
 import { Placement } from "~lib/components/shared/Tooltip"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown/StreamlitMarkdown"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
@@ -85,7 +86,7 @@ function Radio({
 
   const theme = useTheme()
   const { colors, radii } = theme
-  const style = { width }
+  const style = useLayoutStyles({ width })
   const hasCaptions = captions.length > 0
   const hasOptions = options.length > 0
   const cleanedOptions = hasOptions ? options : ["No options to select."]

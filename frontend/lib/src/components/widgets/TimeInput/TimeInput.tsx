@@ -38,6 +38,7 @@ import {
   isNullOrUndefined,
   labelVisibilityProtoValueToEnum,
 } from "~lib/util/utils"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import { StyledClearIconContainer } from "./styled-components"
 
@@ -70,7 +71,7 @@ function TimeInput({
   })
 
   const clearable = isNullOrUndefined(element.default) && !disabled
-  const style = { width }
+  const style = useLayoutStyles({ width })
   const theme = useTheme()
 
   const selectOverrides = {

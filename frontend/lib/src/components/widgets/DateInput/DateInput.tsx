@@ -46,6 +46,7 @@ import {
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
 import { LibContext } from "~lib/components/core/LibContext"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 import { EmotionTheme } from "~lib/theme"
 
 import { useIntlLocale } from "./useIntlLocale"
@@ -107,7 +108,7 @@ function DateInput({
   const { locale } = useContext(LibContext)
   const loadedLocale = useIntlLocale(locale)
 
-  const style = { width }
+  const style = useLayoutStyles({ width })
   const minDate = moment(element.min, DATE_FORMAT).toDate()
   const maxDate = getMaxDate(element)
   const clearable = element.default.length === 0 && !disabled
