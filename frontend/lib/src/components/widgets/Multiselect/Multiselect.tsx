@@ -45,6 +45,7 @@ import {
   useBasicWidgetState,
   ValueWithSource,
 } from "~lib/hooks/useBasicWidgetState"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
@@ -191,7 +192,7 @@ const Multiselect: FC<Props> = props => {
     [overMaxSelections, value]
   )
 
-  const style = { width }
+  const style = useLayoutStyles({ width })
   const { options } = element
   const disabled = options.length === 0 ? true : props.disabled
   const placeholder =

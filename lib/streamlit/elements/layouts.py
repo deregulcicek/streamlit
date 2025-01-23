@@ -47,6 +47,14 @@ class LayoutsMixin:
         height: int | None = None,
         border: bool | None = None,
         key: Key | None = None,
+        # TODO: Move this Literal definition to somewhere shared
+        gap: Literal["small", "medium", "large"] | None = None,
+        direction: Literal["vertical", "horizontal"] | None = None,
+        horizontal_alignment: Literal["start", "center", "end", "stretch", "distribute"]
+        | None = None,
+        vertical_alignment: Literal["top", "center", "bottom", "stretch", "distribute"]
+        | None = None,
+        wrap: bool | None = False,
     ) -> DeltaGenerator:
         """Insert a multi-element container.
 
@@ -171,6 +179,40 @@ class LayoutsMixin:
             block_proto.id = compute_and_register_element_id(
                 "container", user_key=key, form_id=None
             )
+
+        if direction == "vertical":
+            # Large is the default to match the previous behavior in `StyledVerticalBlock`
+            block_proto.vertical.gap = gap if gap else "large"
+            block_proto.vertical.direction = BlockProto.Vertical.Direction.TOP_TO_BOTTOM
+            block_proto.vertical.wrap = wrap if wrap is not None else False
+
+            if horizontal_alignment is not None:
+                block_proto.vertical.horizontal_alignment = getattr(
+                    BlockProto.Vertical.HorizontalAlignment,
+                    f"HORIZONTAL_{horizontal_alignment.upper()}",
+                )
+            if vertical_alignment is not None:
+                block_proto.vertical.vertical_alignment = getattr(
+                    BlockProto.Vertical.VerticalAlignment,
+                    f"VERTICAL_{vertical_alignment.upper()}",
+                )
+        elif direction == "horizontal":
+            block_proto.horizontal.gap = gap if gap else "small"
+            block_proto.horizontal.direction = (
+                BlockProto.Horizontal.Direction.START_TO_END
+            )
+            block_proto.horizontal.wrap = wrap if wrap is not None else False
+
+            if horizontal_alignment is not None:
+                block_proto.horizontal.horizontal_alignment = getattr(
+                    BlockProto.Horizontal.HorizontalAlignment,
+                    f"HORIZONTAL_{horizontal_alignment.upper()}",
+                )
+            if vertical_alignment is not None:
+                block_proto.horizontal.vertical_alignment = getattr(
+                    BlockProto.Horizontal.VerticalAlignment,
+                    f"VERTICAL_{vertical_alignment.upper()}",
+                )
 
         return self.dg._block(block_proto)
 

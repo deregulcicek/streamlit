@@ -43,6 +43,7 @@ import {
 } from "~lib/components/widgets/BaseWidget"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import {
   StyledThumb,
@@ -95,7 +96,7 @@ function Slider({
   >([])
 
   const { colors, fonts, fontSizes, spacing } = useTheme()
-  const style = { width }
+  const style = useLayoutStyles({ width })
 
   const formattedValueArr = uiValue.map(v => formatValue(v, element))
   const formattedMinValue = formatValue(element.min, element)

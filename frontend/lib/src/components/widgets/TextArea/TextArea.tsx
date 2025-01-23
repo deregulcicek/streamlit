@@ -39,6 +39,7 @@ import {
   useBasicWidgetState,
   ValueWithSource,
 } from "~lib/hooks/useBasicWidgetState"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
@@ -163,7 +164,7 @@ const TextArea: FC<Props> = ({
     true
   )
 
-  const style = { width }
+  const style = useLayoutStyles({ width })
   const { height, placeholder, formId } = element
 
   // Show "Please enter" instructions if in a form & allowed, or not in form and state is dirty.
