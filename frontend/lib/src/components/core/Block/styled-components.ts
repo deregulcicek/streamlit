@@ -75,10 +75,10 @@ const getJustifyContent = (
     case BlockProto.Vertical.Justify.JUSTIFY_END:
       return "end"
     case BlockProto.Horizontal.Justify.SPACE_AROUND:
-      case BlockProto.Vertical.Justify.SPACE_AROUND:
+    case BlockProto.Vertical.Justify.SPACE_AROUND:
       return "space-around"
     case BlockProto.Horizontal.Justify.SPACE_BETWEEN:
-      case BlockProto.Vertical.Justify.SPACE_BETWEEN:
+    case BlockProto.Vertical.Justify.SPACE_BETWEEN:
       return "space-between"
     case BlockProto.Horizontal.Justify.SPACE_EVENLY:
     case BlockProto.Vertical.Justify.SPACE_EVENLY:
@@ -118,15 +118,17 @@ export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
 
 export interface StyledElementContainerProps {
   isStale: boolean
-  width: number | string | undefined
   flex: number | string | undefined
+  width: React.CSSProperties["width"]
+  maxWidth?: React.CSSProperties["maxWidth"]
   elementType: string
 }
 
 const GLOBAL_ELEMENTS = ["balloons", "snow"]
 export const StyledElementContainer = styled.div<StyledElementContainerProps>(
-  ({ theme, isStale, width, flex, elementType }) => ({
+  ({ theme, isStale, width, elementType, maxWidth, flex }) => ({
     width,
+    maxWidth,
     flex,
     // Allows to have absolutely-positioned nodes inside app elements, like
     // floating buttons.
@@ -225,19 +227,21 @@ export const StyledColumn = styled.div<StyledColumnProps>(
 
 export interface StyledVerticalBlockProps {
   ref?: React.RefObject<any>
-  width?: number | string
   align: BlockProto.Vertical.Align | BlockProto.Horizontal.Align | null
   justify: BlockProto.Vertical.Justify | BlockProto.Horizontal.Justify | null
   wrap: boolean
   gap: string | null
+  width?: React.CSSProperties["width"]
+  maxWidth?: React.CSSProperties["maxWidth"]
 }
 
 export const StyledVerticalBlock = styled.div<StyledVerticalBlockProps>(
-  ({ width, theme, align, justify, wrap, gap }) => {
+  ({ width, maxWidth, theme, align, justify, wrap, gap }) => {
     const gapWidth = gap ? translateGapWidth(gap, theme) : theme.spacing.lg
 
     return {
       width,
+      maxWidth,
       position: "relative", // Required for the automatic width computation.
       display: "flex",
       flex: 1,

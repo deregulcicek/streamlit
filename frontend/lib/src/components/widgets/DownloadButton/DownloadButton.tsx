@@ -83,7 +83,7 @@ function DownloadButton(props: Props): ReactElement {
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleDownloadClick}
-          fluidWidth={element.useContainerWidth}
+          fluidWidth={element.useContainerWidth || !!element.help}
         >
           <DynamicButtonLabel icon={element.icon} label={element.label} />
         </BaseButton>

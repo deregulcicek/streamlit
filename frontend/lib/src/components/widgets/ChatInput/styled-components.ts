@@ -17,30 +17,26 @@ import styled from "@emotion/styled"
 
 import { hasLightBackgroundColor } from "~lib/theme"
 
-export interface StyledChatInputContainerProps {
-}
+export const StyledChatInputContainer = styled.div(({ theme }) => {
+  return {
+    border: `${theme.sizes.borderWidth} solid`,
+    borderColor: theme.colors.widgetBorderColor ?? theme.colors.transparent,
+    borderRadius: theme.radii.chatInput,
+    display: "flex",
+    backgroundColor: theme.colors.secondaryBg,
+    overflow: "hidden",
 
-export const StyledChatInputContainer =
-  styled.div<StyledChatInputContainerProps>(({ theme }) => {
-    return {
-      border: `${theme.sizes.borderWidth} solid`,
-      borderColor: theme.colors.widgetBorderColor ?? theme.colors.transparent,
-      borderRadius: theme.radii.chatInput,
-      display: "flex",
-      backgroundColor: theme.colors.secondaryBg,
-      overflow: "hidden",
+    ":focus-within": {
+      borderColor: theme.colors.primary,
+    },
 
-      ":focus-within": {
-        borderColor: theme.colors.primary,
-      },
-
-      "&.dropzone": {
-        borderColor: theme.colors.primary,
-        borderRadius: theme.radii.full,
-        height: theme.sizes.emptyDropdownHeight,
-      },
-    }
-  })
+    "&.dropzone": {
+      borderColor: theme.colors.primary,
+      borderRadius: theme.radii.full,
+      height: theme.sizes.emptyDropdownHeight,
+    },
+  }
+})
 
 export const StyledChatInput = styled.div(({ theme }) => {
   return {

@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import styled from "@emotion/styled"
+import React, { FC } from "react"
 
-interface StyledIframeProps {
-  disableScrolling: boolean
-}
+import { useLayoutStyles } from "~lib/components/core/Layout/useLayoutStyles"
+import type { ElementNode } from "~lib/AppNode"
 
-export const StyledIframe = styled.iframe<StyledIframeProps>(
-  ({ theme, disableScrolling }) => ({
-    width: "100%",
-    colorScheme: "normal",
-    border: "none",
-    padding: theme.spacing.none,
-    margin: theme.spacing.none,
-    overflow: disableScrolling ? "hidden" : undefined,
+import { StyledElementContainer } from "./styled-components"
+
+export const StyledElementContainerLayoutWrapper: FC<
+  Omit<Parameters<typeof StyledElementContainer>[0], "width"> & {
+    node: ElementNode
+    width: React.CSSProperties["width"]
+  }
+> = ({ width, node, ...rest }) => {
+  const styles = useLayoutStyles({
+    width,
+    element:
+      (node.element?.type && node.element[node.element.type]) || undefined,
   })
-)
+
+  return <StyledElementContainer {...rest} {...styles} />
+}

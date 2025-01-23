@@ -82,8 +82,7 @@ function GraphVizChart({
 
   return (
     <StyledToolbarElementContainer
-      ref={elementRef}
-      width={width ?? "0"}
+      width={width ?? 0}
       height={height}
       useContainerWidth={isFullScreen || element.useContainerWidth}
     >

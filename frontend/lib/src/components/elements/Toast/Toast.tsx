@@ -111,10 +111,8 @@ export function shortenMessage(fullMessage: string): string {
   return fullMessage
 }
 
-function Toast({
-  body,
-  icon,
-}: Readonly<ToastProps>): ReactElement {
+function Toast({ body, icon }: Readonly<ToastProps>): ReactElement {
+  const theme: EmotionTheme = useTheme()
   const displayMessage = shortenMessage(body)
   const shortened = body !== displayMessage
 

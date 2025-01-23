@@ -89,7 +89,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
             data-testid="stPageLink-NavLink"
             disabled={disabled}
             isCurrentPage={isCurrentPage}
-            fluidWidth={useContainerWidth || false}
+            fluidWidth={useContainerWidth || !!element.help}
             href={element.page}
             target={element.external ? "_blank" : ""}
             rel="noreferrer"

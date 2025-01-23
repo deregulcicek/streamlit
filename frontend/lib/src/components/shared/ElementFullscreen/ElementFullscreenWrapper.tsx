@@ -22,6 +22,7 @@ import { StyledFullScreenFrame } from "~lib/components/shared/FullScreenWrapper/
 import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { EmotionTheme } from "~lib/theme"
 import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import { useFullscreen } from "./useFullscreen"
 
@@ -36,9 +37,10 @@ const ElementFullscreenWrapper: FC<ElementFullscreenWrapperProps> = ({
 }) => {
   const theme: EmotionTheme = useTheme()
   const { expanded, fullHeight, fullWidth, zoomIn, zoomOut } = useFullscreen()
-  const { value: calculatedWidth, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
-  const calculatedWidthAsInt = parseInt(calculatedWidth || "0", 10)
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const fullscreenContextValue = useMemo(() => {
     return {

@@ -24,6 +24,7 @@ import {
   BaseButtonTooltip,
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
+import { Box } from "~lib/components/shared/Base/styled-components"
 
 import BaseLinkButton from "./BaseLinkButton"
 
@@ -50,7 +51,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
   }
 
   return (
-    <div className="stLinkButton" data-testid="stLinkButton">
+    <Box className="stLinkButton" data-testid="stLinkButton">
       <BaseButtonTooltip help={element.help}>
         {/* We use separate BaseLinkButton instead of BaseButton here, because
         link behavior requires tag <a> instead of <button>.*/}
@@ -59,7 +60,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleClick}
-          fluidWidth={element.useContainerWidth}
+          fluidWidth={element.useContainerWidth || !!element.help}
           href={element.url}
           target="_blank"
           rel="noreferrer"
@@ -68,7 +69,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
           <DynamicButtonLabel icon={element.icon} label={element.label} />
         </BaseLinkButton>
       </BaseButtonTooltip>
-    </div>
+    </Box>
   )
 }
 

@@ -34,7 +34,7 @@ export interface BaseLinkButtonProps {
     | BaseButtonKind.TERTIARY
   size?: BaseButtonSize
   disabled?: boolean
-  // If true or number, the button should take up container's full width
+  // If true, the button should take up container's full width
   fluidWidth?: boolean
   children: ReactNode
   autoFocus?: boolean

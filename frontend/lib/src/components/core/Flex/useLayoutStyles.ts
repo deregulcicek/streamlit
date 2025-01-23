@@ -24,7 +24,12 @@ import { assertNever } from "~lib/util/assertNever"
 export type UseLayoutStylesArgs<T> = {
   width: number | undefined
   element:
-  | (T & { width?: number; useContainerWidth?: boolean | null; flex?: string; justifyRight?: boolean })
+    | (T & {
+        width?: number
+        useContainerWidth?: boolean | null
+        flex?: string
+        justifyRight?: boolean
+      })
     | undefined
 }
 
@@ -220,7 +225,6 @@ export const useLayoutStyles = <T>({
     }
 
     return styles
-
   }, [flexContext, useContainerWidth, elementWidth, containerWidth, element])
 
   return layoutStyles

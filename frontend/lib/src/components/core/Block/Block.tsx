@@ -20,7 +20,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
 } from "react"
 
 import classNames from "classnames"
@@ -40,6 +39,7 @@ import Expander from "~lib/components/elements/Expander"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
 import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 import { FlexContextProvider } from "~lib/components/core/Flex/FlexContext"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   assignDividerColor,
@@ -65,7 +65,7 @@ export interface BlockPropsWithoutWidth extends BaseBlockProps {
 
 interface BlockPropsWithWidth extends BaseBlockProps {
   node: BlockNode
-  width: number
+  width: React.CSSProperties["width"]
 }
 
 // Render BlockNodes (i.e. container nodes).
@@ -128,7 +128,6 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
       <Popover
         empty={node.isEmpty}
         element={node.deltaBlock.popover as BlockProto.Popover}
-        width={props.width}
       >
         {child}
       </Popover>
@@ -185,6 +184,16 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
   }
 
   if (node.deltaBlock.tabContainer) {
+    // This is to get around a number of scrolling + mounting/unmounting issues
+    // in the Tabs component. Only render the Tabs if we have a calculated
+    // width. Often, the first render from VerticalBlock will have a width of 0,
+    // which causes an issue where the tabs can be unnecessarily horizontally
+    // scrolled in Webkit/Safari. Once we have an actual width, we can render
+    // the Tabs component and avoid this issue.
+    if (!childProps.width) {
+      return <div />
+    }
+
     const renderTabContent = (
       mappedChildProps: JSX.IntrinsicAttributes & BlockPropsWithoutWidth
     ): ReactElement => {
@@ -200,12 +209,8 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return (
       <FlexContextProvider
         direction="row"
-        justify={
-          node.deltaBlock.horizontal?.justify ?? null
-        }
-        align={
-          node.deltaBlock.horizontal?.align ?? null
-        }
+        justify={node.deltaBlock.horizontal?.justify ?? null}
+        align={node.deltaBlock.horizontal?.align ?? null}
       >
         {child}
       </FlexContextProvider>
@@ -216,9 +221,7 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return (
       <FlexContextProvider
         direction="column"
-        align={
-          node.deltaBlock.vertical?.align ?? null
-        }
+        align={node.deltaBlock.vertical?.align ?? null}
         justify={node.deltaBlock.vertical?.justify ?? null}
       >
         {child}
@@ -233,11 +236,7 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     // If we are creating a new container, we need to set the flex direction
     // context to null to preserve existing measurement functionality.
     return (
-      <FlexContextProvider
-        direction={null}
-        align={null}
-        justify={null}
-      >
+      <FlexContextProvider direction={null} align={null} justify={null}>
         {child}
       </FlexContextProvider>
     )
@@ -336,38 +335,17 @@ function ScrollToBottomVerticalBlockWrapper(
 // Currently, only VerticalBlocks will ever contain leaf elements. But this is only enforced on the
 // Python side.
 const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
-  const wrapperElement = useRef<HTMLDivElement>(null)
-  const [calculatedWidth, setCalculatedWidth] = React.useState(-1)
-
-  // TODO: There is a bug when `activateScrollToBottom=true` and when the window resizes
-  // the calculated width gets crazy large. This can be reproduced by running the
-  // `e2e_playwright/st_chat_input.py` Streamlit app and resizing the window.
-
-  const observer = useMemo(
-    () =>
-      new ResizeObserver(([entry]) => {
-        // Since the setWidth will perform changes to the DOM,
-        // we need wrap it in a requestAnimationFrame to avoid this error:
-        // ResizeObserver loop completed with undelivered notifications.
-        window.requestAnimationFrame(() => {
-          // We need to determine the available width here to be able to set
-          // an explicit width for the `StyledVerticalBlock`.
-
-          // The width should never be set to 0 since it can cause
-          // flickering effects.
-          setCalculatedWidth(entry.target.getBoundingClientRect().width || -1)
-        })
-      }),
-    [setCalculatedWidth]
-  )
+  const {
+    values: [calculatedWidth],
+    elementRef: wrapperElement,
+    forceRecalculate,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined
   const gap = props.node.deltaBlock.vertical?.gap ?? null
-  const align =
-    props.node.deltaBlock.vertical?.align ?? null
-  const justify =
-    props.node.deltaBlock.vertical?.justify ?? null
+  const align = props.node.deltaBlock.vertical?.align ?? null
+  const justify = props.node.deltaBlock.vertical?.justify ?? null
   const wrap =
     props.node.deltaBlock.vertical?.wrap ??
     // "true" is the current behavior today and preserves it when there is no
@@ -382,19 +360,11 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
       )
     })
 
+  // We need to update the observer whenever the scrolling is activated or deactivated
+  // Otherwise, it still tries to measure the width of the old wrapper element.
   useEffect(() => {
-    if (wrapperElement.current) {
-      observer.observe(wrapperElement.current)
-    }
-    return () => {
-      observer.disconnect()
-    }
-    // We need to update the observer whenever the scrolling is activated or deactivated
-    // Otherwise, it still tries to measure the width of the old wrapper element.
-    // TODO: Update to match React best practices
-    // eslint-disable-next-line react-compiler/react-compiler
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [observer, activateScrollToBottom])
+    forceRecalculate()
+  }, [forceRecalculate, activateScrollToBottom])
 
   // Decide which wrapper to use based on whether we need to activate scrolling to bottom
   // This is done for performance reasons, to prevent the usage of useScrollToBottom
@@ -410,13 +380,9 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     element: undefined,
   })
 
-  const propsWithNewWidth = {
+  const propsWithCalculatedWidth = {
     ...props,
-    // TODO: CASTING TO `number` IS A HACK TO GET AROUND THE TYPE SYSTEM FOR NOW
-    // All downstream components expect a number. But in this world, we are only
-    // providing number | undefined to let it size itself. Any real solution will
-    // update the type system everywhere, but this is just a prototype.
-    ...{ width: styles.width as number },
+    width: styles.width,
   }
 
   // Widths of children autosizes to container width (and therefore window width).
@@ -434,7 +400,6 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     >
       <StyledVerticalBlockWrapper ref={wrapperElement}>
         <StyledVerticalBlock
-          width={styles.width}
           gap={gap}
           align={align}
           justify={justify}
@@ -444,9 +409,9 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
             convertKeyToClassName(userKey)
           )}
           data-testid="stVerticalBlock"
-          style={styles}
+          {...styles}
         >
-          <ChildRenderer {...propsWithNewWidth} />
+          <ChildRenderer {...propsWithCalculatedWidth} />
         </StyledVerticalBlock>
       </StyledVerticalBlockWrapper>
     </VerticalBlockBorderWrapper>
@@ -458,10 +423,8 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   // The children are always columns, but this is not checked. We just trust the Python side to
   // do the right thing, then we ask ChildRenderer to handle it.
   const gap = props.node.deltaBlock.horizontal?.gap ?? ""
-  const align =
-    props.node.deltaBlock.horizontal?.align ?? null
-  const justify =
-    props.node.deltaBlock.horizontal?.justify ?? null
+  const align = props.node.deltaBlock.horizontal?.align ?? null
+  const justify = props.node.deltaBlock.horizontal?.justify ?? null
   const wrap = props.node.deltaBlock.horizontal?.wrap ?? false
 
   return (

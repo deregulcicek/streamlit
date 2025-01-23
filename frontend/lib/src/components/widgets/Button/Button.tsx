@@ -25,6 +25,7 @@ import BaseButton, {
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
+import { Box } from "~lib/components/shared/Base/styled-components"
 
 export interface Props {
   disabled: boolean
@@ -44,13 +45,13 @@ function Button(props: Props): ReactElement {
   }
 
   return (
-    <div className="stButton" data-testid="stButton">
+    <Box className="stButton" data-testid="stButton">
       <BaseButtonTooltip help={element.help}>
         <BaseButton
           kind={kind}
           size={BaseButtonSize.SMALL}
           disabled={disabled}
-          fluidWidth={element.useContainerWidth}
+          fluidWidth={element.useContainerWidth || !!element.help}
           onClick={() =>
             widgetMgr.setTriggerValue(element, { fromUi: true }, fragmentId)
           }
@@ -58,7 +59,7 @@ function Button(props: Props): ReactElement {
           <DynamicButtonLabel icon={element.icon} label={element.label} />
         </BaseButton>
       </BaseButtonTooltip>
-    </div>
+    </Box>
   )
 }
 

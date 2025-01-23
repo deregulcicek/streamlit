@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
+import { CSSProperties } from "react"
+
 import styled from "@emotion/styled"
 
-interface StyledIframeProps {
-  disableScrolling: boolean
-}
-
-export const StyledIframe = styled.iframe<StyledIframeProps>(
-  ({ theme, disableScrolling }) => ({
-    width: "100%",
-    colorScheme: "normal",
-    border: "none",
-    padding: theme.spacing.none,
-    margin: theme.spacing.none,
-    overflow: disableScrolling ? "hidden" : undefined,
-  })
-)
+export const Box = styled.div<{
+  width?: CSSProperties["width"]
+  height?: CSSProperties["height"]
+}>(({ width = "100%", height }) => ({
+  width,
+  height,
+}))

@@ -18,6 +18,7 @@ import React, { ReactElement, useEffect } from "react"
 
 import { Button as ButtonProto } from "@streamlit/protobuf"
 
+import { Box } from "~lib/components/shared/Base/styled-components"
 import BaseButton, {
   BaseButtonKind,
   BaseButtonSize,
@@ -52,12 +53,12 @@ export function FormSubmitButton(props: Props): ReactElement {
   }, [widgetMgr, formId, element])
 
   return (
-    <div className="stFormSubmitButton" data-testid="stFormSubmitButton">
+    <Box className="stFormSubmitButton" data-testid="stFormSubmitButton">
       <BaseButtonTooltip help={element.help}>
         <BaseButton
           kind={kind}
           size={BaseButtonSize.SMALL}
-          fluidWidth={element.useContainerWidth}
+          fluidWidth={element.useContainerWidth || !!element.help}
           disabled={disabled || hasInProgressUpload}
           onClick={() => {
             widgetMgr.submitForm(element.formId, fragmentId, element)
@@ -66,6 +67,6 @@ export function FormSubmitButton(props: Props): ReactElement {
           <DynamicButtonLabel icon={element.icon} label={element.label} />
         </BaseButton>
       </BaseButtonTooltip>
-    </div>
+    </Box>
   )
 }

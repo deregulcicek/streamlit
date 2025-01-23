@@ -89,6 +89,7 @@ import Heading from "~lib/components/shared/StreamlitMarkdown/Heading"
 import { LibContext } from "~lib/components/core/LibContext"
 import { getElementId } from "~lib/util/utils"
 import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import {
   BaseBlockProps,
@@ -97,7 +98,7 @@ import {
   isComponentStale,
   shouldComponentBeEnabled,
 } from "./utils"
-import { StyledElementContainer } from "./styled-components"
+import { StyledElementContainerLayoutWrapper } from "./StyledElementContainerLayoutWrapper"
 
 // Lazy-load elements.
 const Audio = React.lazy(() => import("~lib/components/elements/Audio"))
@@ -120,7 +121,9 @@ const BokehChart = React.lazy(
 
 // RTL ESLint triggers a false positive on this render function
 // eslint-disable-next-line testing-library/render-result-naming-convention
-const DebouncedBokehChart = debounceRender(BokehChart, 100)
+const DebouncedBokehChart = withCalculatedWidth(
+  debounceRender(BokehChart, 100)
+)
 
 const DeckGlJsonChart = React.lazy(
   () => import("~lib/components/elements/DeckGlJsonChart")
@@ -189,7 +192,7 @@ const StreamlitSyntaxHighlighter = React.lazy(
 
 export interface ElementNodeRendererProps extends BaseBlockProps {
   node: ElementNode
-  width: number
+  width: React.CSSProperties["width"]
 }
 
 interface RawElementNodeRendererProps extends ElementNodeRendererProps {
@@ -731,8 +734,14 @@ const StyledElementContainer2: FC<
       (node.element?.type && node.element[node.element.type]) || undefined,
   })
 
-
-  return <StyledElementContainer width={style.width} flex={style.flex} {...rest} style={style} />
+  return (
+    <StyledElementContainer
+      width={style.width}
+      flex={style.flex}
+      {...rest}
+      style={style}
+    />
+  )
 }
 
 // Render ElementNodes (i.e. leaf nodes) wrapped in error catchers and all sorts of other //
@@ -764,7 +773,7 @@ const ElementNodeRenderer = (
 
   return (
     <Maybe enable={enable}>
-      <StyledElementContainer2
+      <StyledElementContainerLayoutWrapper
         className={classNames(
           "stElementContainer",
           "element-container",
@@ -792,7 +801,7 @@ const ElementNodeRenderer = (
             <RawElementNodeRenderer {...props} isStale={isStale} />
           </Suspense>
         </ErrorBoundary>
-      </StyledElementContainer2>
+      </StyledElementContainerLayoutWrapper>
     </Maybe>
   )
 }

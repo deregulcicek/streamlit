@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useCallback, useState } from "react"
+import React, {
+  memo,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from "react"
 
 import uniqueId from "lodash/uniqueId"
 import { Input as UIInput } from "baseui/input"
@@ -39,6 +45,7 @@ import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
 import { isInForm, labelVisibilityProtoValueToEnum } from "~lib/util/utils"
 import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import { StyledTextInput } from "./styled-components"
 
@@ -63,9 +70,10 @@ function TextInput({
     getStateFromWidgetMgr(widgetMgr, element) ?? null
   )
 
-  const { value: evaluatedWidth, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
-  const width = parseInt(evaluatedWidth || "0", 10)
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   /**
    * True if the user-specified state.value has not yet been synced to the WidgetStateManager.

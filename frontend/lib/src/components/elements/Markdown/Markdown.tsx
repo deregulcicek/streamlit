@@ -32,9 +32,7 @@ export interface MarkdownProps {
 /**
  * Functional element representing Markdown formatted text.
  */
-function Markdown({
-  element,
-}: Readonly<MarkdownProps>): ReactElement {
+function Markdown({ element }: Readonly<MarkdownProps>): ReactElement {
   return (
     <div className="stMarkdown" data-testid="stMarkdown">
       {element.help ? (

@@ -32,9 +32,7 @@ export interface TextProps {
 /**
  * Functional element representing preformatted (plain) text.
  */
-function TextElement({
-  element,
-}: Readonly<TextProps>): ReactElement {
+function TextElement({ element }: Readonly<TextProps>): ReactElement {
   return (
     <StyledLabelHelpWrapper className="stText" data-testid="stText">
       <StyledText>{element.body}</StyledText>

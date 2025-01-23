@@ -39,9 +39,7 @@ export interface IFrameProps {
   element: IFrameProto
 }
 
-function IFrame({
-  element,
-}: Readonly<IFrameProps>): ReactElement {
+function IFrame({ element }: Readonly<IFrameProps>): ReactElement {
   // Either 'src' or 'srcDoc' will be set in our element. If 'src'
   // is set, we're loading a remote URL in the iframe.
   const src = getNonEmptyString(element.src)

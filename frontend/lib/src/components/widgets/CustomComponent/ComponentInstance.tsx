@@ -40,6 +40,7 @@ import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { COMMUNITY_URL, COMPONENT_DEVELOPER_URL } from "~lib/urls"
 import { ensureError } from "~lib/util/ErrorHandling"
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import { ComponentRegistry } from "./ComponentRegistry"
 import {
@@ -409,4 +410,4 @@ function ComponentInstance(props: Props): ReactElement {
   )
 }
 
-export default memo(ComponentInstance)
+export default withCalculatedWidth(memo(ComponentInstance))

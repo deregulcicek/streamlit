@@ -31,7 +31,7 @@ export interface StyledNavLinkProps {
 export const StyledNavLink = styled.a<StyledNavLinkProps>(
   ({ disabled, isCurrentPage, fluidWidth, theme }) => ({
     textDecoration: "none",
-    width: typeof fluidWidth == "number" ? `${fluidWidth}px` : "fit-content",
+    width: fluidWidth ? "100%" : "fit-content",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
