@@ -34,6 +34,7 @@ import {
 } from "react-dropzone"
 import zip from "lodash/zip"
 
+import { EmotionTheme } from "@streamlit/lib/src/theme"
 import {
   AcceptFileValue,
   chatInputAcceptFileProtoValueToEnum,
@@ -239,6 +240,7 @@ interface FileUploadAreaProps {
   getInputProps: any
   showDropzone: boolean
   disabled: boolean
+  theme: EmotionTheme
 }
 
 const FileUploadArea = ({
@@ -246,21 +248,28 @@ const FileUploadArea = ({
   getInputProps,
   showDropzone,
   disabled,
-}: FileUploadAreaProps): React.ReactElement => (
-  <>
-    <StyledFileUploadDropzone showDropzone={showDropzone} {...getRootProps()}>
+  theme,
+}: FileUploadAreaProps): React.ReactElement =>
+  showDropzone ? (
+    <StyledFileUploadDropzone {...getRootProps()}>
       <input {...getInputProps()} />
-      {showDropzone ? (
-        "Drag and drop files here"
-      ) : (
-        <BaseButton kind={BaseButtonKind.BORDERLESS_ICON} disabled={disabled}>
-          <Icon content={AttachFile} size="base" color="inherit" />
-        </BaseButton>
-      )}
+      Drag and drop files here
     </StyledFileUploadDropzone>
-    {showDropzone ? null : <StyledVerticalDivider />}
-  </>
-)
+  ) : (
+    <>
+      <div {...getRootProps()}>
+        <input {...getInputProps()} />
+        <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
+          <Icon
+            content={AttachFile}
+            size="lg"
+            color={theme.colors.fadedText60}
+          />
+        </BaseButton>
+      </div>
+      <StyledVerticalDivider />
+    </>
+  )
 
 function ChatInput({
   width,
@@ -599,6 +608,7 @@ function ChatInput({
               getInputProps={getInputProps}
               showDropzone={showDropzone}
               disabled={disabled}
+              theme={theme}
             />
           )}
           {showDropzone ? null : (
@@ -634,10 +644,7 @@ function ChatInput({
                         : "auto",
                       maxHeight: maxHeight ? `${maxHeight}px` : "none",
                       // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-                      paddingLeft:
-                        acceptFile !== AcceptFileValue.None
-                          ? theme.spacing.sm
-                          : theme.spacing.lg,
+                      paddingLeft: theme.spacing.none,
                       paddingBottom: theme.spacing.sm,
                       paddingTop: theme.spacing.sm,
                       // Calculate the right padding to account for the send icon (iconSizes.xl + 2 * spacing.sm)

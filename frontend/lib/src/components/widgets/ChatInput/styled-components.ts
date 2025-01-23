@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import styled from "@emotion/styled"
-import { Theme } from "@emotion/react"
 
 import { hasLightBackgroundColor } from "@streamlit/lib/src/theme"
 
@@ -46,12 +45,14 @@ export const StyledChatInputContainer =
     }
   })
 
-export const StyledChatInput = styled.div(({}) => {
+export const StyledChatInput = styled.div(({ theme }) => {
   return {
     position: "relative",
     flexGrow: 1,
     display: "flex",
     alignItems: "center",
+    paddingLeft: theme.spacing.lg,
+    gap: theme.spacing.sm,
   }
 })
 
@@ -120,24 +121,15 @@ export const StyledInputInstructionsContainer = styled.div(({ theme }) => ({
   right: `calc(${theme.iconSizes.xl} + 2 * ${theme.spacing.sm} + ${theme.spacing.sm})`,
 }))
 
-export interface StyledFileUploadDropzoneProps {
-  showDropzone: boolean
-}
-
-export const StyledFileUploadDropzone =
-  styled.div<StyledFileUploadDropzoneProps>(({ theme, showDropzone }) => {
-    return showDropzone
-      ? {
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "auto",
-          color: theme.colors.primary,
-        }
-      : {}
-  })
+export const StyledFileUploadDropzone = styled.div(({ theme }) => ({
+  height: "100%",
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  margin: "auto",
+  color: theme.colors.primary,
+}))
 
 export interface StyledVerticalDividerProps {
   color?: string
@@ -148,8 +140,6 @@ export const StyledVerticalDivider = styled.div<StyledVerticalDividerProps>(
     return {
       height: theme.spacing.xl,
       width: theme.sizes.borderWidth,
-      marginLeft: `-${theme.spacing.twoXS}`,
-      marginRight: theme.spacing.twoXS,
       backgroundColor: color ?? theme.colors.fadedText20,
     }
   }
