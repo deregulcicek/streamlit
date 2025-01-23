@@ -22,13 +22,13 @@ import isObject from "lodash/isObject"
 import merge from "lodash/merge"
 import once from "lodash/once"
 
+import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 import {
   CustomThemeConfig,
   ICustomThemeConfig,
 } from "@streamlit/lib/src/proto"
 import {
   baseTheme,
-  CachedTheme,
   darkTheme,
   EmotionTheme,
   lightTheme,
@@ -37,14 +37,9 @@ import {
 } from "@streamlit/lib/src/theme"
 import { logError } from "@streamlit/lib/src/util/log"
 import {
-  localStorageAvailable,
-  LocalStore,
-} from "@streamlit/lib/src/util/storageUtils"
-import {
   isDarkThemeInQueryParams,
   isLightThemeInQueryParams,
 } from "@streamlit/lib/src/util/utils"
-import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
@@ -355,79 +350,6 @@ export const createTheme = (
   }
 }
 
-export const getCachedTheme = (): ThemeConfig | null => {
-  if (!localStorageAvailable()) {
-    return null
-  }
-
-  const cachedThemeStr = window.localStorage.getItem(LocalStore.ACTIVE_THEME)
-  if (!cachedThemeStr) {
-    return null
-  }
-
-  const { name: themeName, themeInput }: CachedTheme =
-    JSON.parse(cachedThemeStr)
-  switch (themeName) {
-    case lightTheme.name:
-      return getMergedLightTheme()
-    case darkTheme.name:
-      return getMergedDarkTheme()
-    default:
-      // At this point we're guaranteed that themeInput is defined.
-      return createTheme(themeName, themeInput as Partial<CustomThemeConfig>)
-  }
-}
-
-const deleteOldCachedThemes = (): void => {
-  const { CACHED_THEME_VERSION, CACHED_THEME_BASE_KEY } = LocalStore
-  const { localStorage } = window
-
-  // Pre-release versions of theming stored cached themes under the key
-  // "stActiveTheme".
-  localStorage.removeItem("stActiveTheme")
-
-  // The first version of cached themes had keys of the form
-  // `stActiveTheme-${window.location.pathname}` with no version number.
-  localStorage.removeItem(CACHED_THEME_BASE_KEY)
-
-  for (let i = 1; i <= CACHED_THEME_VERSION; i++) {
-    localStorage.removeItem(`${CACHED_THEME_BASE_KEY}-v${i}`)
-  }
-}
-
-export const setCachedTheme = (themeConfig: ThemeConfig): void => {
-  if (!localStorageAvailable()) {
-    return
-  }
-
-  deleteOldCachedThemes()
-
-  // Do not set the theme if the app has a pre-defined theme from the embedder
-  if (isLightThemeInQueryParams() || isDarkThemeInQueryParams()) {
-    return
-  }
-
-  const cachedTheme: CachedTheme = {
-    name: themeConfig.name,
-    ...(!isPresetTheme(themeConfig) && {
-      themeInput: toThemeInput(themeConfig.emotion),
-    }),
-  }
-
-  window.localStorage.setItem(
-    LocalStore.ACTIVE_THEME,
-    JSON.stringify(cachedTheme)
-  )
-}
-
-export const removeCachedTheme = (): void => {
-  if (!localStorageAvailable()) {
-    return
-  }
-
-  window.localStorage.removeItem(LocalStore.ACTIVE_THEME)
-}
-
 export const getHostSpecifiedTheme = (): ThemeConfig => {
   if (isLightThemeInQueryParams()) {
     return getMergedLightTheme()
@@ -441,15 +363,6 @@ export const getHostSpecifiedTheme = (): ThemeConfig => {
 }
 
 export const getDefaultTheme = (): ThemeConfig => {
-  // Priority for default theme
-  const cachedTheme = getCachedTheme()
-
-  // We shouldn't ever have auto saved in our storage in case
-  // OS theme changes but we explicitly check in case!
-  if (cachedTheme && cachedTheme.name !== AUTO_THEME_NAME) {
-    return cachedTheme
-  }
-
   return getHostSpecifiedTheme()
 }
 

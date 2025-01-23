@@ -25,7 +25,6 @@ import {
 } from "@streamlit/lib/src/theme/index"
 import { fonts } from "@streamlit/lib/src/theme/primitives/typography"
 import { ThemeConfig } from "@streamlit/lib/src/theme/types"
-import { LocalStore } from "@streamlit/lib/src/util/storageUtils"
 
 import { hasLightBackgroundColor } from "./getColors"
 import {
@@ -37,14 +36,11 @@ import {
   CUSTOM_THEME_NAME,
   fontEnumToString,
   fontToEnum,
-  getCachedTheme,
   getDefaultTheme,
   getHostSpecifiedTheme,
   getSystemTheme,
   isColor,
   isPresetTheme,
-  removeCachedTheme,
-  setCachedTheme,
   toThemeInput,
 } from "./utils"
 
@@ -118,162 +114,6 @@ describe("isPresetTheme", () => {
     )
 
     expect(isPresetTheme(customTheme)).toBe(false)
-  })
-})
-
-describe("Cached theme helpers", () => {
-  // NOTE: localStorage is weird, and calling .spyOn(window.localStorage, "setItem")
-  // doesn't work. Accessing .__proto__ here isn't too bad of a crime since
-  // it's test code.
-  const breakLocalStorage = (): void => {
-    vi
-      // eslint-disable-next-line no-proto
-      .spyOn(window.localStorage.__proto__, "setItem")
-      .mockImplementation(() => {
-        throw new Error("boom")
-      })
-  }
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-    window.localStorage.clear()
-  })
-
-  describe("getCachedTheme", () => {
-    it("returns null if localStorage is not available", () => {
-      breakLocalStorage()
-
-      // eslint-disable-next-line no-proto
-      const getItemSpy = vi.spyOn(window.localStorage.__proto__, "getItem")
-      expect(getCachedTheme()).toBe(null)
-      expect(getItemSpy).not.toHaveBeenCalled()
-    })
-
-    it("returns null if no theme is set in localStorage", () => {
-      expect(getCachedTheme()).toBe(null)
-    })
-
-    it("does not find cached themes with older versions, so returns null", () => {
-      // Save a cachedTheme in LocalStorage with the key of a previous version.
-      window.localStorage.setItem(
-        LocalStore.CACHED_THEME_BASE_KEY,
-        JSON.stringify({ name: darkTheme.name })
-      )
-      expect(getCachedTheme()).toBe(null)
-    })
-
-    it("returns preset cached theme if localStorage is available and one is set", () => {
-      window.localStorage.setItem(
-        LocalStore.ACTIVE_THEME,
-        JSON.stringify({ name: darkTheme.name })
-      )
-      expect(getCachedTheme()).toEqual(darkTheme)
-    })
-
-    it("returns a custom cached theme if localStorage is available and one is set", () => {
-      const themeInput: Partial<CustomThemeConfig> = {
-        primaryColor: "red",
-        backgroundColor: "orange",
-        secondaryBackgroundColor: "yellow",
-        textColor: "green",
-        font: CustomThemeConfig.FontFamily.SERIF,
-      }
-
-      const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
-
-      window.localStorage.setItem(
-        LocalStore.ACTIVE_THEME,
-        JSON.stringify({ name: CUSTOM_THEME_NAME, themeInput })
-      )
-
-      expect(getCachedTheme()).toEqual(customTheme)
-    })
-  })
-
-  describe("removeCachedTheme", () => {
-    it("does nothing if localStorage is not available", () => {
-      breakLocalStorage()
-
-      const removeItemSpy = vi.spyOn(
-        // eslint-disable-next-line no-proto
-        window.localStorage.__proto__,
-        "removeItem"
-      )
-      removeCachedTheme()
-      expect(removeItemSpy).not.toHaveBeenCalled()
-    })
-
-    it("removes theme if localStorage", () => {
-      const removeItemSpy = vi.spyOn(
-        // eslint-disable-next-line no-proto
-        window.localStorage.__proto__,
-        "removeItem"
-      )
-
-      removeCachedTheme()
-      expect(removeItemSpy).toHaveBeenCalled()
-    })
-  })
-
-  describe("setCachedTheme", () => {
-    const themeInput: Partial<CustomThemeConfig> = {
-      primaryColor: "red",
-      backgroundColor: "orange",
-      secondaryBackgroundColor: "yellow",
-      textColor: "green",
-      font: CustomThemeConfig.FontFamily.SERIF,
-    }
-    const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
-
-    it("does nothing if localStorage is not available", () => {
-      breakLocalStorage()
-
-      // eslint-disable-next-line no-proto
-      const setItemSpy = vi.spyOn(window.localStorage.__proto__, "setItem")
-
-      setCachedTheme(darkTheme)
-      // This looks a bit funny and is the way it is because the way we know
-      // that localStorage is broken is that setItem throws an error at us.
-      expect(setItemSpy).toHaveBeenCalledTimes(1)
-      expect(setItemSpy).toHaveBeenCalledWith("testData", "testData")
-    })
-
-    it("sets a preset theme with just its name if localStorage is available", () => {
-      setCachedTheme(darkTheme)
-      const cachedTheme = JSON.parse(
-        window.localStorage.getItem(LocalStore.ACTIVE_THEME) as string
-      )
-      expect(cachedTheme).toEqual({ name: darkTheme.name })
-    })
-
-    it("deletes cached themes with older versions", () => {
-      window.localStorage.setItem("stActiveTheme", "I should get deleted :|")
-
-      window.localStorage.setItem(
-        LocalStore.CACHED_THEME_BASE_KEY,
-        "I should get deleted too :|"
-      )
-
-      setCachedTheme(customTheme)
-
-      expect(window.localStorage.getItem("stActiveTheme")).toBe(null)
-      expect(
-        window.localStorage.getItem(LocalStore.CACHED_THEME_BASE_KEY)
-      ).toBe(null)
-    })
-
-    it("sets a custom theme with its name and themeInput if localStorage is available", () => {
-      setCachedTheme(customTheme)
-
-      const cachedTheme = JSON.parse(
-        window.localStorage.getItem(LocalStore.ACTIVE_THEME) as string
-      )
-
-      expect(cachedTheme).toEqual({
-        name: customTheme.name,
-        themeInput,
-      })
-    })
   })
 })
 
@@ -479,7 +319,7 @@ describe("getDefaultTheme", () => {
     window.localStorage.clear()
   })
 
-  it("sets default to the auto theme when there is no cached theme", () => {
+  it("sets default to the auto theme", () => {
     windowSpy = mockWindow()
     const defaultTheme = getDefaultTheme()
 
@@ -494,16 +334,6 @@ describe("getDefaultTheme", () => {
     const defaultTheme = getDefaultTheme()
 
     expect(defaultTheme.name).toBe(AUTO_THEME_NAME)
-    expect(defaultTheme.emotion.colors).toEqual(darkTheme.emotion.colors)
-  })
-
-  it("sets the default to the user preference when one is set", () => {
-    windowSpy = mockWindow()
-    setCachedTheme(darkTheme)
-
-    const defaultTheme = getDefaultTheme()
-
-    expect(defaultTheme.name).toBe("Dark")
     expect(defaultTheme.emotion.colors).toEqual(darkTheme.emotion.colors)
   })
 

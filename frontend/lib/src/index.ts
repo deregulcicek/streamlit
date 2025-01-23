@@ -96,15 +96,12 @@ export {
   createPresetThemes,
   createTheme,
   darkTheme,
-  getCachedTheme,
   getDefaultTheme,
   getHostSpecifiedTheme,
   globalStyles,
   hasLightBackgroundColor,
   isPresetTheme,
   lightTheme,
-  removeCachedTheme,
-  setCachedTheme,
   toExportedTheme,
   toThemeInput,
 } from "./theme"
@@ -114,6 +111,12 @@ export { fonts, spacing } from "./theme/primitives"
 export { ensureError } from "./util/ErrorHandling"
 export { useIsOverflowing } from "./util/Hooks"
 export { logAlways, logError, logMessage, logWarning } from "./util/log"
+export {
+  mark,
+  measure,
+  type StPerformanceMark,
+  type StPerformanceMetric,
+} from "./util/performance"
 export { default as Resolver } from "./util/Resolver"
 export { LocalStore, localStorageAvailable } from "./util/storageUtils"
 export { Timer } from "./util/Timer"
@@ -149,9 +152,3 @@ export {
 } from "./util/utils"
 export { WidgetStateManager, createFormsData } from "./WidgetStateManager"
 export type { FormsData } from "./WidgetStateManager"
-export {
-  mark,
-  measure,
-  type StPerformanceMetric,
-  type StPerformanceMark,
-} from "./util/performance"
