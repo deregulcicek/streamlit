@@ -47,7 +47,6 @@ import {
   ForwardMsg,
   ForwardMsgMetadata,
   generateUID,
-  getCachedTheme,
   getElementId,
   getEmbeddingIdClassName,
   getHostSpecifiedTheme,
@@ -1147,8 +1146,7 @@ export class App extends PureComponent<Props, State> {
       // For now, users can only add one custom theme.
       this.props.theme.addThemes([customTheme])
 
-      const userPreference = getCachedTheme()
-      if (userPreference === null || usingCustomTheme) {
+      if (usingCustomTheme) {
         // Update the theme to be customTheme either if the user hasn't set a
         // preference (developer-provided custom themes should be the default
         // for an app) or if a custom theme is currently active (to ensure that
