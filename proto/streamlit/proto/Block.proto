@@ -40,10 +40,55 @@ message Block {
     bool border = 1;
     // Height of the container, activates scrolling
     uint32 height = 2;
+    string gap = 3;
+    enum Direction {
+      TOP_TO_BOTTOM = 0;
+      BOTTOM_TO_TOP = 1;
+    }
+    optional Direction direction = 4;
+    enum HorizontalAlignment {
+      HORIZONTAL_START = 0;
+      HORIZONTAL_CENTER = 1;
+      HORIZONTAL_END = 2;
+      HORIZONTAL_STRETCH = 3;
+      HORIZONTAL_DISTRIBUTE = 4;
+    }
+    optional HorizontalAlignment horizontal_alignment = 5;
+    enum VerticalAlignment {
+      VERTICAL_TOP = 0;
+      VERTICAL_CENTER = 1;
+      VERTICAL_BOTTOM = 2;
+      VERTICAL_STRETCH = 3;
+      VERTICAL_DISTRIBUTE = 4;
+    }
+    optional VerticalAlignment vertical_alignment = 6;
+    bool wrap = 7;
   }
 
   message Horizontal {
     string gap = 1;
+    enum Direction {
+      START_TO_END = 0;
+      END_TO_START = 1;
+    }
+    optional Direction direction = 2;
+    enum HorizontalAlignment {
+      HORIZONTAL_START = 0;
+      HORIZONTAL_CENTER = 1;
+      HORIZONTAL_END = 2;
+      HORIZONTAL_STRETCH = 3;
+      HORIZONTAL_DISTRIBUTE = 4;
+    }
+    optional HorizontalAlignment horizontal_alignment = 3;
+    enum VerticalAlignment {
+      VERTICAL_TOP = 0;
+      VERTICAL_CENTER = 1;
+      VERTICAL_BOTTOM = 2;
+      VERTICAL_STRETCH = 3;
+      VERTICAL_DISTRIBUTE = 4;
+    }
+    optional VerticalAlignment vertical_alignment = 4;
+    bool wrap = 6;
   }
 
   message Column {

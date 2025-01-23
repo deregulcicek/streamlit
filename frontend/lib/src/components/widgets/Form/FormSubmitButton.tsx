@@ -25,6 +25,7 @@ import BaseButton, {
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
@@ -45,7 +46,7 @@ export function FormSubmitButton(props: Props): ReactElement {
     fragmentId,
   } = props
   const { formId } = element
-  const style = { width }
+  const style = useLayoutStyles({ width })
 
   let kind = BaseButtonKind.SECONDARY_FORM_SUBMIT
   if (element.type === "primary") {

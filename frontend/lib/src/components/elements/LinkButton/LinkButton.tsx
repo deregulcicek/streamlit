@@ -24,6 +24,7 @@ import {
   BaseButtonTooltip,
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import BaseLinkButton from "./BaseLinkButton"
 
@@ -35,7 +36,7 @@ export interface Props {
 
 function LinkButton(props: Readonly<Props>): ReactElement {
   const { disabled, element, width } = props
-  const style = { width }
+  const style = useLayoutStyles({ width })
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {

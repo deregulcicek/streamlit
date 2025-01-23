@@ -22,6 +22,7 @@ import {
   InlineTooltipIcon,
   StyledLabelHelpWrapper,
 } from "~lib/components/shared/TooltipIcon"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import { StyledText } from "./styled-components"
 
@@ -33,11 +34,15 @@ export interface TextProps {
 /**
  * Functional element representing preformatted (plain) text.
  */
-function TextElement({ width, element }: Readonly<TextProps>): ReactElement {
-  const styleProp = { width }
+function TextElement({
+  width,
+  element,
+}: Readonly<TextProps>): ReactElement {
+  const style = useLayoutStyles({ width })
+
   return (
     <StyledLabelHelpWrapper
-      style={styleProp}
+      style={style}
       className="stText"
       data-testid="stText"
     >

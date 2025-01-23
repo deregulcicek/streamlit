@@ -28,6 +28,7 @@ import BaseButton, {
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { LibContext } from "~lib/components/core/LibContext"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   endpoints: StreamlitEndpoints
@@ -52,7 +53,8 @@ export function createDownloadLink(
 
 function DownloadButton(props: Props): ReactElement {
   const { disabled, element, widgetMgr, width, endpoints, fragmentId } = props
-  const style = { width }
+
+  const style = useLayoutStyles({ width })
   const {
     libConfig: { enforceDownloadInNewTab = false }, // Default to false, if no libConfig, e.g. for tests
   } = React.useContext(LibContext)

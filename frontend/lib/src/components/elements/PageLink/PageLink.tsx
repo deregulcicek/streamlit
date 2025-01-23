@@ -27,6 +27,7 @@ import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 import { EmotionTheme } from "~lib/theme"
 import { LibContext } from "~lib/components/core/LibContext"
 import IsSidebarContext from "~lib/components/core/IsSidebarContext"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import {
   StyledNavLink,
@@ -59,7 +60,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
   const { colors }: EmotionTheme = useTheme()
 
   const { disabled, element, width } = props
-  const style = { width }
+  const style = useLayoutStyles({ width })
 
   const useContainerWidth = shouldUseContainerWidth(
     element.useContainerWidth,

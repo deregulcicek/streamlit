@@ -88,6 +88,7 @@ import { FormSubmitContent } from "~lib/components/widgets/Form"
 import Heading from "~lib/components/shared/StreamlitMarkdown/Heading"
 import { LibContext } from "~lib/components/core/LibContext"
 import { getElementId } from "~lib/util/utils"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import {
   BaseBlockProps,
@@ -209,8 +210,15 @@ const RawElementNodeRenderer = (
     throw new Error("ElementNode not found.")
   }
 
+  const styles = useLayoutStyles({ width: props.width })
+  // TODO: CASTING TO `number` IS A HACK TO GET AROUND THE TYPE SYSTEM FOR NOW
+  // All downstream components expect a number. But in this world, we are only
+  // providing number | undefined to let it size itself. Any real solution will
+  // update the type system everywhere, but this is just a prototype.
+  const width = styles.width as number
+
   const elementProps = {
-    width: props.width,
+    width,
     disableFullscreenMode: props.disableFullscreenMode,
   }
 
@@ -721,7 +729,7 @@ const ElementNodeRenderer = (
   props: ElementNodeRendererProps
 ): ReactElement => {
   const { isFullScreen, fragmentIdsThisRun } = React.useContext(LibContext)
-  const { node, width } = props
+  const { node, width: propsWidth } = props
 
   const elementType = node.element.type || ""
   const enable = shouldComponentBeEnabled(elementType, props.scriptRunState)
@@ -736,6 +744,13 @@ const ElementNodeRenderer = (
   // Get the user key - if it was specified - and use it as CSS class name:
   const elementId = getElementId(node.element)
   const userKey = getKeyFromId(elementId)
+
+  // TODO: We need a better way to ensure that anything that uses width is
+  // leveraging `useLayoutStyles`. Might we be able to hoist this logic higher
+  // up in the tree so that we only need `useLayoutStyles` in components that
+  // change the width?
+  const calculatedStyles = useLayoutStyles({ width: propsWidth })
+  const { width } = calculatedStyles
 
   // TODO: If would be great if we could return an empty fragment if isHidden is true, to keep the
   // DOM clean. But this would require the keys passed to ElementNodeRenderer at Block.tsx to be a
@@ -757,7 +772,7 @@ const ElementNodeRenderer = (
         width={width}
         elementType={elementType}
       >
-        <ErrorBoundary width={width}>
+        <ErrorBoundary width={propsWidth}>
           <Suspense
             fallback={
               <Skeleton
