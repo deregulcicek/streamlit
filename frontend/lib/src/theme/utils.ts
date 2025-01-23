@@ -544,7 +544,7 @@ const deleteOldCachedThemes = (): void => {
   }
 }
 
-export const setCachedTheme = (_themeConfig: ThemeConfig): void => {
+export const setCachedTheme = (themeConfig: ThemeConfig): void => {
   if (!localStorageAvailable()) {
     return
   }
@@ -556,17 +556,19 @@ export const setCachedTheme = (_themeConfig: ThemeConfig): void => {
     return
   }
 
-  // const cachedTheme: CachedTheme = {
-  //   name: themeConfig.name,
-  //   ...(!isPresetTheme(themeConfig) && {
-  //     themeInput: toThemeInput(themeConfig.emotion),
-  //   }),
-  // }
+  // TODO(lukasmasuch): Do not cache custom themes
+  if (!isPresetTheme(themeConfig)) {
+    return
+  }
 
-  // window.localStorage.setItem(
-  //   LocalStore.ACTIVE_THEME,
-  //   JSON.stringify(cachedTheme)
-  // )
+  const cachedTheme: CachedTheme = {
+    name: themeConfig.name,
+  }
+
+  window.localStorage.setItem(
+    LocalStore.ACTIVE_THEME,
+    JSON.stringify(cachedTheme)
+  )
 }
 
 export const removeCachedTheme = (): void => {
