@@ -89,13 +89,17 @@ export function applyStreamlitTheme(config: any, theme: EmotionTheme): any {
       titleFontWeight: theme.fontWeights.normal,
       titleFontStyle: "normal",
       titleColor: getGray70(theme),
-      titlePadding: convertRemToPx("0.313rem"),
+      // TODO(lukasmasuch): Change padding here to use a spacing
+      // based on our available spacings (-> 4px = 0.25rem)
+      titlePadding: 5,
       labelPadding: convertRemToPx(theme.spacing.lg),
       columnPadding: convertRemToPx(theme.spacing.sm),
       rowPadding: convertRemToPx(theme.spacing.twoXS),
+      // TODO(lukasmasuch): Change padding here to use a spacing
+      // based on our available spacings (-> 8px = 0.5rem)
       // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
-      padding: convertRemToPx("0.438rem"),
-      symbolStrokeWidth: convertRemToPx("0.25rem"),
+      padding: 7,
+      symbolStrokeWidth: convertRemToPx(theme.spacing.twoXS),
     },
     range: {
       category: getCategoricalColorsArray(theme),
