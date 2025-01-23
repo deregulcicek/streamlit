@@ -39,6 +39,12 @@ export const StyledChatInputContainer =
       ":focus-within": {
         borderColor: theme.colors.primary,
       },
+
+      "&.dropzone": {
+        borderColor: theme.colors.primary,
+        borderRadius: theme.radii.full,
+        height: theme.sizes.emptyDropdownHeight,
+      },
     }
   })
 
@@ -115,6 +121,25 @@ export const StyledInputInstructionsContainer = styled.div(({ theme }) => ({
   // and some additional margin between the icon and the text (spacing.sm).
   right: `calc(${theme.iconSizes.xl} + 2 * ${theme.spacing.sm} + ${theme.spacing.sm})`,
 }))
+
+export interface StyledFileUploadDropzoneProps {
+  showDropzone: boolean
+}
+
+export const StyledFileUploadDropzone =
+  styled.div<StyledFileUploadDropzoneProps>(({ theme, showDropzone }) => {
+    return showDropzone
+      ? {
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          color: theme.colors.primary,
+        }
+      : {}
+  })
 
 export interface StyledVerticalDividerProps {
   color?: string

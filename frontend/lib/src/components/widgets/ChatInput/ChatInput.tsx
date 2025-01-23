@@ -67,6 +67,7 @@ import UploadedFiles from "@streamlit/lib/src/components/widgets/FileUploader/Up
 import {
   StyledChatInput,
   StyledChatInputContainer,
+  StyledFileUploadDropzone,
   StyledInputInstructionsContainer,
   StyledSendIconButton,
   StyledSendIconButtonContainer,
@@ -233,6 +234,34 @@ const MAX_VISIBLE_NUM_LINES = 6.5
 // to manage it better.
 const ROUNDING_OFFSET = 1
 
+interface FileUploadAreaProps {
+  getRootProps: any
+  getInputProps: any
+  showDropzone: boolean
+  disabled: boolean
+}
+
+const FileUploadArea = ({
+  getRootProps,
+  getInputProps,
+  showDropzone,
+  disabled,
+}: FileUploadAreaProps): React.ReactElement => (
+  <>
+    <StyledFileUploadDropzone showDropzone={showDropzone} {...getRootProps()}>
+      <input {...getInputProps()} />
+      {showDropzone ? (
+        "Drag and drop files here"
+      ) : (
+        <BaseButton kind={BaseButtonKind.BORDERLESS_ICON} disabled={disabled}>
+          <Icon content={AttachFile} size="base" color="inherit" />
+        </BaseButton>
+      )}
+    </StyledFileUploadDropzone>
+    {showDropzone ? null : <StyledVerticalDivider />}
+  </>
+)
+
 function ChatInput({
   width,
   element,
@@ -253,6 +282,8 @@ function ChatInput({
   // The value of the height of the textarea. It depends on a variety of factors including the default height, and autogrowing
   const [scrollHeight, setScrollHeight] = useState(0)
   const [files, setFiles] = useState<UploadFileInfo[]>([])
+
+  const [fileDragged, setFileDragged] = useState(false)
 
   const acceptFile = chatInputAcceptFileProtoValueToEnum(element.acceptFile)
   const addFiles = (filesToAdd: UploadFileInfo[]): void => {
@@ -487,6 +518,50 @@ function ChatInput({
     }
   }, [chatInputRef])
 
+  useEffect(() => {
+    const handleDragEnter = (event: DragEvent): void => {
+      event.preventDefault()
+      event.stopPropagation()
+      if (!fileDragged) {
+        setFileDragged(true)
+      }
+    }
+
+    const handleDragLeave = (event: DragEvent): void => {
+      event.preventDefault()
+      event.stopPropagation()
+      if (fileDragged) {
+        // This check prevents the dropzone from flickering since the dragleave
+        // event could fire when user is dragging within the window
+        if (
+          (event.clientX <= 0 && event.clientY <= 0) ||
+          (event.clientX >= window.innerWidth &&
+            event.clientY >= window.innerHeight)
+        ) {
+          setFileDragged(false)
+        }
+      }
+    }
+
+    const handleDrop = (event: DragEvent): void => {
+      event.preventDefault()
+      event.stopPropagation()
+      if (fileDragged) {
+        setFileDragged(false)
+      }
+    }
+
+    window.addEventListener("dragover", handleDragEnter)
+    window.addEventListener("drop", handleDrop)
+    window.addEventListener("dragleave", handleDragLeave)
+
+    return () => {
+      window.removeEventListener("dragover", handleDragEnter)
+      window.removeEventListener("drop", handleDrop)
+      window.removeEventListener("drop", handleDragLeave)
+    }
+  }, [fileDragged])
+
   const { disabled, placeholder, maxChars } = element
   const { minHeight, maxHeight } = heightGuidance.current
 
@@ -494,6 +569,8 @@ function ChatInput({
     scrollHeight > 0 && chatInputRef.current
       ? Math.abs(scrollHeight - minHeight) > ROUNDING_OFFSET
       : false
+
+  const showDropzone = acceptFile !== AcceptFileValue.None && fileDragged
 
   return (
     <>
@@ -511,93 +588,90 @@ function ChatInput({
         />
       )}
       <StyledChatInputContainer
-        className="stChatInput"
+        className={showDropzone ? "stChatInput dropzone" : "stChatInput"}
         data-testid="stChatInput"
         width={width}
       >
         <StyledChatInput>
-          {acceptFile !== AcceptFileValue.None ? (
-            <>
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <BaseButton
-                  kind={BaseButtonKind.BORDERLESS_ICON}
-                  onClick={() => {}}
-                  disabled={disabled}
-                >
-                  <Icon content={AttachFile} size="base" color="inherit" />
-                </BaseButton>
-              </div>
-              <StyledVerticalDivider />
-            </>
-          ) : null}
-          <UITextArea
-            inputRef={chatInputRef}
-            value={value}
-            placeholder={placeholder}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            aria-label={placeholder}
-            disabled={disabled}
-            rows={1}
-            overrides={{
-              Root: {
-                style: {
-                  minHeight: theme.sizes.minElementHeight,
-                  outline: "none",
-                  border: "none",
-                },
-              },
-              Input: {
-                props: {
-                  "data-testid": "stChatInputTextArea",
-                },
-                style: {
-                  lineHeight: theme.lineHeights.inputWidget,
-                  "::placeholder": {
-                    opacity: "0.7",
-                  },
-                  height: isInputExtended
-                    ? `${scrollHeight + ROUNDING_OFFSET}px`
-                    : "auto",
-                  maxHeight: maxHeight ? `${maxHeight}px` : "none",
-                  // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-                  paddingLeft:
-                    acceptFile !== AcceptFileValue.None
-                      ? theme.spacing.sm
-                      : theme.spacing.lg,
-                  paddingBottom: theme.spacing.sm,
-                  paddingTop: theme.spacing.sm,
-                  // Calculate the right padding to account for the send icon (iconSizes.xl + 2 * spacing.sm)
-                  // and some additional margin between the icon and the text (spacing.sm).
-                  paddingRight: `calc(${theme.iconSizes.xl} + 2 * ${theme.spacing.sm} + ${theme.spacing.sm})`,
-                },
-              },
-            }}
-          />
-          {/* Hide the character limit in small widget sizes */}
-          {width > theme.breakpoints.hideWidgetDetails && (
-            <StyledInputInstructionsContainer>
-              <InputInstructions
-                dirty={dirty}
-                value={value}
-                maxLength={maxChars}
-                type="chat"
-                // Chat Input are not able to be used in forms
-                inForm={false}
-              />
-            </StyledInputInstructionsContainer>
+          {acceptFile === AcceptFileValue.None ? null : (
+            <FileUploadArea
+              getRootProps={getRootProps}
+              getInputProps={getInputProps}
+              showDropzone={showDropzone}
+              disabled={disabled}
+            />
           )}
-          <StyledSendIconButtonContainer>
-            <StyledSendIconButton
-              onClick={handleSubmit}
-              disabled={!dirty || disabled}
-              extended={isInputExtended}
-              data-testid="stChatInputSubmitButton"
-            >
-              <Icon content={Send} size="xl" color="inherit" />
-            </StyledSendIconButton>
-          </StyledSendIconButtonContainer>
+          {showDropzone ? null : (
+            <>
+              <UITextArea
+                inputRef={chatInputRef}
+                value={value}
+                placeholder={placeholder}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                aria-label={placeholder}
+                disabled={disabled}
+                rows={1}
+                overrides={{
+                  Root: {
+                    style: {
+                      minHeight: theme.sizes.minElementHeight,
+                      outline: "none",
+                      border: "none",
+                    },
+                  },
+                  Input: {
+                    props: {
+                      "data-testid": "stChatInputTextArea",
+                    },
+                    style: {
+                      lineHeight: theme.lineHeights.inputWidget,
+                      "::placeholder": {
+                        opacity: "0.7",
+                      },
+                      height: isInputExtended
+                        ? `${scrollHeight + ROUNDING_OFFSET}px`
+                        : "auto",
+                      maxHeight: maxHeight ? `${maxHeight}px` : "none",
+                      // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
+                      paddingLeft:
+                        acceptFile !== AcceptFileValue.None
+                          ? theme.spacing.sm
+                          : theme.spacing.lg,
+                      paddingBottom: theme.spacing.sm,
+                      paddingTop: theme.spacing.sm,
+                      // Calculate the right padding to account for the send icon (iconSizes.xl + 2 * spacing.sm)
+                      // and some additional margin between the icon and the text (spacing.sm).
+                      paddingRight: `calc(${theme.iconSizes.xl} + 2 * ${theme.spacing.sm} + ${theme.spacing.sm})`,
+                    },
+                  },
+                }}
+              />
+              {/* Hide the character limit in small widget sizes */}
+              {width > theme.breakpoints.hideWidgetDetails && (
+                <StyledInputInstructionsContainer>
+                  <InputInstructions
+                    dirty={dirty}
+                    value={value}
+                    maxLength={maxChars}
+                    type="chat"
+                    // Chat Input are not able to be used in forms
+                    inForm={false}
+                  />
+                </StyledInputInstructionsContainer>
+              )}
+              <StyledSendIconButtonContainer>
+                <StyledSendIconButton
+                  onClick={handleSubmit}
+                  disabled={!dirty || disabled}
+                  extended={isInputExtended}
+                  data-testid="stChatInputSubmitButton"
+                >
+                  <Icon content={Send} size="xl" color="inherit" />
+                </StyledSendIconButton>
+              </StyledSendIconButtonContainer>
+            </>
+          )}
         </StyledChatInput>
       </StyledChatInputContainer>
     </>
