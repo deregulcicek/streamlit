@@ -18,8 +18,6 @@ import { Theme } from "@emotion/react"
 
 import { hasLightBackgroundColor } from "@streamlit/lib/src/theme"
 
-const chatBorderRadius = (theme: Theme): string => theme.radii.xxxl
-
 export interface StyledChatInputContainerProps {
   width: number
 }
@@ -29,7 +27,7 @@ export const StyledChatInputContainer =
     return {
       border: `${theme.sizes.borderWidth} solid`,
       borderColor: theme.colors.transparent,
-      borderRadius: chatBorderRadius(theme),
+      borderRadius: theme.radii.chatInput,
       display: "flex",
       backgroundColor:
         theme.colors.widgetBackgroundColor ?? theme.colors.secondaryBg,
@@ -71,9 +69,9 @@ export const StyledSendIconButton = styled.button<StyledSendIconButtonProps>(
     return {
       border: "none",
       backgroundColor: theme.colors.transparent,
-      borderTopRightRadius: extended ? "0" : chatBorderRadius(theme),
+      borderTopRightRadius: extended ? "0" : theme.radii.chatInput,
       borderTopLeftRadius: extended ? theme.radii.default : "0",
-      borderBottomRightRadius: chatBorderRadius(theme),
+      borderBottomRightRadius: theme.radii.chatInput,
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",

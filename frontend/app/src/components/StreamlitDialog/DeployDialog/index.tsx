@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from "./DeployDialog"
+export { DeployDialog } from "./DeployDialog"
+export type { DeployDialogProps } from "./DeployDialog"

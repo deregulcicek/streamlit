@@ -15,7 +15,7 @@
  */
 
 import { Config } from "@streamlit/lib"
-import { isLocalhost } from "@streamlit/app/src/components/MainMenu"
+import { isLocalhost } from "@streamlit/app/src/util/deploymentInfo"
 
 export const showDevelopmentOptions = (
   hostIsOwner: boolean | undefined,
