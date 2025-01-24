@@ -63,7 +63,6 @@ import {
   UploadFileInfo,
 } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
-import UploadedFiles from "@streamlit/lib/src/components/widgets/FileUploader/UploadedFiles"
 
 import {
   StyledChatInput,
@@ -74,6 +73,7 @@ import {
   StyledSendIconButtonContainer,
   StyledVerticalDivider,
 } from "./styled-components"
+import ChatUploadedFiles from "./UploadedFile/ChatUploadedFiles"
 
 export interface Props {
   disabled: boolean
@@ -583,18 +583,8 @@ function ChatInput({
 
   return (
     <>
-      {files.length > 0 && (
-        <UploadedFiles
-          items={[...files]}
-          pageSize={1}
-          onDelete={deleteFile}
-          surface="chat"
-          resetOnAdd
-          style={{
-            paddingLeft: 0,
-            paddingRight: 0,
-          }}
-        />
+      {acceptFile === AcceptFileValue.None ? null : (
+        <ChatUploadedFiles items={[...files]} onDelete={deleteFile} />
       )}
       <StyledChatInputContainer
         className={showDropzone ? "stChatInput dropzone" : "stChatInput"}

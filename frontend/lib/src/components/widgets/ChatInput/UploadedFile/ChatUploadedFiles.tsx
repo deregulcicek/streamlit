@@ -16,14 +16,14 @@
 
 import React, { ReactElement } from "react"
 
-import withPagination, { PaginationProps } from "./withPagination"
-import UploadedFile from "./UploadedFile"
+import { UploadFileInfo } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
+
 import {
-  StyledUploadedFiles,
-  StyledUploadedFilesList,
-  StyledUploadedFilesListItem,
+  StyledChatUploadedFiles,
+  StyledUploadedChatFileList,
+  StyledUploadedChatFileListItem,
 } from "./styled-components"
-import { UploadFileInfo } from "./UploadFileInfo"
+import ChatUploadedFile from "./ChatUploadedFile"
 
 export interface Props {
   items: UploadFileInfo[]
@@ -31,24 +31,16 @@ export interface Props {
   style?: React.CSSProperties
 }
 
-const UploadedFileList = ({ items, onDelete }: Props): ReactElement => {
-  return (
-    <StyledUploadedFilesList>
+const ChatUploadedFiles = ({ items, onDelete }: Props): ReactElement => (
+  <StyledChatUploadedFiles>
+    <StyledUploadedChatFileList>
       {items.map(file => (
-        <StyledUploadedFilesListItem key={file.id}>
-          <UploadedFile fileInfo={file} onDelete={onDelete} />
-        </StyledUploadedFilesListItem>
+        <StyledUploadedChatFileListItem key={file.id}>
+          <ChatUploadedFile fileInfo={file} onDelete={onDelete} />
+        </StyledUploadedChatFileListItem>
       ))}
-    </StyledUploadedFilesList>
-  )
-}
-
-export const PaginatedFiles = withPagination(UploadedFileList)
-
-const UploadedFiles = (props: Props & PaginationProps): ReactElement => (
-  <StyledUploadedFiles>
-    <PaginatedFiles {...props} />
-  </StyledUploadedFiles>
+    </StyledUploadedChatFileList>
+  </StyledChatUploadedFiles>
 )
 
-export default UploadedFiles
+export default ChatUploadedFiles
