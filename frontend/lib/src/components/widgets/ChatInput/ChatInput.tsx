@@ -63,6 +63,8 @@ import {
   UploadFileInfo,
 } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
+import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
+import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
 
 import {
   StyledChatInput,
@@ -259,13 +261,19 @@ const FileUploadArea = ({
     <>
       <div {...getRootProps()}>
         <input {...getInputProps()} />
-        <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
-          <Icon
-            content={AttachFile}
-            size="lg"
-            color={theme.colors.fadedText60}
-          />
-        </BaseButton>
+        <TooltipIcon
+          content="Upload or drag and drop a file"
+          placement={Placement.TOP}
+          markdownProps={{ italicLabel: true }}
+        >
+          <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
+            <Icon
+              content={AttachFile}
+              size="lg"
+              color={theme.colors.fadedText60}
+            />
+          </BaseButton>
+        </TooltipIcon>
       </div>
       <StyledVerticalDivider />
     </>

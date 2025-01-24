@@ -22,6 +22,7 @@ export interface StyledStreamlitMarkdownProps {
   isInSidebarOrDialog: boolean
   isLabel?: boolean
   boldLabel?: boolean
+  italicLabel?: boolean
   largerLabel?: boolean
   isToast?: boolean
 }
@@ -158,6 +159,7 @@ export const StyledStreamlitMarkdown =
       isInSidebarOrDialog,
       isLabel,
       boldLabel,
+      italicLabel,
       largerLabel,
       isToast,
     }) => {
@@ -183,6 +185,7 @@ export const StyledStreamlitMarkdown =
           wordBreak: "break-word",
           marginBottom: isLabel ? theme.spacing.none : "",
           fontWeight: boldLabel ? theme.fontWeights.bold : "",
+          fontStyle: italicLabel ? "italic" : "",
           marginTop: theme.spacing.none,
           marginLeft: theme.spacing.none,
           marginRight: theme.spacing.none,
