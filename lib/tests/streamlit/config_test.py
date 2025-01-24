@@ -549,6 +549,7 @@ class ConfigTest(unittest.TestCase):
         expected = {
             "base": None,
             "primaryColor": "000000",
+            "roundness": None,
             "secondaryBackgroundColor": None,
             "backgroundColor": None,
             "textColor": None,
