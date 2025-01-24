@@ -57,6 +57,7 @@ import {
 } from "@streamlit/lib/src/theme"
 import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
 import streamlitLogo from "@streamlit/lib/src/assets/img/streamlit-logo/streamlit-mark-color.svg"
+import { logWarning } from "@streamlit/lib/src/util/log"
 
 import {
   StyledHeadingActionElements,
@@ -348,6 +349,15 @@ export function RenderedMarkdown({
   isLabel,
   disableLinks,
 }: Readonly<RenderedMarkdownProps>): ReactElement {
+  if (typeof source !== "string") {
+    // This is a fallback to prevent potential issues when source is not a valid string:
+    // https://github.com/streamlit/streamlit/issues/10245
+    // This is not expected to happen and might be caused by a bug
+    // somewhere else.
+    logWarning("Markdown source is not a string. This should never happen.")
+    source = source ?? ""
+  }
+
   const renderers: Components = {
     pre: CustomPreTag,
     code: CustomCodeTag,
