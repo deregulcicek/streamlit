@@ -22,6 +22,7 @@ import isObject from "lodash/isObject"
 import merge from "lodash/merge"
 import once from "lodash/once"
 
+import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 import {
   CustomThemeConfig,
   ICustomThemeConfig,
@@ -43,8 +44,8 @@ import {
 import {
   isDarkThemeInQueryParams,
   isLightThemeInQueryParams,
+  notNullOrUndefined,
 } from "@streamlit/lib/src/util/utils"
-import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
@@ -165,7 +166,7 @@ export const createEmotionTheme = (
   baseThemeConfig = baseTheme
 ): EmotionTheme => {
   const { colors, genericFonts } = baseThemeConfig.emotion
-  const { font, radii, fontSizes, ...customColors } = themeInput
+  const { font, radii, fontSizes, roundness, ...customColors } = themeInput
 
   const parsedFont = fontEnumToString(font)
 
@@ -210,15 +211,18 @@ export const createEmotionTheme = (
 
   const conditionalOverrides: any = {}
 
-  if (radii) {
+  if (notNullOrUndefined(roundness)) {
     conditionalOverrides.radii = {
       ...baseThemeConfig.emotion.radii,
     }
 
-    if (radii.checkboxRadius)
-      conditionalOverrides.radii.md = addPxUnit(radii.checkboxRadius)
-    if (radii.baseWidgetRadius)
-      conditionalOverrides.radii.default = addPxUnit(radii.baseWidgetRadius)
+    // Normalize the roundness to be between 0 and 1.5rem base radii.
+    const baseRadii = Math.max(0, Math.min(roundness, 1)) * 1.5
+    conditionalOverrides.radii.default = addRemUnit(baseRadii)
+    // Adapt all the other radii sizes based on the base radii:
+    conditionalOverrides.radii.md = addRemUnit(baseRadii * 0.5)
+    conditionalOverrides.radii.xl = addRemUnit(baseRadii * 1.5)
+    conditionalOverrides.radii.xxl = addRemUnit(baseRadii * 2)
   }
 
   if (fontSizes) {
@@ -317,12 +321,14 @@ export const createTheme = (
   baseThemeConfig?: ThemeConfig,
   inSidebar = false
 ): ThemeConfig => {
+  let completedThemeInput: CustomThemeConfig
+
   if (baseThemeConfig) {
-    themeInput = completeThemeInput(themeInput, baseThemeConfig)
+    completedThemeInput = completeThemeInput(themeInput, baseThemeConfig)
   } else if (themeInput.base === CustomThemeConfig.BaseTheme.DARK) {
-    themeInput = completeThemeInput(themeInput, darkTheme)
+    completedThemeInput = completeThemeInput(themeInput, darkTheme)
   } else {
-    themeInput = completeThemeInput(themeInput, lightTheme)
+    completedThemeInput = completeThemeInput(themeInput, lightTheme)
   }
 
   // We use startingTheme to pick a set of "auxiliary colors" for widgets like
@@ -333,7 +339,7 @@ export const createTheme = (
   // theme's backgroundColor instead of picking them using themeInput.base.
   // This way, things will look good even if a user sets
   // themeInput.base === LIGHT and themeInput.backgroundColor === "black".
-  const bgColor = themeInput.backgroundColor as string
+  const bgColor = completedThemeInput.backgroundColor as string
   const startingTheme = merge(
     cloneDeep(
       baseThemeConfig
@@ -345,7 +351,7 @@ export const createTheme = (
     { emotion: { inSidebar } }
   )
 
-  const emotion = createEmotionTheme(themeInput, startingTheme)
+  const emotion = createEmotionTheme(completedThemeInput, startingTheme)
 
   return {
     ...startingTheme,
@@ -481,6 +487,10 @@ export function computeSpacingStyle(
 
 function addPxUnit(n: number): string {
   return `${n}px`
+}
+
+function addRemUnit(n: number): string {
+  return `${n}rem`
 }
 
 export function blend(color: string, background: string | undefined): string {
