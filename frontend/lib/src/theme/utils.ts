@@ -166,7 +166,7 @@ export const createEmotionTheme = (
   baseThemeConfig = baseTheme
 ): EmotionTheme => {
   const { colors, genericFonts } = baseThemeConfig.emotion
-  const { font, radii, fontSizes, roundness, ...customColors } = themeInput
+  const { font, fontSizes, roundness, ...customColors } = themeInput
 
   const parsedFont = fontEnumToString(font)
 
