@@ -16,9 +16,9 @@ import pandas as pd
 
 import streamlit as st
 
-st.set_page_config(initial_sidebar_state="expanded")
+st.set_page_config(initial_sidebar_state="expanded", layout="wide")
 
-st.sidebar.write("Hello World")
+
 st.header("Custom Theme :primary[App]")
 
 col1, col2, col3 = st.columns(3)
@@ -28,5 +28,10 @@ with col1:
     st.button("Primary Button", type="primary")
 with col2:
     st.text_input("Text Input")
+    st.checkbox("Checkbox", value=True)
 with col3:
     st.dataframe(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+
+with st.sidebar:
+    st.write("Hello World")
+    st.text_input("Text Input in Sidebar")
