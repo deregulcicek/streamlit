@@ -28,7 +28,6 @@ import { UploadFileInfo } from "./UploadFileInfo"
 export interface Props {
   items: UploadFileInfo[]
   onDelete: (id: number) => void
-  style?: React.CSSProperties
 }
 
 const UploadedFileList = ({ items, onDelete }: Props): ReactElement => {
@@ -50,5 +49,4 @@ const UploadedFiles = (props: Props & PaginationProps): ReactElement => (
     <PaginatedFiles {...props} />
   </StyledUploadedFiles>
 )
-
 export default UploadedFiles

@@ -86,7 +86,7 @@ const UploadedFile = ({ fileInfo, onDelete }: Props): React.ReactElement => {
       data-testid="stFileUploaderFile"
     >
       <StyledFileIcon>
-        <Icon content={InsertDriveFile} size={"twoXL"} />
+        <Icon content={InsertDriveFile} size="twoXL" />
       </StyledFileIcon>
       <StyledUploadedFileData className="stFileUploaderFileData">
         <StyledUploadedFileName
