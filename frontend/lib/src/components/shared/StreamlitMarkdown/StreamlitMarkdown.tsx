@@ -99,11 +99,6 @@ export interface Props {
   boldLabel?: boolean
 
   /**
-   * Make the label italic
-   */
-  italicLabel?: boolean
-
-  /**
    * Checkbox labels have larger font sizing
    */
   largerLabel?: boolean
@@ -626,7 +621,6 @@ const StreamlitMarkdown: React.FC<Props> = ({
   isCaption,
   isLabel,
   boldLabel,
-  italicLabel,
   largerLabel,
   disableLinks,
   isToast,
@@ -640,7 +634,6 @@ const StreamlitMarkdown: React.FC<Props> = ({
       isInSidebarOrDialog={isInSidebar || isInDialog}
       isLabel={isLabel}
       boldLabel={boldLabel}
-      italicLabel={italicLabel}
       largerLabel={largerLabel}
       isToast={isToast}
       style={style}

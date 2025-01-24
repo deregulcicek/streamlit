@@ -370,22 +370,6 @@ describe("StreamlitMarkdown", () => {
     expect(textTag).toHaveStyle("font-weight: 600")
   })
 
-  it("renders italic label text when italicLabel is true", () => {
-    const source = "Here is some checkbox label text"
-    render(
-      <StreamlitMarkdown
-        source={source}
-        allowHTML={false}
-        isLabel
-        italicLabel
-        largerLabel
-      />
-    )
-
-    const textTag = screen.getByText("Here is some checkbox label text")
-    expect(textTag).toHaveStyle("font-style: italic")
-  })
-
   it("colours text properly", () => {
     const colorMapping = new Map([
       ["red", colors.red80],
