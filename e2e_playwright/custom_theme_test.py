@@ -27,9 +27,9 @@ def configure_custom_theme():
     """Configure custom theme."""
     os.environ["STREAMLIT_THEME_BASE"] = "dark"
     os.environ["STREAMLIT_THEME_PRIMARY_COLOR"] = "#1BD760"
-    os.environ["STREAMLIT_THEME_BACKGROUND_COLOR"] = "#181818"
-    os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"] = "#2C2C2C"
-    os.environ["STREAMLIT_THEME_TEXT_COLOR"] = "#FFFFFF"
+    os.environ["STREAMLIT_THEME_BACKGROUND_COLOR"] = "#001200"
+    os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"] = "#021A09"
+    os.environ["STREAMLIT_THEME_TEXT_COLOR"] = "#DFFDE0"
     os.environ["STREAMLIT_THEME_ROUNDNESS"] = "0.75"
     yield
     del os.environ["STREAMLIT_THEME_BASE"]
