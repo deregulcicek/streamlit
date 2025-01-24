@@ -392,6 +392,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.backgroundColor",
                 "theme.secondaryBackgroundColor",
                 "theme.textColor",
+                "theme.roundness",
                 "theme.font",
                 "global.appTest",
                 "global.developmentMode",
