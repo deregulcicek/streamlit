@@ -43,4 +43,4 @@ def configure_custom_theme():
 def test_custom_theme(
     app: Page, assert_snapshot: ImageCompareFunction, configure_custom_theme
 ):
-    assert_snapshot(app, name="custom_theme")
+    assert_snapshot(app, name="custom_themed_app")
