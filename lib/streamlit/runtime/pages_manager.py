@@ -222,8 +222,6 @@ class PagesManager:
     NOTE: Each strategy handles its own thread safety when accessing the pages
     """
 
-    DefaultStrategy: type[PagesStrategyV1 | PagesStrategyV2] = PagesStrategyV1
-
     def __init__(
         self,
         main_script_path: ScriptPath,
@@ -232,7 +230,11 @@ class PagesManager:
     ):
         self._main_script_path = main_script_path
         self._main_script_hash: PageHash = calc_md5(main_script_path)
-        self.pages_strategy = PagesManager.DefaultStrategy(self, **kwargs)
+        pages_dir = Path(main_script_path).parent / "pages"
+        if os.path.exists(pages_dir):
+            self.pages_strategy = PagesStrategyV1(self, **kwargs)
+        else:
+            self.pages_strategy = PagesStrategyV2(self, **kwargs)
         self._script_cache = script_cache
         self._intended_page_script_hash: PageHash | None = None
         self._intended_page_name: PageName | None = None

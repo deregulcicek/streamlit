@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import os
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -28,20 +29,27 @@ from streamlit.util import calc_md5
 class PagesManagerTest(unittest.TestCase):
     def test_register_pages_changed_callback(self):
         """Test that the pages changed callback is correctly registered and unregistered"""
-        pages_manager = PagesManager("main_script_path")
-        with patch.object(source_util, "_on_pages_changed", MagicMock()):
 
-            def callback():
-                return None
+        def callback():
+            return None
 
-            disconnect = pages_manager.register_pages_changed_callback(callback)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            pages_dir = os.path.join(temp_dir, "foo", "bar", "pages")
+            os.makedirs(pages_dir, exist_ok=True)
 
-            source_util._on_pages_changed.connect.assert_called_once_with(
-                callback, weak=False
-            )
+            app_path = os.path.join(temp_dir, "foo", "bar", "streamlit_app.py")
+            pages_manager = PagesManager(app_path)
+            with patch.object(source_util, "_on_pages_changed", MagicMock()):
+                disconnect = pages_manager.register_pages_changed_callback(callback)
 
-            disconnect()
-            source_util._on_pages_changed.disconnect.assert_called_once_with(callback)
+                source_util._on_pages_changed.connect.assert_called_once_with(
+                    callback, weak=False
+                )
+
+                disconnect()
+                source_util._on_pages_changed.disconnect.assert_called_once_with(
+                    callback
+                )
 
     @patch("streamlit.runtime.pages_manager.watch_dir")
     @patch.object(source_util, "invalidate_pages_cache", MagicMock())
@@ -49,26 +57,33 @@ class PagesManagerTest(unittest.TestCase):
         """Test that the pages watcher is correctly installed and uninstalled"""
         # Ensure PagesStrategyV1.is_watching_pages_dir is False to start
         PagesStrategyV1.is_watching_pages_dir = False
-        PagesManager(os.path.normpath("/foo/bar/streamlit_app.py"))
 
-        patched_watch_dir.assert_called_once()
-        args, _ = patched_watch_dir.call_args_list[0]
-        on_pages_changed = args[1]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create the required pages folder
+            pages_dir = os.path.join(temp_dir, "foo", "bar", "pages")
+            os.makedirs(pages_dir, exist_ok=True)
 
-        patched_watch_dir.assert_called_once_with(
-            os.path.normpath("/foo/bar/pages"),
-            on_pages_changed,
-            glob_pattern="*.py",
-            allow_nonexistent=True,
-        )
+            app_path = os.path.join(temp_dir, "foo", "bar", "streamlit_app.py")
+            PagesManager(app_path)
 
-        patched_watch_dir.reset_mock()
+            patched_watch_dir.assert_called_once()
+            args, _ = patched_watch_dir.call_args_list[0]
+            on_pages_changed = args[1]
 
-        _ = PagesManager(os.path.normpath("/foo/bar/streamlit_app.py"))
-        patched_watch_dir.assert_not_called()
+            patched_watch_dir.assert_called_once_with(
+                pages_dir,
+                on_pages_changed,
+                glob_pattern="*.py",
+                allow_nonexistent=True,
+            )
 
-        on_pages_changed("/foo/bar/pages")
-        source_util.invalidate_pages_cache.assert_called_once()
+            patched_watch_dir.reset_mock()
+
+            _ = PagesManager(os.path.normpath(app_path))
+            patched_watch_dir.assert_not_called()
+
+            on_pages_changed(pages_dir)
+            source_util.invalidate_pages_cache.assert_called_once()
 
 
 class PagesManagerV2Test(unittest.TestCase):
