@@ -22,11 +22,9 @@ import isObject from "lodash/isObject"
 import merge from "lodash/merge"
 import once from "lodash/once"
 
-import { CircularBuffer } from "@streamlit/lib/src/components/shared/Profiler/CircularBuffer"
-import {
-  CustomThemeConfig,
-  ICustomThemeConfig,
-} from "@streamlit/lib/src/proto"
+import { CustomThemeConfig, ICustomThemeConfig } from "@streamlit/protobuf"
+
+import { CircularBuffer } from "~lib/components/shared/Profiler/CircularBuffer"
 import {
   baseTheme,
   CachedTheme,
@@ -35,17 +33,14 @@ import {
   lightTheme,
   ThemeConfig,
   ThemeSpacing,
-} from "@streamlit/lib/src/theme"
-import { logError } from "@streamlit/lib/src/util/log"
-import {
-  localStorageAvailable,
-  LocalStore,
-} from "@streamlit/lib/src/util/storageUtils"
+} from "~lib/theme"
+import { logError } from "~lib/util/log"
+import { localStorageAvailable, LocalStore } from "~lib/util/storageUtils"
 import {
   isDarkThemeInQueryParams,
   isLightThemeInQueryParams,
   notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+} from "~lib/util/utils"
 
 import { createBaseUiTheme } from "./createThemeUtil"
 import {
