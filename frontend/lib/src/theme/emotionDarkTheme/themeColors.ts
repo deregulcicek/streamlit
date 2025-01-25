@@ -16,7 +16,7 @@
 
 import { lighten, transparentize } from "color2k"
 
-import { colors } from "@streamlit/lib/src/theme/primitives/colors"
+import { colors } from "~lib/theme/primitives/colors"
 
 export default {
   ...colors,
