@@ -174,26 +174,31 @@ def get_pages(main_script_path_str: ScriptPath) -> dict[PageHash, PageInfo]:
         return pages
 
 
-_pages_watcher_lock = threading.Lock()
-_is_watching_pages_dir = False
+def pages_watcher_factory() -> Callable[[Path], None]:
+    _is_watching_pages_dir = False
+    _pages_watcher_lock = threading.Lock()
+
+    def setup(pages_dir: Path) -> None:
+        nonlocal _is_watching_pages_dir
+        with _pages_watcher_lock:
+            if _is_watching_pages_dir:
+                return
+
+            def _handle_page_changed(_path: str) -> None:
+                invalidate_pages_cache()
+
+            watch_dir(
+                str(pages_dir),
+                _handle_page_changed,
+                glob_pattern="*.py",
+                allow_nonexistent=True,
+            )
+            _is_watching_pages_dir = True
+
+    return setup
 
 
-def setup_pages_watcher(pages_dir: Path) -> None:
-    global _is_watching_pages_dir
-    with _pages_watcher_lock:
-        if _is_watching_pages_dir:
-            return
-
-        def _handle_page_changed(_path: str) -> None:
-            invalidate_pages_cache()
-
-        watch_dir(
-            str(pages_dir),
-            _handle_page_changed,
-            glob_pattern="*.py",
-            allow_nonexistent=True,
-        )
-        _is_watching_pages_dir = True
+setup_pages_watcher = pages_watcher_factory()
 
 
 def register_pages_changed_callback(

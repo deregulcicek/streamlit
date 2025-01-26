@@ -131,7 +131,7 @@ import { showDevelopmentOptions } from "./showDevelopmentOptions"
 // Used to import fonts + responsive reboot items
 import "@streamlit/app/src/assets/css/theme.scss"
 import { ThemeManager } from "./util/useThemeManager"
-import { AppNavigation, MaybeStateUpdate } from "./util/AppNavigation"
+import { AppNavigation } from "./util/AppNavigation"
 
 export interface Props {
   screenCast: ScreenCastHOC
@@ -817,7 +817,10 @@ export class App extends PureComponent<Props, State> {
   }
 
   handlePageNotFound = (pageNotFound: PageNotFound): void => {
-    this.maybeSetState(this.appNavigation.handlePageNotFound(pageNotFound))
+    const [newState, callback] =
+      this.appNavigation.handlePageNotFound(pageNotFound)
+
+    this.setState(newState as State, callback)
   }
 
   onPageIconChanged = (iconUrl: string): void => {
@@ -829,11 +832,17 @@ export class App extends PureComponent<Props, State> {
   }
 
   handlePagesChanged = (pagesChangedMsg: PagesChanged): void => {
-    this.maybeSetState(this.appNavigation.handlePagesChanged(pagesChangedMsg))
+    const [newState, callback] =
+      this.appNavigation.handlePagesChanged(pagesChangedMsg)
+
+    this.setState(newState as State, callback)
   }
 
   handleNavigation = (navigationMsg: Navigation): void => {
-    this.maybeSetState(this.appNavigation.handleNavigation(navigationMsg))
+    const [newState, callback] =
+      this.appNavigation.handleNavigation(navigationMsg)
+
+    this.setState(newState as State, callback)
   }
 
   handlePageProfileMsg = (pageProfile: PageProfile): void => {
@@ -972,14 +981,6 @@ export class App extends PureComponent<Props, State> {
     }
   }
 
-  maybeSetState(stateUpdate: MaybeStateUpdate): void {
-    if (stateUpdate) {
-      const [newState, callback] = stateUpdate
-
-      this.setState(newState as State, callback)
-    }
-  }
-
   /**
    * Handler for ForwardMsg.newSession messages. This runs on each rerun
    * @param newSessionProto a NewSession protobuf
@@ -1028,7 +1029,10 @@ export class App extends PureComponent<Props, State> {
         // empty array.
         fragmentIdsThisRun,
       })
-      this.maybeSetState(this.appNavigation.handleNewSession(newSessionProto))
+      const [newState, callback] =
+        this.appNavigation.handleNewSession(newSessionProto)
+
+      this.setState(newState as State, callback)
 
       // Set the favicon to its default values
       this.onPageIconChanged(`${import.meta.env.BASE_URL}favicon.png`)

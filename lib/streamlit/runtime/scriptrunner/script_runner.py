@@ -511,7 +511,11 @@ class ScriptRunner:
                 # Send Navigation to Frontend
                 msg = ForwardMsg()
                 msg.navigation.expanded = False
-                msg.navigation.position = NavigationProto.Position.SIDEBAR
+                msg.navigation.position = (
+                    NavigationProto.Position.HIDDEN
+                    if config.get_option("client.showSidebarNavigation") is False
+                    else NavigationProto.Position.SIDEBAR
+                )
                 msg.navigation.page_script_hash = active_script["page_script_hash"]
                 for page in ctx.pages_manager.get_pages().values():
                     page_info = msg.navigation.app_pages.add()
