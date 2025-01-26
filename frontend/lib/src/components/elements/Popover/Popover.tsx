@@ -55,7 +55,7 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
   const lightBackground = hasLightBackgroundColor(theme)
 
   const popoverRef = useRef<any>(null)
-  function calcYOffsite() {
+  function calcYOffsite(): undefined {
     window.clearTimeout(timeoutId)
     if (!open) return
     const parentElement = popoverRef?.current?.popperRef?.current
