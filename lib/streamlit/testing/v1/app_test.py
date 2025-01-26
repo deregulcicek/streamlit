@@ -31,6 +31,7 @@ from streamlit.runtime.caching.storage.dummy_cache_storage import (
 from streamlit.runtime.media_file_manager import MediaFileManager
 from streamlit.runtime.memory_media_file_storage import MemoryMediaFileStorage
 from streamlit.runtime.pages_manager import PagesManager
+from streamlit.runtime.scriptrunner.script_cache import ScriptCache
 from streamlit.runtime.secrets import Secrets
 from streamlit.runtime.state.common import TESTING_KEY
 from streamlit.runtime.state.safe_session_state import SafeSessionState
@@ -322,11 +323,13 @@ class AppTest:
 
         # setup
         mock_runtime = MagicMock(spec=Runtime)
+        mock_runtime._script_cache = ScriptCache()
         mock_runtime.media_file_mgr = MediaFileManager(
             MemoryMediaFileStorage("/mock/media")
         )
         mock_runtime.cache_storage_manager = MemoryCacheStorageManager()
         Runtime._instance = mock_runtime
+        source_util.invalidate_pages_cache()
         pages_manager = PagesManager(self._script_path, setup_watcher=False)
         with source_util._pages_cache_lock:
             saved_cached_pages = source_util._cached_pages

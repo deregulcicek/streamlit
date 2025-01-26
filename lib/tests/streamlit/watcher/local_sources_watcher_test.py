@@ -382,13 +382,15 @@ class LocalSourcesWatcherTest(unittest.TestCase):
 
         args1, _ = fob.call_args_list[0]
         args2, _ = fob.call_args_list[1]
+        args3, _ = fob.call_args_list[2]
 
         assert args1[0] == "streamlit_app.py"
         assert args2[0] == "streamlit_app2.py"
+        assert args3[0] == SCRIPT_PATH
 
         lsw.update_watched_pages()
-        args3, _ = fob.call_args_list[2]
-        assert args3[0] == "streamlit_app3.py"
+        args4, _ = fob.call_args_list[3]
+        assert args4[0] == "streamlit_app3.py"
 
     @patch(
         "streamlit.runtime.pages_manager.PagesManager.get_pages",
@@ -420,14 +422,19 @@ class LocalSourcesWatcherTest(unittest.TestCase):
     @patch("streamlit.watcher.local_sources_watcher.PathWatcher", MagicMock())
     def test_watches_union_of_page_scripts(self):
         lsw = local_sources_watcher.LocalSourcesWatcher(PagesManager(SCRIPT_PATH))
-        assert lsw._watched_pages == {"page1.py", "page2.py"}
+        assert lsw._watched_pages == {"page1.py", "page2.py", SCRIPT_PATH}
 
         def isfile_mock(x):
             return True
 
         with patch("os.path.isfile", wraps=isfile_mock):
             lsw.update_watched_pages()
-            assert lsw._watched_pages == {"page1.py", "page2.py", "page3.py"}
+            assert lsw._watched_pages == {
+                "page1.py",
+                "page2.py",
+                "page3.py",
+                SCRIPT_PATH,
+            }
 
     @patch(
         "streamlit.runtime.pages_manager.PagesManager.get_pages",
@@ -459,14 +466,14 @@ class LocalSourcesWatcherTest(unittest.TestCase):
     @patch("streamlit.watcher.local_sources_watcher.PathWatcher", MagicMock())
     def test_unwatches_invalid_page_script_paths(self):
         lsw = local_sources_watcher.LocalSourcesWatcher(PagesManager(SCRIPT_PATH))
-        assert lsw._watched_pages == {"page1.py", "page2.py"}
+        assert lsw._watched_pages == {"page1.py", "page2.py", SCRIPT_PATH}
 
         def isfile_mock(x):
             return x != "page2.py"
 
         with patch("os.path.isfile", wraps=isfile_mock):
             lsw.update_watched_pages()
-            assert lsw._watched_pages == {"page1.py", "page3.py"}
+            assert lsw._watched_pages == {"page1.py", "page3.py", SCRIPT_PATH}
 
     @patch("streamlit.watcher.local_sources_watcher.PathWatcher")
     def test_passes_filepath_to_callback(self, fob):

@@ -298,9 +298,7 @@ def navigation(
 
     # Inform our page manager about the set of pages we have
     ctx.pages_manager.set_pages(pagehash_to_pageinfo)
-    found_page = ctx.pages_manager.get_page_script(
-        fallback_page_hash=default_page._script_hash
-    )
+    found_page = ctx.find_intended_page(fallback_page_hash=default_page._script_hash)
 
     page_to_return = None
     if found_page:

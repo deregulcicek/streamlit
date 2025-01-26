@@ -49,6 +49,7 @@ if TYPE_CHECKING:
     from streamlit.runtime.scriptrunner_utils.script_requests import ScriptRequests
     from streamlit.runtime.state import SafeSessionState
     from streamlit.runtime.uploaded_file_manager import UploadedFileManager
+    from streamlit.source_util import PageHash, PageInfo
 _LOGGER: Final = get_logger(__name__)
 
 UserInfo: TypeAlias = Dict[str, Union[str, bool, None]]
@@ -59,6 +60,12 @@ UserInfo: TypeAlias = Dict[str, Union[str, bool, None]]
 in_cached_function: contextvars.ContextVar[bool] = contextvars.ContextVar(
     "in_cached_function", default=False
 )
+
+
+@dataclass
+class ScriptRunIntent:
+    page_script_hash: str
+    page_name: str | None = None
 
 
 @dataclass
@@ -85,6 +92,7 @@ class ScriptRunContext:
     user_info: UserInfo
     fragment_storage: FragmentStorage
     pages_manager: PagesManager
+    script_intent: ScriptRunIntent | None = None
 
     gather_usage_stats: bool = False
     command_tracking_deactivated: bool = False
@@ -130,14 +138,28 @@ class ScriptRunContext:
             # in the event of any exception, ensure we set the active hash back
             self._active_script_hash = original_page_hash
 
+    def find_intended_page(
+        self, *, fallback_page_hash: PageHash | None = None
+    ) -> PageInfo:
+        return self.pages_manager.find_page_info(
+            self._script_intent.page_script_hash,
+            self._script_intent.page_name,
+            fallback_page_hash=fallback_page_hash,
+        )
+
     def set_mpa_v2_page(self, page_script_hash: str):
         self._active_script_hash = self.pages_manager.main_script_hash
         self.pages_manager.set_current_page_script_hash(page_script_hash)
+
+    def set_script_intent(self, script_intent: ScriptRunIntent):
+        self._script_intent = script_intent
 
     def reset(
         self,
         query_string: str = "",
         page_script_hash: str = "",
+        active_script_hash: str = "",
+        script_intent: ScriptRunIntent = ScriptRunIntent("", None),
         fragment_ids_this_run: list[str] | None = None,
     ) -> None:
         self.cursors = {}
@@ -146,7 +168,8 @@ class ScriptRunContext:
         self.form_ids_this_run = set()
         self.query_string = query_string
         self.pages_manager.set_current_page_script_hash(page_script_hash)
-        self._active_script_hash = self.pages_manager.initial_active_script_hash
+        self._active_script_hash = active_script_hash
+        self.set_script_intent(script_intent)
         # Permit set_page_config when the ScriptRunContext is reused on a rerun
         self._set_page_config_allowed = True
         self._has_script_started = False

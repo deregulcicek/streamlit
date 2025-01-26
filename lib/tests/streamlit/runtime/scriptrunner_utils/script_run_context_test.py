@@ -346,7 +346,10 @@ class ScriptRunContextTest(unittest.TestCase):
             pages_manager=pages_manager,
             current_fragment_id="my_fragment_id",
         )
-        ctx.reset(page_script_hash=pages_manager.main_script_hash)
+        ctx.reset(
+            page_script_hash=pages_manager.main_script_hash,
+            active_script_hash=pages_manager.main_script_hash,
+        )
         assert ctx.active_script_hash == pages_manager.main_script_hash
 
         pages_manager.set_pages({})

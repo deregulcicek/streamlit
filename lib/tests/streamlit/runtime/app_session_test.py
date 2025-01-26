@@ -550,6 +550,7 @@ class AppSessionTest(unittest.TestCase):
         "get_pages",
         MagicMock(return_value={}),
     )
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     def test_recreates_local_sources_watcher_if_none(self):
         session = _create_test_session()
         session._local_sources_watcher = None

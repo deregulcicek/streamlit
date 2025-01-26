@@ -24,7 +24,6 @@ from streamlit.runtime.forward_msg_queue import ForwardMsgQueue
 from streamlit.runtime.fragment import MemoryFragmentStorage
 from streamlit.runtime.memory_uploaded_file_manager import MemoryUploadedFileManager
 from streamlit.runtime.scriptrunner import RerunData, ScriptRunner, ScriptRunnerEvent
-from streamlit.runtime.scriptrunner.script_cache import ScriptCache
 from streamlit.testing.v1.element_tree import ElementTree, parse_tree_from_messages
 
 if TYPE_CHECKING:
@@ -61,7 +60,7 @@ class LocalScriptRunner(ScriptRunner):
             main_script_path=script_path,
             session_state=self.session_state._state,
             uploaded_file_mgr=MemoryUploadedFileManager("/mock/upload"),
-            script_cache=ScriptCache(),
+            script_cache=runtime.get_instance()._script_cache,
             initial_rerun_data=RerunData(),
             user_info={"email": "test@example.com"},
             fragment_storage=MemoryFragmentStorage(),

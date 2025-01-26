@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Callable
 
 from streamlit.errors import StreamlitAPIException
+from streamlit.runtime import get_instance
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner_utils.script_run_context import get_script_run_ctx
 from streamlit.source_util import page_icon_and_name
@@ -296,7 +297,8 @@ class StreamlitPage:
                 self._page()
                 return
             else:
-                code = ctx.pages_manager.get_page_script_byte_code(str(self._page))
+                runtime = get_instance()
+                code = runtime.get_page_script_byte_code(str(self._page))
 
                 # We create a module named __page__ for this specific
                 # script. This is differentiate it from the `__main__` module

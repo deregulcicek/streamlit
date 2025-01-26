@@ -25,6 +25,7 @@ from typing_extensions import NotRequired, TypeAlias
 from streamlit.logger import get_logger
 from streamlit.string_util import extract_leading_emoji
 from streamlit.util import calc_md5
+from streamlit.watcher import watch_dir
 
 _LOGGER: Final = get_logger(__name__)
 
@@ -138,9 +139,10 @@ def get_pages(main_script_path_str: ScriptPath) -> dict[PageHash, PageInfo]:
         pages: dict[PageHash, PageInfo] = {
             main_script_hash: {
                 "page_script_hash": main_script_hash,
-                "page_name": main_page_name,
+                "page_name": main_page_name.replace("_", " "),
                 "icon": main_page_icon,
                 "script_path": str(main_script_path.resolve()),
+                "url_pathname": "",
             }
         }
 
@@ -161,14 +163,37 @@ def get_pages(main_script_path_str: ScriptPath) -> dict[PageHash, PageInfo]:
 
             pages[psh] = {
                 "page_script_hash": psh,
-                "page_name": pn,
+                "page_name": pn.replace("_", " "),
                 "icon": pi,
                 "script_path": script_path_str,
+                "url_pathname": pn,
             }
 
         _cached_pages = pages
 
         return pages
+
+
+_pages_watcher_lock = threading.Lock()
+_is_watching_pages_dir = False
+
+
+def setup_pages_watcher(pages_dir: Path) -> None:
+    global _is_watching_pages_dir
+    with _pages_watcher_lock:
+        if _is_watching_pages_dir:
+            return
+
+        def _handle_page_changed(_path: str) -> None:
+            invalidate_pages_cache()
+
+        watch_dir(
+            str(pages_dir),
+            _handle_page_changed,
+            glob_pattern="*.py",
+            allow_nonexistent=True,
+        )
+        _is_watching_pages_dir = True
 
 
 def register_pages_changed_callback(

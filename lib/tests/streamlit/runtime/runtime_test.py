@@ -124,6 +124,7 @@ class RuntimeTest(RuntimeTestCase):
         await self.runtime.stopped
         self.assertEqual(RuntimeState.STOPPED, self.runtime.state)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_connect_session(self):
         """We can create and remove a single session."""
         await self.runtime.start()
@@ -223,6 +224,7 @@ class RuntimeTest(RuntimeTestCase):
                 "create_session is deprecated! Use connect_session instead."
             )
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_disconnect_session_disconnects_appsession(self):
         """Closing a session should disconnect its associated AppSession."""
         await self.runtime.start()
@@ -244,6 +246,7 @@ class RuntimeTest(RuntimeTestCase):
             patched_on_session_disconnected.assert_called_once()
             patched_remove_refs_for_session.assert_called_once_with(session)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_close_session_closes_appsession(self):
         await self.runtime.start()
 
@@ -264,6 +267,7 @@ class RuntimeTest(RuntimeTestCase):
             patched_on_session_disconnected.assert_called_once()
             patched_remove_refs_for_session.assert_called_once_with(session)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_multiple_sessions(self):
         """Multiple sessions can be connected."""
         await self.runtime.start()
@@ -291,6 +295,7 @@ class RuntimeTest(RuntimeTestCase):
 
         self.assertEqual(RuntimeState.NO_SESSIONS_CONNECTED, self.runtime.state)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_disconnect_invalid_session(self):
         """Disconnecting a session that doesn't exist is a no-op: no error raised."""
         await self.runtime.start()
@@ -305,6 +310,7 @@ class RuntimeTest(RuntimeTestCase):
         self.runtime.disconnect_session(session_id)
         self.runtime.disconnect_session(session_id)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_close_invalid_session(self):
         """Closing a session that doesn't exist is a no-op: no error raised."""
         await self.runtime.start()
@@ -319,6 +325,7 @@ class RuntimeTest(RuntimeTestCase):
         self.runtime.close_session(session_id)
         self.runtime.close_session(session_id)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_is_active_session(self):
         """`is_active_session` should work as expected."""
         await self.runtime.start()
@@ -331,6 +338,7 @@ class RuntimeTest(RuntimeTestCase):
         self.runtime.disconnect_session(session_id)
         self.assertFalse(self.runtime.is_active_session(session_id))
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_closes_app_sessions_on_stop(self):
         """When the Runtime stops, it should close all AppSessions."""
         await self.runtime.start()
@@ -356,6 +364,7 @@ class RuntimeTest(RuntimeTestCase):
             # All sessions should be shut down via self._session_mgr.close_session
             patched_close_session.assert_has_calls(call(s.id) for s in app_sessions)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     @patch("streamlit.runtime.app_session.AppSession.handle_backmsg", new=MagicMock())
     async def test_handle_backmsg(self):
         """BackMsgs should be delivered to the appropriate AppSession."""
@@ -381,6 +390,7 @@ class RuntimeTest(RuntimeTestCase):
         "streamlit.runtime.app_session.AppSession.handle_backmsg_exception",
         new=MagicMock(),
     )
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_handle_backmsg_deserialization_exception(self):
         """BackMsg deserialization Exceptions should be delivered to the
         appropriate AppSession.
@@ -424,6 +434,7 @@ class RuntimeTest(RuntimeTestCase):
         with self.assertRaises(RuntimeStoppedError):
             self.runtime.handle_backmsg("not_a_session_id", MagicMock())
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_handle_session_client_disconnected(self):
         """Runtime should gracefully handle `SessionClient.write_forward_msg`
         raising a `SessionClientDisconnectedError`.
@@ -450,6 +461,7 @@ class RuntimeTest(RuntimeTestCase):
         raise_disconnected_error.assert_called_once()
         self.assertFalse(self.runtime.is_active_session(session_id))
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_stable_number_of_async_tasks(self):
         """Test that the number of async tasks remains stable.
 
@@ -468,6 +480,7 @@ class RuntimeTest(RuntimeTestCase):
         # It is expected that there are a couple of tasks, but not one per loop:
         self.assertLess(len(asyncio.all_tasks()), 10)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_forwardmsg_hashing(self):
         """Test that outgoing ForwardMsgs contain hashes."""
         await self.runtime.start()
@@ -485,6 +498,7 @@ class RuntimeTest(RuntimeTestCase):
         received = client.forward_msgs.pop()
         self.assertEqual(populate_hash_if_needed(msg), received.hash)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_forwardmsg_cacheable_flag(self):
         """Test that the metadata.cacheable flag is set properly on outgoing
         ForwardMsgs."""
@@ -511,6 +525,7 @@ class RuntimeTest(RuntimeTestCase):
             self.assertFalse(cacheable_msg.metadata.cacheable)
             self.assertFalse(received.metadata.cacheable)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_duplicate_forwardmsg_caching(self):
         """Test that duplicate ForwardMsgs are sent only once."""
         with patch_config_options({"global.minCachedMessageSize": 0}):
@@ -544,6 +559,7 @@ class RuntimeTest(RuntimeTestCase):
             # And the same *metadata* as msg2:
             self.assertEqual(msg2.metadata, cached.metadata)
 
+    @patch("streamlit.watcher.local_sources_watcher.PathWatcher", new=MagicMock())
     async def test_forwardmsg_cache_clearing(self):
         """Test that the ForwardMsgCache gets properly cleared when scripts
         finish running.

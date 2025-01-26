@@ -19,7 +19,7 @@ import time
 import traceback
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Awaitable, Final, NamedTuple
+from typing import TYPE_CHECKING, Any, Awaitable, Final, NamedTuple
 
 from streamlit import config
 from streamlit.components.lib.local_component_registry import LocalComponentRegistry
@@ -272,6 +272,13 @@ class Runtime:
         if session_info is None:
             return None
         return session_info.client
+
+    def get_page_script_byte_code(self, script_path: str) -> Any:
+        if self._script_cache is None:
+            # Returning an empty string for an empty script
+            return ""
+
+        return self._script_cache.get_bytecode(script_path)
 
     def clear_user_info_for_session(self, session_id: str) -> None:
         """Clear the user_info for the given session_id.

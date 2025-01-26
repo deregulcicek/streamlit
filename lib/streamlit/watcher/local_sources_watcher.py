@@ -87,6 +87,11 @@ class LocalSourcesWatcher:
                 self._deregister_watcher(old_page_path)
                 self._watched_pages.remove(old_page_path)
 
+        # Add the main script path.
+        if self._main_script_path not in self._watched_pages:
+            self._register_watcher(self._main_script_path, module_name=None)
+            new_pages_paths.add(self._main_script_path)
+
         self._watched_pages = self._watched_pages.union(new_pages_paths)
 
     def register_file_change_callback(self, cb: Callable[[str], None]) -> None:

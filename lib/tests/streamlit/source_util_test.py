@@ -152,32 +152,37 @@ def test_get_pages(tmpdir):
     assert received_pages == {
         calc_md5(main_script_path): {
             "page_script_hash": calc_md5(main_script_path),
-            "page_name": "streamlit_app",
+            "page_name": "streamlit app",
             "script_path": main_script_path,
             "icon": "",
+            "url_pathname": "",
         },
         calc_md5(str(pages_dir / "01-page.py")): {
             "page_script_hash": calc_md5(str(pages_dir / "01-page.py")),
             "page_name": "page",
             "script_path": str(pages_dir / "01-page.py"),
             "icon": "",
+            "url_pathname": "page",
         },
         calc_md5(str(pages_dir / "03_other_page.py")): {
             "page_script_hash": calc_md5(str(pages_dir / "03_other_page.py")),
-            "page_name": "other_page",
+            "page_name": "other page",
             "script_path": str(pages_dir / "03_other_page.py"),
             "icon": "",
+            "url_pathname": "other_page",
         },
         calc_md5(str(pages_dir / "04 last numbered page.py")): {
             "page_script_hash": calc_md5(str(pages_dir / "04 last numbered page.py")),
-            "page_name": "last_numbered_page",
+            "page_name": "last numbered page",
             "script_path": str(pages_dir / "04 last numbered page.py"),
             "icon": "",
+            "url_pathname": "last_numbered_page",
         },
         calc_md5(str(pages_dir / "page.py")): {
             "page_script_hash": calc_md5(str(pages_dir / "page.py")),
             "page_name": "page",
             "script_path": str(pages_dir / "page.py"),
             "icon": "",
+            "url_pathname": "page",
         },
     }
