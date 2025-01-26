@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useRef } from "react"
 
 import { useTheme } from "@emotion/react"
 import { ExpandLess, ExpandMore } from "@emotion-icons/material-outlined"
@@ -40,6 +40,8 @@ export interface PopoverProps {
   width: number
 }
 
+let timeoutId: NodeJS.Timeout | undefined
+
 const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
   element,
   empty,
@@ -51,6 +53,30 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
 
   const theme = useTheme()
   const lightBackground = hasLightBackgroundColor(theme)
+
+  const popoverRef = useRef<any>(null)
+  function calcYOffsite() {
+    window.clearTimeout(timeoutId)
+    if (!open) return
+    const parentElement = popoverRef?.current?.popperRef?.current
+    if (!parentElement) {
+      // if the element is not in the DOM yet, retry
+      timeoutId = setTimeout(() => {
+        calcYOffsite()
+      }, 10)
+    } else {
+      const boundingClientRect = parentElement.getBoundingClientRect()
+      let yCoordinate = boundingClientRect.y
+      if (yCoordinate < 0) {
+        // transform to positive coordinate for calculation
+        yCoordinate = -1 * yCoordinate
+        parentElement.style.top = `calc(${yCoordinate}px + ${theme.sizes.headerHeight})`
+      }
+    }
+  }
+  if (open) {
+    calcYOffsite()
+  }
 
   // When useContainerWidth true & has help tooltip,
   // we need to pass the container width down to the button
@@ -70,6 +96,7 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
         onClick={() => (open ? setOpen(false) : undefined)}
         onEsc={() => setOpen(false)}
         ignoreBoundary={isInSidebar}
+        innerRef={popoverRef}
         // TODO(lukasmasuch): We currently use renderAll to have a consistent
         // width during the first and subsequent opens of the popover. Once we ,
         // support setting an explicit width we should reconsider turning this to
