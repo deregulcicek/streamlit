@@ -44,6 +44,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.button("Button")
     st.button("Primary Button", type="primary")
+    st.divider()
     st.code("# st.code\na = 1234")
     st.chat_input("Chat Input")
 with col2:
@@ -55,7 +56,8 @@ with col2:
 with col3:
     tab1, _, _ = st.tabs(["Tab 1", "Tab 2", "Tab 3"])
     with tab1:
-        st.dataframe(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+        st.dataframe(pd.DataFrame({"A": [1, 2], "B": ["Hello", "World"]}))
+        st.table(pd.DataFrame({"A": [1, 2], "B": ["Hello", "World"]}))
 
 with st.sidebar:
     st.markdown(
@@ -64,4 +66,5 @@ with st.sidebar:
         help="Tooltip",
     )
     st.success("Wohooo!")
+    st.divider()
     st.text_input("Text Input in Sidebar", placeholder="Placeholder")

@@ -31,6 +31,8 @@ def configure_custom_theme():
     os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"] = "#021A09"
     os.environ["STREAMLIT_THEME_TEXT_COLOR"] = "#DFFDE0"
     os.environ["STREAMLIT_THEME_ROUNDNESS"] = "0.85"
+    os.environ["STREAMLIT_THEME_BORDER_COLOR"] = "#FF0000"
+    os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"] = "True"
     os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"] = "minimal"
     yield
     del os.environ["STREAMLIT_THEME_BASE"]
@@ -39,6 +41,8 @@ def configure_custom_theme():
     del os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"]
     del os.environ["STREAMLIT_THEME_TEXT_COLOR"]
     del os.environ["STREAMLIT_THEME_ROUNDNESS"]
+    del os.environ["STREAMLIT_THEME_BORDER_COLOR"]
+    del os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"]
     del os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"]
 
 
