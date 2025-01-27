@@ -53,6 +53,7 @@ with col2:
         st.checkbox("Checkbox", value=True)
         st.slider("Slider", min_value=0, max_value=100, value=50)
 
+
 with col3:
     tab1, _, _ = st.tabs(["Tab 1", "Tab 2", "Tab 3"])
     with tab1:
@@ -68,3 +69,4 @@ with st.sidebar:
     st.success("Wohooo!")
     st.divider()
     st.text_input("Text Input in Sidebar", placeholder="Placeholder")
+    st.file_uploader("File :primary[Uploader]")
