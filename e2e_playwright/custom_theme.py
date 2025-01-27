@@ -57,7 +57,10 @@ with col2:
 with col3:
     tab1, _, _ = st.tabs(["Tab 1", "Tab 2", "Tab 3"])
     with tab1:
-        st.dataframe(pd.DataFrame({"A": [1, 2], "B": ["Hello", "World"]}))
+        st.dataframe(
+            pd.DataFrame({"A": [1, 2], "B": ["Hello", "World"]}),
+            use_container_width=True,
+        )
         st.table(pd.DataFrame({"A": [1, 2], "B": ["Hello", "World"]}))
 
 with st.sidebar:
