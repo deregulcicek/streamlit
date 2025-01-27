@@ -129,6 +129,7 @@ export const StyledFileUploadDropzone = styled.div(({ theme }) => ({
   justifyContent: "center",
   margin: "auto",
   color: theme.colors.primary,
+  fontWeight: theme.fontWeights.bold,
 }))
 
 export interface StyledVerticalDividerProps {
