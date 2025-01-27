@@ -613,6 +613,19 @@ describe("createEmotionTheme", () => {
       baseTheme.emotion.genericFonts.codeFont
     )
   })
+
+  it("adapts the radii theme props if roundness is provided", () => {
+    const themeInput: Partial<CustomThemeConfig> = {
+      roundness: 0.75,
+    }
+
+    const theme = createEmotionTheme(themeInput)
+
+    expect(theme.radii.default).toBe("1.125rem")
+    expect(theme.radii.md).toBe("0.5625rem")
+    expect(theme.radii.xl).toBe("1.6875rem")
+    expect(theme.radii.xxl).toBe("2.25rem")
+  })
 })
 
 describe("toThemeInput", () => {
