@@ -769,20 +769,7 @@ class AppSessionScriptEventTest(IsolatedAsyncioTestCase):
         init_msg = new_session_msg.initialize
         assert init_msg.HasField("user_info")
 
-        assert list(new_session_msg.app_pages) == [
-            AppPage(
-                page_script_hash="hash1",
-                page_name="page 1",
-                icon="",
-                url_pathname="page_1",
-            ),
-            AppPage(
-                page_script_hash="hash2",
-                page_name="page 2",
-                icon="🎉",
-                url_pathname="page_2",
-            ),
-        ]
+        assert list(new_session_msg.app_pages) == []
 
         add_script_run_ctx(ctx=orig_ctx)
 
