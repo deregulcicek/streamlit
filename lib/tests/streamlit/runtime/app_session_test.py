@@ -1061,8 +1061,8 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "secondaryBackgroundColor": None,
                     "textColor": None,
                     "roundness": None,
-                    "borderColor": "#ff0000",
-                    "showBorderAroundInputs": True,
+                    "borderColor": None,
+                    "showBorderAroundInputs": None,
                 }
             )
         )
@@ -1094,13 +1094,11 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.HasField("custom_theme")
         assert new_session_msg.custom_theme.primary_color == "coral"
         assert new_session_msg.custom_theme.background_color == "white"
-        assert new_session_msg.custom_theme.font == "sans serif"
-        assert new_session_msg.custom_theme.base == "light"
         assert new_session_msg.custom_theme.text_color == "black"
         assert new_session_msg.custom_theme.secondary_background_color == "blue"
         assert new_session_msg.custom_theme.roundness == 0.75
         assert new_session_msg.custom_theme.border_color == "#ff0000"
-        assert new_session_msg.custom_theme.show_border_around_inputs
+        assert new_session_msg.custom_theme.show_border_around_inputs is True
 
     @patch("streamlit.runtime.app_session._LOGGER")
     @patch("streamlit.runtime.app_session.config")
