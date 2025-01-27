@@ -32,7 +32,7 @@ describe("getConnectionStateUI", () => {
     expect(uiState).toBeUndefined()
   })
 
-  it("Returns returns connecting UI state correctly", () => {
+  it("Returns connecting UI state correctly", () => {
     for (const state of [
       ConnectionState.INITIAL,
       ConnectionState.PINGING_SERVER,
@@ -45,7 +45,7 @@ describe("getConnectionStateUI", () => {
     }
   })
 
-  it("Returns returns error UI state correctly", () => {
+  it("Returns error UI state correctly", () => {
     for (const state of [
       ConnectionState.DISCONNECTED_FOREVER,
       "NOT_DEFINED",
