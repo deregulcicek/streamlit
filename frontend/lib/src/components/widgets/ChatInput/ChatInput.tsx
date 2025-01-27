@@ -257,7 +257,7 @@ const FileUploadArea = ({
     </StyledFileUploadDropzone>
   ) : (
     <>
-      <div {...getRootProps()}>
+      <div data-testid="stChatInputFileUploadButton" {...getRootProps()}>
         <input {...getInputProps()} />
         <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
           <Icon

@@ -32,7 +32,7 @@ export interface Props {
 }
 
 const ChatUploadedFiles = ({ items, onDelete }: Props): ReactElement => (
-  <StyledChatUploadedFiles>
+  <StyledChatUploadedFiles data-testid="stChatUploadedFiles">
     <StyledUploadedChatFileList>
       {items.map(file => (
         <StyledUploadedChatFileListItem key={file.id}>

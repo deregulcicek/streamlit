@@ -14,19 +14,26 @@
 
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import ImageCompareFunction, rerun_app, wait_for_app_loaded
+from e2e_playwright.conftest import (
+    ImageCompareFunction,
+    rerun_app,
+    wait_for_app_loaded,
+    wait_for_app_run,
+)
 from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
 
 
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that the st.chat_input widgets are correctly rendered via screenshot matching."""
     chat_input_widgets = app.get_by_test_id("stChatInput")
-    expect(chat_input_widgets).to_have_count(4)
+    expect(chat_input_widgets).to_have_count(6)
 
     assert_snapshot(chat_input_widgets.nth(0), name="st_chat_input-inline")
     assert_snapshot(chat_input_widgets.nth(1), name="st_chat_input-in_column_disabled")
     assert_snapshot(chat_input_widgets.nth(2), name="st_chat_input-callback")
-    assert_snapshot(chat_input_widgets.nth(3), name="st_chat_input-bottom")
+    assert_snapshot(chat_input_widgets.nth(3), name="st_chat_input-single-file")
+    assert_snapshot(chat_input_widgets.nth(4), name="st_chat_input-multiple-files")
+    assert_snapshot(chat_input_widgets.nth(5), name="st_chat_input-bottom")
 
 
 def test_max_characters_enforced(
@@ -38,7 +45,7 @@ def test_max_characters_enforced(
         "tincidunt pul vinar. Nam pulvinar neque sapien, eu pellentesque metus pellentesque "
         "at. Ut et dui molestie, iaculis magna sed. This text should not appear in the input."
     )
-    chat_input = themed_app.get_by_test_id("stChatInput").nth(3)
+    chat_input = themed_app.get_by_test_id("stChatInput").nth(5)
     chat_input_area = chat_input.locator("textarea")
 
     chat_input_area.type(long_text)
@@ -103,7 +110,7 @@ def test_submit_hover_state_with_input_value(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test the submit button's hover state when input value is present."""
-    chat_input = app.get_by_test_id("stChatInput").nth(3)
+    chat_input = app.get_by_test_id("stChatInput").nth(5)
     chat_input_area = chat_input.locator("textarea")
     chat_input_area.type("Corgi")
 
@@ -114,24 +121,24 @@ def test_submit_hover_state_with_input_value(
 
 def test_enter_submits_clears_input(app: Page):
     """Test that pressing Enter submits and clears the input."""
-    markdown_output = app.get_by_test_id("stMarkdown").nth(3)
+    markdown_output = app.get_by_test_id("stMarkdown").nth(5)
     expect(markdown_output).to_have_text(
-        "Chat input 4 (bottom, max_chars) - value: None"
+        "Chat input 6 (bottom, max_chars) - value: None"
     )
 
-    chat_input_area = app.get_by_test_id("stChatInputTextArea").nth(3)
+    chat_input_area = app.get_by_test_id("stChatInputTextArea").nth(5)
     chat_input_area.type("Corgi")
     chat_input_area.press("Enter")
     expect(chat_input_area).to_have_value("")
 
     expect(markdown_output).to_have_text(
-        "Chat input 4 (bottom, max_chars) - value: Corgi"
+        "Chat input 6 (bottom, max_chars) - value: Corgi"
     )
 
 
 def test_shift_enter_creates_new_line(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that Shift+Enter creates a new line."""
-    chat_input = app.get_by_test_id("stChatInput").nth(3)
+    chat_input = app.get_by_test_id("stChatInput").nth(5)
     chat_input_area = chat_input.locator("textarea")
     chat_input_area.fill("")  # Clear the input first
     chat_input_area.press("Shift+Enter")
@@ -158,7 +165,7 @@ def test_chat_input_focus_state(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that st.chat_input renders the focus state correctly."""
-    chat_input = themed_app.get_by_test_id("stChatInput").nth(3)
+    chat_input = themed_app.get_by_test_id("stChatInput").nth(5)
     chat_input_area = chat_input.locator("textarea")
     chat_input_area.click()
     expect(chat_input_area).to_be_focused()
@@ -167,7 +174,7 @@ def test_chat_input_focus_state(
 
 def test_grows_shrinks_input_text(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that input grows with long text and shrinks when text is deleted."""
-    chat_input = app.get_by_test_id("stChatInput").nth(3)
+    chat_input = app.get_by_test_id("stChatInput").nth(5)
     chat_input_area = chat_input.locator("textarea")
     chat_input_area.type(
         "Lorem ipsum dolor amet, consectetur adipiscing elit. "
@@ -206,6 +213,102 @@ def test_calls_callback_on_submit(app: Page):
         "Chat input 3 (callback) - value: None",
         use_inner_text=True,
     )
+
+
+def test_uploads_and_delete_single_file(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that it correctly uploads and deletes a single file."""
+    file_name1 = "file1.txt"
+    file_content1 = b"file1content"
+
+    file_name2 = "file2.txt"
+    file_content2 = b"file2content"
+
+    chat_input = app.get_by_test_id("stChatInput").nth(3)
+    with app.expect_file_chooser() as fc_info:
+        chat_input.get_by_test_id("stChatInputFileUploadButton").click()
+
+    file_chooser = fc_info.value
+    file_chooser.set_files(
+        files=[{"name": file_name1, "mimeType": "text/plain", "buffer": file_content1}]
+    )
+    wait_for_app_run(app)
+
+    uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(0)
+    expect(uploaded_files).to_have_text(file_name1, use_inner_text=True)
+
+    assert_snapshot(uploaded_files, name="st_chat_input-single_file_uploaded")
+
+    # Upload a second file. This one will replace the first.
+    with app.expect_file_chooser() as fc_info:
+        chat_input.get_by_test_id("stChatInputFileUploadButton").click()
+
+    file_chooser = fc_info.value
+    file_chooser.set_files(
+        files=[{"name": file_name2, "mimeType": "text/plain", "buffer": file_content2}]
+    )
+
+    wait_for_app_run(app)
+
+    uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(0)
+    expect(uploaded_files).not_to_have_text(file_name1, use_inner_text=True)
+    expect(uploaded_files).to_have_text(file_name2, use_inner_text=True)
+
+    # Delete the uploaded file
+    chat_input.get_by_test_id("stChatInputDeleteBtn").nth(0).click()
+
+    wait_for_app_run(app)
+
+    expect(app.get_by_test_id("stChatUploadedFiles").nth(0)).not_to_have_text(
+        file_name2, use_inner_text=True
+    )
+
+
+def test_uploads_and_deletes_multiple_files(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that uploading multiple files at once works correctly."""
+    file_name1 = "file1.txt"
+    file_content1 = b"file1content"
+
+    file_name2 = "file2.txt"
+    file_content2 = b"file2content"
+
+    files = [
+        {"name": file_name1, "mimeType": "text/plain", "buffer": file_content1},
+        {"name": file_name2, "mimeType": "text/plain", "buffer": file_content2},
+    ]
+
+    chat_input = app.get_by_test_id("stChatInput").nth(4)
+    with app.expect_file_chooser() as fc_info:
+        chat_input.get_by_test_id("stChatInputFileUploadButton").click()
+
+    file_chooser = fc_info.value
+    file_chooser.set_files(files=files)
+
+    wait_for_app_run(app, wait_delay=500)
+
+    uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
+    assert_snapshot(uploaded_files, name="st_chat_input-multiple_files_uploaded")
+
+    uploaded_file_names = chat_input.get_by_test_id("stChatInputFileName")
+    expect(uploaded_file_names).to_have_count(2)
+
+    # The widget should show the names of the uploaded files in reverse order
+    file_names = [files[1]["name"], files[0]["name"]]
+    for i, element in enumerate(uploaded_file_names.all()):
+        expect(element).to_have_text(file_names[i], use_inner_text=True)
+
+    # Delete one uploaded file
+    chat_input.get_by_test_id("stChatInputDeleteBtn").nth(0).click()
+
+    wait_for_app_run(app)
+
+    uploaded_file_names = chat_input.get_by_test_id("stChatInputFileName")
+    expect(uploaded_file_names).to_have_count(1)
+
+    expect(uploaded_file_names).to_have_text(files[0]["name"], use_inner_text=True)
 
 
 def test_check_top_level_class(app: Page):
