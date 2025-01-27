@@ -608,11 +608,6 @@ class ScriptRunner:
             # which reads self._requests and checks for rerun data
             self._session_state[SCRIPT_RUN_WITHOUT_ERRORS_KEY] = run_without_errors
 
-            if not self._pages_manager.was_navigation_called() and rerun_data.page_name:
-                msg = ForwardMsg()
-                msg.page_not_found.page_name = rerun_data.page_name
-                ctx.enqueue(msg)
-
             if rerun_exception_data:
                 # The handling for when a full script run or a fragment is stopped early
                 # is the same, so we only have one ScriptRunnerEvent for this scenario.

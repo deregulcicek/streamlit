@@ -241,7 +241,6 @@ class PagesManager:
         self._intended_page_script_hash: PageHash | None = None
         self._intended_page_name: PageName | None = None
         self._current_page_script_hash: PageHash = ""
-        self._navigation_called = False
 
     @property
     def main_script_path(self) -> ScriptPath:
@@ -270,15 +269,6 @@ class PagesManager:
     @property
     def initial_active_script_hash(self) -> PageHash:
         return self.pages_strategy.initial_active_script_hash
-
-    def was_navigation_called(self) -> bool:
-        # We say navigation was called, if it explicitly was called and the strategy is not V1
-        return self._navigation_called and not isinstance(
-            self.pages_strategy, PagesStrategyV1
-        )
-
-    def set_navigation_called(self) -> None:
-        self._navigation_called = True
 
     @property
     def mpa_version(self) -> int:
