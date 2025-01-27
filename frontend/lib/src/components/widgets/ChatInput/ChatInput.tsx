@@ -39,7 +39,7 @@ import {
   AcceptFileValue,
   chatInputAcceptFileProtoValueToEnum,
   isNullOrUndefined,
-} from "~lib/src/util/utils"
+} from "~lib/util/utils"
 import {
   ChatInput as ChatInputProto,
   FileUploaderState as FileUploaderStateProto,
@@ -48,16 +48,11 @@ import {
   IFileURLs,
   UploadedFileInfo as UploadedFileInfoProto,
 } from "@streamlit/protobuf"
-import {
-  WidgetInfo,
-  WidgetStateManager,
-} from "~lib/WidgetStateManager"
+import { WidgetInfo, WidgetStateManager } from "~lib/WidgetStateManager"
 import Icon from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
 import { isEnterKeyPressed } from "~lib/util/inputUtils"
-import BaseButton, {
-  BaseButtonKind,
-} from "~lib/components/shared/BaseButton"
+import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
 import {
   UploadedStatus,
   UploadFileInfo,
