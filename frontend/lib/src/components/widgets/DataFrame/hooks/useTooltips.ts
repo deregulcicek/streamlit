@@ -28,7 +28,6 @@ import {
   isErrorCell,
   isMissingValueCell,
 } from "~lib/components/widgets/DataFrame/columns"
-import { notNullOrUndefined } from "~lib/util/utils"
 
 // Debounce time for triggering the tooltip on hover.
 export const DEBOUNCE_TIME_MS = 600
@@ -83,14 +82,14 @@ function useTooltips(
 
         const column = columns[colIdx]
 
-        if (args.kind === "header" && notNullOrUndefined(column)) {
+        if (args.kind === "header" && column?.help) {
           tooltipContent = column.help
         } else if (args.kind === "cell") {
           // TODO(lukasmasuch): Ignore the last row if num_rows=dynamic (trailing row).
 
           const cell = getCellContent([colIdx, rowIdx])
 
-          if (isErrorCell(cell)) {
+          if (isErrorCell(cell) && cell.errorDetails) {
             // If the cell is an error cell, we don't need to check for required or missing values.
             tooltipContent = cell.errorDetails
           } else if (

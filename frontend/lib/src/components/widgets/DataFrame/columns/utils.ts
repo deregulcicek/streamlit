@@ -161,7 +161,9 @@ interface CellWithTooltip extends BaseGridCell {
  */
 export function hasTooltip(cell: BaseGridCell): cell is CellWithTooltip {
   return (
-    cell.hasOwnProperty("tooltip") && (cell as CellWithTooltip).tooltip !== ""
+    cell.hasOwnProperty("tooltip") &&
+    typeof (cell as CellWithTooltip).tooltip === "string" &&
+    (cell as CellWithTooltip).tooltip !== ""
   )
 }
 /**

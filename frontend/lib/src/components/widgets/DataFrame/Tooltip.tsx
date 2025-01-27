@@ -70,7 +70,7 @@ function Tooltip({
         <StyledTooltipContentWrapper data-testid="stDataFrameTooltipContent">
           <StreamlitMarkdown
             style={{ fontSize: fontSizes.sm }}
-            source={content}
+            source={content || ""}
             allowHTML={false}
           />
         </StyledTooltipContentWrapper>
