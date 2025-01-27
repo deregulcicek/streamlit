@@ -199,8 +199,6 @@ function ColumnMenu({
             color: colors.bodyText,
             fontSize: fontSizes.sm,
             fontWeight: fontWeights.normal,
-            overflow: "auto",
-
             // See the long comment about `borderRadius`. The same applies here
             // to `padding`.
             paddingTop: "0 !important",
