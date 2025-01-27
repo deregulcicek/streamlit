@@ -44,20 +44,20 @@ import remarkGfm from "remark-gfm"
 import { findAndReplace } from "mdast-util-find-and-replace"
 import xxhash from "xxhashjs"
 
-import StreamlitSyntaxHighlighter from "@streamlit/lib/src/components/elements/CodeBlock/StreamlitSyntaxHighlighter"
-import { StyledInlineCode } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
-import IsDialogContext from "@streamlit/lib/src/components/core/IsDialogContext"
-import IsSidebarContext from "@streamlit/lib/src/components/core/IsSidebarContext"
-import ErrorBoundary from "@streamlit/lib/src/components/shared/ErrorBoundary"
-import { InlineTooltipIcon } from "@streamlit/lib/src/components/shared/TooltipIcon"
+import StreamlitSyntaxHighlighter from "~lib/components/elements/CodeBlock/StreamlitSyntaxHighlighter"
+import { StyledInlineCode } from "~lib/components/elements/CodeBlock/styled-components"
+import IsDialogContext from "~lib/components/core/IsDialogContext"
+import IsSidebarContext from "~lib/components/core/IsSidebarContext"
+import ErrorBoundary from "~lib/components/shared/ErrorBoundary"
+import { InlineTooltipIcon } from "~lib/components/shared/TooltipIcon"
 import {
   EmotionTheme,
   getMarkdownBgColors,
   getMarkdownTextColors,
-} from "@streamlit/lib/src/theme"
-import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
-import streamlitLogo from "@streamlit/lib/src/assets/img/streamlit-logo/streamlit-mark-color.svg"
-import { logWarning } from "@streamlit/lib/src/util/log"
+} from "~lib/theme"
+import { LibContext } from "~lib/components/core/LibContext"
+import streamlitLogo from "~lib/assets/img/streamlit-logo/streamlit-mark-color.svg"
+import { logWarning } from "~lib/util/log"
 
 import {
   StyledHeadingActionElements,
@@ -354,7 +354,9 @@ export function RenderedMarkdown({
     // https://github.com/streamlit/streamlit/issues/10245
     // This is not expected to happen and might be caused by a bug
     // somewhere else.
-    logWarning("Markdown source is not a string. This should never happen.")
+    logWarning(
+      `Markdown source is not a string: ${source}. This should never happen.`
+    )
     source = source ?? ""
   }
 
