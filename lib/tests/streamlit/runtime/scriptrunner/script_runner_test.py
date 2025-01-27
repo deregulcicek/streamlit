@@ -51,6 +51,7 @@ from streamlit.runtime.scriptrunner_utils.script_requests import (
     ScriptRequestType,
 )
 from streamlit.runtime.state.session_state import SessionState
+from streamlit.util import calc_md5
 from tests import testutil
 
 if TYPE_CHECKING:
@@ -976,7 +977,7 @@ class ScriptRunnerTest(AsyncTestCase):
     )
     def test_page_script_hash_to_script_path(self):
         scriptrunner = TestScriptRunner("good_script.py")
-        scriptrunner.request_rerun(RerunData(page_name="good_script2"))
+        scriptrunner.request_rerun(RerunData(page_name=""))
         scriptrunner.start()
         scriptrunner.join()
 
@@ -990,90 +991,17 @@ class ScriptRunnerTest(AsyncTestCase):
                 ScriptRunnerEvent.SHUTDOWN,
             ],
         )
-        self._assert_text_deltas(scriptrunner, [text_utf2])
+        self._assert_text_deltas(scriptrunner, [text_utf])
         self.assertEqual(
-            os.path.join(os.path.dirname(__file__), "test_data", "good_script2.py"),
+            os.path.join(os.path.dirname(__file__), "test_data", "good_script.py"),
             sys.modules["__main__"].__file__,
             (" ScriptRunner should set the __main__.__file__" "attribute correctly"),
         )
 
         shutdown_data = scriptrunner.event_data[-1]
-        self.assertEqual(shutdown_data["client_state"].page_script_hash, "hash2")
-
-    @patch(
-        "streamlit.source_util.get_pages",
-        MagicMock(
-            return_value={
-                "hash2": {"page_script_hash": "hash2", "script_path": "script2"},
-            }
-        ),
-    )
-    def test_404_hash_not_found(self):
-        scriptrunner = TestScriptRunner("good_script.py")
-        scriptrunner.request_rerun(RerunData(page_script_hash="hash3"))
-        scriptrunner.start()
-        scriptrunner.join()
-
-        self._assert_no_exceptions(scriptrunner)
-        self._assert_events(
-            scriptrunner,
-            [
-                ScriptRunnerEvent.SCRIPT_STARTED,
-                ScriptRunnerEvent.ENQUEUE_FORWARD_MSG,  # page not found message
-                ScriptRunnerEvent.ENQUEUE_FORWARD_MSG,  # deltas
-                ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS,
-                ScriptRunnerEvent.SHUTDOWN,
-            ],
-        )
-        self._assert_text_deltas(scriptrunner, [text_utf])
-
-        page_not_found_msg = scriptrunner.forward_msg_queue._queue[0].page_not_found
-        self.assertEqual(page_not_found_msg.page_name, "")
-
         self.assertEqual(
-            scriptrunner._main_script_path,
-            sys.modules["__main__"].__file__,
-            (" ScriptRunner should set the __main__.__file__" "attribute correctly"),
-        )
-
-    @patch(
-        "streamlit.source_util.get_pages",
-        MagicMock(
-            return_value={
-                "hash2": {
-                    "page_script_hash": "hash2",
-                    "script_path": "script2",
-                    "page_name": "page2",
-                },
-            }
-        ),
-    )
-    def test_404_page_name_not_found(self):
-        scriptrunner = TestScriptRunner("good_script.py")
-        scriptrunner.request_rerun(RerunData(page_name="nonexistent"))
-        scriptrunner.start()
-        scriptrunner.join()
-
-        self._assert_no_exceptions(scriptrunner)
-        self._assert_events(
-            scriptrunner,
-            [
-                ScriptRunnerEvent.SCRIPT_STARTED,
-                ScriptRunnerEvent.ENQUEUE_FORWARD_MSG,  # page not found message
-                ScriptRunnerEvent.ENQUEUE_FORWARD_MSG,  # deltas
-                ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS,
-                ScriptRunnerEvent.SHUTDOWN,
-            ],
-        )
-        self._assert_text_deltas(scriptrunner, [text_utf])
-
-        page_not_found_msg = scriptrunner.forward_msg_queue._queue[0].page_not_found
-        self.assertEqual(page_not_found_msg.page_name, "nonexistent")
-
-        self.assertEqual(
-            scriptrunner._main_script_path,
-            sys.modules["__main__"].__file__,
-            (" ScriptRunner should set the __main__.__file__" "attribute correctly"),
+            shutdown_data["client_state"].page_script_hash,
+            scriptrunner.main_script_hash,
         )
 
     def _assert_no_exceptions(self, scriptrunner: TestScriptRunner) -> None:
@@ -1165,6 +1093,7 @@ class TestScriptRunner(ScriptRunner):
 
         # Accumulates uncaught exceptions thrown by our run thread.
         self.script_thread_exceptions: list[BaseException] = []
+        self.main_script_hash = calc_md5(main_script_path)
 
         # Accumulates all ScriptRunnerEvents emitted by us.
         self.events: list[ScriptRunnerEvent] = []
