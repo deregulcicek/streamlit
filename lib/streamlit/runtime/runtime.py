@@ -274,10 +274,6 @@ class Runtime:
         return session_info.client
 
     def get_page_script_byte_code(self, script_path: str) -> Any:
-        if self._script_cache is None:
-            # Returning an empty string for an empty script
-            return ""
-
         return self._script_cache.get_bytecode(script_path)
 
     def clear_user_info_for_session(self, session_id: str) -> None:

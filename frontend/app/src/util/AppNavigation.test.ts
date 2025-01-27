@@ -164,6 +164,7 @@ describe("AppNavigation", () => {
 
     const [newState] = maybeState!
     expect(newState).toEqual({
+      currentPageScriptHash: "page_script_hash",
       hideSidebarNav: true,
     })
   })

@@ -57,7 +57,7 @@ message NewSession {
   // See the "theme" config section.
   CustomThemeConfig custom_theme = 7;
 
-  // A list of all of this app's pages, in order and including the main page.
+  // DEPRECATED - A list of all of this app's pages, in order and including the main page.
   repeated AppPage app_pages = 8;
 
   // A hash of the script corresponding to the page currently being viewed.

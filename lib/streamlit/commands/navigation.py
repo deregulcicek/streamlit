@@ -320,6 +320,7 @@ def navigation(
     ctx.set_mpa_v2_page(page_to_return._script_hash)
 
     # This will either navigation or yield if the page is not found
+    msg.navigation.is_mpa_v1 = False
     ctx.enqueue(msg)
 
     return page_to_return

@@ -140,7 +140,7 @@ class ScriptRunContext:
 
     def find_intended_page(
         self, *, fallback_page_hash: PageHash | None = None
-    ) -> PageInfo:
+    ) -> PageInfo | None:
         return self.pages_manager.find_page_info(
             self._script_intent.page_script_hash,
             self._script_intent.page_name,

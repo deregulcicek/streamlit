@@ -74,6 +74,8 @@ export class AppNavigation {
 
   mainPage: IAppPage | null
 
+  isMPAv1: boolean
+
   constructor(
     hostCommunicationMgr: HostCommunicationManager,
     onUpdatePageUrl: PageUrlUpdateCallback,
@@ -91,6 +93,7 @@ export class AppNavigation {
     this.currentPageScriptHash = null
     this.appPages = []
     this.mainPage = null
+    this.isMPAv1 = false
   }
 
   handleNewSession(newSession: NewSession): StateUpdate {
@@ -117,8 +120,9 @@ export class AppNavigation {
   }
 
   handleNavigation(navigationMsg: Navigation): StateUpdate {
-    const { sections, position, appPages } = navigationMsg
+    const { sections, position, appPages, isMpaV1 } = navigationMsg
 
+    this.isMPAv1 = isMpaV1
     this.appPages = appPages
     this.hideSidebarNav = position === Navigation.Position.HIDDEN
 
@@ -224,7 +228,15 @@ export class AppNavigation {
     mainScriptHash: string,
     sidebarElements: BlockNode | undefined
   ): AppRoot {
-    // return AppRoot.empty(mainScriptHash, false, sidebarElements, elements.logo)
+    if (this.isMPAv1) {
+      return AppRoot.empty(
+        mainScriptHash,
+        false,
+        sidebarElements,
+        elements.logo
+      )
+    }
+
     return elements.filterMainScriptElements(mainScriptHash)
   }
 }

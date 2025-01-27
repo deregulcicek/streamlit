@@ -512,6 +512,7 @@ class ScriptRunner:
             if ctx.pages_manager.mpa_version == 1:
                 # Send Navigation to Frontend
                 msg = ForwardMsg()
+                msg.navigation.is_mpa_v1 = True
                 msg.navigation.expanded = False
                 msg.navigation.position = (
                     NavigationProto.Position.HIDDEN

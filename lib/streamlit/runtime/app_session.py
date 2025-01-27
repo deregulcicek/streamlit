@@ -722,9 +722,6 @@ class AppSession:
         if fragment_ids_this_run:
             msg.new_session.fragment_ids_this_run.extend(fragment_ids_this_run)
 
-        self._populate_app_pages(
-            msg.new_session, pages or self._pages_manager.get_pages()
-        )
         _populate_config_msg(msg.new_session.config)
         _populate_theme_msg(msg.new_session.custom_theme)
 
