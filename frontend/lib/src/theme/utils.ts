@@ -375,6 +375,7 @@ export const createTheme = (
     name: themeName,
     emotion,
     basewebTheme: createBaseUiTheme(emotion, startingTheme.primitives),
+    themeInput,
   }
 }
 
