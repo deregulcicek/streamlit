@@ -34,12 +34,12 @@ import {
 } from "react-dropzone"
 import zip from "lodash/zip"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+import { EmotionTheme } from "~lib/theme"
 import {
   AcceptFileValue,
   chatInputAcceptFileProtoValueToEnum,
   isNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+} from "~lib/src/util/utils"
 import {
   ChatInput as ChatInputProto,
   FileUploaderState as FileUploaderStateProto,
@@ -47,22 +47,22 @@ import {
   IChatInputValue,
   IFileURLs,
   UploadedFileInfo as UploadedFileInfoProto,
-} from "@streamlit/lib/src/proto"
+} from "@streamlit/protobuf"
 import {
   WidgetInfo,
   WidgetStateManager,
-} from "@streamlit/lib/src/WidgetStateManager"
-import Icon from "@streamlit/lib/src/components/shared/Icon"
-import InputInstructions from "@streamlit/lib/src/components/shared/InputInstructions/InputInstructions"
-import { isEnterKeyPressed } from "@streamlit/lib/src/util/inputUtils"
+} from "~lib/WidgetStateManager"
+import Icon from "~lib/components/shared/Icon"
+import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
+import { isEnterKeyPressed } from "~lib/util/inputUtils"
 import BaseButton, {
   BaseButtonKind,
-} from "@streamlit/lib/src/components/shared/BaseButton"
+} from "~lib/components/shared/BaseButton"
 import {
   UploadedStatus,
   UploadFileInfo,
-} from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
-import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
+} from "~lib/components/widgets/FileUploader/UploadFileInfo"
+import { FileUploadClient } from "~lib/FileUploadClient"
 
 import {
   StyledChatInput,

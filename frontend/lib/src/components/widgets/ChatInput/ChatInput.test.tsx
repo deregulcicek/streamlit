@@ -19,14 +19,15 @@ import React from "react"
 import { fireEvent, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
-import { render } from "@streamlit/lib/src/test_util"
 import {
   ChatInput as ChatInputProto,
   FileURLs as FileURLsProto,
   IChatInputValue,
-} from "@streamlit/lib/src/proto"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
-import { UploadFileInfo } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
+} from "@streamlit/protobuf"
+
+import { render } from "~lib/test_util"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
+import { UploadFileInfo } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
 import ChatInput, { Props } from "./ChatInput"
 

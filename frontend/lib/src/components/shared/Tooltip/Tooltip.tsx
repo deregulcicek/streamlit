@@ -24,10 +24,7 @@ import {
   StatefulTooltip,
 } from "baseui/tooltip"
 
-import {
-  EmotionTheme,
-  hasLightBackgroundColor,
-} from "@streamlit/lib/src/theme"
+import { EmotionTheme, hasLightBackgroundColor } from "~lib/theme"
 
 import { StyledTooltipContentWrapper } from "./styled-components"
 
