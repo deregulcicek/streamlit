@@ -222,6 +222,8 @@ class PagesManager:
     NOTE: Each strategy handles its own thread safety when accessing the pages
     """
 
+    pages_strategy: PagesStrategyV1 | PagesStrategyV2
+
     def __init__(
         self,
         main_script_path: ScriptPath,
@@ -316,7 +318,6 @@ class PagesManager:
                     "This may cause unusual app behavior. You may want to rename the "
                     "pages/ directory."
                 )
-            PagesManager.DefaultStrategy = PagesStrategyV2
             self.pages_strategy = PagesStrategyV2(self)
 
         self.pages_strategy.set_pages(pages)
