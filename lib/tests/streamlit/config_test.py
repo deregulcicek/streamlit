@@ -569,7 +569,7 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.roundness", 0.85, "test")
         config._set_option("theme.secondaryBackgroundColor", "#021A09", "test")
         config._set_option("theme.backgroundColor", "#001200", "test")
-        config._set_option("theme.borderColor", "#ff0000", "test")
+        config._set_option("theme.borderColor", "#0B4C0B", "test")
         config._set_option("theme.showBorderAroundInputs", True, "test")
 
         expected = {
@@ -580,7 +580,7 @@ class ConfigTest(unittest.TestCase):
             "backgroundColor": "#001200",
             "textColor": "#DFFDE0",
             "font": "serif",
-            "borderColor": "#ff0000",
+            "borderColor": "#0B4C0B",
             "showBorderAroundInputs": True,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
