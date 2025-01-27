@@ -18,9 +18,7 @@ import React, { ReactElement } from "react"
 
 import { useTheme } from "@emotion/react"
 
-import Tooltip, {
-  Placement,
-} from "@streamlit/lib/src/components/shared/Tooltip"
+import Tooltip, { Placement } from "~lib/components/shared/Tooltip"
 
 interface Props {
   children: ReactElement

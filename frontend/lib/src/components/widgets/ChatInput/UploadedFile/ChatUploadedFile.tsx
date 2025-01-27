@@ -22,14 +22,10 @@ import {
   InsertDriveFile,
 } from "@emotion-icons/material-outlined"
 
-import BaseButton, {
-  BaseButtonKind,
-} from "@streamlit/lib/src/components/shared/BaseButton"
-import Icon, {
-  StyledSpinnerIcon,
-} from "@streamlit/lib/src/components/shared/Icon"
-import { FileSize, getSizeDisplay } from "@streamlit/lib/src/util/FileHelper"
-import { UploadFileInfo } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
+import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
+import Icon, { StyledSpinnerIcon } from "~lib/components/shared/Icon"
+import { FileSize, getSizeDisplay } from "~lib/util/FileHelper"
+import { UploadFileInfo } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
 import {
   StyledChatUploadedFile,

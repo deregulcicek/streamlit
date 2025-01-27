@@ -34,12 +34,6 @@ import {
 } from "react-dropzone"
 import zip from "lodash/zip"
 
-import { EmotionTheme } from "~lib/theme"
-import {
-  AcceptFileValue,
-  chatInputAcceptFileProtoValueToEnum,
-  isNullOrUndefined,
-} from "~lib/util/utils"
 import {
   ChatInput as ChatInputProto,
   FileUploaderState as FileUploaderStateProto,
@@ -48,6 +42,13 @@ import {
   IFileURLs,
   UploadedFileInfo as UploadedFileInfoProto,
 } from "@streamlit/protobuf"
+
+import { EmotionTheme } from "~lib/theme"
+import {
+  AcceptFileValue,
+  chatInputAcceptFileProtoValueToEnum,
+  isNullOrUndefined,
+} from "~lib/util/utils"
 import { WidgetInfo, WidgetStateManager } from "~lib/WidgetStateManager"
 import Icon from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"

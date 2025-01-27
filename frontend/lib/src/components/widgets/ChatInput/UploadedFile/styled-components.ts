@@ -15,7 +15,7 @@
  */
 import styled from "@emotion/styled"
 
-import { FileStatus } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
+import { FileStatus } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
 export const StyledChatUploadedFiles = styled.div(({ theme }) => ({
   left: 0,

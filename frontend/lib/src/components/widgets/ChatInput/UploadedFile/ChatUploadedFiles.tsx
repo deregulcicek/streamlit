@@ -16,7 +16,7 @@
 
 import React, { ReactElement } from "react"
 
-import { UploadFileInfo } from "@streamlit/lib/src/components/widgets/FileUploader/UploadFileInfo"
+import { UploadFileInfo } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
 import {
   StyledChatUploadedFiles,
