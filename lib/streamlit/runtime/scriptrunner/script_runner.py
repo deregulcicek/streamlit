@@ -465,7 +465,9 @@ class ScriptRunner:
                     page_script_hash = active_script["page_script_hash"]
             else:
                 active_script = main_page
-                page_script_hash = main_page["page_script_hash"]
+                page_script_hash = (
+                    intended_page_script_hash or main_page["page_script_hash"]
+                )
 
             active_script_hash = active_script["page_script_hash"]
             # Clear widget state on page change. This normally happens implicitly

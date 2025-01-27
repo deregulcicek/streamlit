@@ -855,7 +855,7 @@ class ButtonMixin:
             # Handle retrieving the page_script_hash & page
             for page_data in all_app_pages.values():
                 full_path = page_data["script_path"]
-                page_name = page_data["page_name"]
+                page_name = page_data["url_pathname"]
                 if requested_page == full_path:
                     if label is None:
                         page_link_proto.label = page_name.replace("_", " ")

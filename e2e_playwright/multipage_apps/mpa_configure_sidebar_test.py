@@ -100,7 +100,7 @@ def test_page_link_href(
     """Test that page link href set properly."""
     page_links = app.get_by_test_id("stPageLink-NavLink")
 
-    expect(page_links.nth(0)).to_have_attribute("href", "mpa_configure_sidebar")
+    expect(page_links.nth(0)).to_have_attribute("href", "")
     expect(page_links.nth(1)).to_have_attribute("href", "page2")
     expect(page_links.nth(2)).to_have_attribute("href", "page3")
     expect(page_links.nth(3)).to_have_attribute("href", "page_with_duplicate_name")
