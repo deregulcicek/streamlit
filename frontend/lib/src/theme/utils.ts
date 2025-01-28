@@ -214,7 +214,7 @@ export const createEmotionTheme = (
     // Normalize the roundness to be between 0 and 1.5rem base radii.
     // Also enforces that roundness is 0-1. Bigger values are capped at 1.
     // Smaller values are capped at 0.
-    const baseRadii = Math.max(0, Math.min(roundness, 1)) * 1.5
+    const baseRadii = Math.max(0, Math.min(roundness, 1)) * 2
     conditionalOverrides.radii.default = addRemUnit(baseRadii)
     // Adapt all the other radii sizes based on the base radii:
     conditionalOverrides.radii.md = addRemUnit(baseRadii * 0.5)

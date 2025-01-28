@@ -94,10 +94,10 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
               [`@media (max-width: ${theme.breakpoints.sm})`]: {
                 maxWidth: `calc(100% - ${theme.spacing.threeXL})`,
               },
-              borderTopLeftRadius: theme.radii.xl,
-              borderTopRightRadius: theme.radii.xl,
-              borderBottomRightRadius: theme.radii.xl,
-              borderBottomLeftRadius: theme.radii.xl,
+              borderTopLeftRadius: `min(${theme.radii.xl}, ${theme.radii.maxModal})`,
+              borderTopRightRadius: `min(${theme.radii.xl}, ${theme.radii.maxModal})`,
+              borderBottomRightRadius: `min(${theme.radii.xl}, ${theme.radii.maxModal})`,
+              borderBottomLeftRadius: `min(${theme.radii.xl}, ${theme.radii.maxModal})`,
 
               borderLeftWidth: theme.sizes.borderWidth,
               borderRightWidth: theme.sizes.borderWidth,

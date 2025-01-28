@@ -58,15 +58,15 @@ function DeployCard(
 
             ":last-child": {
               borderRightStyle: "none",
-              borderBottomRightRadius: radii.xl,
+              borderBottomRightRadius: `min(${radii.xl}, ${radii.maxModal})`,
             },
             ":first-child": {
-              borderBottomLeftRadius: radii.xl,
+              borderBottomLeftRadius: `min(${radii.xl}, ${radii.maxModal})`,
             },
 
             [`@media (max-width: ${breakpoints.md})`]: {
               ":last-child": {
-                borderBottomLeftRadius: radii.xl,
+                borderBottomLeftRadius: `min(${radii.xl}, ${radii.maxModal})`,
               },
             },
           },

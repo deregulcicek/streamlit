@@ -187,10 +187,10 @@ function Modal(props: StreamlitModalProps): ReactElement {
     },
     Dialog: {
       style: {
-        borderBottomRightRadius: radii.xxl,
-        borderBottomLeftRadius: radii.xxl,
-        borderTopRightRadius: radii.xxl,
-        borderTopLeftRadius: radii.xxl,
+        borderBottomRightRadius: `min(${radii.xxl}, ${radii.maxModal})`,
+        borderBottomLeftRadius: `min(${radii.xxl}, ${radii.maxModal})`,
+        borderTopRightRadius: `min(${radii.xxl}, ${radii.maxModal})`,
+        borderTopLeftRadius: `min(${radii.xxl}, ${radii.maxModal})`,
         // make sure the modal is not too small on mobile
         minWidth: sizes.minPopupWidth,
       },
