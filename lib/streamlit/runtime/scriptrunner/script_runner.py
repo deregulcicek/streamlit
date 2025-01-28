@@ -406,7 +406,7 @@ class ScriptRunner:
             self._execing = False
 
     def _resolve_active_and_page_script(
-        self, intended_page_script_hash: str, intended_page_name: str | None
+        self, intended_page_script_hash: str, intended_page_name: str
     ) -> tuple[PageInfo, str]:
         ctx = self._get_script_run_ctx()
         main_page = self._pages_manager.get_main_page()
