@@ -103,7 +103,7 @@ def _navigation(
                 script_path = ""
 
             script_hash = page._script_hash
-            if script_hash in pagehash_to_pageinfo and not is_mpa_v1:
+            if script_hash in pagehash_to_pageinfo:
                 # The page script hash is soley based on the url path
                 # So duplicate page script hashes are due to duplicate url paths
                 raise StreamlitAPIException(

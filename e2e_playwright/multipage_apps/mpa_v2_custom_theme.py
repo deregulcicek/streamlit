@@ -58,12 +58,6 @@ pg = st.navigation(
                 title="Time Page",
                 icon=":material/access_time:",
             ),
-            st.Page(
-                "pages/05_page_with_duplicate_name.py",
-                title="Events Page",
-                url_path="events",
-                icon=":material/emoji_events:",
-            ),
         ],
     }
 )

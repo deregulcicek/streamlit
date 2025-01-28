@@ -267,7 +267,7 @@ def test_renders_logos(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that logos display properly in sidebar and main sections"""
 
     # Go to logo page & wait short moment for logo to appear
-    app.get_by_test_id("stSidebarNav").locator("a").nth(8).click()
+    app.get_by_test_id("stSidebarNav").locator("a").nth(7).click()
     wait_for_app_loaded(app)
 
     # Sidebar logo
@@ -294,7 +294,7 @@ def test_renders_small_logos(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that small logos display properly in sidebar and main sections"""
 
     # Go to small logo page & wait short moment for logo to appear
-    app.get_by_test_id("stSidebarNav").locator("a").nth(9).click()
+    app.get_by_test_id("stSidebarNav").locator("a").nth(8).click()
     wait_for_app_loaded(app)
 
     # Sidebar logo
@@ -321,7 +321,7 @@ def test_renders_large_logos(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that large logos display properly in sidebar and main sections"""
 
     # Go to large logo page & wait short moment for logo to appear
-    app.get_by_test_id("stSidebarNav").locator("a").nth(10).click()
+    app.get_by_test_id("stSidebarNav").locator("a").nth(9).click()
     wait_for_app_loaded(app)
 
     # Sidebar logo
