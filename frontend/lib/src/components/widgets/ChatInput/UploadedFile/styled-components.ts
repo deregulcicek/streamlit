@@ -62,7 +62,7 @@ export const StyledChatUploadedFileName =
         : theme.colors.fadedText60,
   }))
 
-export const StyledChatUploadedFileSize = styled.small(({ theme }) => ({
+export const StyledChatUploadedFileSize = styled.div(({ theme }) => ({
   marginRight: theme.spacing.md,
   color: theme.colors.fadedText60,
 }))
