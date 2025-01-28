@@ -27,6 +27,7 @@ interface ConnectionStateUI {
 
 export const CONNECTING_LABEL = "Connecting"
 export const CONNECTING_TOOLTIP_TEXT = "Connecting to Streamlit server"
+export const CONNECTING_STATIC_TOOLTIP_TEXT = "Connecting to static app"
 export const ERROR_LABEL = "Error"
 export const ERROR_TOOLTIP_TEXT = "Unable to connect to Streamlit server"
 
@@ -47,8 +48,8 @@ export function getConnectionStateUI(
     case ConnectionState.STATIC_CONNECTING:
       return {
         icon: Ellipses,
-        label: "Connecting",
-        tooltip: "Connecting to static app",
+        label: CONNECTING_LABEL,
+        tooltip: CONNECTING_STATIC_TOOLTIP_TEXT,
       }
     case ConnectionState.STATIC_CONNECTED:
       return undefined

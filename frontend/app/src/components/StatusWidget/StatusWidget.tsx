@@ -55,6 +55,7 @@ import {
   StyledShortcutLabel,
   StyledStatusWidget,
 } from "./styled-components"
+import { getConnectionStateUI } from "./getConnectionStateUI"
 
 /** Component props */
 export interface StatusWidgetProps {

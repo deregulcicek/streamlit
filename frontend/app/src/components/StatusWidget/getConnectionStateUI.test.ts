@@ -21,6 +21,7 @@ import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 import {
   CONNECTING_LABEL,
   CONNECTING_TOOLTIP_TEXT,
+  CONNECTING_STATIC_TOOLTIP_TEXT,
   ERROR_LABEL,
   ERROR_TOOLTIP_TEXT,
   getConnectionStateUI,
@@ -28,8 +29,13 @@ import {
 
 describe("getConnectionStateUI", () => {
   it("Returns undefined for connected", () => {
-    const uiState = getConnectionStateUI(ConnectionState.CONNECTED)
-    expect(uiState).toBeUndefined()
+    for (const state of [
+      ConnectionState.CONNECTED,
+      ConnectionState.STATIC_CONNECTED,
+    ]) {
+      const uiState = getConnectionStateUI(state)
+      expect(uiState).toBeUndefined()
+    }
   })
 
   it("Returns connecting UI state correctly", () => {
@@ -45,11 +51,15 @@ describe("getConnectionStateUI", () => {
     }
   })
 
+  it("Returns static connecting UI state correctly", () => {
+    const uiState = getConnectionStateUI(ConnectionState.STATIC_CONNECTING)
+    expect(uiState?.icon).toBe(Ellipses)
+    expect(uiState?.label).toBe(CONNECTING_LABEL)
+    expect(uiState?.tooltip).toBe(CONNECTING_STATIC_TOOLTIP_TEXT)
+  })
+
   it("Returns error UI state correctly", () => {
-    for (const state of [
-      ConnectionState.DISCONNECTED_FOREVER,
-      "NOT_DEFINED",
-    ]) {
+    for (const state of [ConnectionState.DISCONNECTED_FOREVER, undefined]) {
       const uiState = getConnectionStateUI(state)
       expect(uiState?.icon).toBe(Warning)
       expect(uiState?.label).toBe(ERROR_LABEL)
