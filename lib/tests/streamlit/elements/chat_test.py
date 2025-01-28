@@ -82,9 +82,9 @@ class ChatTest(DeltaGeneratorTestCase):
         [
             ("👋", {"avatar": "👋", "type": BlockProto.ChatMessage.AvatarType.EMOJI}),
             (
-                "https://static.streamlit.io/examples/cat.jpg",
+                "http://not.a.real.url",
                 {
-                    "avatar": "https://static.streamlit.io/examples/cat.jpg",
+                    "avatar": "http://not.a.real.url",
                     "type": BlockProto.ChatMessage.AvatarType.IMAGE,
                 },
             ),
