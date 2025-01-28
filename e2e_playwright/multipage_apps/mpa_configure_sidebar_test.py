@@ -79,7 +79,7 @@ def test_page_links_in_sidebar(
     wait_for_app_run(themed_app)
 
     page_links = themed_app.get_by_test_id("stPageLink-NavLink")
-    expect(page_links).to_have_count(4)
+    expect(page_links).to_have_count(5)
 
     # Selected page
     assert_snapshot(page_links.nth(3), name="current-page-link-sidebar")
