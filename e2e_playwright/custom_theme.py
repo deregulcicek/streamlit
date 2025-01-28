@@ -48,7 +48,7 @@ with col1:
     st.chat_input("Chat Input")
 with col2:
     with st.expander("Expander", expanded=True):
-        st.text_input("Text Input", placeholder="Placeholder")
+        st.text_area("Text Area", placeholder="Placeholder")
         st.checkbox("Checkbox", value=True)
         st.slider("Slider", min_value=0, max_value=100, value=50)
 
@@ -64,4 +64,4 @@ with st.sidebar:
         help="Tooltip",
     )
     st.success("Wohooo!")
-    st.text_input("Text Input in Sidebar", placeholder="Placeholder")
+    st.text_input("Text Input in Sidebar", placeholder="Placeholder", help="Tooltip")
