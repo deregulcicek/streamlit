@@ -86,12 +86,13 @@ def _navigation(
         default_page._default = True
 
     ctx = get_script_run_ctx()
-    is_mpa_v1 = ctx.pages_manager.is_mpa_v1
     if not ctx:
         # This should never run in Streamlit, but we want to make sure that
         # the function always returns a page
         default_page._can_be_called = True
         return default_page
+
+    is_mpa_v1 = ctx.pages_manager.is_mpa_v1
 
     # Build the pagehash-to-pageinfo mapping.
     for section_header in nav_sections:

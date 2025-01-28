@@ -21,8 +21,8 @@ from streamlit.components.v1.component_registry import declare_component
 
 # `html` and `iframe` are part of Custom Components, so they appear in this
 # `streamlit.components.v1` namespace.
-html = streamlit._main._html  # type: ignore[has-type]
-iframe = streamlit._main._iframe  # type: ignore[has-type]
+html = streamlit._main._html
+iframe = streamlit._main._iframe
 
 __all__ = [
     "declare_component",
