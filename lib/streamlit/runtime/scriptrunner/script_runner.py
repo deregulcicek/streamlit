@@ -116,6 +116,31 @@ it in the future.
 """
 
 
+def _mpa_v1(main_script_path: str):
+    from pathlib import Path
+
+    import streamlit as st
+
+    # Select the folder that should be used for the pages:
+    PAGES_FOLDER = Path(main_script_path).parent / "my_pages"
+
+    if PAGES_FOLDER.exists():
+        # Read out the my_pages folder and create a page for every script:
+        pages = PAGES_FOLDER.glob("*.py")
+        pages = [page for page in pages if page.name.endswith(".py")]
+
+        # Use this script as the main page and
+        main_page = st.Page(main_script_path, default=True)
+        # Initialize the navigation with all the pages:
+        page = st.navigation([main_page] + [st.Page(page) for page in pages])
+
+        if page._page != main_page._page:
+            # Only run the page if it is not pointing to this script:
+            page.run()
+            # Finish the script execution here to only run the selected page
+            st.stop()
+
+
 class ScriptRunner:
     def __init__(
         self,
@@ -587,6 +612,7 @@ class ScriptRunner:
                                 pass
 
                     else:
+                        _mpa_v1(self._main_script_path)
                         exec(code, module.__dict__)
                         self._fragment_storage.clear(
                             new_fragment_ids=ctx.new_fragment_ids
