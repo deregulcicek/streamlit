@@ -515,7 +515,8 @@ class ScriptRunner:
                 pages={},
             )
             if ctx.pages_manager.is_mpa_v1:
-                # Send Navigation to Frontend
+                # We spoof a navigation message to the frontend to provide
+                # information about all of its pages.
                 msg = ForwardMsg()
                 msg.navigation.is_mpa_v1 = True
                 msg.navigation.expanded = False
@@ -662,7 +663,8 @@ class ScriptRunner:
                     )
                 )
             ):
-                # We are a single page
+                # We are a single page and the user is trying to navigate to a
+                # non-existent page. We should send a page_not_found message.
                 msg = ForwardMsg()
                 msg.page_not_found.page_name = intended_page_name
                 ctx.enqueue(msg)
