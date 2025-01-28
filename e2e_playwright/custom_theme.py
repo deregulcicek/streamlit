@@ -49,6 +49,12 @@ col1, col2, col3 = st.columns(3)
 with col1:
     if st.button("Open Dialog", use_container_width=True):
         my_dialog()
+    st.segmented_control(
+        "Segmented Control",
+        options=["Option 1", "Option 2"],
+        default="Option 1",
+        label_visibility="collapsed",
+    )
     st.button("Primary Button", type="primary")
     st.divider()
     st.code("# st.code\na = 1234")
