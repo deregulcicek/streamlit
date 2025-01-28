@@ -128,6 +128,7 @@ def _mpa_v1(main_script_path: str):
         # Read out the my_pages folder and create a page for every script:
         pages = PAGES_FOLDER.glob("*.py")
         pages = [page for page in pages if page.name.endswith(".py")]
+        pages.reverse()
 
         # Use this script as the main page and
         main_page = st.Page(main_script_path, default=True)
