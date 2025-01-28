@@ -267,7 +267,7 @@ def test_renders_logos(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that logos display properly in sidebar and main sections"""
 
     # Go to logo page & wait short moment for logo to appear
-    app.get_by_test_id("stSidebarNav").locator("a").nth(7).click()
+    app.get_by_test_id("stSidebarNav").locator("a").nth(8).click()
     wait_for_app_loaded(app)
 
     # Sidebar logo
