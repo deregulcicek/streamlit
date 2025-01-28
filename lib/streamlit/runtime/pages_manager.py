@@ -55,14 +55,6 @@ class PagesManager:
         Overwrites the PagesManager's `pages` dictionary. Also, indicates that
         multi-page app version 2 will be used from here on.
         """
-        if self._is_mpa_v1:
-            # Log the warning and reset the "strategy" to V2
-            _LOGGER.warning(
-                "st.navigation was called in an app with a pages/ directory. "
-                "This may cause unusual app behavior. You may want to rename the "
-                "pages/ directory."
-            )
-            self._is_mpa_v1 = False
         self._pages = pages
 
     def get_main_page(self) -> PageInfo:

@@ -30,7 +30,6 @@ from streamlit.errors import FragmentStorageKeyError
 from streamlit.logger import get_logger
 from streamlit.proto.ClientState_pb2 import ClientState
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
-from streamlit.proto.Navigation_pb2 import Navigation as NavigationProto
 from streamlit.runtime.metrics_util import (
     create_page_profile_message,
     to_microseconds,
@@ -60,13 +59,13 @@ from streamlit.runtime.state import (
     SafeSessionState,
     SessionState,
 )
+from streamlit.util import calc_md5
 
 if TYPE_CHECKING:
     from streamlit.runtime.fragment import FragmentStorage
     from streamlit.runtime.pages_manager import PagesManager
     from streamlit.runtime.scriptrunner.script_cache import ScriptCache
     from streamlit.runtime.uploaded_file_manager import UploadedFileManager
-    from streamlit.source_util import PageInfo
 
 _LOGGER: Final = get_logger(__name__)
 
@@ -405,42 +404,6 @@ class ScriptRunner:
         finally:
             self._execing = False
 
-    def _resolve_active_and_page_script(
-        self, intended_page_script_hash: str, intended_page_name: str
-    ) -> tuple[PageInfo, str]:
-        ctx = self._get_script_run_ctx()
-        main_page = self._pages_manager.get_main_page()
-        active_script = None
-        page_script_hash = None
-        if self._pages_manager.is_mpa_v1:
-            active_script = self._pages_manager.find_page_info(
-                intended_page_script_hash, intended_page_name
-            )
-
-            if active_script is None:
-                # At this point, we know that either
-                #   * the script corresponding to the hash requested no longer
-                #     exists, or
-                #   * we were not able to find a script with the requested page
-                #     name.
-                # In both of these cases, we want to send a page_not_found
-                # message to the frontend.
-                msg = ForwardMsg()
-                msg.page_not_found.page_name = intended_page_name
-                ctx.enqueue(msg)
-
-                active_script = self._pages_manager.get_main_page()
-                page_script_hash = main_page["page_script_hash"]
-            else:
-                page_script_hash = active_script["page_script_hash"]
-        else:
-            active_script = main_page
-            page_script_hash = (
-                intended_page_script_hash or main_page["page_script_hash"]
-            )
-
-        return active_script, page_script_hash
-
     def _run_script(self, rerun_data: RerunData) -> None:
         """Run our script.
 
@@ -471,10 +434,27 @@ class ScriptRunner:
             intended_page_script_hash = rerun_data.page_script_hash
             intended_page_name = rerun_data.page_name
             main_page = self._pages_manager.get_main_page()
-            active_script, page_script_hash = self._resolve_active_and_page_script(
-                intended_page_script_hash, intended_page_name
+            page_script_hash = (
+                intended_page_script_hash or main_page["page_script_hash"]
             )
-            active_script_hash = active_script["page_script_hash"]
+
+            active_script_path = main_page["script_path"]
+            active_script_hash = main_page["page_script_hash"]
+            if self._pages_manager.is_mpa_v1:
+                import importlib.util
+
+                module_name = "streamlit.runtime.scriptrunner_utils.mpa_v1_script"
+                spec = importlib.util.find_spec(module_name)
+
+                # We expect the module to always resolve, but we want a fallback just in case
+                file_path = main_page["script_path"]
+                if spec and spec.origin:
+                    file_path = spec.origin
+
+                # Spoof the initial script that triggers the navigation
+                active_script_path = file_path
+                active_script_hash = calc_md5(active_script_path)
+
             # Clear widget state on page change. This normally happens implicitly
             # in the script run cleanup steps, but doing it explicitly ensures
             # it happens even if a script run was interrupted.
@@ -514,34 +494,12 @@ class ScriptRunner:
                 fragment_ids_this_run=fragment_ids_this_run,
                 pages={},
             )
-            if ctx.pages_manager.is_mpa_v1:
-                # We spoof a navigation message to the frontend to provide
-                # information about all of its pages.
-                msg = ForwardMsg()
-                msg.navigation.is_mpa_v1 = True
-                msg.navigation.expanded = False
-                msg.navigation.position = (
-                    NavigationProto.Position.HIDDEN
-                    if config.get_option("client.showSidebarNavigation") is False
-                    else NavigationProto.Position.SIDEBAR
-                )
-                msg.navigation.page_script_hash = active_script["page_script_hash"]
-                for page in ctx.pages_manager.get_pages().values():
-                    page_info = msg.navigation.app_pages.add()
-                    page_info.page_name = page["page_name"]
-                    page_info.page_script_hash = page["page_script_hash"]
-                    page_info.icon = page["icon"]
-                    page_info.section_header = ""
-                    page_info.url_pathname = page["url_pathname"]
-                    page_info.is_default = page["url_pathname"] == ""
-
-                ctx.enqueue(msg)
 
             # Compile the script. Any errors thrown here will be surfaced
             # to the user via a modal dialog in the frontend, and won't result
             # in their previous script elements disappearing.
             try:
-                script_path = active_script["script_path"]
+                script_path = active_script_path
                 code = self._script_cache.get_bytecode(script_path)
 
             except Exception as ex:
@@ -653,10 +611,17 @@ class ScriptRunner:
 
             is_single_page_app = len(self._pages_manager.get_pages()) == 0
             if (
+                # We are a single page app
                 is_single_page_app
+                # Without any info suggesting we are running version 1 of Multi Page Apps
                 and not ctx.pages_manager.is_mpa_v1
                 and (
+                    # There is some non-empty page_name (or url pathname). This means
+                    # the user is trying to navigate something different from the main
+                    # page.
                     intended_page_name
+                    # The page hash we are looking for does not match the main page hash.
+                    # This means they are trying to run a page that doesn't exist.
                     or (
                         intended_page_script_hash
                         and intended_page_script_hash != main_page["page_script_hash"]

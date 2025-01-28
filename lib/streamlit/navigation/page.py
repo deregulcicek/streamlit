@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Callable
 
 from streamlit.errors import StreamlitAPIException
-from streamlit.runtime import get_instance
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner_utils.script_run_context import get_script_run_ctx
 from streamlit.source_util import page_icon_and_name
@@ -297,12 +296,13 @@ class StreamlitPage:
                 self._page()
                 return
             else:
+                # Avoids a circular import
+                from streamlit.runtime import get_instance
+
                 runtime = get_instance()
                 code = runtime.get_page_script_byte_code(str(self._page))
 
-                # We create a module named __page__ for this specific
-                # script. This is differentiate it from the `__main__` module
-                module = types.ModuleType("__page__")
+                module = types.ModuleType("__main__")
                 # We want __file__ to be the path to the script
                 module.__dict__["__file__"] = self._page
                 exec(code, module.__dict__)
