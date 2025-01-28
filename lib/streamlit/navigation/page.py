@@ -296,11 +296,7 @@ class StreamlitPage:
                 self._page()
                 return
             else:
-                # Avoids a circular import
-                from streamlit.runtime import get_instance
-
-                runtime = get_instance()
-                code = runtime.get_page_script_byte_code(str(self._page))
+                code = ctx.pages_manager.get_page_script_byte_code(str(self._page))
 
                 module = types.ModuleType("__main__")
                 # We want __file__ to be the path to the script

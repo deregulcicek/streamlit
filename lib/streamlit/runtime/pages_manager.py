@@ -16,28 +16,28 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Final
+from typing import TYPE_CHECKING, Any, Callable
 
 from streamlit import source_util
-from streamlit.logger import get_logger
 from streamlit.util import calc_md5
 
 if TYPE_CHECKING:
+    from streamlit.runtime.scriptrunner.script_cache import ScriptCache
     from streamlit.source_util import PageHash, PageInfo, PageName, ScriptPath
-
-_LOGGER: Final = get_logger(__name__)
 
 
 class PagesManager:
     def __init__(
         self,
         main_script_path: ScriptPath,
+        script_cache: ScriptCache | None = None,
         *,
         # setup_watcher is a convenience flag to allow disabling the watcher for testing
         setup_watcher: bool = True,
     ):
         self._main_script_path = main_script_path
         self._main_script_hash: PageHash = calc_md5(main_script_path)
+        self._script_cache = script_cache
         self._current_page_script_hash: PageHash = ""
         pages_dir = self.main_script_parent / "pages"
         self._is_mpa_v1 = os.path.exists(pages_dir)
@@ -126,3 +126,10 @@ class PagesManager:
             return self.get_page_script_by_name(page_name)
 
         return self.get_page_script_by_hash(fallback_page_hash)
+
+    def get_page_script_byte_code(self, script_path: str) -> Any:
+        if self._script_cache is None:
+            # Returning an empty string for an empty script
+            return ""
+
+        return self._script_cache.get_bytecode(script_path)
