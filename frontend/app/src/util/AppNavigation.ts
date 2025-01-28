@@ -74,6 +74,7 @@ export class AppNavigation {
 
   mainPage: IAppPage | null
 
+  // MPAv1 = Multi Page App Version 1 (with a pages folder)
   isMPAv1: boolean
 
   constructor(

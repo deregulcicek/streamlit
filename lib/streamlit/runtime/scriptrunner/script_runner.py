@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from streamlit.runtime.pages_manager import PagesManager
     from streamlit.runtime.scriptrunner.script_cache import ScriptCache
     from streamlit.runtime.uploaded_file_manager import UploadedFileManager
+    from streamlit.source_util import PageInfo
 
 _LOGGER: Final = get_logger(__name__)
 
@@ -404,6 +405,42 @@ class ScriptRunner:
         finally:
             self._execing = False
 
+    def _resolve_active_and_page_script(
+        self, intended_page_script_hash: str, intended_page_name: str | None
+    ) -> tuple[PageInfo, str]:
+        ctx = self._get_script_run_ctx()
+        main_page = self._pages_manager.get_main_page()
+        active_script = None
+        page_script_hash = None
+        if self._pages_manager.is_mpa_v1:
+            active_script = self._pages_manager.find_page_info(
+                intended_page_script_hash, intended_page_name
+            )
+
+            if active_script is None:
+                # At this point, we know that either
+                #   * the script corresponding to the hash requested no longer
+                #     exists, or
+                #   * we were not able to find a script with the requested page
+                #     name.
+                # In both of these cases, we want to send a page_not_found
+                # message to the frontend.
+                msg = ForwardMsg()
+                msg.page_not_found.page_name = intended_page_name
+                ctx.enqueue(msg)
+
+                active_script = self._pages_manager.get_main_page()
+                page_script_hash = main_page["page_script_hash"]
+            else:
+                page_script_hash = active_script["page_script_hash"]
+        else:
+            active_script = main_page
+            page_script_hash = (
+                intended_page_script_hash or main_page["page_script_hash"]
+            )
+
+        return active_script, page_script_hash
+
     def _run_script(self, rerun_data: RerunData) -> None:
         """Run our script.
 
@@ -434,41 +471,9 @@ class ScriptRunner:
             intended_page_script_hash = rerun_data.page_script_hash
             intended_page_name = rerun_data.page_name
             main_page = self._pages_manager.get_main_page()
-            # main_script_hash = main_page["page_script_hash"]
-
-            # We want to know:
-            # 1. The active script to start with for the run.
-            # 2. The page_script_hash that we're running.
-
-            active_script = None
-            page_script_hash = None
-            if self._pages_manager.mpa_version == 1:
-                active_script = self._pages_manager.find_page_info(
-                    intended_page_script_hash, intended_page_name
-                )
-
-                if active_script is None:
-                    # At this point, we know that either
-                    #   * the script corresponding to the hash requested no longer
-                    #     exists, or
-                    #   * we were not able to find a script with the requested page
-                    #     name.
-                    # In both of these cases, we want to send a page_not_found
-                    # message to the frontend.
-                    msg = ForwardMsg()
-                    msg.page_not_found.page_name = intended_page_name
-                    ctx.enqueue(msg)
-
-                    active_script = self._pages_manager.get_main_page()
-                    page_script_hash = main_page["page_script_hash"]
-                else:
-                    page_script_hash = active_script["page_script_hash"]
-            else:
-                active_script = main_page
-                page_script_hash = (
-                    intended_page_script_hash or main_page["page_script_hash"]
-                )
-
+            active_script, page_script_hash = self._resolve_active_and_page_script(
+                intended_page_script_hash, intended_page_name
+            )
             active_script_hash = active_script["page_script_hash"]
             # Clear widget state on page change. This normally happens implicitly
             # in the script run cleanup steps, but doing it explicitly ensures
@@ -509,7 +514,7 @@ class ScriptRunner:
                 fragment_ids_this_run=fragment_ids_this_run,
                 pages={},
             )
-            if ctx.pages_manager.mpa_version == 1:
+            if ctx.pages_manager.is_mpa_v1:
                 # Send Navigation to Frontend
                 msg = ForwardMsg()
                 msg.navigation.is_mpa_v1 = True
@@ -648,7 +653,7 @@ class ScriptRunner:
             is_single_page_app = len(self._pages_manager.get_pages()) == 0
             if (
                 is_single_page_app
-                and ctx.pages_manager.mpa_version == 2
+                and not ctx.pages_manager.is_mpa_v1
                 and (
                     intended_page_name
                     or (

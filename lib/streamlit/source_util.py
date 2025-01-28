@@ -174,6 +174,8 @@ def get_pages(main_script_path_str: ScriptPath) -> dict[PageHash, PageInfo]:
         return pages
 
 
+# MPA v1 requires a pages watcher to be set up specifically for the pages
+# directory (identifying pages that are added/removed).
 def pages_watcher_factory() -> Callable[[Path], None]:
     _is_watching_pages_dir = False
     _pages_watcher_lock = threading.Lock()

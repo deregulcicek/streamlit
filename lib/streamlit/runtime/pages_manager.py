@@ -41,17 +41,20 @@ class PagesManager:
         self._current_page_script_hash: PageHash = ""
         pages_dir = self.main_script_parent / "pages"
         self._is_mpa_v1 = os.path.exists(pages_dir)
+        self._pages = {}
         if self._is_mpa_v1:
             if setup_watcher:
                 source_util.setup_pages_watcher(pages_dir)
             self._pages = source_util.get_pages(self._main_script_path)
-        else:
-            self._pages = {}
 
     def get_pages(self) -> dict[PageHash, PageInfo]:
         return self._pages
 
     def set_pages(self, pages: dict[PageHash, PageInfo]):
+        """
+        Overwrites the PagesManager's `pages` dictionary. Also, indicates that
+        multi-page app version 2 will be used from here on.
+        """
         if self._is_mpa_v1:
             # Log the warning and reset the "strategy" to V2
             _LOGGER.warning(
@@ -87,8 +90,8 @@ class PagesManager:
         return self._current_page_script_hash
 
     @property
-    def mpa_version(self) -> int:
-        return 1 if self._is_mpa_v1 else 2
+    def is_mpa_v1(self) -> bool:
+        return self._is_mpa_v1
 
     @property
     def main_script_path(self) -> ScriptPath:
@@ -127,7 +130,7 @@ class PagesManager:
         if page_script_hash:
             return self.get_page_script_by_hash(page_script_hash)
         # We allow page_name to have an empty string because that represents the main page
-        elif page_name is not None:
+        if page_name is not None:
             return self.get_page_script_by_name(page_name)
 
         return self.get_page_script_by_hash(fallback_page_hash)
