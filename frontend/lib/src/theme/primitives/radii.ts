@@ -27,5 +27,5 @@ export const radii = {
   // Ensures that the element is fully rounded:
   full: "9999px",
   // The maximum radius for checkboxes to still be recognizable as a checkbox:
-  maxCheckboxRadius: "0.35rem",
+  maxCheckbox: "0.35rem",
 }
