@@ -39,10 +39,16 @@ st.navigation(
 )
 
 
+@st.dialog("My Dialog")
+def my_dialog():
+    st.write("Hello World")
+
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.button("Button")
+    if st.button("Open Dialog", use_container_width=True):
+        my_dialog()
     st.button("Primary Button", type="primary")
     st.divider()
     st.code("# st.code\na = 1234")
