@@ -38,5 +38,5 @@ export default {
   primary: colors.red70,
   disabled: colors.gray70,
   // Brighten link color a bit so they're easier to read:
-  linkText: lighten(colors.blue80, 0.2),
+  link: lighten(colors.blue80, 0.2),
 }

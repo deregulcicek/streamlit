@@ -68,7 +68,7 @@ export const StyledErrorTextSpan = styled.span(({ theme }) => ({
 }))
 
 export const StyledNoMicInputLearnMoreLink = styled.a(({ theme }) => ({
-  color: theme.colors.linkText,
+  color: theme.colors.link,
   textDecoration: "underline",
 }))
 

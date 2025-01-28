@@ -209,7 +209,7 @@ export const createEmotionTheme = (
     newGenericColors.widgetBackgroundColor = widgetBackgroundColor
   if (skeletonBackgroundColor)
     newGenericColors.skeletonBackgroundColor = skeletonBackgroundColor
-  if (linkColor) newGenericColors.linkText = linkColor
+  if (linkColor) newGenericColors.link = linkColor
 
   // Secondary color is not yet configurable. Set secondary color to primary color
   // by default for all custom themes.
