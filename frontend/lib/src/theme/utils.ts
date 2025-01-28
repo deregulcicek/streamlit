@@ -235,15 +235,28 @@ export const createEmotionTheme = (
       ...baseThemeConfig.emotion.radii,
     }
 
-    // Normalize the roundness to be between 0 and 1.5rem base radii.
+    // Normalize the roundness to be between 0 and 1.6rem base radii.
+    // 1.6rem is chosen based on having our base widgets fully rounded (at 1.25rem)
+    // and some additional roundness for which other elements still look good.
     // Also enforces that roundness is 0-1. Bigger values are capped at 1.
     // Smaller values are capped at 0.
-    const baseRadii = Math.max(0, Math.min(roundness, 1)) * 1.5
+    // We make sure that the value is rounded to 2 decimal places to avoid
+    // floating point precision issues.
+    const baseRadii = roundToTwoDecimals(
+      Math.max(0, Math.min(roundness, 1)) * 1.6
+    )
     conditionalOverrides.radii.default = addRemUnit(baseRadii)
     // Adapt all the other radii sizes based on the base radii:
-    conditionalOverrides.radii.md = addRemUnit(baseRadii * 0.5)
-    conditionalOverrides.radii.xl = addRemUnit(baseRadii * 1.5)
-    conditionalOverrides.radii.xxl = addRemUnit(baseRadii * 2)
+    // But use some upper limits to prevent elements from looking weird:
+    conditionalOverrides.radii.md = addRemUnit(
+      roundToTwoDecimals(baseRadii * 0.5)
+    )
+    conditionalOverrides.radii.xl = addRemUnit(
+      roundToTwoDecimals(baseRadii * 1.5)
+    )
+    conditionalOverrides.radii.xxl = addRemUnit(
+      roundToTwoDecimals(baseRadii * 2)
+    )
   }
 
   if (fontSizes) {
@@ -513,6 +526,10 @@ function addPxUnit(n: number): string {
 
 function addRemUnit(n: number): string {
   return `${n}rem`
+}
+
+function roundToTwoDecimals(n: number): number {
+  return parseFloat(n.toFixed(2))
 }
 
 export function blend(color: string, background: string | undefined): string {
