@@ -43,7 +43,7 @@ def test_page_links_in_main(
     """Test that page link appears as expected in main."""
     expect(themed_app.get_by_test_id("stSidebar")).not_to_be_attached()
     page_links = themed_app.get_by_test_id("stPageLink-NavLink")
-    expect(page_links).to_have_count(5)
+    expect(page_links).to_have_count(4)
 
     # Selected page
     assert_snapshot(page_links.nth(0), name="current-page-link")
