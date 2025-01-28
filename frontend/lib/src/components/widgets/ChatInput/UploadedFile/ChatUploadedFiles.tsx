@@ -28,7 +28,6 @@ import ChatUploadedFile from "./ChatUploadedFile"
 export interface Props {
   items: UploadFileInfo[]
   onDelete: (id: number) => void
-  style?: React.CSSProperties
 }
 
 const ChatUploadedFiles = ({ items, onDelete }: Props): ReactElement => (

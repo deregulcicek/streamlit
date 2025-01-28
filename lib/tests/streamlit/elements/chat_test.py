@@ -14,6 +14,7 @@
 
 """chat input and message unit tests."""
 
+import pathlib
 from unittest.mock import patch
 
 import pytest
@@ -35,6 +36,10 @@ from streamlit.runtime.uploaded_file_manager import (
 )
 from streamlit.type_util import is_custom_dict
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+
+avatar_image_path = str(
+    pathlib.Path(__file__).parent.parent / "commands/full-streamlit.png"
+)
 
 
 class ChatTest(DeltaGeneratorTestCase):
@@ -77,14 +82,15 @@ class ChatTest(DeltaGeneratorTestCase):
             message_block.add_block.chat_message.avatar_type,
             BlockProto.ChatMessage.AvatarType.ICON,
         )
+        str(pathlib.Path(__file__).parent / "full-streamlit.png")
 
     @parameterized.expand(
         [
             ("👋", {"avatar": "👋", "type": BlockProto.ChatMessage.AvatarType.EMOJI}),
             (
-                "https://static.streamlit.io/examples/cat.jpg",
+                avatar_image_path,
                 {
-                    "avatar": "https://static.streamlit.io/examples/cat.jpg",
+                    "avatar": avatar_image_path,
                     "type": BlockProto.ChatMessage.AvatarType.IMAGE,
                 },
             ),

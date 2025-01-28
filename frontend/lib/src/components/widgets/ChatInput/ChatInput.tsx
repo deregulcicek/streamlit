@@ -17,6 +17,7 @@
 import React, {
   ChangeEvent,
   KeyboardEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -146,16 +147,21 @@ const createDropHandler =
     // Create an UploadFileInfo for each of our rejected files, and add them to
     // our state.
     if (rejectedFiles.length > 0) {
-      const rejectedInfos = rejectedFiles.map(rejected => {
-        const { file } = rejected
-        return new UploadFileInfo(file.name, file.size, getNextLocalFileId(), {
-          type: "error",
-          errorMessage: rejected.errors
-            .map(err => err.message)
-            .filter(err => err !== "")
-            .join(", "),
-        })
-      })
+      const rejectedInfos = rejectedFiles.map(
+        rejected =>
+          new UploadFileInfo(
+            rejected.file.name,
+            rejected.file.size,
+            getNextLocalFileId(),
+            {
+              type: "error",
+              errorMessage: rejected.errors
+                .map(err => err.message)
+                .filter(err => !!err)
+                .join(", "),
+            }
+          )
+      )
       addFiles(rejectedInfos)
     }
 
@@ -314,27 +320,33 @@ function ChatInput({
     currentFiles: UploadFileInfo[]
   ): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
 
-  const deleteFile = (fileId: number): void => {
-    setFiles(files => {
-      const file = getFile(fileId, files)
-      if (isNullOrUndefined(file)) {
-        return files
-      }
+  const deleteFile = useCallback(
+    (fileId: number): void => {
+      setFiles(files => {
+        const file = getFile(fileId, files)
+        if (isNullOrUndefined(file)) {
+          return files
+        }
 
-      if (file.status.type === "uploading") {
-        // Cancel request as the file hasn't been uploaded.
-        // However, it may have been received by the server so we'd still
-        // send out a request to delete it.
-        file.status.cancelToken.cancel()
-      }
+        if (file.status.type === "uploading") {
+          // Cancel request as the file hasn't been uploaded.
+          // However, it may have been received by the server so we'd still
+          // send out a request to delete it.
+          file.status.cancelToken.cancel()
+        }
 
-      if (file.status.type === "uploaded" && file.status.fileUrls.deleteUrl) {
-        uploadClient.deleteFile(file.status.fileUrls.deleteUrl)
-      }
+        if (
+          file.status.type === "uploaded" &&
+          file.status.fileUrls.deleteUrl
+        ) {
+          uploadClient.deleteFile(file.status.fileUrls.deleteUrl)
+        }
 
-      return files.filter(file => file.id !== fileId)
-    })
-  }
+        return files.filter(file => file.id !== fileId)
+      })
+    },
+    [uploadClient]
+  )
 
   const createChatInputWidgetFilesValue = (): FileUploaderStateProto => {
     const uploadedFileInfo: UploadedFileInfoProto[] = files

@@ -26,6 +26,8 @@ import {
   Skeleton as SkeletonProto,
 } from "@streamlit/protobuf"
 
+import { assertNever } from "./assertNever"
+
 // This prefix should be in sync with the value on the python side:
 const GENERATED_ELEMENT_ID_PREFIX = "$$ID"
 
@@ -410,7 +412,7 @@ export enum AcceptFileValue {
 }
 
 export function chatInputAcceptFileProtoValueToEnum(
-  value: ChatInputProto.AcceptFile | null | undefined
+  value: ChatInputProto.AcceptFile
 ): AcceptFileValue {
   switch (value) {
     case ChatInputProto.AcceptFile.NONE:
@@ -420,6 +422,7 @@ export function chatInputAcceptFileProtoValueToEnum(
     case ChatInputProto.AcceptFile.MULTIPLE:
       return AcceptFileValue.Multiple
     default:
+      assertNever(value)
       return AcceptFileValue.None
   }
 }

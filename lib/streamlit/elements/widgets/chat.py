@@ -82,15 +82,6 @@ class ChatInputValue(Mapping[str, Any]):
         return vars(self)
 
 
-TYPE_PAIRS = [
-    (".jpg", ".jpeg"),
-    (".mpg", ".mpeg"),
-    (".mp4", ".mpeg4"),
-    (".tif", ".tiff"),
-    (".htm", ".html"),
-]
-
-
 class PresetNames(str, Enum):
     USER = "user"
     ASSISTANT = "assistant"

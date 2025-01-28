@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { FC } from "react"
 
 import {
   Clear,
@@ -25,7 +25,12 @@ import {
 import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
 import Icon, { StyledSpinnerIcon } from "~lib/components/shared/Icon"
 import { FileSize, getSizeDisplay } from "~lib/util/FileHelper"
-import { UploadFileInfo } from "~lib/components/widgets/FileUploader/UploadFileInfo"
+import {
+  ErrorStatus,
+  FileStatus,
+  UploadFileInfo,
+} from "~lib/components/widgets/FileUploader/UploadFileInfo"
+import { assertNever } from "~lib/util/assertNever"
 
 import {
   StyledChatUploadedFile,
@@ -45,10 +50,12 @@ export interface ChatUploadedFileIconProps {
   fileInfo: UploadFileInfo
 }
 
-export const ChatUploadedFileIcon = ({
+export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
   fileInfo,
-}: ChatUploadedFileIconProps): React.ReactElement | null => {
-  switch (fileInfo.status.type) {
+}) => {
+  const fileStatus: FileStatus["type"] = fileInfo.status.type
+
+  switch (fileStatus) {
     case "uploading":
       return (
         <StyledSpinnerIcon
@@ -61,13 +68,16 @@ export const ChatUploadedFileIcon = ({
       )
     case "error":
       return (
-        <ChatUploadedFileIconTooltip content={fileInfo.status.errorMessage}>
+        <ChatUploadedFileIconTooltip
+          content={(fileInfo.status as ErrorStatus).errorMessage}
+        >
           <Icon content={ErrorOutline} size="lg" />
         </ChatUploadedFileIconTooltip>
       )
     case "uploaded":
       return <Icon content={InsertDriveFile} size="lg" />
     default:
+      assertNever(fileStatus)
       return null
   }
 }
