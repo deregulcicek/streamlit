@@ -152,10 +152,6 @@ function Radio({
                   backgroundColor: $isFocusVisible
                     ? colors.darkenedBgMix25
                     : "",
-                  borderTopLeftRadius: radii.md,
-                  borderTopRightRadius: radii.md,
-                  borderBottomLeftRadius: radii.md,
-                  borderBottomRightRadius: radii.md,
                 }),
               },
               RadioMarkOuter: {

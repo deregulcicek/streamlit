@@ -63,15 +63,28 @@ with col1:
         "Multiselect",
         options=["Option 1", "Option 2", "Option 3"],
         default=["Option 1"],
+        label_visibility="collapsed",
     )
 with col2:
     with st.expander("Expander", expanded=True):
-        st.text_area("Text Area", placeholder="Placeholder", height=68)
+        st.text_area(
+            "Text Area",
+            placeholder="Placeholder",
+            height=68,
+            label_visibility="collapsed",
+        )
         checkbox_col, toggle_col = st.columns(2)
         with checkbox_col:
             st.checkbox("Checkbox", value=True)
         with toggle_col:
             st.toggle("Toggle", value=True)
+        st.radio(
+            "Radio",
+            options=["Option 1", "Option 2"],
+            index=0,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
         st.slider("Slider", min_value=0, max_value=100, value=50)
 
 with col3:
