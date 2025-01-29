@@ -24,19 +24,16 @@ import {
   BaseButtonTooltip,
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import BaseLinkButton from "./BaseLinkButton"
 
 export interface Props {
   disabled: boolean
   element: LinkButtonProto
-  width: number
 }
 
 function LinkButton(props: Readonly<Props>): ReactElement {
-  const { disabled, element, width } = props
-  const style = useLayoutStyles({ width, element })
+  const { disabled, element } = props
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {
@@ -44,10 +41,6 @@ function LinkButton(props: Readonly<Props>): ReactElement {
   } else if (element.type === "tertiary") {
     kind = BaseButtonKind.TERTIARY
   }
-
-  // When useContainerWidth true & has help tooltip,
-  // we need to pass the container width down to the button
-  const fluidWidth = element.help ? width : true
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
     // Prevent the link from being followed if the button is disabled.
@@ -57,7 +50,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
   }
 
   return (
-    <div className="stLinkButton" data-testid="stLinkButton" style={style}>
+    <div className="stLinkButton" data-testid="stLinkButton">
       <BaseButtonTooltip help={element.help}>
         {/* We use separate BaseLinkButton instead of BaseButton here, because
         link behavior requires tag <a> instead of <button>.*/}
@@ -66,7 +59,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleClick}
-          fluidWidth={element.useContainerWidth ? fluidWidth : false}
+          fluidWidth={element.useContainerWidth}
           href={element.url}
           target="_blank"
           rel="noreferrer"

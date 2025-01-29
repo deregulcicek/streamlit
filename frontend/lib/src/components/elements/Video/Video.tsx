@@ -23,11 +23,8 @@ import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManag
 
 import { StyledVideoIframe } from "./styled-components"
 
-const DEFAULT_HEIGHT = 528
-
 export interface VideoProps {
   endpoints: StreamlitEndpoints
-  width: number
   element: VideoProto
   elementMgr: ElementStateManager
 }
@@ -39,7 +36,6 @@ export interface Subtitle {
 
 function Video({
   element,
-  width,
   endpoints,
   elementMgr,
 }: Readonly<VideoProps>): ReactElement {
@@ -214,7 +210,10 @@ function Video({
       muted={muted}
       autoPlay={autoplay && !preventAutoplay}
       src={endpoints.buildMediaURL(url)}
-      style={{ width, height: width === 0 ? DEFAULT_HEIGHT : undefined }}
+      style={{
+        // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
+        width: "var(--st-block-width)",
+      }}
       crossOrigin={
         process.env.NODE_ENV === "development" && subtitles.length > 0
           ? "anonymous"

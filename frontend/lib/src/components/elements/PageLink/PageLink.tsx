@@ -27,7 +27,6 @@ import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 import { EmotionTheme } from "~lib/theme"
 import { LibContext } from "~lib/components/core/LibContext"
 import IsSidebarContext from "~lib/components/core/IsSidebarContext"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import {
   StyledNavLink,
@@ -38,7 +37,6 @@ import {
 export interface Props {
   disabled: boolean
   element: PageLinkProto
-  width: number
 }
 
 function shouldUseContainerWidth(
@@ -59,8 +57,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
 
   const { colors }: EmotionTheme = useTheme()
 
-  const { disabled, element, width } = props
-  const style = useLayoutStyles({ width, element })
+  const { disabled, element } = props
 
   const useContainerWidth = shouldUseContainerWidth(
     element.useContainerWidth,
@@ -85,14 +82,14 @@ function PageLink(props: Readonly<Props>): ReactElement {
   }
 
   return (
-    <div className="stPageLink" data-testid="stPageLink" style={style}>
+    <div className="stPageLink" data-testid="stPageLink">
       <BaseButtonTooltip help={element.help} placement={Placement.TOP_RIGHT}>
         <StyledNavLinkContainer>
           <StyledNavLink
             data-testid="stPageLink-NavLink"
             disabled={disabled}
             isCurrentPage={isCurrentPage}
-            fluidWidth={useContainerWidth ? width : false}
+            fluidWidth={useContainerWidth || false}
             href={element.page}
             target={element.external ? "_blank" : ""}
             rel="noreferrer"

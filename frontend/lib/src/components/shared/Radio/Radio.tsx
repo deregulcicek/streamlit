@@ -33,12 +33,10 @@ import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { LabelVisibilityOptions } from "~lib/util/utils"
 import { Placement } from "~lib/components/shared/Tooltip"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown/StreamlitMarkdown"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
   horizontal: boolean
-  width?: number
   value: number | null
   onChange: (selectedIndex: number) => any
   options: any[]
@@ -51,7 +49,6 @@ export interface Props {
 function Radio({
   disabled,
   horizontal,
-  width,
   value: defaultValue,
   onChange,
   options,
@@ -86,6 +83,7 @@ function Radio({
 
   const theme = useTheme()
   const style = useLayoutStyles({ width, element: undefined })
+  const { colors, radii } = theme
   const hasCaptions = captions.length > 0
   const hasOptions = options.length > 0
   const cleanedOptions = hasOptions ? options : ["No options to select."]
@@ -101,7 +99,7 @@ function Radio({
   }
 
   return (
-    <div className="stRadio" data-testid="stRadio" style={style}>
+    <div className="stRadio" data-testid="stRadio">
       <WidgetLabel
         label={label}
         disabled={shouldDisable}

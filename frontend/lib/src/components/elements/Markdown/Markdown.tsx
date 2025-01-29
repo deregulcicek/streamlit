@@ -23,10 +23,8 @@ import {
   InlineTooltipIcon,
   StyledLabelHelpWrapper,
 } from "~lib/components/shared/TooltipIcon"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface MarkdownProps {
-  width: number
   help?: string
   element: MarkdownProto
 }
@@ -35,13 +33,10 @@ export interface MarkdownProps {
  * Functional element representing Markdown formatted text.
  */
 function Markdown({
-  width,
   element,
 }: Readonly<MarkdownProps>): ReactElement {
-  const style = useLayoutStyles({ width, element })
-
   return (
-    <div className="stMarkdown" data-testid="stMarkdown" style={style}>
+    <div className="stMarkdown" data-testid="stMarkdown">
       {element.help ? (
         <StyledLabelHelpWrapper
           isLatex={element.elementType === MarkdownProto.Type.LATEX}

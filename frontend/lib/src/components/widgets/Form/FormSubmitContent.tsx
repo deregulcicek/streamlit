@@ -16,17 +16,12 @@
 
 import React, { ReactElement } from "react"
 
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
-
 import { FormSubmitButton, Props } from "./FormSubmitButton"
 import { StyledFormSubmitContent } from "./styled-components"
 
 export function FormSubmitContent(props: Props): ReactElement {
-  const { element, width } = props
-  const style = useLayoutStyles({ width, element })
-
   return (
-    <StyledFormSubmitContent style={style}>
+    <StyledFormSubmitContent>
       <FormSubmitButton {...props} />
     </StyledFormSubmitContent>
   )

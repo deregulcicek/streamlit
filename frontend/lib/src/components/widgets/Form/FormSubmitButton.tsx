@@ -25,28 +25,19 @@ import BaseButton, {
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
   element: ButtonProto
   hasInProgressUpload: boolean
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
 export function FormSubmitButton(props: Props): ReactElement {
-  const {
-    disabled,
-    element,
-    widgetMgr,
-    hasInProgressUpload,
-    width,
-    fragmentId,
-  } = props
+  const { disabled, element, widgetMgr, hasInProgressUpload, fragmentId } =
+    props
   const { formId } = element
-  const style = useLayoutStyles({ width, element })
 
   let kind = BaseButtonKind.SECONDARY_FORM_SUBMIT
   if (element.type === "primary") {
@@ -60,21 +51,13 @@ export function FormSubmitButton(props: Props): ReactElement {
     return () => widgetMgr.removeSubmitButton(formId, element)
   }, [widgetMgr, formId, element])
 
-  // When useContainerWidth true & has help tooltip,
-  // we need to pass the container width down to the button
-  const fluidWidth = element.help ? width : true
-
   return (
-    <div
-      className="stFormSubmitButton"
-      data-testid="stFormSubmitButton"
-      style={style}
-    >
+    <div className="stFormSubmitButton" data-testid="stFormSubmitButton">
       <BaseButtonTooltip help={element.help}>
         <BaseButton
           kind={kind}
           size={BaseButtonSize.SMALL}
-          fluidWidth={element.useContainerWidth ? fluidWidth : false}
+          fluidWidth={element.useContainerWidth}
           disabled={disabled || hasInProgressUpload}
           onClick={() => {
             widgetMgr.submitForm(element.formId, fragmentId, element)

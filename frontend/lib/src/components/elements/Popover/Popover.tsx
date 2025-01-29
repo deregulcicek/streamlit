@@ -52,10 +52,6 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
   const theme = useTheme()
   const lightBackground = hasLightBackgroundColor(theme)
 
-  // When useContainerWidth true & has help tooltip,
-  // we need to pass the container width down to the button
-  const fluidButtonWidth = element.help ? width : true
-
   return (
     <div data-testid="stPopover" className="stPopover">
       <UIPopover
@@ -135,7 +131,6 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
               kind={BaseButtonKind.SECONDARY}
               size={BaseButtonSize.SMALL}
               disabled={empty || element.disabled}
-              fluidWidth={element.useContainerWidth ? fluidButtonWidth : false}
               onClick={() => setOpen(!open)}
             >
               <DynamicButtonLabel icon={element.icon} label={element.label} />

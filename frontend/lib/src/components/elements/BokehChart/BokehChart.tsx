@@ -28,9 +28,9 @@ import "~lib/vendor/bokeh/bokeh-gl-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-mathjax-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-tables-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-widgets-2.4.3.esm.min"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 export interface BokehChartProps {
-  width: number
   element: BokehChartProto
   height?: number
 }
@@ -41,11 +41,13 @@ interface Dimensions {
 }
 
 export function BokehChart({
-  width,
   element,
   height,
 }: Readonly<BokehChartProps>): ReactElement {
   const chartId = `bokeh-chart-${element.elementId}`
+
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
 
   const memoizedGetChartData = useCallback(() => {
     return JSON.parse(element.figure)
@@ -57,12 +59,14 @@ export function BokehChart({
       let chartWidth: number = plot.attributes.plot_width
       let chartHeight: number = plot.attributes.plot_height
 
+      const parsedWidth = parseInt(width || "0", 10)
+
       // if is not fullscreen and useContainerWidth==false, we should use default values
       if (height) {
-        chartWidth = width
+        chartWidth = parsedWidth
         chartHeight = height
       } else if (element.useContainerWidth) {
-        chartWidth = width
+        chartWidth = parsedWidth
       }
 
       return { chartWidth, chartHeight }
@@ -126,7 +130,12 @@ export function BokehChart({
   }, [width, height, element, memoizedGetChartData, memoizedUpdateChart])
 
   return (
-    <div id={chartId} className="stBokehChart" data-testid="stBokehChart" />
+    <div
+      id={chartId}
+      ref={elementRef}
+      className="stBokehChart"
+      data-testid="stBokehChart"
+    />
   )
 }
 

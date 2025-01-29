@@ -29,6 +29,7 @@ import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscre
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
 import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import {
   StyledCaption,
@@ -38,7 +39,6 @@ import {
 
 export interface ImageListProps {
   endpoints: StreamlitEndpoints
-  width: number
   element: ImageListProto
   disableFullscreenMode?: boolean
 }
@@ -62,7 +62,6 @@ enum WidthBehavior {
  */
 function ImageList({
   element,
-  width,
   endpoints,
   disableFullscreenMode,
 }: Readonly<ImageListProps>): ReactElement {
@@ -73,9 +72,13 @@ function ImageList({
     expand,
     collapse,
   } = useRequiredContext(ElementFullscreenContext)
+  const { value: evaluatedWidth, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
+  const width = parseInt(evaluatedWidth || "0", 10)
 
   // The width of the element is the width of the container, not necessarily the image.
-  const elementWidth: number = isFullScreen ? fullScreenWidth : width
+  const elementWidth: number =
+    isFullScreen && fullScreenWidth ? fullScreenWidth : width
   // The width field in the proto sets the image width, but has special
   // cases the values in the WidthBehavior enum.
   let imageWidth: number | undefined
@@ -121,6 +124,7 @@ function ImageList({
       height={height}
       useContainerWidth={isFullScreen}
       topCentered
+      ref={elementRef}
     >
       <Toolbar
         target={StyledToolbarElementContainer}

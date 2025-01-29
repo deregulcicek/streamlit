@@ -37,15 +37,11 @@ function getNonEmptyString(
 
 export interface IFrameProps {
   element: IFrameProto
-  width: number
 }
 
 function IFrame({
   element,
-  width: propWidth,
 }: Readonly<IFrameProps>): ReactElement {
-  const width = element.hasWidth ? element.width : propWidth
-
   // Either 'src' or 'srcDoc' will be set in our element. If 'src'
   // is set, we're loading a remote URL in the iframe.
   const src = getNonEmptyString(element.src)
@@ -61,7 +57,6 @@ function IFrame({
       disableScrolling={!element.scrolling}
       src={src}
       srcDoc={srcDoc}
-      width={width}
       height={element.height}
       scrolling={element.scrolling ? "auto" : "no"}
       sandbox={DEFAULT_IFRAME_SANDBOX_POLICY}
