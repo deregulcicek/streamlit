@@ -192,7 +192,7 @@ const Multiselect: FC<Props> = props => {
     [overMaxSelections, value]
   )
 
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
   const { options } = element
   const disabled = options.length === 0 ? true : props.disabled
   const placeholder =

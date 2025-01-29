@@ -96,7 +96,7 @@ function Slider({
   >([])
 
   const { colors, fonts, fontSizes, spacing } = useTheme()
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   const formattedValueArr = uiValue.map(v => formatValue(v, element))
   const formattedMinValue = formatValue(element.min, element)

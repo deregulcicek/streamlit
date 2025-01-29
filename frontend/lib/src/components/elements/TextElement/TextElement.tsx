@@ -38,7 +38,7 @@ function TextElement({
   width,
   element,
 }: Readonly<TextProps>): ReactElement {
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   return (
     <StyledLabelHelpWrapper

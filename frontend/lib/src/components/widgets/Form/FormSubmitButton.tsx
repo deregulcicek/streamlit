@@ -46,7 +46,7 @@ export function FormSubmitButton(props: Props): ReactElement {
     fragmentId,
   } = props
   const { formId } = element
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   let kind = BaseButtonKind.SECONDARY_FORM_SUBMIT
   if (element.type === "primary") {

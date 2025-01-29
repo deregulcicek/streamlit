@@ -36,7 +36,7 @@ export interface Props {
 
 function LinkButton(props: Readonly<Props>): ReactElement {
   const { disabled, element, width } = props
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {
