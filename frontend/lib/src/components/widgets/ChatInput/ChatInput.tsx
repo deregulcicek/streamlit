@@ -437,10 +437,12 @@ function ChatInput({
     },
   })
 
+  const acceptFileType = element.fileType
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: dropHandler,
     multiple: acceptFile === AcceptFileValue.Multiple,
-    accept: element.fileType.length > 0 ? element.fileType : undefined,
+    accept: acceptFileType.length > 0 ? { acceptFileType } : undefined,
   })
 
   const getScrollHeight = (): number => {
