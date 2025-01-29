@@ -32,6 +32,7 @@ import { WidgetStateManager } from "~lib/WidgetStateManager"
 import Icon from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
 import { isEnterKeyPressed } from "~lib/util/inputUtils"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import {
   StyledChatInput,
@@ -45,7 +46,6 @@ export interface Props {
   disabled: boolean
   element: ChatInputProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -57,7 +57,6 @@ const MAX_VISIBLE_NUM_LINES = 6.5
 const ROUNDING_OFFSET = 1
 
 function ChatInput({
-  width,
   element,
   widgetMgr,
   fragmentId,
@@ -71,6 +70,9 @@ function ChatInput({
   const [scrollHeight, setScrollHeight] = useState(0)
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
   const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
+
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
 
   const getScrollHeight = (): number => {
     let scrollHeight = 0
@@ -166,7 +168,7 @@ function ChatInput({
     <StyledChatInputContainer
       className="stChatInput"
       data-testid="stChatInput"
-      width={width}
+      ref={elementRef}
     >
       <StyledChatInput>
         <UITextArea
@@ -193,7 +195,6 @@ function ChatInput({
                 borderRightWidth: theme.sizes.borderWidth,
                 borderTopWidth: theme.sizes.borderWidth,
                 borderBottomWidth: theme.sizes.borderWidth,
-                width: `${width}px`,
               },
             },
             InputContainer: {
@@ -229,7 +230,7 @@ function ChatInput({
           }}
         />
         {/* Hide the character limit in small widget sizes */}
-        {width > theme.breakpoints.hideWidgetDetails && (
+        {parseInt(width || "0", 10) > theme.breakpoints.hideWidgetDetails && (
           <StyledInputInstructionsContainer>
             <InputInstructions
               dirty={dirty}

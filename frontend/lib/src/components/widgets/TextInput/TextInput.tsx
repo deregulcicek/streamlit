@@ -38,6 +38,7 @@ import {
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
 import { isInForm, labelVisibilityProtoValueToEnum } from "~lib/util/utils"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import { StyledTextInput } from "./styled-components"
 
@@ -45,7 +46,6 @@ export interface Props {
   disabled: boolean
   element: TextInputProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -53,7 +53,6 @@ function TextInput({
   disabled,
   element,
   widgetMgr,
-  width,
   fragmentId,
 }: Props): ReactElement {
   /**
@@ -63,6 +62,10 @@ function TextInput({
   const [uiValue, setUiValue] = useState<string | null>(
     getStateFromWidgetMgr(widgetMgr, element) ?? null
   )
+
+  const { value: evaluatedWidth, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
+  const width = parseInt(evaluatedWidth || "0", 10)
 
   /**
    * True if the user-specified state.value has not yet been synced to the WidgetStateManager.
@@ -144,7 +147,7 @@ function TextInput({
     <StyledTextInput
       className="stTextInput"
       data-testid="stTextInput"
-      width={width}
+      ref={elementRef}
     >
       <WidgetLabel
         label={element.label}

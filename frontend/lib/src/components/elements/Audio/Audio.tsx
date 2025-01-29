@@ -23,14 +23,12 @@ import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManag
 
 export interface AudioProps {
   endpoints: StreamlitEndpoints
-  width: number
   element: AudioProto
   elementMgr: ElementStateManager
 }
 
 export default function Audio({
   element,
-  width,
   endpoints,
   elementMgr,
 }: Readonly<AudioProps>): ReactElement {
@@ -155,7 +153,7 @@ export default function Audio({
       controls
       autoPlay={autoplay && !preventAutoplay}
       src={uri}
-      style={{ width }}
+      style={{ width: "100%" }}
     />
   )
 }

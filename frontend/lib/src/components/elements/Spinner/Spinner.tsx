@@ -32,7 +32,6 @@ import {
 } from "./styled-components"
 
 export interface SpinnerProps {
-  width: number
   element: SpinnerProto
 }
 
@@ -72,7 +71,7 @@ export const formatTime = (seconds: number): string => {
   return `(${hourText}${minText}${secText})`
 }
 
-function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
+function Spinner({ element }: Readonly<SpinnerProps>): ReactElement {
   const { activeTheme } = React.useContext(LibContext)
   const usingCustomTheme = !isPresetTheme(activeTheme)
   const { cache, showTime } = element
@@ -92,7 +91,6 @@ function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
     <StyledSpinner
       className={classNames({ stSpinner: true, stCacheSpinner: cache })}
       data-testid="stSpinner"
-      width={width}
       cache={cache}
     >
       <StyledSpinnerContainer>

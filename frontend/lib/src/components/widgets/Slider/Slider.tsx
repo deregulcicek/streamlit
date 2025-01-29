@@ -43,7 +43,6 @@ import {
 } from "~lib/components/widgets/BaseWidget"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 import {
   StyledThumb,
@@ -58,7 +57,6 @@ export interface Props {
   disabled: boolean
   element: SliderProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -66,7 +64,6 @@ function Slider({
   disabled,
   element,
   widgetMgr,
-  width,
   fragmentId,
 }: Props): ReactElement {
   const [value, setValueWithSource] = useBasicWidgetState<
@@ -96,7 +93,6 @@ function Slider({
   >([])
 
   const { colors, fonts, fontSizes, spacing } = useTheme()
-  const style = useLayoutStyles({ width, element })
 
   const formattedValueArr = uiValue.map(v => formatValue(v, element))
   const formattedMinValue = formatValue(element.min, element)
@@ -241,12 +237,7 @@ function Slider({
   )
 
   return (
-    <div
-      ref={sliderRef}
-      className="stSlider"
-      data-testid="stSlider"
-      style={style}
-    >
+    <div ref={sliderRef} className="stSlider" data-testid="stSlider">
       <WidgetLabel
         label={element.label}
         disabled={disabled}

@@ -103,7 +103,6 @@ export interface DataFrameProps {
   widgetMgr: WidgetStateManager
   disableFullscreenMode?: boolean
   fragmentId?: string
-  width: number
   height?: number
 }
 
@@ -564,7 +563,7 @@ function DataFrame({
     gridTheme,
     numRows,
     usesGroupRow,
-    containerWidth,
+    containerWidth || 0,
     containerHeight,
     isFullScreen
   )
@@ -601,7 +600,7 @@ function DataFrame({
   const { pinColumn, unpinColumn, freezeColumns } = useColumnPinning(
     columns,
     isEmptyTable,
-    containerWidth,
+    containerWidth || 0,
     gridTheme.minColumnWidth,
     clearSelection,
     setColumnConfigMapping

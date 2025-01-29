@@ -28,14 +28,12 @@ import BaseButton, {
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { LibContext } from "~lib/components/core/LibContext"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   endpoints: StreamlitEndpoints
   disabled: boolean
   element: DownloadButtonProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
@@ -52,9 +50,8 @@ export function createDownloadLink(
 }
 
 function DownloadButton(props: Props): ReactElement {
-  const { disabled, element, widgetMgr, width, endpoints, fragmentId } = props
+  const { disabled, element, widgetMgr, endpoints, fragmentId } = props
 
-  const style = useLayoutStyles({ width, element })
   const {
     libConfig: { enforceDownloadInNewTab = false }, // Default to false, if no libConfig, e.g. for tests
   } = React.useContext(LibContext)
@@ -78,23 +75,15 @@ function DownloadButton(props: Props): ReactElement {
     link.click()
   }
 
-  // When useContainerWidth true & has help tooltip,
-  // we need to pass the container width down to the button
-  const fluidWidth = element.help ? width : true
-
   return (
-    <div
-      className="stDownloadButton"
-      data-testid="stDownloadButton"
-      style={style}
-    >
+    <div className="stDownloadButton" data-testid="stDownloadButton">
       <BaseButtonTooltip help={element.help}>
         <BaseButton
           kind={kind}
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleDownloadClick}
-          fluidWidth={element.useContainerWidth ? fluidWidth : false}
+          fluidWidth={element.useContainerWidth}
         >
           <DynamicButtonLabel icon={element.icon} label={element.label} />
         </BaseButton>

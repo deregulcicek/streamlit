@@ -105,7 +105,7 @@ export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
 
 export interface StyledElementContainerProps {
   isStale: boolean
-  width: number | undefined
+  width: number | string | undefined
   elementType: string
 }
 
@@ -210,7 +210,7 @@ export const StyledColumn = styled.div<StyledColumnProps>(
 
 export interface StyledVerticalBlockProps {
   ref?: React.RefObject<any>
-  width?: number
+  width?: number | string
   verticalAlignment: BlockProto.Vertical.VerticalAlignment | null
   horizontalAlignment: BlockProto.Vertical.HorizontalAlignment | null
   wrap: boolean

@@ -23,18 +23,17 @@ import { StyledCaptionText } from "~lib/components/elements/Progress/styled-comp
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 
 export interface ProgressProps {
-  width: number
   element: ProgressProto
 }
 
-function Progress({ element, width }: Readonly<ProgressProps>): ReactElement {
+function Progress({ element }: Readonly<ProgressProps>): ReactElement {
   return (
     <div className="stProgress" data-testid="stProgress">
       <StyledCaptionText>
         <StreamlitMarkdown source={element.text} allowHTML={false} isLabel />
       </StyledCaptionText>
 
-      <ProgressBar value={element.value} width={width} />
+      <ProgressBar value={element.value} />
     </div>
   )
 }

@@ -28,12 +28,12 @@ import Toolbar, {
 import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
 import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import { StyledGraphVizChart } from "./styled-components"
 
 export interface GraphVizChartProps {
   element: GraphVizChartProto
-  width: number
   disableFullscreenMode?: boolean
 }
 
@@ -42,10 +42,11 @@ function GraphVizChart({
   disableFullscreenMode,
 }: Readonly<GraphVizChartProps>): ReactElement {
   const chartId = `st-graphviz-chart-${element.elementId}`
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
 
   const {
     expanded: isFullScreen,
-    width,
     height,
     expand,
     collapse,
@@ -80,7 +81,8 @@ function GraphVizChart({
 
   return (
     <StyledToolbarElementContainer
-      width={width}
+      ref={elementRef}
+      width={width ?? "0"}
       height={height}
       useContainerWidth={isFullScreen || element.useContainerWidth}
     >

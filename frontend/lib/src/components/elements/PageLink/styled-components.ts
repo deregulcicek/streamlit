@@ -24,8 +24,8 @@ export const StyledNavLinkContainer = styled.div({
 export interface StyledNavLinkProps {
   disabled: boolean
   isCurrentPage: boolean
-  // If true or number, the button should take up container's full width
-  fluidWidth?: boolean | number
+  // If true, the button should take up container's full width
+  fluidWidth?: boolean
 }
 
 export const StyledNavLink = styled.a<StyledNavLinkProps>(

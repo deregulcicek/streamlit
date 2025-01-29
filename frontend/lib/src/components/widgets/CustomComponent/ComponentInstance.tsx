@@ -64,7 +64,6 @@ export interface Props {
   widgetMgr: WidgetStateManager
   disabled: boolean
   element: ComponentInstanceProto
-  width: number
   theme: EmotionTheme
   fragmentId?: string
 }
@@ -171,8 +170,7 @@ function compareDataframeArgs(
 function ComponentInstance(props: Props): ReactElement {
   const [componentError, setComponentError] = useState<Error>()
 
-  const { disabled, element, registry, theme, widgetMgr, width, fragmentId } =
-    props
+  const { disabled, element, registry, theme, widgetMgr, fragmentId } = props
   const { componentName, jsonArgs, specialArgs, url } = element
 
   const [parsedNewArgs, parsedDataframeArgs] = tryParseArgs(
@@ -241,7 +239,7 @@ function ComponentInstance(props: Props): ReactElement {
       theme,
       iframeRef.current ?? undefined
     )
-  }, [disabled, frameHeight, haveDataframeArgsChanged, jsonArgs, theme, width])
+  }, [disabled, frameHeight, haveDataframeArgsChanged, jsonArgs, theme])
 
   useEffect(() => {
     const handleSetFrameHeight = (height: number | undefined): void => {
@@ -368,7 +366,6 @@ function ComponentInstance(props: Props): ReactElement {
     // eslint-disable-next-line react-compiler/react-compiler
     !isReadyRef.current && isReadyTimeout ? (
       <AlertElement
-        width={width}
         body={getWarnMessage(componentName, url)}
         kind={Kind.WARNING}
       />
@@ -398,7 +395,6 @@ function ComponentInstance(props: Props): ReactElement {
         allow={DEFAULT_IFRAME_FEATURE_POLICY}
         ref={iframeRef}
         src={getSrc(componentName, registry, url)}
-        width={width}
         // for undefined height we set the height to 0 to avoid inconsistent behavior
         height={frameHeight ?? 0}
         scrolling="no"

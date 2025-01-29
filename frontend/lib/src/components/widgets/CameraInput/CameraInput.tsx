@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { FC } from "react"
 
 import { X } from "@emotion-icons/open-iconic"
 import axios from "axios"
@@ -48,6 +48,7 @@ import {
   UploadFileInfo,
   UploadingStatus,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import CameraInputButton from "./CameraInputButton"
 import { FacingMode } from "./SwitchFacingModeButton"
@@ -68,6 +69,7 @@ export interface Props {
   fragmentId?: string
   // Allow for unit testing
   testOverride?: WebcamPermission
+  elementRef?: (node: HTMLElement | null) => void
 }
 
 type FileUploaderStatus =
@@ -350,7 +352,7 @@ class CameraInput extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactNode {
-    const { element, widgetMgr, disabled, width } = this.props
+    const { element, widgetMgr, disabled, elementRef, width } = this.props
 
     // Manage our form-clear event handler.
     this.formClearHelper.manageFormClearListener(
@@ -360,7 +362,11 @@ class CameraInput extends React.PureComponent<Props, State> {
     )
 
     return (
-      <StyledCameraInput className="stCameraInput" data-testid="stCameraInput">
+      <StyledCameraInput
+        className="stCameraInput"
+        data-testid="stCameraInput"
+        ref={elementRef}
+      >
         <WidgetLabel
           label={element.label}
           disabled={disabled}
@@ -592,4 +598,18 @@ function urltoFile(url: string, filename: string): Promise<File> {
     .then(buf => new File([buf], filename, { type: "image/jpeg" }))
 }
 
-export default CameraInput
+const CameraInputWrapper: FC<Omit<Props, "width">> = props => {
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
+
+  return (
+    <CameraInput
+      {...props}
+      // @ts-expect-error
+      elementRef={elementRef}
+      width={parseInt(width || "0", 10)}
+    />
+  )
+}
+
+export default CameraInputWrapper
