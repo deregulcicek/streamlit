@@ -27,7 +27,6 @@ import {
 
 import { render } from "~lib/test_util"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
-import { UploadFileInfo } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
 import ChatInput, { Props } from "./ChatInput"
 
@@ -70,10 +69,7 @@ const getProps = (
   ...widgetProps,
 })
 
-const mockChatInputValue = (
-  text: string,
-  _: UploadFileInfo[] = [] // TODO (sfc-gh-pchiu): implement mock for files
-): IChatInputValue => {
+const mockChatInputValue = (text: string): IChatInputValue => {
   return {
     data: text,
     fileUploaderState: {
