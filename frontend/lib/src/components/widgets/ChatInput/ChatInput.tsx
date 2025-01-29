@@ -51,6 +51,7 @@ import {
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "~lib/FileUploadClient"
 import { getAccept } from "~lib/components/widgets/FileUploader/FileDropzone"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import {
   StyledChatInput,
@@ -68,7 +69,6 @@ export interface Props {
   disabled: boolean
   element: ChatInputProto
   widgetMgr: WidgetStateManager
-  width: number
   uploadClient: FileUploadClient
   fragmentId?: string
 }
@@ -92,7 +92,6 @@ const getFile = (
 ): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
 
 function ChatInput({
-  width,
   element,
   widgetMgr,
   fragmentId,
@@ -244,6 +243,9 @@ function ChatInput({
     multiple: acceptFile === AcceptFileValue.Multiple,
     accept: getAccept(element.fileType),
   })
+
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
 
   const getScrollHeight = (): number => {
     let scrollHeight = 0
@@ -405,7 +407,6 @@ function ChatInput({
           showDropzone ? `${containerClass} dropzone` : containerClass
         }
         data-testid="stChatInput"
-        width={width}
       >
         <StyledChatInput>
           {acceptFile === AcceptFileValue.None ? null : (

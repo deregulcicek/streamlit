@@ -25,7 +25,6 @@ import { StyledAudio, StyledAudioContainer } from "./styled-components"
 
 export interface AudioProps {
   endpoints: StreamlitEndpoints
-  width: number
   element: AudioProto
   elementMgr: ElementStateManager
 }
@@ -157,6 +156,7 @@ export default function Audio({
         controls
         autoPlay={autoplay && !preventAutoplay}
         src={uri}
+        style={{ width: "100%" }}
       />
     </StyledAudioContainer>
   )

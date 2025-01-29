@@ -18,18 +18,16 @@ import styled from "@emotion/styled"
 import { hasLightBackgroundColor } from "~lib/theme"
 
 export interface StyledChatInputContainerProps {
-  width: number
 }
 
 export const StyledChatInputContainer =
-  styled.div<StyledChatInputContainerProps>(({ theme, width }) => {
+  styled.div<StyledChatInputContainerProps>(({ theme }) => {
     return {
       border: `${theme.sizes.borderWidth} solid`,
       borderColor: theme.colors.widgetBorderColor ?? theme.colors.transparent,
       borderRadius: theme.radii.chatInput,
       display: "flex",
       backgroundColor: theme.colors.secondaryBg,
-      width: `${width}px`,
       overflow: "hidden",
 
       ":focus-within": {

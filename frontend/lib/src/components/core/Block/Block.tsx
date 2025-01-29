@@ -146,7 +146,6 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
         formId={formId}
         clearOnSubmit={clearOnSubmit}
         enterToSubmit={enterToSubmit}
-        width={props.width}
         hasSubmitButton={hasSubmitButton}
         scriptRunState={props.scriptRunState}
         widgetMgr={props.widgetMgr}
@@ -340,6 +339,10 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
   const wrapperElement = useRef<HTMLDivElement>(null)
   const [calculatedWidth, setCalculatedWidth] = React.useState(-1)
 
+  // TODO: There is a bug when `activateScrollToBottom=true` and when the window resizes
+  // the calculated width gets crazy large. This can be reproduced by running the
+  // `e2e_playwright/st_chat_input.py` Streamlit app and resizing the window.
+
   const observer = useMemo(
     () =>
       new ResizeObserver(([entry]) => {
@@ -373,11 +376,11 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
 
   const activateScrollToBottom =
     height &&
-    props.node.children.find(node => {
+    props.node.children.some(node => {
       return (
         node instanceof BlockNode && node.deltaBlock.type === "chatMessage"
       )
-    }) !== undefined
+    })
 
   useEffect(() => {
     if (wrapperElement.current) {
@@ -402,7 +405,7 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
 
   // Extract the user-specified key from the block ID (if provided):
   const userKey = getKeyFromId(props.node.deltaBlock.id)
-  const { width } = useLayoutStyles({
+  const styles = useLayoutStyles({
     width: calculatedWidth,
     element: undefined,
   })
@@ -413,7 +416,7 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     // All downstream components expect a number. But in this world, we are only
     // providing number | undefined to let it size itself. Any real solution will
     // update the type system everywhere, but this is just a prototype.
-    ...{ width: width as number },
+    ...{ width: styles.width as number },
   }
 
   // Widths of children autosizes to container width (and therefore window width).
@@ -431,7 +434,7 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     >
       <StyledVerticalBlockWrapper ref={wrapperElement}>
         <StyledVerticalBlock
-          width={width}
+          width={styles.width}
           gap={gap}
           verticalAlignment={verticalAlignment}
           horizontalAlignment={horizontalAlignment}
@@ -441,6 +444,7 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
             convertKeyToClassName(userKey)
           )}
           data-testid="stVerticalBlock"
+          style={styles}
         >
           <ChildRenderer {...propsWithNewWidth} />
         </StyledVerticalBlock>

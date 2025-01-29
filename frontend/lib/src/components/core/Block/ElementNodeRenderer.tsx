@@ -209,19 +209,7 @@ const RawElementNodeRenderer = (
     throw new Error("ElementNode not found.")
   }
 
-  const styles = useLayoutStyles({
-    width: props.width,
-    element:
-      (node.element?.type && node.element[node.element.type]) || undefined,
-  })
-  // TODO: CASTING TO `number` IS A HACK TO GET AROUND THE TYPE SYSTEM FOR NOW
-  // All downstream components expect a number. But in this world, we are only
-  // providing number | undefined to let it size itself. Any real solution will
-  // update the type system everywhere, but this is just a prototype.
-  const width = styles.width as number
-
   const elementProps = {
-    width,
     disableFullscreenMode: props.disableFullscreenMode,
   }
 
@@ -727,7 +715,10 @@ const RawElementNodeRenderer = (
 }
 
 const StyledElementContainer2: FC<
-  Parameters<typeof StyledElementContainer>[0] & { node: ElementNode }
+  Omit<Parameters<typeof StyledElementContainer>[0], "width"> & {
+    node: ElementNode
+    width: number
+  }
 > = ({ width, node, ...rest }) => {
   // TODO: We need a better way to ensure that anything that uses width is
   // leveraging `useLayoutStyles`. Might we be able to hoist this logic higher
@@ -782,11 +773,11 @@ const ElementNodeRenderer = (
         // Applying stale opacity in fullscreen mode
         // causes the fullscreen overlay to be transparent.
         isStale={isStale && !isFullScreen}
-        width={undefined}
+        width={propsWidth}
         elementType={elementType}
         node={node}
       >
-        <ErrorBoundary width={propsWidth}>
+        <ErrorBoundary>
           <Suspense
             fallback={
               <Skeleton

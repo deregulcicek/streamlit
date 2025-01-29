@@ -48,6 +48,7 @@ import {
   WidgetLabel,
 } from "~lib/components/widgets/BaseWidget"
 import { EmotionTheme } from "~lib/theme"
+import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
 
 import {
   StyledInputContainer,
@@ -166,7 +167,6 @@ export interface Props {
   disabled: boolean
   element: NumberInputProto
   widgetMgr: WidgetStateManager
-  width: number
   theme: EmotionTheme
   fragmentId?: string
 }
@@ -175,7 +175,6 @@ export const NumberInput: React.FC<Props> = ({
   disabled,
   element,
   widgetMgr,
-  width,
   theme,
   fragmentId,
 }: Props): ReactElement => {
@@ -188,6 +187,9 @@ export const NumberInput: React.FC<Props> = ({
   } = element
   const min = element.hasMin ? element.min : -Infinity
   const max = element.hasMax ? element.max : +Infinity
+
+  const { value: width, elementRef } =
+    useEvaluatedCssProperty("--st-block-width")
 
   const [step, setStep] = useState<number>(getStep(element))
   const initialValue = getInitialValue({ element, widgetMgr })
@@ -210,7 +212,8 @@ export const NumberInput: React.FC<Props> = ({
     : dirty
   // Hide input instructions for small widget sizes.
   const shouldShowInstructions =
-    isFocused && width > theme.breakpoints.hideWidgetDetails
+    isFocused &&
+    parseInt(width || "0", 10) > theme.breakpoints.hideWidgetDetails
 
   // Update the step if the props change
   useEffect(() => {
@@ -401,7 +404,7 @@ export const NumberInput: React.FC<Props> = ({
     <div
       className="stNumberInput"
       data-testid="stNumberInput"
-      style={{ width }}
+      ref={elementRef}
     >
       <WidgetLabel
         label={element.label}
@@ -507,7 +510,8 @@ export const NumberInput: React.FC<Props> = ({
           }}
         />
         {/* We only want to show the increment/decrement controls when there is sufficient room to display the value and these controls. */}
-        {width > theme.breakpoints.hideNumberInputControls && (
+        {parseInt(width || "0", 10) >
+          theme.breakpoints.hideNumberInputControls && (
           <StyledInputControls>
             <StyledInputControl
               data-testid="stNumberInputStepDown"

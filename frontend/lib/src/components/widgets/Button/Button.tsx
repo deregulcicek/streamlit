@@ -30,12 +30,11 @@ export interface Props {
   disabled: boolean
   element: ButtonProto
   widgetMgr: WidgetStateManager
-  width: number
   fragmentId?: string
 }
 
 function Button(props: Props): ReactElement {
-  const { disabled, element, widgetMgr, width, fragmentId } = props
+  const { disabled, element, widgetMgr, fragmentId } = props
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {
@@ -44,10 +43,6 @@ function Button(props: Props): ReactElement {
     kind = BaseButtonKind.TERTIARY
   }
 
-  // When useContainerWidth true & has help tooltip,
-  // we need to pass the container width down to the button
-  const fluidWidth = element.help ? width : true
-
   return (
     <div className="stButton" data-testid="stButton">
       <BaseButtonTooltip help={element.help}>
@@ -55,7 +50,7 @@ function Button(props: Props): ReactElement {
           kind={kind}
           size={BaseButtonSize.SMALL}
           disabled={disabled}
-          fluidWidth={element.useContainerWidth ? fluidWidth : false}
+          fluidWidth={element.useContainerWidth}
           onClick={() =>
             widgetMgr.setTriggerValue(element, { fromUi: true }, fragmentId)
           }
