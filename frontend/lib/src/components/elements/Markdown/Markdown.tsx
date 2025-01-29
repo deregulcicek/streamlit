@@ -38,7 +38,7 @@ export default function Markdown({
   width,
   element,
 }: Readonly<MarkdownProps>): ReactElement {
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   return (
     <div className="stMarkdown" data-testid="stMarkdown" style={style}>

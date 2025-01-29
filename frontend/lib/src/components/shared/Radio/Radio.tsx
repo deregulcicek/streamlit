@@ -85,7 +85,7 @@ function Radio({
   )
 
   const theme = useTheme()
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element: undefined })
   const hasCaptions = captions.length > 0
   const hasOptions = options.length > 0
   const cleanedOptions = hasOptions ? options : ["No options to select."]

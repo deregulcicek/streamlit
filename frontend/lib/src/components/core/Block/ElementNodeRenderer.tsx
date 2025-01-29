@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, Suspense } from "react"
+import React, { FC, ReactElement, Suspense } from "react"
 
 import debounceRender from "react-debounce-render"
 import classNames from "classnames"
@@ -209,7 +209,11 @@ const RawElementNodeRenderer = (
     throw new Error("ElementNode not found.")
   }
 
-  const styles = useLayoutStyles({ width: props.width })
+  const styles = useLayoutStyles({
+    width: props.width,
+    element:
+      (node.element?.type && node.element[node.element.type]) || undefined,
+  })
   // TODO: CASTING TO `number` IS A HACK TO GET AROUND THE TYPE SYSTEM FOR NOW
   // All downstream components expect a number. But in this world, we are only
   // providing number | undefined to let it size itself. Any real solution will
@@ -722,6 +726,22 @@ const RawElementNodeRenderer = (
   }
 }
 
+const StyledElementContainer2: FC<
+  Parameters<typeof StyledElementContainer>[0] & { node: ElementNode }
+> = ({ width, node, ...rest }) => {
+  // TODO: We need a better way to ensure that anything that uses width is
+  // leveraging `useLayoutStyles`. Might we be able to hoist this logic higher
+  // up in the tree so that we only need `useLayoutStyles` in components that
+  // change the width?
+  const style = useLayoutStyles({
+    width,
+    element:
+      (node.element?.type && node.element[node.element.type]) || undefined,
+  })
+
+  return <StyledElementContainer width={style.width} {...rest} style={style} />
+}
+
 // Render ElementNodes (i.e. leaf nodes) wrapped in error catchers and all sorts of other //
 // utilities.
 const ElementNodeRenderer = (
@@ -731,6 +751,7 @@ const ElementNodeRenderer = (
   const { node, width: propsWidth } = props
 
   const elementType = node.element.type || ""
+
   const enable = shouldComponentBeEnabled(elementType, props.scriptRunState)
   const isStale = isComponentStale(
     enable,
@@ -744,20 +765,13 @@ const ElementNodeRenderer = (
   const elementId = getElementId(node.element)
   const userKey = getKeyFromId(elementId)
 
-  // TODO: We need a better way to ensure that anything that uses width is
-  // leveraging `useLayoutStyles`. Might we be able to hoist this logic higher
-  // up in the tree so that we only need `useLayoutStyles` in components that
-  // change the width?
-  const calculatedStyles = useLayoutStyles({ width: propsWidth })
-  const { width } = calculatedStyles
-
   // TODO: If would be great if we could return an empty fragment if isHidden is true, to keep the
   // DOM clean. But this would require the keys passed to ElementNodeRenderer at Block.tsx to be a
   // stable hash of some sort.
 
   return (
     <Maybe enable={enable}>
-      <StyledElementContainer
+      <StyledElementContainer2
         className={classNames(
           "stElementContainer",
           "element-container",
@@ -768,8 +782,9 @@ const ElementNodeRenderer = (
         // Applying stale opacity in fullscreen mode
         // causes the fullscreen overlay to be transparent.
         isStale={isStale && !isFullScreen}
-        width={width}
+        width={undefined}
         elementType={elementType}
+        node={node}
       >
         <ErrorBoundary width={propsWidth}>
           <Suspense
@@ -784,7 +799,7 @@ const ElementNodeRenderer = (
             <RawElementNodeRenderer {...props} isStale={isStale} />
           </Suspense>
         </ErrorBoundary>
-      </StyledElementContainer>
+      </StyledElementContainer2>
     </Maybe>
   )
 }

@@ -71,7 +71,7 @@ function TimeInput({
   })
 
   const clearable = isNullOrUndefined(element.default) && !disabled
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
   const theme = useTheme()
 
   const selectOverrides = {

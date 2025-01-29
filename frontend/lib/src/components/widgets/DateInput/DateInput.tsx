@@ -108,7 +108,7 @@ function DateInput({
   const { locale } = useContext(LibContext)
   const loadedLocale = useIntlLocale(locale)
 
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
   const minDate = moment(element.min, DATE_FORMAT).toDate()
   const maxDate = getMaxDate(element)
   const clearable = element.default.length === 0 && !disabled
