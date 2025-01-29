@@ -22,8 +22,8 @@ import { FormSubmitButton, Props } from "./FormSubmitButton"
 import { StyledFormSubmitContent } from "./styled-components"
 
 export function FormSubmitContent(props: Props): ReactElement {
-  const { width } = props
-  const style = useLayoutStyles({ width })
+  const { element, width } = props
+  const style = useLayoutStyles({ width, element })
 
   return (
     <StyledFormSubmitContent style={style}>

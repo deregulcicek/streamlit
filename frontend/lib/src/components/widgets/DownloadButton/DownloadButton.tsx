@@ -54,7 +54,7 @@ export function createDownloadLink(
 function DownloadButton(props: Props): ReactElement {
   const { disabled, element, widgetMgr, width, endpoints, fragmentId } = props
 
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
   const {
     libConfig: { enforceDownloadInNewTab = false }, // Default to false, if no libConfig, e.g. for tests
   } = React.useContext(LibContext)

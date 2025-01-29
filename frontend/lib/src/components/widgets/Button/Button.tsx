@@ -25,7 +25,6 @@ import BaseButton, {
   DynamicButtonLabel,
 } from "~lib/components/shared/BaseButton"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
 
 export interface Props {
   disabled: boolean
@@ -37,7 +36,6 @@ export interface Props {
 
 function Button(props: Props): ReactElement {
   const { disabled, element, widgetMgr, width, fragmentId } = props
-  const style = useLayoutStyles({ width })
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {
@@ -51,7 +49,7 @@ function Button(props: Props): ReactElement {
   const fluidWidth = element.help ? width : true
 
   return (
-    <div className="stButton" data-testid="stButton" style={style}>
+    <div className="stButton" data-testid="stButton">
       <BaseButtonTooltip help={element.help}>
         <BaseButton
           kind={kind}

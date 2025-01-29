@@ -164,7 +164,7 @@ const TextArea: FC<Props> = ({
     true
   )
 
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
   const { height, placeholder, formId } = element
 
   // Show "Please enter" instructions if in a form & allowed, or not in form and state is dirty.

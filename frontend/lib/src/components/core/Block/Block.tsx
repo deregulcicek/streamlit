@@ -198,12 +198,32 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
   }
 
   if (notNullOrUndefined(node.deltaBlock.horizontal?.direction)) {
-    return <FlexContextProvider direction="row">{child}</FlexContextProvider>
+    return (
+      <FlexContextProvider
+        direction="row"
+        horizontalAlignment={
+          node.deltaBlock.horizontal?.horizontalAlignment ?? null
+        }
+        verticalAlignment={
+          node.deltaBlock.horizontal?.verticalAlignment ?? null
+        }
+      >
+        {child}
+      </FlexContextProvider>
+    )
   }
 
   if (notNullOrUndefined(node.deltaBlock.vertical?.direction)) {
     return (
-      <FlexContextProvider direction="column">{child}</FlexContextProvider>
+      <FlexContextProvider
+        direction="column"
+        horizontalAlignment={
+          node.deltaBlock.vertical?.horizontalAlignment ?? null
+        }
+        verticalAlignment={node.deltaBlock.vertical?.verticalAlignment ?? null}
+      >
+        {child}
+      </FlexContextProvider>
     )
   }
 
@@ -213,7 +233,15 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
   ) {
     // If we are creating a new container, we need to set the flex direction
     // context to null to preserve existing measurement functionality.
-    return <FlexContextProvider direction={null}>{child}</FlexContextProvider>
+    return (
+      <FlexContextProvider
+        direction={null}
+        horizontalAlignment={null}
+        verticalAlignment={null}
+      >
+        {child}
+      </FlexContextProvider>
+    )
   }
 
   return child
@@ -374,7 +402,10 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
 
   // Extract the user-specified key from the block ID (if provided):
   const userKey = getKeyFromId(props.node.deltaBlock.id)
-  const { width } = useLayoutStyles({ width: calculatedWidth })
+  const { width } = useLayoutStyles({
+    width: calculatedWidth,
+    element: undefined,
+  })
 
   const propsWithNewWidth = {
     ...props,

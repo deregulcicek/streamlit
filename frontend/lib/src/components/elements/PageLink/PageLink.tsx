@@ -60,7 +60,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
   const { colors }: EmotionTheme = useTheme()
 
   const { disabled, element, width } = props
-  const style = useLayoutStyles({ width })
+  const style = useLayoutStyles({ width, element })
 
   const useContainerWidth = shouldUseContainerWidth(
     element.useContainerWidth,
