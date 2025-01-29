@@ -17,3 +17,4 @@ import streamlit as st
 st.header("Page 4")
 x = st.slider("x")
 st.markdown(f"x is {x}")
+st.sidebar.text_input("Text input")

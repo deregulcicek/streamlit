@@ -21,3 +21,4 @@ st.write("Query Params:", st.query_params)
 page_6 = st.button("`pages/06_page_6.py`")
 if page_6:
     st.switch_page("pages/06_page_6.py")
+st.sidebar.button("`Foo bar`")

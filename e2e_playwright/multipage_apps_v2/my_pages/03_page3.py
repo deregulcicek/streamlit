@@ -17,3 +17,4 @@ import streamlit as st
 st.header("Page 3")
 x = st.slider("x")
 st.markdown(f"x is {x}")
+st.sidebar.slider("y", 0, 100, 50)
