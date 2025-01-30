@@ -18,7 +18,7 @@ docutils==0.21.2
 emoji==2.14.1
 execnet==2.1.1
 filelock==3.17.0
-fonttools==4.55.7
+fonttools==4.55.8
 gitdb==4.0.12
 GitPython==3.1.44
 graphviz==0.20.3
