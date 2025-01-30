@@ -25,7 +25,7 @@ from e2e_playwright.shared.app_utils import check_top_level_class, get_element_b
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that the st.chat_input widgets are correctly rendered via screenshot matching."""
     chat_input_widgets = app.get_by_test_id("stChatInput")
-    expect(chat_input_widgets).to_have_count(6)
+    expect(chat_input_widgets).to_have_count(4)
 
     assert_snapshot(chat_input_widgets.nth(0), name="st_chat_input-inline")
     assert_snapshot(chat_input_widgets.nth(1), name="st_chat_input-in_column_disabled")
