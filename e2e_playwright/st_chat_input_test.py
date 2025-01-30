@@ -120,7 +120,7 @@ def test_enter_submits_clears_input(app: Page):
     """Test that pressing Enter submits and clears the input."""
     markdown_output = app.get_by_test_id("stMarkdown").nth(3)
     expect(markdown_output).to_have_text(
-        "Chat input 6 (bottom, max_chars) - value: None"
+        "Chat input 4 (bottom, max_chars) - value: None"
     )
 
     chat_input_area = app.get_by_test_id("stChatInputTextArea").nth(3)
@@ -129,7 +129,7 @@ def test_enter_submits_clears_input(app: Page):
     expect(chat_input_area).to_have_value("")
 
     expect(markdown_output).to_have_text(
-        "Chat input 6 (bottom, max_chars) - value: Corgi"
+        "Chat input 4 (bottom, max_chars) - value: Corgi"
     )
 
 
