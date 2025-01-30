@@ -260,6 +260,8 @@ def test_uploads_and_deletes_single_file(
         file_chooser = fc_info.value
         file_chooser.set_files(files=[file2])
 
+    # take away hover focus of button
+    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
     wait_for_app_run(app)
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(0)
