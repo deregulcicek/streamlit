@@ -45,11 +45,12 @@ def test_uploads_and_deletes_single_file(
         file_chooser = fc_info.value
         file_chooser.set_files(files=[file1])
 
+    # take away hover focus of button
+    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
     wait_for_app_run(app)
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(0)
     expect(uploaded_files.get_by_text(file_name1)).to_be_visible()
-
     assert_snapshot(uploaded_files, name="st_chat_input-single_file_uploaded")
 
     # Upload a second file. This one will replace the first.
@@ -96,6 +97,8 @@ def test_uploads_and_deletes_multiple_files(
     file_chooser = fc_info.value
     file_chooser.set_files(files=files)
 
+    # take away hover focus of button
+    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
     wait_for_app_run(app, wait_delay=500)
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
