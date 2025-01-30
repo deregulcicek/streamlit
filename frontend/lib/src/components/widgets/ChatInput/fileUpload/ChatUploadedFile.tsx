@@ -27,7 +27,6 @@ import Icon, { StyledSpinnerIcon } from "~lib/components/shared/Icon"
 import { FileSize, getSizeDisplay } from "~lib/util/FileHelper"
 import {
   ErrorStatus,
-  FileStatus,
   UploadFileInfo,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { assertNever } from "~lib/util/assertNever"

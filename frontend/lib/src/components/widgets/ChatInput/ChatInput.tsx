@@ -19,7 +19,6 @@ import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react"
@@ -313,7 +312,7 @@ function ChatInput({
     setScrollHeight(getScrollHeight())
   }
 
-  useMemo(() => {
+  useEffect(() => {
     // Disable send button if there are files still being uploaded
     if (files.some(f => f.status.type === "uploading")) {
       setDirty(false)
