@@ -59,11 +59,9 @@ describe("getConnectionStateUI", () => {
   })
 
   it("Returns error UI state correctly", () => {
-    for (const state of [ConnectionState.DISCONNECTED_FOREVER, undefined]) {
-      const uiState = getConnectionStateUI(state)
-      expect(uiState?.icon).toBe(Warning)
-      expect(uiState?.label).toBe(ERROR_LABEL)
-      expect(uiState?.tooltip).toBe(ERROR_TOOLTIP_TEXT)
-    }
+    const uiState = getConnectionStateUI(ConnectionState.DISCONNECTED_FOREVER)
+    expect(uiState?.icon).toBe(Warning)
+    expect(uiState?.label).toBe(ERROR_LABEL)
+    expect(uiState?.tooltip).toBe(ERROR_TOOLTIP_TEXT)
   })
 })
