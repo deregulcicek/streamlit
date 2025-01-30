@@ -53,9 +53,9 @@ export interface ChatUploadedFileIconProps {
 export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
   fileInfo,
 }) => {
-  const fileStatus: FileStatus["type"] = fileInfo.status.type
+  const { type } = fileInfo.status
 
-  switch (fileStatus) {
+  switch (type) {
     case "uploading":
       return (
         <StyledSpinnerIcon
@@ -77,7 +77,7 @@ export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
     case "uploaded":
       return <Icon content={InsertDriveFile} size="lg" />
     default:
-      assertNever(fileStatus)
+      assertNever(type)
       return null
   }
 }
