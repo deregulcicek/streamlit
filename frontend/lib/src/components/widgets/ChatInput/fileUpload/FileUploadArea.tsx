@@ -25,10 +25,14 @@ import {
   StyledFileUploadDropzone,
   StyledVerticalDivider,
 } from "~lib/components/widgets/ChatInput/styled-components"
+import TooltipIcon from "~lib/components/shared/TooltipIcon"
+import { AcceptFileValue } from "~lib/util/utils"
+import { Placement } from "~lib/components/shared/Tooltip"
 
 export interface Props {
   getRootProps: any
   getInputProps: any
+  acceptFile: AcceptFileValue
   showDropzone: boolean
   disabled: boolean
   theme: EmotionTheme
@@ -37,6 +41,7 @@ export interface Props {
 const FileUploadArea = ({
   getRootProps,
   getInputProps,
+  acceptFile,
   showDropzone,
   disabled,
   theme,
@@ -50,13 +55,20 @@ const FileUploadArea = ({
     <>
       <div data-testid="stChatInputFileUploadButton" {...getRootProps()}>
         <input {...getInputProps()} />
-        <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
-          <Icon
-            content={AttachFile}
-            size="lg"
-            color={theme.colors.fadedText60}
-          />
-        </BaseButton>
+        <TooltipIcon
+          content={`Upload or drag and drop ${
+            acceptFile === AcceptFileValue.Multiple ? "files" : "a file"
+          }`}
+          placement={Placement.TOP}
+        >
+          <BaseButton kind={BaseButtonKind.MINIMAL} disabled={disabled}>
+            <Icon
+              content={AttachFile}
+              size="lg"
+              color={theme.colors.fadedText60}
+            />
+          </BaseButton>
+        </TooltipIcon>
       </div>
       <StyledVerticalDivider />
     </>

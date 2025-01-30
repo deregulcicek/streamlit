@@ -395,6 +395,7 @@ function ChatInput({
       : false
 
   const showDropzone = acceptFile !== AcceptFileValue.None && fileDragged
+  const containerClass = "stChatInput"
 
   return (
     <>
@@ -402,7 +403,9 @@ function ChatInput({
         <ChatUploadedFiles items={[...files]} onDelete={deleteFile} />
       )}
       <StyledChatInputContainer
-        className={showDropzone ? "stChatInput dropzone" : "stChatInput"}
+        className={
+          showDropzone ? `${containerClass} dropzone` : containerClass
+        }
         data-testid="stChatInput"
         width={width}
       >
@@ -411,6 +414,7 @@ function ChatInput({
             <FileUploadArea
               getRootProps={getRootProps}
               getInputProps={getInputProps}
+              acceptFile={acceptFile}
               showDropzone={showDropzone}
               disabled={disabled}
               theme={theme}
