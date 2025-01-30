@@ -50,6 +50,7 @@ import {
   UploadFileInfo,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "~lib/FileUploadClient"
+import { getAccept } from "~lib/components/widgets/FileUploader/FileDropzone"
 
 import {
   StyledChatInput,
@@ -243,12 +244,10 @@ function ChatInput({
     },
   })
 
-  const acceptFileType = element.fileType
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: dropHandler,
     multiple: acceptFile === AcceptFileValue.Multiple,
-    accept: acceptFileType.length > 0 ? { acceptFileType } : undefined,
+    accept: getAccept(element.fileType),
   })
 
   const getScrollHeight = (): number => {
