@@ -19,6 +19,7 @@ import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -80,6 +81,17 @@ const MAX_VISIBLE_NUM_LINES = 6.5
 // to manage it better.
 const ROUNDING_OFFSET = 1
 
+const updateFile = (
+  id: number,
+  fileInfo: UploadFileInfo,
+  currentFiles: UploadFileInfo[]
+): UploadFileInfo[] => currentFiles.map(f => (f.id === id ? fileInfo : f))
+
+const getFile = (
+  localFileId: number,
+  currentFiles: UploadFileInfo[]
+): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
+
 function ChatInput({
   width,
   element,
@@ -104,28 +116,12 @@ function ChatInput({
   const [fileDragged, setFileDragged] = useState(false)
 
   const acceptFile = chatInputAcceptFileProtoValueToEnum(element.acceptFile)
-  const addFiles = (filesToAdd: UploadFileInfo[]): void => {
-    setFiles(currentFiles => [...currentFiles, ...filesToAdd])
-  }
 
-  const isDirty = (value: string, files: UploadFileInfo[]): boolean => {
-    // TODO [kajarnec] add explanatory comment here.
-    if (files.some(f => f.status.type === "uploading")) {
-      return false
-    }
-    return value !== "" || files.length > 0
-  }
-
-  const updateFile = (
-    id: number,
-    fileInfo: UploadFileInfo,
-    currentFiles: UploadFileInfo[]
-  ): UploadFileInfo[] => currentFiles.map(f => (f.id === id ? fileInfo : f))
-
-  const getFile = (
-    localFileId: number,
-    currentFiles: UploadFileInfo[]
-  ): UploadFileInfo | undefined => currentFiles.find(f => f.id === localFileId)
+  const addFiles = useCallback(
+    (filesToAdd: UploadFileInfo[]): void =>
+      setFiles(currentFiles => [...currentFiles, ...filesToAdd]),
+    []
+  )
 
   const deleteFile = useCallback(
     (fileId: number): void => {
@@ -313,10 +309,17 @@ function ChatInput({
       return
     }
 
-    setDirty(isDirty(value, files))
     setValue(value)
     setScrollHeight(getScrollHeight())
   }
+
+  useMemo(() => {
+    // Disable send button if there are files still being uploaded
+    if (files.some(f => f.status.type === "uploading")) {
+      setDirty(false)
+    }
+    setDirty(value !== "" || files.length > 0)
+  }, [files, value])
 
   useEffect(() => {
     if (element.setValue) {
@@ -326,13 +329,8 @@ function ChatInput({
       element.setValue = false
       const val = element.value || ""
       setValue(val)
-      setDirty(isDirty(val, files))
     }
   }, [element, files])
-
-  useEffect(() => {
-    setDirty(isDirty(value, files))
-  }, [files, value])
 
   useEffect(() => {
     if (chatInputRef.current) {
