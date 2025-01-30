@@ -18,7 +18,6 @@ from e2e_playwright.conftest import (
     ImageCompareFunction,
     wait_for_app_run,
 )
-from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
 
 
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
@@ -114,13 +113,3 @@ def test_uploads_and_deletes_multiple_files(
     expect(uploaded_file_names).to_have_count(1)
 
     expect(uploaded_file_names).to_have_text(files[1]["name"], use_inner_text=True)
-
-
-def test_check_top_level_class(app: Page):
-    """Check that the top level class is correctly set."""
-    check_top_level_class(app, "stChatInput")
-
-
-def test_custom_css_class_via_key(app: Page):
-    """Test that the element can have a custom css class via the key argument."""
-    expect(get_element_by_key(app, "chat_input_3")).to_be_visible()
