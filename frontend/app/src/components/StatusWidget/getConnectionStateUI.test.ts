@@ -20,8 +20,8 @@ import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 
 import {
   CONNECTING_LABEL,
-  CONNECTING_TOOLTIP_TEXT,
   CONNECTING_STATIC_TOOLTIP_TEXT,
+  CONNECTING_TOOLTIP_TEXT,
   ERROR_LABEL,
   ERROR_TOOLTIP_TEXT,
   getConnectionStateUI,
