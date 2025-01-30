@@ -14,11 +14,7 @@
 
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import (
-    ImageCompareFunction,
-    rerun_app,
-    wait_for_app_loaded,
-)
+from e2e_playwright.conftest import ImageCompareFunction, rerun_app, wait_for_app_loaded
 from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
 
 
