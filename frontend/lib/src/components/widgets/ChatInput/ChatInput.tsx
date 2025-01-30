@@ -312,13 +312,14 @@ function ChatInput({
     setScrollHeight(getScrollHeight())
   }
 
-  useEffect(() => {
-    // Disable send button if there are files still being uploaded
-    if (files.some(f => f.status.type === "uploading")) {
-      setDirty(false)
-    }
-    setDirty(value !== "" || files.length > 0)
-  }, [files, value])
+  useEffect(
+    () =>
+      // Disable send button if there are files still being uploaded
+      files.some(f => f.status.type === "uploading")
+        ? setDirty(false)
+        : setDirty(value !== "" || files.length > 0),
+    [files, value]
+  )
 
   useEffect(() => {
     if (element.setValue) {
@@ -329,7 +330,7 @@ function ChatInput({
       const val = element.value || ""
       setValue(val)
     }
-  }, [element, files])
+  }, [element])
 
   useEffect(() => {
     if (chatInputRef.current) {
