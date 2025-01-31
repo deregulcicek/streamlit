@@ -120,27 +120,3 @@ export const StyledInputInstructionsContainer = styled.div(({ theme }) => ({
   // and some additional margin between the icon and the text (spacing.sm).
   right: `calc(${theme.iconSizes.xl} + 2 * ${theme.spacing.sm} + ${theme.spacing.sm})`,
 }))
-
-export const StyledFileUploadDropzone = styled.div(({ theme }) => ({
-  height: "100%",
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "auto",
-  color: theme.colors.primary,
-  fontWeight: theme.fontWeights.bold,
-}))
-
-export const StyledVerticalDividerContainer = styled.div(({ theme }) => ({
-  position: "relative",
-  paddingTop: theme.spacing.sm,
-  paddingBottom: theme.spacing.sm,
-  height: "100%",
-  width: theme.sizes.borderWidth,
-}))
-
-export const StyledVerticalDivider = styled.div(({ theme }) => ({
-  height: "100%",
-  backgroundColor: theme.colors.fadedText20,
-}))

@@ -21,14 +21,15 @@ import { AttachFile } from "@emotion-icons/material-outlined"
 import { EmotionTheme } from "~lib/theme"
 import Icon from "~lib/components/shared/Icon"
 import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
-import {
-  StyledFileUploadDropzone,
-  StyledVerticalDivider,
-  StyledVerticalDividerContainer,
-} from "~lib/components/widgets/ChatInput/styled-components"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { AcceptFileValue } from "~lib/util/utils"
 import { Placement } from "~lib/components/shared/Tooltip"
+
+import {
+  StyledFileUploadArea,
+  StyledFileUploadDropzone,
+  StyledVerticalDivider,
+} from "./styled-components"
 
 export interface Props {
   getRootProps: any
@@ -53,7 +54,7 @@ const FileUploadArea = ({
       Drag and drop files here
     </StyledFileUploadDropzone>
   ) : (
-    <>
+    <StyledFileUploadArea>
       <div data-testid="stChatInputFileUploadButton" {...getRootProps()}>
         <input {...getInputProps()} />
         <TooltipIcon
@@ -71,10 +72,8 @@ const FileUploadArea = ({
           </BaseButton>
         </TooltipIcon>
       </div>
-      <StyledVerticalDividerContainer>
-        <StyledVerticalDivider />
-      </StyledVerticalDividerContainer>
-    </>
+      <StyledVerticalDivider />
+    </StyledFileUploadArea>
   )
 
 export default FileUploadArea

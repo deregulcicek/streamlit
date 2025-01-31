@@ -156,6 +156,13 @@ def test_shift_enter_creates_new_line(app: Page, assert_snapshot: ImageCompareFu
     chat_input_area.type("New Line")
     assert_snapshot(chat_input, name="st_chat_input-shift_enter_new_line")
 
+    chat_input = app.get_by_test_id("stChatInput").nth(3)
+    chat_input_area = chat_input.locator("textarea")
+    chat_input_area.fill("")  # Clear the input first
+    chat_input_area.press("Shift+Enter")
+    chat_input_area.type("New Line")
+    assert_snapshot(chat_input, name="st_chat_input-file_upload_shift_enter_new_line")
+
 
 def test_click_button_to_submit_clears_input(app: Page):
     """Test that clicking the button submits and clears the input."""

@@ -17,6 +17,33 @@ import styled from "@emotion/styled"
 
 import { FileStatus } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 
+export const StyledFileUploadDropzone = styled.div(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  margin: "auto",
+  height: "100%",
+  width: "100%",
+  color: theme.colors.primary,
+  fontWeight: theme.fontWeights.bold,
+}))
+
+export const StyledFileUploadArea = styled.div(({}) => ({
+  display: "flex",
+  alignItems: "top",
+  height: "100%",
+}))
+
+export const StyledVerticalDivider = styled.div(({ theme }) => ({
+  // We need to use hard-coded in order to align the divider centered
+  // given the height of chat input and divider.
+  marginTop: "0.625em",
+  marginLeft: theme.spacing.twoXS,
+  height: theme.spacing.xl,
+  width: theme.sizes.borderWidth,
+  backgroundColor: theme.colors.fadedText20,
+}))
+
 export const StyledChatUploadedFiles = styled.div(({ theme }) => ({
   left: 0,
   right: 0,
