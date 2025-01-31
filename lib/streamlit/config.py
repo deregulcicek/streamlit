@@ -1060,7 +1060,6 @@ _create_option(
     description="""
         Whether to hide the colored line on the top of the app (top decoration).
     """,
-    default_val=False,
     type_=bool,
 )
 
