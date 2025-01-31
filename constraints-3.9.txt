@@ -5,7 +5,7 @@ backports.tarfile==1.2.0
 blinker==1.9.0
 bokeh==2.4.3
 cachetools==5.5.1
-certifi==2024.12.14
+certifi==2025.1.31
 cffi==1.17.1
 cfgv==3.4.0
 charset-normalizer==3.4.1
@@ -82,7 +82,7 @@ pytest-rerunfailures==15.0
 pytest-xdist==3.6.1
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
-pytz==2024.2
+pytz==2025.1
 PyYAML==6.0.2
 readme_renderer==44.0
 referencing==0.36.2
@@ -117,7 +117,7 @@ types-typed-ast==1.5.8.7
 typing_extensions==4.12.2
 tzdata==2025.1
 urllib3==2.3.0
-uv==0.5.25
+uv==0.5.26
 vega-datasets==0.9.0
 virtualenv==20.29.1
 watchdog==6.0.0
