@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { Signal } from "typed-signals"
+import { PageConfig } from "@streamlit/protobuf"
 
-import { SessionEvent } from "@streamlit/protobuf"
-
-/** Redispatches SessionEvent messages received from the server. */
-export class SessionEventDispatcher {
-  /** Dispatched when a SessionEvent is received */
-  public readonly onSessionEvent = new Signal<(evt: SessionEvent) => void>()
-
-  /** Redispatches a ForwardMsg.SessionEvent via a signal. */
-  public handleSessionEventMsg(msg: SessionEvent): void {
-    this.onSessionEvent.emit(msg)
+export function shouldCollapse(
+  initialSidebarState: PageConfig.SidebarState | undefined,
+  mediumBreakpointPx: number
+): boolean {
+  switch (initialSidebarState) {
+    case PageConfig.SidebarState.EXPANDED:
+      return false
+    case PageConfig.SidebarState.COLLAPSED:
+      return true
+    case PageConfig.SidebarState.AUTO:
+    default: {
+      // Expand sidebar only if browser width > MEDIUM_BREAKPOINT_PX
+      const { innerWidth } = window || {}
+      return innerWidth ? innerWidth <= mediumBreakpointPx : false
+    }
   }
 }

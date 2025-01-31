@@ -74,8 +74,6 @@ export {
   mockSessionInfoProps,
 } from "./mocks/mocks"
 export { mockTheme } from "./mocks/mockTheme"
-export { PerformanceEvents } from "./profiler/PerformanceEvents"
-export * from "@streamlit/protobuf"
 export { RootStyleProvider } from "./RootStyleProvider"
 export { ScriptRunState } from "./ScriptRunState"
 export { SessionInfo } from "./SessionInfo"
@@ -113,7 +111,6 @@ export { default as emotionLightTheme } from "./theme/emotionLightTheme"
 export { fonts, spacing } from "./theme/primitives"
 export { ensureError } from "./util/ErrorHandling"
 export { useIsOverflowing } from "./util/Hooks"
-export { logAlways, logError, logMessage, logWarning } from "./util/log"
 export { default as Resolver } from "./util/Resolver"
 export { LocalStore, localStorageAvailable } from "./util/storageUtils"
 export { Timer } from "./util/Timer"
@@ -123,7 +120,6 @@ export {
   getPossibleBaseUris,
   makePath,
 } from "./util/UriUtil"
-export type { BaseUriParts } from "./util/UriUtil"
 export {
   extractPageNameFromPathName,
   generateUID,
