@@ -21,7 +21,7 @@ from typing import (
     Any,
     Iterator,
     Literal,
-    Mapping,
+    MutableMapping,
     Sequence,
     cast,
     overload,
@@ -62,7 +62,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class ChatInputValue(Mapping[str, Any]):
+class ChatInputValue(MutableMapping[str, Any]):
     text: str
     files: list[UploadedFile]
 
@@ -77,6 +77,15 @@ class ChatInputValue(Mapping[str, Any]):
             return getattr(self, item)  # type: ignore[no-any-return]
         except AttributeError:
             raise KeyError(f"Invalid key: {item}") from None
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        setattr(self, key, value)
+
+    def __delitem__(self, key: str) -> None:
+        try:
+            delattr(self, key)
+        except AttributeError:
+            raise KeyError(f"Invalid key: {key}") from None
 
     def to_dict(self) -> dict[str, str | list[UploadedFile]]:
         return vars(self)
