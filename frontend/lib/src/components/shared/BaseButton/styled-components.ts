@@ -149,6 +149,9 @@ export const StyledSecondaryButton = styled(
   "&:hover": {
     borderColor: theme.colors.primary,
     color: theme.colors.primary,
+    "& *": {
+      color: "inherit !important",
+    },
   },
   "&:active": {
     color: theme.colors.white,
