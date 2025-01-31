@@ -402,8 +402,8 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
         <StyledVerticalBlock
           width={width}
           gap={gap}
-          verticalAlignment={verticalAlignment}
-          horizontalAlignment={horizontalAlignment}
+          justifyContent={verticalAlignment}
+          alignItems={horizontalAlignment}
           wrap={wrap}
           className={classNames(
             "stVerticalBlock",
@@ -432,8 +432,8 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   return (
     <StyledHorizontalBlock
       gap={gap}
-      verticalAlignment={verticalAlignment}
-      horizontalAlignment={horizontalAlignment}
+      alignItems={verticalAlignment}
+      justifyContent={horizontalAlignment}
       wrap={wrap}
       className="stHorizontalBlock"
       data-testid="stHorizontalBlock"
