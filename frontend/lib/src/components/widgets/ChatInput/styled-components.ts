@@ -132,16 +132,15 @@ export const StyledFileUploadDropzone = styled.div(({ theme }) => ({
   fontWeight: theme.fontWeights.bold,
 }))
 
-export interface StyledVerticalDividerProps {
-  color?: string
-}
+export const StyledVerticalDividerContainer = styled.div(({ theme }) => ({
+  position: "relative",
+  paddingTop: theme.spacing.sm,
+  paddingBottom: theme.spacing.sm,
+  height: "100%",
+  width: theme.sizes.borderWidth,
+}))
 
-export const StyledVerticalDivider = styled.div<StyledVerticalDividerProps>(
-  ({ theme, color }) => {
-    return {
-      height: theme.spacing.xl,
-      width: theme.sizes.borderWidth,
-      backgroundColor: color ?? theme.colors.fadedText20,
-    }
-  }
-)
+export const StyledVerticalDivider = styled.div(({ theme }) => ({
+  height: "100%",
+  backgroundColor: theme.colors.fadedText20,
+}))

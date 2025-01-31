@@ -24,6 +24,7 @@ import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
 import {
   StyledFileUploadDropzone,
   StyledVerticalDivider,
+  StyledVerticalDividerContainer,
 } from "~lib/components/widgets/ChatInput/styled-components"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { AcceptFileValue } from "~lib/util/utils"
@@ -70,7 +71,9 @@ const FileUploadArea = ({
           </BaseButton>
         </TooltipIcon>
       </div>
-      <StyledVerticalDivider />
+      <StyledVerticalDividerContainer>
+        <StyledVerticalDivider />
+      </StyledVerticalDividerContainer>
     </>
   )
 
