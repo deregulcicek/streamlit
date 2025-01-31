@@ -38,7 +38,7 @@ export const StyledVerticalDivider = styled.div(({ theme }) => ({
   // We need to use hard-coded in order to align the divider centered
   // given the height of chat input and divider.
   marginTop: "0.625em",
-  marginLeft: theme.spacing.twoXS,
+  marginLeft: theme.spacing.sm,
   height: theme.spacing.xl,
   width: theme.sizes.borderWidth,
   backgroundColor: theme.colors.fadedText20,
