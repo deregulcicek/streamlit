@@ -14,26 +14,35 @@
  * limitations under the License.
  */
 
-import { ForwardMsgList, logError } from "@streamlit/lib"
+import { MockInstance } from "vitest"
+
+import { ForwardMsgList } from "@streamlit/protobuf"
 
 import { ConnectionState } from "./ConnectionState"
+import { DefaultStreamlitEndpoints } from "./DefaultStreamlitEndpoints"
 import {
   dispatchAppForwardMessages,
   establishStaticConnection,
   getProtoResponse,
   getStaticConfig,
+  log,
 } from "./StaticConnection"
 
 describe("StaticConnection", () => {
+  let logErrorSpy: MockInstance
+
   beforeAll(() => {
     vi.mock(import("@streamlit/lib"), async importOriginal => {
       const actual = await importOriginal()
       return {
         ...actual,
         localStorageAvailable: vi.fn().mockReturnValue(true),
-        logError: vi.fn(),
       }
     })
+  })
+
+  beforeEach(() => {
+    logErrorSpy = vi.spyOn(log, "error").mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -89,7 +98,7 @@ describe("StaticConnection", () => {
       const result = await getStaticConfig()
 
       expect(result).toBe("")
-      expect(logError).toHaveBeenCalledWith(
+      expect(logErrorSpy).toHaveBeenCalledWith(
         "Failed to fetch static config url: ",
         404
       )
@@ -97,15 +106,9 @@ describe("StaticConnection", () => {
   })
 
   describe("getProtoResponse", () => {
-    beforeEach(() => {
-      // Handles getStaticConfig
-      vi.spyOn(window.localStorage.__proto__, "getItem").mockReturnValue(
-        "www.example.com"
-      )
-    })
-
     it("fetches proto response from correct URL", async () => {
       const staticAppId = "123"
+      const staticConfigUrl = "www.example.com"
 
       // Mock fetch for our protos
       // @ts-expect-error
@@ -116,7 +119,7 @@ describe("StaticConnection", () => {
         })
       )
 
-      const result = await getProtoResponse(staticAppId)
+      const result = await getProtoResponse(staticAppId, staticConfigUrl)
 
       expect(fetch).toHaveBeenCalledWith(
         "www.example.com/123/protos.pb",
@@ -127,6 +130,7 @@ describe("StaticConnection", () => {
 
     it("logs error if fetch fails", async () => {
       const staticAppId = "123"
+      const staticConfigUrl = "www.example.com"
 
       // Mock fetch for our protos
       // @ts-expect-error
@@ -137,10 +141,10 @@ describe("StaticConnection", () => {
         })
       )
 
-      const result = await getProtoResponse(staticAppId)
+      const result = await getProtoResponse(staticAppId, staticConfigUrl)
 
       expect(result).toBeNull()
-      expect(logError).toHaveBeenCalledWith(
+      expect(logErrorSpy).toHaveBeenCalledWith(
         `Failed to fetch static app protos for id: ${staticAppId}`,
         404
       )
@@ -148,18 +152,12 @@ describe("StaticConnection", () => {
   })
 
   describe("dispatchAppForwardMessages", () => {
-    beforeEach(() => {
-      // Handles getStaticConfig
-      vi.spyOn(window.localStorage.__proto__, "getItem").mockReturnValue(
-        "www.example.com"
-      )
-    })
+    const staticAppId = "123"
+    const staticConfigUrl = "www.example.com"
+    const onMessage = vi.fn()
+    const onConnectionError = vi.fn()
 
     it("decodes and dispatches messages", async () => {
-      const staticAppId = "123"
-      const onMessage = vi.fn()
-      const onConnectionError = vi.fn()
-
       // Handles getProtoResponse
       // @ts-expect-error
       global.fetch = vi.fn(() =>
@@ -178,6 +176,7 @@ describe("StaticConnection", () => {
 
       await dispatchAppForwardMessages(
         staticAppId,
+        staticConfigUrl,
         onMessage,
         onConnectionError
       )
@@ -187,10 +186,6 @@ describe("StaticConnection", () => {
     })
 
     it("logs error if arrayBuffer is undefined", async () => {
-      const staticAppId = "123"
-      const onMessage = vi.fn()
-      const onConnectionError = vi.fn()
-
       // Handles getProtoResponse
       // @ts-expect-error
       global.fetch = vi.fn(() =>
@@ -202,17 +197,28 @@ describe("StaticConnection", () => {
 
       await dispatchAppForwardMessages(
         staticAppId,
+        staticConfigUrl,
         onMessage,
         onConnectionError
       )
 
-      expect(logError).toHaveBeenCalledWith(
+      expect(logErrorSpy).toHaveBeenCalledWith(
         "Failed to retrieve static app protos"
       )
     })
   })
 
   describe("StaticConnection", () => {
+    const MOCK_SERVER_URI = {
+      hostname: "streamlit.mock",
+      port: "80",
+      pathname: "/mock/base/path",
+    } as URL
+    const endpoints = new DefaultStreamlitEndpoints({
+      getServerUri: () => MOCK_SERVER_URI,
+      csrfEnabled: false,
+    })
+
     beforeEach(() => {
       // Handles getStaticConfig
       vi.spyOn(window.localStorage.__proto__, "getItem").mockReturnValue(
@@ -231,6 +237,7 @@ describe("StaticConnection", () => {
 
     it("handles connection state changes and message dispatch", async () => {
       const staticAppId = "123"
+      const staticConfigUrl = "www.example.com"
       const onConnectionStateChange = vi.fn()
       const onMessage = vi.fn()
       const onConnectionError = vi.fn()
@@ -239,7 +246,8 @@ describe("StaticConnection", () => {
         staticAppId,
         onConnectionStateChange,
         onMessage,
-        onConnectionError
+        onConnectionError,
+        endpoints
       )
 
       expect(onConnectionStateChange).toHaveBeenCalledWith(
@@ -247,6 +255,7 @@ describe("StaticConnection", () => {
       )
       await dispatchAppForwardMessages(
         staticAppId,
+        staticConfigUrl,
         onMessage,
         onConnectionError
       )
