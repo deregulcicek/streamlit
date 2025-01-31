@@ -680,6 +680,7 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         "borderColor": "#ff0000",
         "showBorderAroundInputs": True,
         "linkColor": "#2EC163",
+        "hideColoredLine": True,
     }
 
     for k, v in overrides.items():
@@ -1043,6 +1044,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "borderColor": None,
                     "showBorderAroundInputs": None,
                     "linkColor": None,
+                    "hideColoredLine": None,
                 }
             )
         )
@@ -1066,6 +1068,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "borderColor": None,
                     "showBorderAroundInputs": None,
                     "linkColor": None,
+                    "hideColoredLine": None,
                 }
             )
         )
@@ -1083,6 +1086,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.HasField("border_color")
         assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
         assert not new_session_msg.custom_theme.HasField("link_color")
+        assert not new_session_msg.custom_theme.HasField("hide_colored_line")
 
     @patch("streamlit.runtime.app_session.config")
     def test_can_specify_all_options(self, patched_config):
@@ -1104,6 +1108,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.custom_theme.border_color == "#ff0000"
         assert new_session_msg.custom_theme.show_border_around_inputs is True
         assert new_session_msg.custom_theme.link_color == "#2EC163"
+        assert new_session_msg.custom_theme.hide_colored_line is True
 
     @patch("streamlit.runtime.app_session._LOGGER")
     @patch("streamlit.runtime.app_session.config")

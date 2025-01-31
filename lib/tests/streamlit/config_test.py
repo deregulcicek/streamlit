@@ -397,6 +397,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.borderColor",
                 "theme.showBorderAroundInputs",
                 "theme.linkColor",
+                "theme.hideColoredLine",
                 "global.appTest",
                 "global.developmentMode",
                 "global.disableWidgetStateDuplicationWarning",
@@ -558,6 +559,7 @@ class ConfigTest(unittest.TestCase):
             "borderColor": None,
             "showBorderAroundInputs": None,
             "linkColor": None,
+            "hideColoredLine": None,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -574,6 +576,7 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.borderColor", "#0B4C0B", "test")
         config._set_option("theme.showBorderAroundInputs", True, "test")
         config._set_option("theme.linkColor", "#2EC163", "test")
+        config._set_option("theme.hideColoredLine", True, "test")
         expected = {
             "base": "dark",
             "primaryColor": "#1BD760",
@@ -585,6 +588,7 @@ class ConfigTest(unittest.TestCase):
             "borderColor": "#0B4C0B",
             "showBorderAroundInputs": True,
             "linkColor": "#2EC163",
+            "hideColoredLine": True,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 

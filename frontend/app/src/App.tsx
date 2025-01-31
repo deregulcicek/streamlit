@@ -164,6 +164,7 @@ interface State {
   gitInfo: IGitInfo | null
   formsData: FormsData
   hideTopBar: boolean
+  hideColoredLine: boolean
   hideSidebarNav: boolean
   expandSidebarNav: boolean
   appPages: IAppPage[]
@@ -292,14 +293,15 @@ export class App extends PureComponent<Props, State> {
       navSections: [],
       currentPageScriptHash: "",
       mainScriptHash: "",
-      // We set hideTopBar to true by default because this information isn't
-      // available on page load (we get it when the script begins to run), so
-      // the user would see top bar elements for a few ms if this defaulted to
-      // false. hideSidebarNav doesn't have this issue (app pages and the value
-      // of the config option are received simultaneously), but we set it to
-      // true as well for consistency.
+      // We set hideTopBar & hideColoredLine to true by default because this
+      // information isn't available on page load (we get it when the script
+      // begins to run), so the user would see top bar elements for a few ms if
+      // this defaulted to false. hideSidebarNav doesn't have this issue (app
+      // pages and the value of the config option are received simultaneously),
+      // but we set it to true as well for consistency.
       hideTopBar: true,
       hideSidebarNav: true,
+      hideColoredLine: true,
       expandSidebarNav: false,
       toolbarMode: Config.ToolbarMode.MINIMAL,
       latestRunTime: performance.now(),
@@ -1038,6 +1040,7 @@ export class App extends PureComponent<Props, State> {
       this.setState({
         allowRunOnSave: config.allowRunOnSave,
         hideTopBar: config.hideTopBar,
+        hideColoredLine: themeInput.hideColoredLine ?? false,
         toolbarMode: config.toolbarMode,
         latestRunTime: performance.now(),
         mainScriptHash,
@@ -1870,6 +1873,7 @@ export class App extends PureComponent<Props, State> {
       userSettings,
       hideTopBar,
       hideSidebarNav,
+      hideColoredLine,
       expandSidebarNav,
       currentPageScriptHash,
       hostHideSidebarNav,
@@ -1916,7 +1920,8 @@ export class App extends PureComponent<Props, State> {
           showPadding: !isEmbed() || isPaddingDisplayed(),
           disableScrolling: isScrollingHidden(),
           showToolbar: !isEmbed() || isToolbarDisplayed(),
-          showColoredLine: !isEmbed() || isColoredLineDisplayed(),
+          showColoredLine:
+            (!hideColoredLine && !isEmbed()) || isColoredLineDisplayed(),
           // host communication manager elements
           pageLinkBaseUrl,
           sidebarChevronDownshift,

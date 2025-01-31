@@ -1055,6 +1055,15 @@ _create_option(
     type_=bool,
 )
 
+_create_option(
+    "theme.hideColoredLine",
+    description="""
+        Whether to hide the colored line on the top of the app (top decoration).
+    """,
+    default_val=False,
+    type_=bool,
+)
+
 # Config Section: Secrets #
 
 _create_section("secrets", "Secrets configuration.")

@@ -165,6 +165,7 @@ message CustomThemeConfig {
   optional string border_color = 19;
   optional bool show_border_around_inputs = 20;
   optional string link_color = 21;
+  optional bool hide_colored_line = 22;
 }
 
 message FontFace {
