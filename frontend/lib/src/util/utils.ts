@@ -546,7 +546,7 @@ export function extractPageNameFromPathName(
   // weird-looking triple `replace()`.
   return decodeURIComponent(
     document.location.pathname
-      .replace(`/${basePath}`, "")
+      .replace(basePath, "")
       .replace(new RegExp("^/?"), "")
       .replace(new RegExp("/$"), "")
   )

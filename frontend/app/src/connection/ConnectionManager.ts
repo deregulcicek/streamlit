@@ -15,17 +15,14 @@
  */
 import { ReactNode } from "react"
 
+import { getLogger } from "loglevel"
+
 import {
-  BackMsg,
-  BaseUriParts,
-  ensureError,
-  ForwardMsg,
   getPossibleBaseUris,
   IHostConfigResponse,
-  logError,
-  SessionInfo,
   StreamlitEndpoints,
 } from "@streamlit/lib"
+import { BackMsg, ForwardMsg } from "@streamlit/protobuf"
 
 import { ConnectionState } from "./ConnectionState"
 import { establishStaticConnection } from "./StaticConnection"
@@ -39,10 +36,11 @@ import { WebsocketConnection } from "./WebsocketConnection"
  * due to jitter).
  */
 const RETRY_COUNT_FOR_WARNING = 6
+const log = getLogger("ConnectionManager")
 
 interface Props {
   /** The app's SessionInfo instance */
-  sessionInfo: SessionInfo
+  getLastSessionId: () => string | undefined
 
   /** The app's StreamlitEndpoints instance */
   endpoints: StreamlitEndpoints
@@ -110,7 +108,7 @@ export class ConnectionManager {
    * Return the BaseUriParts for the server we're connected to,
    * if we are connected to a server.
    */
-  public getBaseUriParts(): BaseUriParts | undefined {
+  public getBaseUriParts(): URL | undefined {
     if (this.websocketConnection instanceof WebsocketConnection) {
       return this.websocketConnection.getBaseUriParts()
     }
@@ -125,7 +123,7 @@ export class ConnectionManager {
       this.websocketConnection.sendMessage(obj)
     } else {
       // Don't need to make a big deal out of this. Just print to console.
-      logError(`Cannot send message when server is disconnected: ${obj}`)
+      log.error(`Cannot send message when server is disconnected: ${obj}`)
     }
   }
 
@@ -173,8 +171,8 @@ export class ConnectionManager {
       try {
         this.websocketConnection = await this.connectToRunningServer()
       } catch (e) {
-        const err = ensureError(e)
-        logError(err.message)
+        const err = e instanceof Error ? e : new Error(`${e}`)
+        log.error(err.message)
         this.setConnectionState(
           ConnectionState.DISCONNECTED_FOREVER,
           err.message
@@ -218,7 +216,7 @@ export class ConnectionManager {
     const baseUriPartsList = getPossibleBaseUris()
 
     return new WebsocketConnection({
-      sessionInfo: this.props.sessionInfo,
+      getLastSessionId: this.props.getLastSessionId,
       endpoints: this.props.endpoints,
       baseUriPartsList,
       onMessage: this.props.onMessage,

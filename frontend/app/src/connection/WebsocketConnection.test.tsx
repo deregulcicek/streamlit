@@ -20,12 +20,8 @@ import axios from "axios"
 import { default as WS } from "vitest-websocket-mock"
 import zip from "lodash/zip"
 
-import {
-  BackMsg,
-  mockEndpoints,
-  mockSessionInfoProps,
-  SessionInfo,
-} from "@streamlit/lib"
+import { mockEndpoints } from "@streamlit/lib"
+import { BackMsg } from "@streamlit/protobuf"
 import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 import {
   Args,
@@ -48,14 +44,14 @@ const MOCK_HEALTH_RESPONSE = { status: "ok" }
 /** Create mock WebsocketConnection arguments */
 function createMockArgs(overrides?: Partial<Args>): Args {
   return {
-    sessionInfo: new SessionInfo(),
+    getLastSessionId: () => undefined,
     endpoints: mockEndpoints(),
     baseUriPartsList: [
       {
-        host: "localhost",
-        port: 1234,
-        basePath: "/",
-      },
+        hostname: "localhost",
+        port: "1234",
+        pathname: "/",
+      } as URL,
     ],
     onMessage: vi.fn(),
     onConnectionStateChange: vi.fn(),
@@ -70,9 +66,9 @@ function createMockArgs(overrides?: Partial<Args>): Args {
 describe("doInitPings", () => {
   const MOCK_PING_DATA = {
     uri: [
-      { host: "not.a.real.host", port: 3000, basePath: "/" },
-      { host: "not.a.real.host", port: 3001, basePath: "/" },
-    ],
+      { hostname: "not.a.real.host", port: "3000", pathname: "/" },
+      { hostname: "not.a.real.host", port: "3001", pathname: "/" },
+    ] as URL[],
     timeoutMs: 10,
     maxTimeoutMs: 100,
     retryCallback: vi.fn(),
@@ -270,9 +266,9 @@ describe("doInitPings", () => {
     const MOCK_PING_DATA_LOCALHOST = {
       ...MOCK_PING_DATA,
       uri: [
-        { host: "localhost", port: 3000, basePath: "/" },
-        { host: "localhost", port: 3001, basePath: "/" },
-      ],
+        { hostname: "localhost", port: "3000", pathname: "/" },
+        { hostname: "localhost", port: "3001", pathname: "/" },
+      ] as URL[],
     }
 
     const TEST_ERROR = {
@@ -448,7 +444,13 @@ describe("doInitPings", () => {
     }
 
     await doInitPings(
-      [{ host: "not.a.real.host", port: 3000, basePath: "/" }],
+      [
+        {
+          hostname: "not.a.real.host",
+          port: "3000",
+          pathname: "/",
+        } as URL,
+      ],
       MOCK_PING_DATA.timeoutMs,
       MOCK_PING_DATA.maxTimeoutMs,
       callback,
@@ -549,7 +551,13 @@ describe("doInitPings", () => {
     }
 
     await doInitPings(
-      [{ host: "not.a.real.host", port: 3000, basePath: "/" }],
+      [
+        {
+          hostname: "not.a.real.host",
+          port: "3000",
+          pathname: "/",
+        } as URL,
+      ],
       MOCK_PING_DATA.timeoutMs,
       MOCK_PING_DATA.maxTimeoutMs,
       callback,
@@ -566,7 +574,13 @@ describe("doInitPings", () => {
     }
 
     await doInitPings(
-      [{ host: "not.a.real.host", port: 3000, basePath: "/" }],
+      [
+        {
+          hostname: "not.a.real.host",
+          port: "3000",
+          pathname: "/",
+        } as URL,
+      ],
       MOCK_PING_DATA.timeoutMs,
       MOCK_PING_DATA.maxTimeoutMs,
       callback2,
@@ -717,15 +731,9 @@ describe("WebsocketConnection auth token handling", () => {
   })
 
   it("sets third Sec-WebSocket-Protocol option to lastSessionId if available", async () => {
-    // Create a mock SessionInfo with sessionInfo.last.sessionId == "lastSessionId"
-    const sessionInfo = new SessionInfo()
-    sessionInfo.setCurrent(
-      mockSessionInfoProps({ sessionId: "lastSessionId" })
+    const ws = new WebsocketConnection(
+      createMockArgs({ getLastSessionId: () => "lastSessionId" })
     )
-    sessionInfo.setCurrent(mockSessionInfoProps())
-    expect(sessionInfo.last?.sessionId).toBe("lastSessionId")
-
-    const ws = new WebsocketConnection(createMockArgs({ sessionInfo }))
 
     // Set correct state for this action
     // @ts-expect-error
@@ -741,18 +749,10 @@ describe("WebsocketConnection auth token handling", () => {
   })
 
   it("sets both host provided auth token and lastSessionId if both set", async () => {
-    // Create a mock SessionInfo with sessionInfo.last.sessionId == "lastSessionId"
-    const sessionInfo = new SessionInfo()
-    sessionInfo.setCurrent(
-      mockSessionInfoProps({ sessionId: "lastSessionId" })
-    )
-    sessionInfo.setCurrent(mockSessionInfoProps())
-    expect(sessionInfo.last?.sessionId).toBe("lastSessionId")
-
     const resetHostAuthToken = vi.fn()
     const ws = new WebsocketConnection(
       createMockArgs({
-        sessionInfo,
+        getLastSessionId: () => "lastSessionId",
         claimHostAuthToken: () => Promise.resolve("iAmAnAuthToken"),
         resetHostAuthToken,
       })
