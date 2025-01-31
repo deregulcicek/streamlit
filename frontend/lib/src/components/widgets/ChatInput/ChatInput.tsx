@@ -344,7 +344,7 @@ function ChatInput({
     const handleDragEnter = (event: DragEvent): void => {
       event.preventDefault()
       event.stopPropagation()
-      if (!fileDragged) {
+      if (!fileDragged && event.dataTransfer?.types.includes("Files")) {
         setFileDragged(true)
       }
     }
@@ -380,7 +380,7 @@ function ChatInput({
     return () => {
       window.removeEventListener("dragover", handleDragEnter)
       window.removeEventListener("drop", handleDrop)
-      window.removeEventListener("drop", handleDragLeave)
+      window.removeEventListener("dragleave", handleDragLeave)
     }
   }, [fileDragged])
 
