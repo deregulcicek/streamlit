@@ -1040,7 +1040,7 @@ export class App extends PureComponent<Props, State> {
       this.setState({
         allowRunOnSave: config.allowRunOnSave,
         hideTopBar: config.hideTopBar,
-        hideColoredLine: themeInput.hideColoredLine ?? false,
+        hideColoredLine: themeInput?.hideColoredLine ?? false,
         toolbarMode: config.toolbarMode,
         latestRunTime: performance.now(),
         mainScriptHash,
