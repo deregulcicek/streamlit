@@ -105,6 +105,7 @@ export interface DataFrameProps {
   fragmentId?: string
   width: number
   height?: number
+  customToolbarActions?: React.ReactNode[]
 }
 
 /**
@@ -122,6 +123,7 @@ function DataFrame({
   widgetMgr,
   disableFullscreenMode,
   fragmentId,
+  customToolbarActions,
 }: Readonly<DataFrameProps>): ReactElement {
   const {
     expanded: isFullScreen,
@@ -568,7 +570,6 @@ function DataFrame({
     containerHeight,
     isFullScreen
   )
-
   // This is used as fallback in case the table is empty to
   // insert cells indicating this state:
   const getEmptyStateContent = React.useCallback(
@@ -708,6 +709,7 @@ function DataFrame({
         onCollapse={collapse}
         target={StyledResizableContainer}
       >
+        {customToolbarActions?.map(action => action)}
         {((isRowSelectionActivated && isRowSelected) ||
           (isColumnSelectionActivated && isColumnSelected)) && (
           // Add clear selection action if selections are active

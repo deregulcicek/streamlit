@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useRef } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 
 import { Global } from "@emotion/react"
+import { InsertChart, TableChart } from "@emotion-icons/material-outlined"
 
+import { Arrow, Arrow as ArrowProto } from "@streamlit/protobuf"
+
+import DataFrame from "~lib/components/widgets/DataFrame"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import Toolbar, {
   StyledToolbarElementContainer,
+  ToolbarAction,
 } from "~lib/components/shared/Toolbar"
 import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
@@ -48,6 +53,9 @@ const ArrowVegaLiteChart: FC<Props> = ({
   fragmentId,
   widgetMgr,
 }) => {
+  const [showData, setShowData] = useState(false)
+  const [enableShowData, setEnableShowData] = useState(false)
+  const [chartHeight, setChartHeight] = useState<number | null>(null)
   const {
     expanded: isFullScreen,
     width,
@@ -83,7 +91,7 @@ const ArrowVegaLiteChart: FC<Props> = ({
     }
 
     return finalizeView
-  }, [createView, finalizeView, spec, width, height])
+  }, [createView, finalizeView, spec, width, height, showData])
 
   // The references to data and datasets will always change each rerun
   // because the forward message always produces new references, so
@@ -91,6 +99,56 @@ const ArrowVegaLiteChart: FC<Props> = ({
   useEffect(() => {
     updateView(data, datasets)
   }, [data, datasets, updateView])
+
+  useEffect(() => {
+    if (data || (datasets && datasets[0]?.data)) {
+      setEnableShowData(true)
+    } else {
+      setEnableShowData(false)
+    }
+  }, [data, datasets])
+
+  if (showData) {
+    return (
+      <DataFrame
+        element={
+          new ArrowProto({
+            useContainerWidth: true,
+            editingMode: Arrow.EditingMode.READ_ONLY,
+            disabled: true,
+            data: new Uint8Array(),
+            styler: null,
+            // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
+            width: null,
+            // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
+            height: chartHeight ?? null,
+            id: "",
+            columns: "",
+            formId: "",
+            columnOrder: [],
+            selectionMode: [],
+          })
+        }
+        data={data ?? datasets[0].data}
+        widgetMgr={widgetMgr}
+        width={width}
+        height={height ?? undefined}
+        disabled={true}
+        fragmentId={fragmentId}
+        disableFullscreenMode={true}
+        customToolbarActions={[
+          <ToolbarAction
+            key="show-chart"
+            label="Show chart"
+            icon={InsertChart}
+            onClick={() => {
+              setShowData(false)
+            }}
+          />,
+        ]}
+      />
+    )
+  }
 
   // Create the container inside which Vega draws its content.
   // To style the Vega tooltip, we need to apply global styles since
@@ -107,7 +165,20 @@ const ArrowVegaLiteChart: FC<Props> = ({
         onExpand={expand}
         onCollapse={collapse}
         disableFullscreenMode={disableFullscreenMode}
-      ></Toolbar>
+      >
+        {enableShowData && (
+          <ToolbarAction
+            label="Show data"
+            icon={TableChart}
+            onClick={() => {
+              setChartHeight(
+                containerRef.current?.getBoundingClientRect().height ?? null
+              )
+              setShowData(true)
+            }}
+          />
+        )}
+      </Toolbar>
       <Global styles={StyledVegaLiteChartTooltips} />
       <StyledVegaLiteChartContainer
         data-testid="stVegaLiteChart"
