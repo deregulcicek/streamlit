@@ -16,16 +16,14 @@ from __future__ import annotations
 
 import json
 import pickle
+from collections.abc import Iterator, KeysView, MutableMapping
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
 from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    Iterator,
-    KeysView,
     List,
-    MutableMapping,
     Union,
     cast,
 )

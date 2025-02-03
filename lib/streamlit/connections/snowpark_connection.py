@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import threading
 from collections import ChainMap
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Iterator, cast
+from typing import TYPE_CHECKING, cast
 
 from streamlit.connections import BaseConnection
 from streamlit.connections.util import (

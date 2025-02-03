@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone, tzinfo
 from numbers import Integral, Real
@@ -23,7 +24,6 @@ from typing import (
     Any,
     Final,
     List,
-    Sequence,
     Tuple,
     TypeVar,
     Union,

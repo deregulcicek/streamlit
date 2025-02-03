@@ -16,7 +16,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 
 def _unflatten_single_dict(flat_dict: dict[Any, Any]) -> dict[Any, Any]:

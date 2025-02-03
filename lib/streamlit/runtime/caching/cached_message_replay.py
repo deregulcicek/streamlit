@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import contextlib
 import threading
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Iterator, Literal, Union
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 import streamlit as st
 from streamlit import runtime, util

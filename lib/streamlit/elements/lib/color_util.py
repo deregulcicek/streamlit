@@ -14,7 +14,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Collection, Tuple, Union, cast
+from collections.abc import Collection
+from typing import Any, Callable, Tuple, Union, cast
 
 from typing_extensions import TypeAlias
 

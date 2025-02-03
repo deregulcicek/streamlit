@@ -15,7 +15,8 @@
 from __future__ import annotations
 
 import datetime
-from typing import Iterable, Literal, TypedDict
+from collections.abc import Iterable
+from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired, TypeAlias
 

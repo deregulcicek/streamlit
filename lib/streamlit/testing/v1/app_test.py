@@ -18,8 +18,9 @@ import inspect
 import tempfile
 import textwrap
 import traceback
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import MagicMock
 from urllib import parse
 

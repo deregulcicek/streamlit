@@ -15,11 +15,11 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable
 from datetime import date, datetime, time, timedelta
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
     Literal,
     Union,
     overload,

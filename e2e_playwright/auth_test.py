@@ -15,8 +15,8 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Generator
 from tempfile import NamedTemporaryFile
-from typing import Generator
 
 import pytest
 from playwright.sync_api import Page, expect

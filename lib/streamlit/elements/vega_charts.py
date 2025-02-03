@@ -19,15 +19,14 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    Iterable,
     Literal,
-    Sequence,
     TypedDict,
     Union,
     cast,

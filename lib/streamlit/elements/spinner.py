@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import contextlib
 import threading
-from typing import Iterator
+from collections.abc import Iterator
 
 import streamlit as st
 from streamlit.runtime.scriptrunner import add_script_run_ctx

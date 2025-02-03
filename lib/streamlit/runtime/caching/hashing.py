@@ -32,8 +32,9 @@ import threading
 import uuid
 import weakref
 from enum import Enum
+from re import Pattern
 from types import MappingProxyType
-from typing import Any, Callable, Dict, Final, Pattern, Type, Union, cast
+from typing import Any, Callable, Dict, Final, Type, Union, cast
 
 from typing_extensions import TypeAlias
 

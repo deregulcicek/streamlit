@@ -18,11 +18,11 @@ import collections
 import contextlib
 import contextvars
 import threading
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import (
     TYPE_CHECKING,
     Callable,
-    Counter,
     Dict,
     Final,
     Union,

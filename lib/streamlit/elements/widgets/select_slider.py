@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from textwrap import dedent
 from typing import (
@@ -21,7 +22,6 @@ from typing import (
     Any,
     Callable,
     Generic,
-    Sequence,
     Tuple,
     cast,
     overload,

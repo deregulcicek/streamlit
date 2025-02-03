@@ -17,9 +17,10 @@ from __future__ import annotations
 import asyncio
 import time
 import traceback
+from collections.abc import Awaitable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Awaitable, Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
 
 from streamlit import config
 from streamlit.components.lib.local_component_registry import LocalComponentRegistry
@@ -385,9 +386,9 @@ class Runtime:
         -----
         Threading: UNSAFE. Must be called on the eventloop thread.
         """
-        assert not (
-            existing_session_id and session_id_override
-        ), "Only one of existing_session_id and session_id_override should be set!"
+        assert not (existing_session_id and session_id_override), (
+            "Only one of existing_session_id and session_id_override should be set!"
+        )
 
         if self._state in (RuntimeState.STOPPING, RuntimeState.STOPPED):
             raise RuntimeStoppedError(f"Can't connect_session (state={self._state})")

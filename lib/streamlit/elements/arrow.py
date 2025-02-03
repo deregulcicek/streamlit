@@ -15,13 +15,12 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Hashable, Iterable
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    Hashable,
-    Iterable,
     Literal,
     TypedDict,
     cast,
@@ -921,9 +920,9 @@ def marshall(proto: ArrowProto, data: Data, default_uuid: str | None = None) -> 
     if dataframe_util.is_pandas_styler(data):
         # default_uuid is a string only if the data is a `Styler`,
         # and `None` otherwise.
-        assert isinstance(
-            default_uuid, str
-        ), "Default UUID must be a string for Styler data."
+        assert isinstance(default_uuid, str), (
+            "Default UUID must be a string for Styler data."
+        )
         marshall_styler(proto, data, default_uuid)
 
     proto.data = dataframe_util.convert_anything_to_arrow_bytes(data)

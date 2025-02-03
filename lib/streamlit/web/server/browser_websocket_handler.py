@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import hmac
 import json
-from typing import TYPE_CHECKING, Any, Awaitable, Final
+from collections.abc import Awaitable
+from typing import TYPE_CHECKING, Any, Final
 from urllib.parse import urlparse
 
 import tornado.concurrent

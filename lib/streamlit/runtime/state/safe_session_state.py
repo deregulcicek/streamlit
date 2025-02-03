@@ -15,8 +15,9 @@
 from __future__ import annotations
 
 import threading
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Callable, Iterator
+from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
     from streamlit.proto.WidgetStates_pb2 import WidgetState as WidgetStateProto

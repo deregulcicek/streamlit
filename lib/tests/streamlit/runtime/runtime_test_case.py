@@ -87,9 +87,9 @@ class MockSessionManager(SessionManager):
                 session_id_override=session_id_override,
             )
 
-        assert (
-            session.id not in self._session_info_by_id
-        ), f"session.id '{session.id}' registered multiple times!"
+        assert session.id not in self._session_info_by_id, (
+            f"session.id '{session.id}' registered multiple times!"
+        )
 
         self._session_info_by_id[session.id] = SessionInfo(client, session)
         return session.id

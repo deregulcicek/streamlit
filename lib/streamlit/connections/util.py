@@ -21,7 +21,8 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Collection, cast
+from collections.abc import Collection
+from typing import Any, cast
 
 SNOWSQL_CONNECTION_FILE = "~/.snowsql/config"
 

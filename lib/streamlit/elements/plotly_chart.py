@@ -17,13 +17,13 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
     Final,
-    Iterable,
     List,
     Literal,
     TypedDict,

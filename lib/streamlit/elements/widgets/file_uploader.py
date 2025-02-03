@@ -14,9 +14,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from textwrap import dedent
-from typing import TYPE_CHECKING, List, Literal, Sequence, Union, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Union, cast, overload
 
 from typing_extensions import TypeAlias
 

@@ -20,20 +20,24 @@ import dataclasses
 import re
 import types
 from collections import UserList, deque
-from collections.abc import ItemsView, KeysView, ValuesView
+from collections.abc import (
+    AsyncGenerator,
+    Generator,
+    ItemsView,
+    Iterable,
+    KeysView,
+    Mapping,
+    Sequence,
+    ValuesView,
+)
 from enum import EnumMeta
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     Final,
-    Generator,
-    Iterable,
     Literal,
-    Mapping,
     NamedTuple,
     Protocol,
-    Sequence,
     Tuple,
     TypeVar,
     Union,

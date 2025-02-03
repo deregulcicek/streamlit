@@ -49,9 +49,9 @@ with (
     import streamlit as st  # noqa: F401
     from streamlit import config, file_util, source_util
 
-    assert (
-        not config._config_options
-    ), "config.get_option() should not be called on file import!"
+    assert not config._config_options, (
+        "config.get_option() should not be called on file import!"
+    )
 
     config_path = file_util.get_streamlit_file_path("config.toml")
     path_exists.side_effect = lambda path: path == config_path

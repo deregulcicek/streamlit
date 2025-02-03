@@ -15,7 +15,8 @@
 from __future__ import annotations
 
 import os
-from typing import Final, Sequence
+from collections.abc import Sequence
+from typing import Final
 
 import tornado.web
 

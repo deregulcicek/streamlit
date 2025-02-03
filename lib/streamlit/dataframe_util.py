@@ -22,18 +22,15 @@ import inspect
 import math
 import re
 from collections import ChainMap, UserDict, UserList, deque
-from collections.abc import ItemsView
+from collections.abc import ItemsView, Iterable, Mapping, Sequence
 from enum import Enum, EnumMeta, auto
 from types import MappingProxyType
 from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    Iterable,
     List,
-    Mapping,
     Protocol,
-    Sequence,
     TypeVar,
     Union,
     cast,
@@ -1279,8 +1276,7 @@ def _pandas_df_to_series(df: DataFrame) -> Series[Any]:
     # Select first column in dataframe and create a new series based on the values
     if len(df.columns) != 1:
         raise ValueError(
-            "DataFrame is expected to have a single column but "
-            f"has {len(df.columns)}."
+            f"DataFrame is expected to have a single column but has {len(df.columns)}."
         )
     return df[df.columns[0]]
 

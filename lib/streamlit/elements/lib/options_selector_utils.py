@@ -14,8 +14,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from enum import Enum, EnumMeta
-from typing import Any, Final, Iterable, Sequence, TypeVar, overload
+from typing import Any, Final, TypeVar, overload
 
 from streamlit import config, logger
 from streamlit.dataframe_util import OptionSequence, convert_anything_to_list

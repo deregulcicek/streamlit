@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import copy
 import json
-from typing import TYPE_CHECKING, Any, Collection, Final, cast
+from collections.abc import Collection
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import streamlit.elements.deck_gl_json_chart as deck_gl_json_chart
 from streamlit import config, dataframe_util

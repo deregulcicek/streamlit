@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import uuid
 from collections import defaultdict
-from typing import Sequence
+from collections.abc import Sequence
 
 from streamlit import util
 from streamlit.runtime.stats import CacheStat, group_stats

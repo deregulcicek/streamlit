@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from textwrap import dedent
@@ -23,7 +24,6 @@ from typing import (
     Final,
     List,
     Literal,
-    Sequence,
     Tuple,
     Union,
     cast,

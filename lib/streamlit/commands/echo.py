@@ -19,7 +19,8 @@ import contextlib
 import re
 import textwrap
 import traceback
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 from streamlit.runtime.metrics_util import gather_metrics
 

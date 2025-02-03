@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import textwrap
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from dataclasses import dataclass, field, fields, is_dataclass
 from datetime import date, datetime, time, timedelta
 from typing import (
@@ -23,7 +24,6 @@ from typing import (
     Callable,
     Generic,
     List,
-    Sequence,
     TypeVar,
     Union,
     cast,

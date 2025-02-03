@@ -15,7 +15,8 @@
 from __future__ import annotations
 
 import hashlib
-from typing import TYPE_CHECKING, Final, MutableMapping
+from collections.abc import MutableMapping
+from typing import TYPE_CHECKING, Final
 from weakref import WeakKeyDictionary
 
 from streamlit import config, util

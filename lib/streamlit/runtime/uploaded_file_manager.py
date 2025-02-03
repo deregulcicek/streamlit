@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import io
 from abc import abstractmethod
-from typing import TYPE_CHECKING, NamedTuple, Protocol, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, NamedTuple, Protocol
 
 from streamlit import util
 from streamlit.runtime.stats import CacheStatsProvider

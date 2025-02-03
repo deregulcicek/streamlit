@@ -19,8 +19,9 @@ import logging
 import mimetypes
 import os
 import sys
+from collections.abc import Awaitable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Awaitable, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import tornado.concurrent
 import tornado.locks

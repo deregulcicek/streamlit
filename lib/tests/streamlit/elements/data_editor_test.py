@@ -19,8 +19,9 @@ from __future__ import annotations
 import datetime
 import json
 import unittest
+from collections.abc import Mapping
 from decimal import Decimal
-from typing import Any, Mapping
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import numpy as np
