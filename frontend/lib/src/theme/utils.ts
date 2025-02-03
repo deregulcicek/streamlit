@@ -569,6 +569,10 @@ export const convertRemToPx = (scssValue: string): number => {
     (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16)
   )
 }
+
+/**
+ * Returns true if the background color is light based on luminance.
+ */
 export function hasLightBackgroundColor(theme: EmotionTheme): boolean {
   return getLuminance(theme.colors.bgColor) > 0.5
 }
