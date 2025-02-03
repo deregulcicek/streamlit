@@ -49,6 +49,11 @@ message StringTriggerValue {
   optional string data = 1;
 }
 
+
+message ContextClientInfo {
+  string timezone = 1;
+}
+
 // NOTE: The FileURLsRequest, FileURLs, and FileURLsResponse message types
 // must remain stable as some external services rely on them to support
 // `st.file_uploader`. These types aren't completely set in stone, but changing

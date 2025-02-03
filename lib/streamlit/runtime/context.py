@@ -205,3 +205,20 @@ class ContextProxy:
 
         cookies = session_client_request.cookies
         return StreamlitCookies.from_tornado_cookies(cookies)
+
+    @property
+    def timezone(self) -> str:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+
+        session_client = runtime.get_instance().get_client(ctx.session_id)
+
+        if session_client is None:
+            return None
+
+        return (
+            runtime.get_instance()
+            ._session_mgr.get_session_info(ctx.session_id)
+            .session._client_context_info.get("timezone")
+        )

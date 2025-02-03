@@ -268,6 +268,14 @@ export class App extends PureComponent<Props, State> {
       )
     }
 
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    console.log("TTTTTTTTTTTTTTTTTTTTT")
+    console.log(timezone)
+    const date = new Date()
+    const offset = date.getTimezoneOffset()
+    console.log("OOOOOOOOOOOOOOOOOO")
+    console.log(offset)
+
     this.state = {
       connectionState: ConnectionState.INITIAL,
       elements: AppRoot.empty("", true), // Blank Main Script Hash for initial render
@@ -644,6 +652,7 @@ export class App extends PureComponent<Props, State> {
         log.info("Requesting a script run.")
         this.widgetMgr.sendUpdateWidgetsMessage(undefined)
         this.setState({ dialog: null })
+        this.sendTimeZoneData()
       }
 
       this.hostCommunicationMgr.sendMessageToHost({
@@ -1817,6 +1826,20 @@ export class App extends PureComponent<Props, State> {
     })
     this.sendLoadGitInfoBackMsg()
     this.openDeployDialog()
+  }
+
+  sendTimeZoneData = (): void => {
+    console.log("BEFORE IF ")
+    if (this.isServerConnected()) {
+      console.log("IN IFF")
+      const backMsg = new BackMsg({
+        contextClientInfo: {
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      })
+      backMsg.type = "contextClientInfo"
+      this.sendBackMsg(backMsg)
+    }
   }
 
   requestFileURLs = (requestId: string, files: File[]): void => {

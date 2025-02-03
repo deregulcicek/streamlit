@@ -73,6 +73,9 @@ message BackMsg {
 
     // Sends an app heartbeat message through the websocket
     bool app_heartbeat = 17;
+
+    // Sends the st.context required info to the server for the current session
+    ContextClientInfo context_client_info = 18;
   }
 
   // An ID used to associate this BackMsg with the corresponding ForwardMsgs
