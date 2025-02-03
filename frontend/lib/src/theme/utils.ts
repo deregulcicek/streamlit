@@ -42,7 +42,7 @@ import {
   notNullOrUndefined,
 } from "~lib/util/utils"
 
-import { createBaseUiTheme } from "./createThemeUtil"
+import { createBaseUiTheme } from "./createBaseUiTheme"
 import {
   computeDerivedColors,
   createEmotionColors,
