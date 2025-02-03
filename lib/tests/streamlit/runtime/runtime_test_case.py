@@ -70,10 +70,13 @@ class MockSessionManager(SessionManager):
         existing_session_id: str | None = None,
         session_id_override: str | None = None,
     ) -> str:
-        with mock.patch(
-            "streamlit.runtime.scriptrunner.ScriptRunner", new=mock.MagicMock()
-        ), mock.patch.object(
-            PagesManager, "get_pages", mock.MagicMock(return_value={})
+        with (
+            mock.patch(
+                "streamlit.runtime.scriptrunner.ScriptRunner", new=mock.MagicMock()
+            ),
+            mock.patch.object(
+                PagesManager, "get_pages", mock.MagicMock(return_value={})
+            ),
         ):
             session = AppSession(
                 script_data=script_data,
