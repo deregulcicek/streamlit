@@ -21,8 +21,12 @@ import { ISubtitleTrack, Video as VideoProto } from "@streamlit/protobuf"
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { IS_DEV_ENV } from "~lib/baseconsts"
 import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManager"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
+import { useMergeRefs } from "~lib/hooks/useMergeRefs"
 
-import { StyledVideoIframe } from "./styled-components"
+import { StyledVideo, StyledVideoIframe } from "./styled-components"
+
+const DEFAULT_HEIGHT = 528
 
 export interface VideoProps {
   endpoints: StreamlitEndpoints
@@ -45,6 +49,16 @@ export default function Video({
   /* Element may contain "url" or "data" property. */
   const { type, url, startTime, subtitles, endTime, loop, autoplay, muted } =
     element
+
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
+
+  const ref = useMergeRefs(
+    videoRef,
+    elementRef as React.RefObject<HTMLVideoElement>
+  )
 
   const preventAutoplay = useMemo<boolean>(() => {
     if (!element.id) {
@@ -203,17 +217,17 @@ export default function Video({
   // Only in dev mode we set crossOrigin to "anonymous" to avoid CORS issues
   // when streamlit frontend and backend are running on different ports
   return (
-    <video
+    <StyledVideo
       className="stVideo"
       data-testid="stVideo"
-      ref={videoRef}
+      ref={ref}
       controls
       muted={muted}
       autoPlay={autoplay && !preventAutoplay}
       src={endpoints.buildMediaURL(url)}
       style={{
-        // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
-        width: "var(--st-block-width)",
+        width,
+        height: width === 0 ? DEFAULT_HEIGHT : undefined,
       }}
       crossOrigin={
         IS_DEV_ENV && subtitles.length > 0 ? "anonymous" : undefined
@@ -229,6 +243,6 @@ export default function Video({
             default={idx === 0}
           />
         ))}
-    </video>
+    </StyledVideo>
   )
 }

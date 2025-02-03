@@ -20,35 +20,27 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
 } from "react"
 
-import classNames from "classnames"
 import { useTheme } from "@emotion/react"
+import classNames from "classnames"
 
 import { Block as BlockProto } from "@streamlit/protobuf"
 
-import { LibContext } from "~lib/components/core/LibContext"
 import { AppNode, BlockNode, ElementNode } from "~lib/AppNode"
-import { getElementId, notNullOrUndefined } from "~lib/util/utils"
-import { Form } from "~lib/components/widgets/Form"
-import Tabs, { TabProps } from "~lib/components/elements/Tabs"
-import Popover from "~lib/components/elements/Popover"
+import { FlexContextProvider } from "~lib/components/core/Flex/FlexContext"
+import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
+import { LibContext } from "~lib/components/core/LibContext"
 import ChatMessage from "~lib/components/elements/ChatMessage"
 import Dialog from "~lib/components/elements/Dialog"
 import Expander from "~lib/components/elements/Expander"
+import Popover from "~lib/components/elements/Popover"
+import Tabs, { TabProps } from "~lib/components/elements/Tabs"
+import { Form } from "~lib/components/widgets/Form"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
-import { FlexContextProvider } from "~lib/components/core/Flex/FlexContext"
+import { getElementId, notNullOrUndefined } from "~lib/util/utils"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
-import {
-  assignDividerColor,
-  BaseBlockProps,
-  convertKeyToClassName,
-  getKeyFromId,
-  isComponentStale,
-  shouldComponentBeEnabled,
-} from "./utils"
 import ElementNodeRenderer from "./ElementNodeRenderer"
 import {
   StyledColumn,
@@ -58,6 +50,14 @@ import {
   StyledVerticalBlockBorderWrapperProps,
   StyledVerticalBlockWrapper,
 } from "./styled-components"
+import {
+  assignDividerColor,
+  BaseBlockProps,
+  convertKeyToClassName,
+  getKeyFromId,
+  isComponentStale,
+  shouldComponentBeEnabled,
+} from "./utils"
 
 export interface BlockPropsWithoutWidth extends BaseBlockProps {
   node: BlockNode
@@ -336,30 +336,11 @@ function ScrollToBottomVerticalBlockWrapper(
 // Currently, only VerticalBlocks will ever contain leaf elements. But this is only enforced on the
 // Python side.
 const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
-  const wrapperElement = useRef<HTMLDivElement>(null)
-  const [calculatedWidth, setCalculatedWidth] = React.useState(-1)
-
-  // TODO: There is a bug when `activateScrollToBottom=true` and when the window resizes
-  // the calculated width gets crazy large. This can be reproduced by running the
-  // `e2e_playwright/st_chat_input.py` Streamlit app and resizing the window.
-
-  const observer = useMemo(
-    () =>
-      new ResizeObserver(([entry]) => {
-        // Since the setWidth will perform changes to the DOM,
-        // we need wrap it in a requestAnimationFrame to avoid this error:
-        // ResizeObserver loop completed with undelivered notifications.
-        window.requestAnimationFrame(() => {
-          // We need to determine the available width here to be able to set
-          // an explicit width for the `StyledVerticalBlock`.
-
-          // The width should never be set to 0 since it can cause
-          // flickering effects.
-          setCalculatedWidth(entry.target.getBoundingClientRect().width || -1)
-        })
-      }),
-    [setCalculatedWidth]
-  )
+  const {
+    values: [calculatedWidth],
+    elementRef: wrapperElement,
+    forceRecalculate,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined
@@ -382,19 +363,11 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
       )
     })
 
+  // We need to update the observer whenever the scrolling is activated or deactivated
+  // Otherwise, it still tries to measure the width of the old wrapper element.
   useEffect(() => {
-    if (wrapperElement.current) {
-      observer.observe(wrapperElement.current)
-    }
-    return () => {
-      observer.disconnect()
-    }
-    // We need to update the observer whenever the scrolling is activated or deactivated
-    // Otherwise, it still tries to measure the width of the old wrapper element.
-    // TODO: Update to match React best practices
-    // eslint-disable-next-line react-compiler/react-compiler
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [observer, activateScrollToBottom])
+    forceRecalculate()
+  }, [forceRecalculate, activateScrollToBottom])
 
   // Decide which wrapper to use based on whether we need to activate scrolling to bottom
   // This is done for performance reasons, to prevent the usage of useScrollToBottom

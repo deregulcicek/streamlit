@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from "react"
+import React, { FC, useMemo } from "react"
 
 import { X } from "@emotion-icons/open-iconic"
 import axios from "axios"
@@ -48,7 +48,7 @@ import {
   UploadFileInfo,
   UploadingStatus,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import CameraInputButton from "./CameraInputButton"
 import { FacingMode } from "./SwitchFacingModeButton"
@@ -599,15 +599,17 @@ function urltoFile(url: string, filename: string): Promise<File> {
 }
 
 const CameraInputWrapper: FC<Omit<Props, "width">> = props => {
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   return (
     <CameraInput
       {...props}
       // @ts-expect-error
       elementRef={elementRef}
-      width={parseInt(width || "0", 10)}
+      width={width}
     />
   )
 }

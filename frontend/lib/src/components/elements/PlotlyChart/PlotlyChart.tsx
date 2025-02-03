@@ -34,7 +34,7 @@ import { FormClearHelper } from "~lib/components/widgets/Form/FormClearHelper"
 import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
 import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   applyStreamlitTheme,
@@ -382,8 +382,10 @@ export function PlotlyChart({
     collapse,
   } = useRequiredContext(ElementFullscreenContext)
 
-  const { value: evaluatedWidth, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [evaluatedWidth],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   // Load the initial figure spec from the element message
   const initialFigureSpec = useMemo<PlotlyFigureType>(() => {
@@ -592,7 +594,7 @@ export function PlotlyChart({
         // width in this case.
         plotlyFigure.layout?.width
       : Math.max(
-          parseInt(evaluatedWidth || "0", 10),
+          evaluatedWidth,
           // Apply a min width to prevent the chart running into issues with negative
           // width values if the browser window is too small:
           MIN_WIDTH

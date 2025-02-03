@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
+import { CSSProperties } from "react"
+
 import styled from "@emotion/styled"
 
-export const StyledVideoIframe = styled.iframe(({ theme }) => ({
-  colorScheme: "normal",
-  border: "none",
-  padding: theme.spacing.none,
-  margin: theme.spacing.none,
-  width: "100%",
-  aspectRatio: "16 / 9",
+export const Box = styled.div<{
+  width?: CSSProperties["width"]
+  height?: CSSProperties["height"]
+}>(({ width = "100%", height }) => ({
+  width,
+  height,
 }))
-
-export const StyledVideo = styled.video`
-  width: 100%;
-`

@@ -88,7 +88,7 @@ message Block {
       VERTICAL_DISTRIBUTE = 4;
     }
     optional VerticalAlignment vertical_alignment = 4;
-    bool wrap = 6;
+    bool wrap = 5;
   }
 
   message Column {

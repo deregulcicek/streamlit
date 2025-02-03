@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect } from "react"
+import React, { ReactElement, useEffect, useMemo } from "react"
 
 import { select } from "d3"
 import { Engine, graphviz } from "d3-graphviz"
@@ -28,7 +28,7 @@ import Toolbar, {
 import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
 import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import { StyledGraphVizChart } from "./styled-components"
 
@@ -42,8 +42,10 @@ function GraphVizChart({
   disableFullscreenMode,
 }: Readonly<GraphVizChartProps>): ReactElement {
   const chartId = `st-graphviz-chart-${element.elementId}`
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const {
     expanded: isFullScreen,

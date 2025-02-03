@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, memo, useCallback, useRef, useState } from "react"
+import React, { FC, memo, useCallback, useMemo, useRef, useState } from "react"
 
 import { Textarea as UITextArea } from "baseui/textarea"
 import { useTheme } from "@emotion/react"
@@ -39,7 +39,7 @@ import {
   useBasicWidgetState,
   ValueWithSource,
 } from "~lib/hooks/useBasicWidgetState"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 export interface Props {
   disabled: boolean
@@ -84,9 +84,10 @@ const TextArea: FC<Props> = ({ disabled, element, widgetMgr, fragmentId }) => {
   // eslint-disable-next-line react-compiler/react-compiler
   const id = useRef(uniqueId("text_area_")).current
 
-  const { value: evaluatedWidth, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
-  const width = parseInt(evaluatedWidth || "0", 10)
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   /**
    * True if the user-specified state.value has not yet been synced to the WidgetStateManager.

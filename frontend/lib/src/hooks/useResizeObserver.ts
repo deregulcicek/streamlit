@@ -22,34 +22,53 @@ import {
   useState,
 } from "react"
 
-export const useEvaluatedCssProperty = <T extends HTMLDivElement>(
-  variableName: string
-): { value: string; elementRef: MutableRefObject<T | null> } => {
-  const elementRef = useRef<T | null>(null)
+export type DOMRectKeys =
+  | "bottom"
+  | "height"
+  | "left"
+  | "right"
+  | "top"
+  | "width"
+  | "x"
+  | "y"
 
-  const getCssValue = useCallback(() => {
+export const useResizeObserver = <T extends HTMLDivElement>(
+  properties: DOMRectKeys[]
+): {
+  values: number[]
+  elementRef: MutableRefObject<T | null>
+  forceRecalculate: () => void
+} => {
+  const elementRef = useRef<T | null>(null)
+  const [values, setValues] = useState<number[]>([])
+
+  const getValues = useCallback(() => {
     if (!elementRef.current) {
-      return ""
+      return []
     }
 
-    return getComputedStyle(elementRef.current)
-      .getPropertyValue(variableName)
-      .trim()
-  }, [variableName])
+    const rect = elementRef.current.getBoundingClientRect()
 
-  const [value, setValue] = useState<string>("")
+    return properties.map(property => {
+      return rect[property]
+    })
+  }, [properties])
+
+  const forceRecalculate = useCallback(() => {
+    setValues(getValues())
+  }, [getValues])
 
   useEffect(() => {
     if (!elementRef.current) {
       return
     }
 
-    setValue(getCssValue())
+    setValues(getValues())
 
     let frameId: number
     const observer = new ResizeObserver(() => {
-      frameId = requestAnimationFrame(() => {
-        setValue(getCssValue())
+      frameId = window.requestAnimationFrame(() => {
+        setValues(getValues())
       })
     })
 
@@ -61,7 +80,7 @@ export const useEvaluatedCssProperty = <T extends HTMLDivElement>(
         cancelAnimationFrame(frameId)
       }
     }
-  }, [variableName, getCssValue])
+  }, [properties, getValues])
 
-  return { value, elementRef }
+  return { values, elementRef, forceRecalculate }
 }

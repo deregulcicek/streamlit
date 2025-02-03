@@ -99,6 +99,7 @@ export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
       alignItems: getAlignItems(verticalAlignment),
       justifyContent: getJustifyContent(horizontalAlignment),
       flexWrap: wrap ? "wrap" : "nowrap",
+      maxWidth: "100%",
     }
   }
 )
@@ -258,5 +259,6 @@ export const StyledVerticalBlockBorderWrapper =
         height: `${height}px`,
         overflow: "auto",
       }),
+      width: "100%",
     })
   )

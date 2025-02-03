@@ -53,7 +53,7 @@ class LayoutsMixin:
         | None = None,
         vertical_alignment: Literal["top", "center", "bottom", "stretch", "distribute"]
         | None = None,
-        wrap: bool | None = False,
+        wrap: bool | None = None,
     ) -> DeltaGenerator:
         """Insert a multi-element container.
 
@@ -200,7 +200,7 @@ class LayoutsMixin:
             block_proto.horizontal.direction = (
                 BlockProto.Horizontal.Direction.START_TO_END
             )
-            block_proto.horizontal.wrap = wrap if wrap is not None else False
+            block_proto.horizontal.wrap = wrap if wrap is not None else True
 
             if horizontal_alignment is not None:
                 block_proto.horizontal.horizontal_alignment = getattr(
@@ -419,6 +419,7 @@ class LayoutsMixin:
 
         block_proto = BlockProto()
         block_proto.horizontal.gap = gap_size
+        block_proto.horizontal.wrap = True
         row = self.dg._block(block_proto)
         total_weight = sum(weights)
         return [row._block(column_proto(w / total_weight)) for w in weights]

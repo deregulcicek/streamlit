@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback, useEffect } from "react"
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react"
 
 import { BokehChart as BokehChartProto } from "@streamlit/protobuf"
 
@@ -22,13 +28,20 @@ import { BokehChart as BokehChartProto } from "@streamlit/protobuf"
 // Importing these files will cause global Bokeh to be mutated
 // Consumers of this component will have to provide these js files
 // bokeh.esm is renamed from bokeh-2.4.3.esm.min.js because addon bokeh scripts have hardcoded path to bokeh main script ("import main from “./bokeh.esm.js")
-import Bokeh from "~lib/vendor/bokeh/bokeh.esm"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 import "~lib/vendor/bokeh/bokeh-api-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-gl-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-mathjax-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-tables-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-widgets-2.4.3.esm.min"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import Bokeh from "~lib/vendor/bokeh/bokeh.esm"
+import { Box } from "~lib/components/shared/Base/styled-components"
+
+const removeAllChildNodes = (element: Node): void => {
+  while (element.lastChild) {
+    element.lastChild.remove()
+  }
+}
 
 export interface BokehChartProps {
   element: BokehChartProto
@@ -46,12 +59,14 @@ export function BokehChart({
 }: Readonly<BokehChartProps>): ReactElement {
   const chartId = `bokeh-chart-${element.elementId}`
 
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
-  const memoizedGetChartData = useCallback(() => {
+  const chartData = useMemo(() => {
     return JSON.parse(element.figure)
-  }, [element])
+  }, [element.figure])
 
   const getChartDimensions = useCallback(
     (plot: any): Dimensions => {
@@ -59,14 +74,12 @@ export function BokehChart({
       let chartWidth: number = plot.attributes.plot_width
       let chartHeight: number = plot.attributes.plot_height
 
-      const parsedWidth = parseInt(width || "0", 10)
-
       // if is not fullscreen and useContainerWidth==false, we should use default values
       if (height) {
-        chartWidth = parsedWidth
+        chartWidth = width
         chartHeight = height
       } else if (element.useContainerWidth) {
-        chartWidth = parsedWidth
+        chartWidth = width
       }
 
       return { chartWidth, chartHeight }
@@ -74,68 +87,66 @@ export function BokehChart({
     [element.useContainerWidth, height, width]
   )
 
-  const removeAllChildNodes = (element: Node): void => {
-    while (element.lastChild) {
-      element.lastChild.remove()
-    }
-  }
+  const updateIdRef = useRef(0)
 
-  const updateChart = (data: any): void => {
+  const updateChart = useCallback(
+    (data: any): void => {
+      const chart = document.getElementById(chartId)
+
+      /**
+       * When you create a bokeh chart in your python script, you can specify
+       * the width: p = figure(title="simple line example", x_axis_label="x", y_axis_label="y", plot_width=200);
+       * In that case, the json object will contains an attribute called
+       * plot_width (or plot_heigth) inside the plot reference.
+       * If that values are missing, we can set that values to make the chart responsive.
+       */
+      const plot =
+        data && data.doc && data.doc.roots && data.doc.roots.references
+          ? data.doc.roots.references.find((e: any) => e.type === "Plot")
+          : undefined
+
+      if (plot) {
+        const { chartWidth, chartHeight } = getChartDimensions(plot)
+
+        if (chartWidth > 0) {
+          plot.attributes.plot_width = chartWidth
+        }
+        if (chartHeight > 0) {
+          plot.attributes.plot_height = chartHeight
+        }
+      }
+
+      if (chart !== null) {
+        removeAllChildNodes(chart)
+        // embed_item is actually an async function call, so a race condition
+        // can occur if updateChart is called twice, leading to two Bokeh charts
+        // to be embedded at the same time.
+        Bokeh.embed.embed_item(data, chartId)
+      }
+    },
+    [chartId, getChartDimensions]
+  )
+
+  useEffect(() => {
+    updateIdRef.current += 1
+    const currentUpdateId = updateIdRef.current
+
     const chart = document.getElementById(chartId)
-
-    /**
-     * When you create a bokeh chart in your python script, you can specify
-     * the width: p = figure(title="simple line example", x_axis_label="x", y_axis_label="y", plot_width=200);
-     * In that case, the json object will contains an attribute called
-     * plot_width (or plot_heigth) inside the plot reference.
-     * If that values are missing, we can set that values to make the chart responsive.
-     */
-    const plot =
-      data && data.doc && data.doc.roots && data.doc.roots.references
-        ? data.doc.roots.references.find((e: any) => e.type === "Plot")
-        : undefined
-
-    if (plot) {
-      const { chartWidth, chartHeight } = getChartDimensions(plot)
-
-      if (chartWidth > 0) {
-        plot.attributes.plot_width = chartWidth
-      }
-      if (chartHeight > 0) {
-        plot.attributes.plot_height = chartHeight
-      }
-    }
-
     if (chart !== null) {
       removeAllChildNodes(chart)
-      // embed_item is actually an async function call, so a race condition
-      // can occur if updateChart is called twice, leading to two Bokeh charts
-      // to be embedded at the same time.
-      Bokeh.embed.embed_item(data, chartId)
+      // See note above about `embed_item` being async
+      Bokeh.embed.embed_item(chartData, chartId).then(() => {
+        if (currentUpdateId === updateIdRef.current) {
+          updateChart(chartData)
+        }
+      })
     }
-  }
-
-  // TODO: Update to match React best practices
-  // eslint-disable-next-line react-compiler/react-compiler
-  const memoizedUpdateChart = useCallback(updateChart, [
-    chartId,
-    getChartDimensions,
-  ])
-
-  // We only want useEffect to run once per prop update, because of the embed_item
-  // race condition mentioned per run. Thus we pass in all props and methods
-  // into the useEffect dependency array.
-  useEffect(() => {
-    memoizedUpdateChart(memoizedGetChartData())
-  }, [width, height, element, memoizedGetChartData, memoizedUpdateChart])
+  }, [width, height, element, chartData, updateChart, chartId])
 
   return (
-    <div
-      id={chartId}
-      ref={elementRef}
-      className="stBokehChart"
-      data-testid="stBokehChart"
-    />
+    <Box ref={elementRef}>
+      <div id={chartId} className="stBokehChart" data-testid="stBokehChart" />
+    </Box>
   )
 }
 

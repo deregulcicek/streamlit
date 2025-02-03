@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties, ReactElement } from "react"
+import React, { CSSProperties, ReactElement, useMemo } from "react"
 
 import {
   ImageList as ImageListProto,
@@ -22,14 +22,15 @@ import {
 } from "@streamlit/protobuf"
 
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
+import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
+import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
+import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 import Toolbar, {
   StyledToolbarElementContainer,
 } from "~lib/components/shared/Toolbar"
-import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
 import { useRequiredContext } from "~lib/hooks/useRequiredContext"
-import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
-import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
+import { Box } from "~lib/components/shared/Base/styled-components"
 
 import {
   StyledCaption,
@@ -72,9 +73,13 @@ function ImageList({
     expand,
     collapse,
   } = useRequiredContext(ElementFullscreenContext)
-  const { value: evaluatedWidth, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
-  const width = parseInt(evaluatedWidth || "0", 10)
+  // TODO: There is a bug in `useLayoutStyles` for Images because the width
+  // property is overloaded. That leads to incorrect values being given for
+  // width. We need to fix it.
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   // The width of the element is the width of the container, not necessarily the image.
   const elementWidth: number =
@@ -119,47 +124,48 @@ function ImageList({
   }
 
   return (
-    <StyledToolbarElementContainer
-      width={elementWidth}
-      height={height}
-      useContainerWidth={isFullScreen}
-      topCentered
-      ref={elementRef}
-    >
-      <Toolbar
-        target={StyledToolbarElementContainer}
-        isFullScreen={isFullScreen}
-        onExpand={expand}
-        onCollapse={collapse}
-        disableFullscreenMode={disableFullscreenMode}
-      ></Toolbar>
-      <StyledImageList className="stImage" data-testid="stImage">
-        {element.imgs.map((iimage, idx): ReactElement => {
-          const image = iimage as ImageProto
-          return (
-            <StyledImageContainer data-testid="stImageContainer" key={idx}>
-              <img
-                style={imgStyle}
-                src={endpoints.buildMediaURL(image.url)}
-                alt={idx.toString()}
-              />
-              {image.caption && (
-                <StyledCaption data-testid="stImageCaption" style={imgStyle}>
-                  <StreamlitMarkdown
-                    source={image.caption}
-                    allowHTML={false}
-                    isCaption
-                    // This is technically not a label but we want the same restrictions
-                    // as for labels (e.g. no Markdown tables or horizontal rule).
-                    isLabel
-                  />
-                </StyledCaption>
-              )}
-            </StyledImageContainer>
-          )
-        })}
-      </StyledImageList>
-    </StyledToolbarElementContainer>
+    <Box ref={elementRef}>
+      <StyledToolbarElementContainer
+        width={elementWidth}
+        height={height}
+        useContainerWidth={isFullScreen}
+        topCentered
+      >
+        <Toolbar
+          target={StyledToolbarElementContainer}
+          isFullScreen={isFullScreen}
+          onExpand={expand}
+          onCollapse={collapse}
+          disableFullscreenMode={disableFullscreenMode}
+        ></Toolbar>
+        <StyledImageList className="stImage" data-testid="stImage">
+          {element.imgs.map((iimage, idx): ReactElement => {
+            const image = iimage as ImageProto
+            return (
+              <StyledImageContainer data-testid="stImageContainer" key={idx}>
+                <img
+                  style={imgStyle}
+                  src={endpoints.buildMediaURL(image.url)}
+                  alt={idx.toString()}
+                />
+                {image.caption && (
+                  <StyledCaption data-testid="stImageCaption" style={imgStyle}>
+                    <StreamlitMarkdown
+                      source={image.caption}
+                      allowHTML={false}
+                      isCaption
+                      // This is technically not a label but we want the same restrictions
+                      // as for labels (e.g. no Markdown tables or horizontal rule).
+                      isLabel
+                    />
+                  </StyledCaption>
+                )}
+              </StyledImageContainer>
+            )
+          })}
+        </StyledImageList>
+      </StyledToolbarElementContainer>
+    </Box>
   )
 }
 

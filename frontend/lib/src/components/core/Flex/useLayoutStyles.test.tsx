@@ -30,7 +30,6 @@ describe("#useLayoutStyles", () => {
         )
         expect(result.current).toEqual({
           width: 100,
-          "--st-block-width": "100px",
         })
       })
     })
@@ -41,18 +40,12 @@ describe("#useLayoutStyles", () => {
       const useContainerWidth = false
 
       it.each([
-        [200, { width: 200, "--st-block-width": "200px", maxWidth: "100%" }],
-        [1000, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
-        [
-          undefined,
-          { width: "auto", "--st-block-width": "auto", maxWidth: "100%" },
-        ],
-        [0, { width: 0, "--st-block-width": "0px", maxWidth: "100%" }],
-        [
-          -100,
-          { width: "auto", "--st-block-width": "auto", maxWidth: "100%" },
-        ],
-        [NaN, { width: "auto", "--st-block-width": "auto", maxWidth: "100%" }],
+        [200, { width: 200, maxWidth: "100%" }],
+        [1000, { width: 700, maxWidth: "100%" }],
+        [undefined, { width: "auto", maxWidth: "100%" }],
+        [0, { width: 0, maxWidth: "100%" }],
+        [-100, { width: "auto", maxWidth: "100%" }],
+        [NaN, { width: "auto", maxWidth: "100%" }],
       ])("and with a width value of %s, returns %o", (width, expected) => {
         const element = { width, useContainerWidth }
         const { result } = renderHook(() =>
@@ -66,15 +59,12 @@ describe("#useLayoutStyles", () => {
       const useContainerWidth = true
 
       it.each([
-        [200, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
-        [1000, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
-        [
-          undefined,
-          { width: 700, "--st-block-width": "700px", maxWidth: "100%" },
-        ],
-        [0, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
-        [-100, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
-        [NaN, { width: 700, "--st-block-width": "700px", maxWidth: "100%" }],
+        [200, { width: 700, maxWidth: "100%" }],
+        [1000, { width: 700, maxWidth: "100%" }],
+        [undefined, { width: 700, maxWidth: "100%" }],
+        [0, { width: 700, maxWidth: "100%" }],
+        [-100, { width: 700, maxWidth: "100%" }],
+        [NaN, { width: 700, maxWidth: "100%" }],
       ])("and with a width value of %s, returns %o", (width, expected) => {
         const element = { width, useContainerWidth }
         const { result } = renderHook(() =>

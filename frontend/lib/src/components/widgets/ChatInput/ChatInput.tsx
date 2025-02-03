@@ -18,6 +18,7 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -32,7 +33,7 @@ import { WidgetStateManager } from "~lib/WidgetStateManager"
 import Icon from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
 import { isEnterKeyPressed } from "~lib/util/inputUtils"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   StyledChatInput,
@@ -71,8 +72,10 @@ function ChatInput({
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
   const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
 
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const getScrollHeight = (): number => {
     let scrollHeight = 0
@@ -230,7 +233,7 @@ function ChatInput({
           }}
         />
         {/* Hide the character limit in small widget sizes */}
-        {parseInt(width || "0", 10) > theme.breakpoints.hideWidgetDetails && (
+        {width > theme.breakpoints.hideWidgetDetails && (
           <StyledInputInstructionsContainer>
             <InputInstructions
               dirty={dirty}

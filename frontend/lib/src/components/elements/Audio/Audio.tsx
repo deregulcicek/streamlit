@@ -21,6 +21,8 @@ import { Audio as AudioProto } from "@streamlit/protobuf"
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManager"
 
+import { StyledAudio } from "./styled-components"
+
 export interface AudioProps {
   endpoints: StreamlitEndpoints
   element: AudioProto
@@ -146,14 +148,13 @@ export default function Audio({
   const uri = endpoints.buildMediaURL(element.url)
 
   return (
-    <audio
+    <StyledAudio
       className="stAudio"
       data-testid="stAudio"
       ref={audioRef}
       controls
       autoPlay={autoplay && !preventAutoplay}
       src={uri}
-      style={{ width: "100%" }}
     />
   )
 }

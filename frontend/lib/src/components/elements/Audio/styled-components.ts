@@ -16,15 +16,6 @@
 
 import styled from "@emotion/styled"
 
-export const StyledVideoIframe = styled.iframe(({ theme }) => ({
-  colorScheme: "normal",
-  border: "none",
-  padding: theme.spacing.none,
-  margin: theme.spacing.none,
-  width: "100%",
-  aspectRatio: "16 / 9",
-}))
-
-export const StyledVideo = styled.video`
+export const StyledAudio = styled.audio`
   width: 100%;
 `

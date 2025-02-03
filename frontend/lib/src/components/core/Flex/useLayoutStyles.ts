@@ -16,7 +16,7 @@
 
 import { useContext, useMemo } from "react"
 
-import { Block as BlockProto } from "@streamlit/protobuf"
+import { Block as BlockProto, ImageList } from "@streamlit/protobuf"
 
 import { FlexContext } from "~lib/components/core/Flex/FlexContext"
 import { assertNever } from "~lib/util/assertNever"
@@ -38,7 +38,6 @@ export type UseLayoutStylesShape = {
   flex?: React.CSSProperties["flex"]
   overflowX?: React.CSSProperties["overflowX"]
   overflowY?: React.CSSProperties["overflowY"]
-  "--st-block-width": React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
 }
 
@@ -73,11 +72,25 @@ export const useLayoutStyles = <T>({
     if (!element) {
       return {
         width: containerWidth,
-        "--st-block-width": containerWidth ? `${containerWidth}px` : undefined,
       }
     }
 
     if (!flexContext?.direction) {
+      if (element instanceof ImageList) {
+        /**
+         * ImageList overrides its `width` param and handles its own width in the
+         * component. There should not be any element-specific carve-outs in this
+         * file, but given the long-standing behavior of ImageList, we have to
+         * make an exception here.
+         *
+         * @see WidthBehavior on the Backend
+         * @see the Image.proto file
+         */
+        return {
+          width: containerWidth,
+        }
+      }
+
       // If there is not a flexContext.direction, that means we are either not in
       // a container, or in a child of a container that does not have a
       // `direction` set.
@@ -107,10 +120,6 @@ export const useLayoutStyles = <T>({
 
       return {
         width: widthWithFallback,
-        "--st-block-width":
-          typeof commandWidth === "number"
-            ? `${commandWidth}px`
-            : widthWithFallback,
         maxWidth: "100%",
       }
     }
@@ -122,7 +131,6 @@ export const useLayoutStyles = <T>({
 
     const style: UseLayoutStylesShape = {
       width: undefined,
-      "--st-block-width": undefined,
     }
 
     const { direction } = flexContext
@@ -196,7 +204,6 @@ export const useLayoutStyles = <T>({
 
     return {
       ...style,
-      "--st-block-width": style.width,
     }
   }, [flexContext, useContainerWidth, elementWidth, containerWidth, element])
 

@@ -18,6 +18,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -48,7 +49,7 @@ import {
   WidgetLabel,
 } from "~lib/components/widgets/BaseWidget"
 import { EmotionTheme } from "~lib/theme"
-import { useEvaluatedCssProperty } from "~lib/hooks/useEvaluatedCssProperty"
+import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
   StyledInputContainer,
@@ -186,8 +187,10 @@ export const NumberInput: React.FC<Props> = ({
   const min = element.hasMin ? element.min : -Infinity
   const max = element.hasMax ? element.max : +Infinity
 
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  const {
+    values: [width],
+    elementRef,
+  } = useResizeObserver(useMemo(() => ["width"], []))
 
   const [step, setStep] = useState<number>(getStep(element))
   const initialValue = getInitialValue({ element, widgetMgr })
@@ -210,8 +213,7 @@ export const NumberInput: React.FC<Props> = ({
     : dirty
   // Hide input instructions for small widget sizes.
   const shouldShowInstructions =
-    isFocused &&
-    parseInt(width || "0", 10) > theme.breakpoints.hideWidgetDetails
+    isFocused && width > theme.breakpoints.hideWidgetDetails
 
   // Update the step if the props change
   useEffect(() => {
@@ -506,8 +508,7 @@ export const NumberInput: React.FC<Props> = ({
           }}
         />
         {/* We only want to show the increment/decrement controls when there is sufficient room to display the value and these controls. */}
-        {parseInt(width || "0", 10) >
-          theme.breakpoints.hideNumberInputControls && (
+        {width > theme.breakpoints.hideNumberInputControls && (
           <StyledInputControls>
             <StyledInputControl
               data-testid="stNumberInputStepDown"
