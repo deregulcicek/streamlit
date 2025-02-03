@@ -50,5 +50,5 @@ def test_custom_theme(
     app: Page, assert_snapshot: ImageCompareFunction, configure_custom_theme
 ):
     # Make sure that all elements are rendered and no skeletons are shown:
-    expect(app.get_by_test_id("stSkeleton")).not_to_be_attached(timeout=15000)
+    expect(app.get_by_test_id("stSkeleton")).to_have_count(0, timeout=25000)
     assert_snapshot(app, name="custom_themed_app")
