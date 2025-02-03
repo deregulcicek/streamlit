@@ -484,6 +484,12 @@ _create_option(
     visibility="hidden",
     type_=bool,
     scriptable=True,
+    deprecated=True,
+    deprecation_text="""
+        logger.enableRich has been deprecated and will be removed in a future version.
+        Exception formatting via rich will be automatically used if rich is installed.
+    """,
+    expiration_date="2025-05-03",
 )
 
 # Config Section: Client #

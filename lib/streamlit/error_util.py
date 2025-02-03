@@ -18,7 +18,6 @@ from typing import Final
 
 import streamlit
 import streamlit.elements.exception as exception
-from streamlit import config
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
 from streamlit.logger import get_logger
 
@@ -85,18 +84,17 @@ def handle_uncaught_app_exception(ex: BaseException) -> None:
 
     error_logged = False
 
-    if config.get_option("logger.enableRich"):
-        try:
-            # Print exception via rich
-            # Rich is only a soft dependency
-            # -> if not installed, we will use the default traceback formatting
-            _print_rich_exception(ex)
-            error_logged = True
-        except Exception:
-            # Rich is not installed or not compatible to our config
-            # -> Use normal traceback formatting as fallback
-            # Catching all exceptions because we don't want to leave any possibility of breaking here.
-            error_logged = False
+    try:
+        # Print exception via rich
+        # Rich is only a soft dependency
+        # -> if not installed, we will use the default traceback formatting
+        _print_rich_exception(ex)
+        error_logged = True
+    except Exception:
+        # Rich is not installed or not compatible to our config
+        # -> Use normal traceback formatting as fallback
+        # Catching all exceptions because we don't want to leave any possibility of breaking here.
+        error_logged = False
 
     if not error_logged:
         # Only log error to console if not already logged by rich
