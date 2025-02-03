@@ -16,7 +16,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, cast
+from typing import (
+    TYPE_CHECKING,
+    Literal,
+    cast,
+)
 
 from streamlit import runtime
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
