@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createEmotionColors } from "~lib/theme/getColors"
+import { createEmotionColors } from "~lib/theme"
 import {
   breakpoints,
   fonts,

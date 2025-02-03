@@ -17,7 +17,6 @@
 import { darken, getLuminance, lighten, mix, transparentize } from "color2k"
 
 import { EmotionTheme } from "./types"
-import { hasLightBackgroundColor } from "./utils"
 
 export type DerivedColors = {
   fadedText05: string
@@ -31,6 +30,13 @@ export type DerivedColors = {
   darkenedBgMix25: string
   darkenedBgMix15: string
   lightenedBg05: string
+}
+
+/**
+ * Returns true if the background color is light based on luminance.
+ */
+export function hasLightBackgroundColor(theme: EmotionTheme): boolean {
+  return getLuminance(theme.colors.bgColor) > 0.5
 }
 
 export const computeDerivedColors = (
