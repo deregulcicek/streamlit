@@ -14,9 +14,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
 from enum import Enum, EnumMeta
-from typing import Any, Final, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Final, TypeVar, overload
 
 from streamlit import config, logger
 from streamlit.dataframe_util import OptionSequence, convert_anything_to_list
@@ -26,6 +25,9 @@ from streamlit.type_util import (
     T,
     check_python_comparable,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 _LOGGER: Final = logger.get_logger(__name__)
 

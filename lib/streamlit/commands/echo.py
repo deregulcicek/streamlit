@@ -19,10 +19,12 @@ import contextlib
 import re
 import textwrap
 import traceback
-from collections.abc import Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from streamlit.runtime.metrics_util import gather_metrics
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 _SPACES_RE = re.compile("\\s*")
 _EMPTY_LINE_RE = re.compile("\\s*\n")

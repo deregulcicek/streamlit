@@ -28,7 +28,6 @@ import socket
 import subprocess
 import sys
 import time
-from collections.abc import Generator
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
@@ -58,6 +57,7 @@ from e2e_playwright.shared.performance import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
     from types import ModuleType
 
 

@@ -29,7 +29,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    List,
     Protocol,
     TypeVar,
     Union,
@@ -944,7 +943,7 @@ def convert_anything_to_list(obj: OptionSequence[V_co]) -> list[V_co]:
         return (
             []
             if data_df.empty
-            else cast(List[V_co], list(data_df.iloc[:, 0].to_list()))
+            else cast(list[V_co], list(data_df.iloc[:, 0].to_list()))
         )
     except errors.StreamlitAPIException:
         # Wrap the object into a list

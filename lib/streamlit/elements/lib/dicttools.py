@@ -16,8 +16,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 def _unflatten_single_dict(flat_dict: dict[Any, Any]) -> dict[Any, Any]:

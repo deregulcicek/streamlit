@@ -22,9 +22,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    List,
     Literal,
-    Tuple,
     Union,
     cast,
     overload,
@@ -72,9 +70,9 @@ DateValue: TypeAlias = Union[NullableScalarDateValue, Sequence[NullableScalarDat
 
 # The return value of st.date_input.
 DateWidgetRangeReturn: TypeAlias = Union[
-    Tuple[()],
-    Tuple[date],
-    Tuple[date, date],
+    tuple[()],
+    tuple[date],
+    tuple[date, date],
 ]
 DateWidgetReturn: TypeAlias = Union[date, DateWidgetRangeReturn, None]
 
@@ -229,7 +227,7 @@ class _DateInputValues:
         )
 
         if value == "today":
-            v = cast(List[date], parsed_value)[0]
+            v = cast(list[date], parsed_value)[0]
             if v < parsed_min:
                 parsed_value = [parsed_min]
             if v > parsed_max:

@@ -32,7 +32,6 @@ from typing import (
     Any,
     Callable,
     Final,
-    List,
     cast,
 )
 
@@ -62,7 +61,7 @@ _LOGGER: Final = get_logger(__name__)
 _TEXT_CURSOR: Final = " ▏"
 
 
-class StreamingOutput(List[Any]):
+class StreamingOutput(list[Any]):
     pass
 
 

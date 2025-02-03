@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Iterable
 from datetime import date, datetime, time, timedelta
 from typing import (
     TYPE_CHECKING,
@@ -45,6 +44,7 @@ from streamlit.util import HASHLIB_KWARGS
 
 if TYPE_CHECKING:
     from builtins import ellipsis
+    from collections.abc import Iterable
 
 
 Key: TypeAlias = Union[str, int]

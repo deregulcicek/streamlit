@@ -23,7 +23,6 @@ from typing import (
     Any,
     Callable,
     Generic,
-    List,
     TypeVar,
     Union,
     cast,
@@ -728,7 +727,7 @@ class ButtonGroup(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(List[T], state[self.id])
+            return cast(list[T], state[self.id])
 
     @property
     def indices(self) -> Sequence[int]:
@@ -816,7 +815,7 @@ class Multiselect(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(List[T], state[self.id])
+            return cast(list[T], state[self.id])
 
     @property
     def indices(self) -> Sequence[int]:

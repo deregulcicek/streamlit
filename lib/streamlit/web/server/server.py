@@ -19,7 +19,6 @@ import logging
 import mimetypes
 import os
 import sys
-from collections.abc import Awaitable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
@@ -64,6 +63,7 @@ from streamlit.web.server.stats_request_handler import StatsRequestHandler
 from streamlit.web.server.upload_file_request_handler import UploadFileRequestHandler
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
     from ssl import SSLContext
 
 _LOGGER: Final = get_logger(__name__)

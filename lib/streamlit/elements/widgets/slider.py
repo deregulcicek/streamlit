@@ -23,8 +23,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    List,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -65,16 +63,16 @@ SliderNumericT = TypeVar("SliderNumericT", int, float)
 SliderDatelikeT = TypeVar("SliderDatelikeT", date, time, datetime)
 
 SliderNumericSpanT: TypeAlias = Union[
-    List[SliderNumericT],
-    Tuple[()],
-    Tuple[SliderNumericT],
-    Tuple[SliderNumericT, SliderNumericT],
+    list[SliderNumericT],
+    tuple[()],
+    tuple[SliderNumericT],
+    tuple[SliderNumericT, SliderNumericT],
 ]
 SliderDatelikeSpanT: TypeAlias = Union[
-    List[SliderDatelikeT],
-    Tuple[()],
-    Tuple[SliderDatelikeT],
-    Tuple[SliderDatelikeT, SliderDatelikeT],
+    list[SliderDatelikeT],
+    tuple[()],
+    tuple[SliderDatelikeT],
+    tuple[SliderDatelikeT, SliderDatelikeT],
 ]
 
 StepNumericT: TypeAlias = SliderNumericT
@@ -96,8 +94,8 @@ SliderValue: TypeAlias = Union[
 ]
 SliderReturnGeneric: TypeAlias = Union[
     SliderValueT,
-    Tuple[SliderValueT],
-    Tuple[SliderValueT, SliderValueT],
+    tuple[SliderValueT],
+    tuple[SliderValueT, SliderValueT],
 ]
 SliderReturn: TypeAlias = Union[
     SliderReturnGeneric[int],

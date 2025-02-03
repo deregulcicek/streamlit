@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Final, List, cast
+from typing import TYPE_CHECKING, Callable, Final, cast
 
 from streamlit.logger import get_logger
 from streamlit.runtime.app_session import AppSession
@@ -162,6 +162,6 @@ class WebsocketSessionManager(SessionManager):
 
     def list_sessions(self) -> list[SessionInfo]:
         return (
-            cast(List[SessionInfo], self.list_active_sessions())
+            cast(list[SessionInfo], self.list_active_sessions())
             + self._session_storage.list()
         )

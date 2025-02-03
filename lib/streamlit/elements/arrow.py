@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Hashable, Iterable
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
@@ -54,6 +53,8 @@ from streamlit.runtime.scriptrunner_utils.script_run_context import (
 from streamlit.runtime.state import WidgetCallback, register_widget
 
 if TYPE_CHECKING:
+    from collections.abc import Hashable, Iterable
+
     from numpy import typing as npt
     from pandas import DataFrame
 

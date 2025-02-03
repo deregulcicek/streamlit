@@ -23,7 +23,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Final,
-    List,
     Union,
     cast,
 )
@@ -253,7 +252,7 @@ class WStates(MutableMapping[str, Any]):
             for widget_id in self.states.keys()
             if self.get_serialized(widget_id)
         ]
-        states = cast(List[WidgetStateProto], states)
+        states = cast(list[WidgetStateProto], states)
         return states
 
     def call_callback(self, widget_id: str) -> None:

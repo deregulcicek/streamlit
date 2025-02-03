@@ -19,7 +19,6 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections.abc import Iterable, Sequence
 from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import (
@@ -58,6 +57,8 @@ from streamlit.runtime.state import WidgetCallback, register_widget
 from streamlit.util import HASHLIB_KWARGS
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
     import altair as alt
 
     from streamlit.dataframe_util import Data

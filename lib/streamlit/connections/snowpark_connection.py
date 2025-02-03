@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import threading
 from collections import ChainMap
-from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, cast
 
@@ -36,6 +35,7 @@ from streamlit.errors import StreamlitAPIException
 from streamlit.runtime.caching import cache_data
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from datetime import timedelta
 
     from pandas import DataFrame

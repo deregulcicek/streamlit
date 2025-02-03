@@ -13,7 +13,6 @@
 # limitations under the License.
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from textwrap import dedent
 from typing import TYPE_CHECKING, Any, Callable, Generic, cast, overload
@@ -50,6 +49,8 @@ from streamlit.type_util import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from streamlit.delta_generator import DeltaGenerator
 
 

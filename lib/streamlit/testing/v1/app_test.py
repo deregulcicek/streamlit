@@ -18,7 +18,6 @@ import inspect
 import tempfile
 import textwrap
 import traceback
-from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import MagicMock
@@ -89,6 +88,8 @@ from streamlit.testing.v1.util import patch_config_options
 from streamlit.util import HASHLIB_KWARGS, calc_md5
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from streamlit.proto.WidgetStates_pb2 import WidgetStates
 
 TMP_DIR = tempfile.TemporaryDirectory()

@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import contextlib
 import threading
-from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal, Union
 
@@ -29,6 +28,7 @@ from streamlit.runtime.scriptrunner_utils.script_run_context import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import FunctionType
 
     from google.protobuf.message import Message

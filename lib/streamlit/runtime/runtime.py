@@ -17,7 +17,6 @@ from __future__ import annotations
 import asyncio
 import time
 import traceback
-from collections.abc import Awaitable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -59,6 +58,8 @@ from streamlit.runtime.stats import StatsManager
 from streamlit.runtime.websocket_session_manager import WebsocketSessionManager
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
+
     from streamlit.components.types.base_component_registry import BaseComponentRegistry
     from streamlit.proto.BackMsg_pb2 import BackMsg
     from streamlit.runtime.caching.storage import CacheStorageManager

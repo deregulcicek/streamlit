@@ -21,8 +21,10 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Collection
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 SNOWSQL_CONNECTION_FILE = "~/.snowsql/config"
 
