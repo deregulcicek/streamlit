@@ -28,7 +28,6 @@ import { fonts } from "~lib/theme/primitives/typography"
 import { ThemeConfig } from "~lib/theme/types"
 import { LocalStore } from "~lib/util/storageUtils"
 
-import { hasLightBackgroundColor } from "./getColors"
 import {
   AUTO_THEME_NAME,
   bgColorToBaseString,
@@ -42,6 +41,7 @@ import {
   getDefaultTheme,
   getHostSpecifiedTheme,
   getSystemTheme,
+  hasLightBackgroundColor,
   isColor,
   isPresetTheme,
   removeCachedTheme,
