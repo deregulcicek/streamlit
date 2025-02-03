@@ -16,7 +16,7 @@
 import os
 
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction
 
@@ -51,4 +51,6 @@ def configure_custom_theme():
 def test_custom_theme(
     app: Page, assert_snapshot: ImageCompareFunction, configure_custom_theme
 ):
+    # Make sure that all elements are rendered and no skeletons are shown:
+    expect(app.get_by_test_id("stSkeleton")).not_to_be_attached()
     assert_snapshot(app, name="custom_themed_app")
