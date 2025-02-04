@@ -421,9 +421,9 @@ describe("HostCommunicationManager messaging", () => {
       textColor: "#1A1D21",
       // Option is deprecated, but we still test to ensure backwards compatibility:
       widgetBorderColor: "#D3DAE8",
-      // Option is deprecated, but we still test to ensure backwards:
+      // Option is deprecated, but we still test to ensure backwards compatibility:
       widgetBackgroundColor: "#FFFFFF",
-      // Option is deprecated, but we still test to ensure backwards:
+      // Option is deprecated, but we still test to ensure backwards compatibility:
       skeletonBackgroundColor: "#CCDDEE",
     }
     dispatchEvent(
