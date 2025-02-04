@@ -33,8 +33,11 @@ const mockCustomThemeConfig = {
   backgroundColor: "#FFFFFF",
   secondaryBackgroundColor: "#F5F5F5",
   textColor: "#1A1D21",
+  // Option is deprecated, but we still test to ensure backwards:
   widgetBackgroundColor: "#FFFFFF",
+  // Option is deprecated, but we still test to ensure backwards:
   widgetBorderColor: "#D3DAE8",
+  // Option is deprecated, but we still test to ensure backwards:
   skeletonBackgroundColor: "#CCDDEE",
   fontFaces: [
     {

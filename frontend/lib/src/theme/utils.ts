@@ -194,8 +194,6 @@ export const createEmotionTheme = (
     backgroundColor: bgColor,
     primaryColor: primary,
     textColor: bodyText,
-    skeletonBackgroundColor,
-    widgetBackgroundColor,
     widgetBorderColor,
     borderColor,
     linkColor,
@@ -207,10 +205,6 @@ export const createEmotionTheme = (
   if (bodyText) newGenericColors.bodyText = bodyText
   if (secondaryBg) newGenericColors.secondaryBg = secondaryBg
   if (bgColor) newGenericColors.bgColor = bgColor
-  if (widgetBackgroundColor)
-    newGenericColors.widgetBackgroundColor = widgetBackgroundColor
-  if (skeletonBackgroundColor)
-    newGenericColors.skeletonBackgroundColor = skeletonBackgroundColor
   if (linkColor) newGenericColors.link = linkColor
 
   // Secondary color is not yet configurable. Set secondary color to primary color
