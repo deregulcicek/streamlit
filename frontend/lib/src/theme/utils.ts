@@ -225,11 +225,10 @@ export const createEmotionTheme = (
 
   if (showBorderAroundInputs || widgetBorderColor) {
     // widgetBorderColor from the themeInput is deprecated. For compatibility
-    // with older SiS theming, we still activate the border around inputs if
-    // it is provided, but we are not using widgetBorderColor from theme input
-    // as color value.
+    // with older SiS theming, we still apply it here if provided, but we should
+    // consider full removing it at some point.
     conditionalOverrides.colors.widgetBorderColor =
-      conditionalOverrides.colors.borderColor
+      widgetBorderColor || conditionalOverrides.colors.borderColor
   }
 
   if (notNullOrUndefined(roundness)) {
