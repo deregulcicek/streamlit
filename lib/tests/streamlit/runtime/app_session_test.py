@@ -683,6 +683,10 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         "secondaryBackgroundColor": "blue",
         "textColor": "black",
         "font": "serif",
+        "roundness": 0.75,
+        "borderColor": "#ff0000",
+        "showBorderAroundInputs": True,
+        "linkColor": "#2EC163",
     }
 
     for k, v in overrides.items():
@@ -1048,6 +1052,10 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "secondaryBackgroundColor": None,
                     "textColor": None,
                     "font": None,
+                    "roundness": None,
+                    "borderColor": None,
+                    "showBorderAroundInputs": None,
+                    "linkColor": None,
                 }
             )
         )
@@ -1067,6 +1075,10 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "backgroundColor": None,
                     "secondaryBackgroundColor": None,
                     "textColor": None,
+                    "roundness": None,
+                    "borderColor": None,
+                    "showBorderAroundInputs": None,
+                    "linkColor": None,
                 }
             )
         )
@@ -1080,6 +1092,10 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         # In proto3, primitive fields are technically always required and are
         # set to the type's zero value when undefined.
         assert new_session_msg.custom_theme.background_color == ""
+        assert not new_session_msg.custom_theme.HasField("roundness")
+        assert not new_session_msg.custom_theme.HasField("border_color")
+        assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
+        assert not new_session_msg.custom_theme.HasField("link_color")
 
     @patch("streamlit.runtime.app_session.config")
     def test_can_specify_all_options(self, patched_config):
@@ -1095,6 +1111,12 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.HasField("custom_theme")
         assert new_session_msg.custom_theme.primary_color == "coral"
         assert new_session_msg.custom_theme.background_color == "white"
+        assert new_session_msg.custom_theme.text_color == "black"
+        assert new_session_msg.custom_theme.secondary_background_color == "blue"
+        assert new_session_msg.custom_theme.roundness == 0.75
+        assert new_session_msg.custom_theme.border_color == "#ff0000"
+        assert new_session_msg.custom_theme.show_border_around_inputs is True
+        assert new_session_msg.custom_theme.link_color == "#2EC163"
 
     @patch("streamlit.runtime.app_session._LOGGER")
     @patch("streamlit.runtime.app_session.config")

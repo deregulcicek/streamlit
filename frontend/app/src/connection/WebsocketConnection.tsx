@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import styled from "@emotion/styled"
+import { getLogger } from "loglevel"
 
 import {
-  LOG,
   PING_MAXIMUM_RETRY_PERIOD_MS,
   PING_MINIMUM_RETRY_PERIOD_MS,
   WEBSOCKET_STREAM_PATH,
@@ -30,29 +29,21 @@ import {
   OnRetry,
 } from "@streamlit/app/src/connection/types"
 import {
-  BackMsg,
-  BaseUriParts,
   buildWsUri,
-  ForwardMsg,
   ForwardMsgCache,
   getCookie,
-  IBackMsg,
   IHostConfigResponse,
   isNullOrUndefined,
-  logError,
-  logMessage,
-  logWarning,
   notNullOrUndefined,
-  PerformanceEvents,
-  SessionInfo,
   StreamlitEndpoints,
 } from "@streamlit/lib"
+import { BackMsg, ForwardMsg, IBackMsg } from "@streamlit/protobuf"
 import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
 import { doInitPings } from "@streamlit/app/src/connection/DoInitPings"
 
 export interface Args {
   /** The application's SessionInfo instance */
-  sessionInfo: SessionInfo
+  getLastSessionId: () => string | undefined
 
   endpoints: StreamlitEndpoints
 
@@ -61,7 +52,7 @@ export interface Args {
    * all fail, we'll retry from the top. The number of retries depends on
    * whether this is a local connection.
    */
-  baseUriPartsList: BaseUriParts[]
+  baseUriPartsList: URL[]
 
   /**
    * Function called when our ConnectionState changes.
@@ -102,6 +93,8 @@ export interface Args {
 interface MessageQueue {
   [index: number]: any
 }
+
+const log = getLogger("WebsocketConnection")
 
 /**
  * Events of the WebsocketConnection state machine. Here's what the FSM looks
@@ -188,7 +181,7 @@ export class WebsocketConnection {
    * Return the BaseUriParts for the server we're connected to,
    * if we are connected to a server.
    */
-  public getBaseUriParts(): BaseUriParts | undefined {
+  public getBaseUriParts(): URL | undefined {
     if (this.state === ConnectionState.CONNECTED) {
       return this.args.baseUriPartsList[this.uriIndex]
     }
@@ -201,7 +194,7 @@ export class WebsocketConnection {
 
   // This should only be called inside stepFsm().
   private setFsmState(state: ConnectionState, errMsg?: string): void {
-    logMessage(LOG, `New state: ${state}`)
+    log.info(`New state: ${state}`)
     this.state = state
 
     // Perform pre-callback actions when entering certain states.
@@ -240,7 +233,7 @@ export class WebsocketConnection {
    * will be displayed to the user in a "Connection Error" dialog.
    */
   private stepFsm(event: Event, errMsg?: string): void {
-    logMessage(LOG, `State: ${this.state}; Event: ${event}`)
+    log.info(`State: ${this.state}; Event: ${event}`)
 
     if (
       event === "FATAL_ERROR" &&
@@ -297,8 +290,7 @@ export class WebsocketConnection {
         // process any events, and it's possible we're in this state because
         // of a fatal error. Just log these events rather than throwing more
         // exceptions.
-        logWarning(
-          LOG,
+        log.warn(
           `Discarding ${event} while in ${ConnectionState.DISCONNECTED_FOREVER}`
         )
         return
@@ -342,13 +334,12 @@ export class WebsocketConnection {
     const hostAuthToken = await this.args.claimHostAuthToken()
     const xsrfCookie = getCookie("_streamlit_xsrf")
     this.args.resetHostAuthToken()
+    const lastSessionId = this.args.getLastSessionId()
     return [
       // NOTE: We have to set the auth token to some arbitrary placeholder if
       // not provided since the empty string is an invalid protocol option.
       hostAuthToken ?? xsrfCookie ?? "PLACEHOLDER_AUTH_TOKEN",
-      ...(this.args.sessionInfo.last?.sessionId
-        ? [this.args.sessionInfo.last?.sessionId]
-        : []),
+      ...(lastSessionId ? [lastSessionId] : []),
     ]
   }
 
@@ -364,7 +355,7 @@ export class WebsocketConnection {
       throw new Error("Websocket already exists")
     }
 
-    logMessage(LOG, "creating WebSocket")
+    log.info("creating WebSocket")
 
     // NOTE: We repurpose the Sec-WebSocket-Protocol header (set via the second
     // parameter to the WebSocket constructor) here in a slightly unfortunate
@@ -391,7 +382,7 @@ export class WebsocketConnection {
       if (checkWebsocket()) {
         this.handleMessage(event.data).catch(reason => {
           const err = `Failed to process a Websocket message (${reason})`
-          logError(LOG, err)
+          log.error(err)
           this.stepFsm("FATAL_ERROR", err)
         })
       }
@@ -399,14 +390,14 @@ export class WebsocketConnection {
 
     this.websocket.addEventListener("open", () => {
       if (checkWebsocket()) {
-        logMessage(LOG, "WebSocket onopen")
+        log.info("WebSocket onopen")
         this.stepFsm("CONNECTION_SUCCEEDED")
       }
     })
 
     this.websocket.addEventListener("close", () => {
       if (checkWebsocket()) {
-        logWarning(LOG, "WebSocket onclose")
+        log.warn("WebSocket onclose")
         this.closeConnection()
         this.stepFsm("CONNECTION_CLOSED")
       }
@@ -414,7 +405,7 @@ export class WebsocketConnection {
 
     this.websocket.addEventListener("error", () => {
       if (checkWebsocket()) {
-        logError(LOG, "WebSocket onerror")
+        log.error("WebSocket onerror")
         this.closeConnection()
         this.stepFsm("CONNECTION_ERROR")
       }
@@ -437,7 +428,7 @@ export class WebsocketConnection {
 
       if (isNullOrUndefined(this.wsConnectionTimeoutId)) {
         // Sometimes the clearTimeout doesn't work. No idea why :-/
-        logWarning(LOG, "Timeout fired after cancellation")
+        log.warn("Timeout fired after cancellation")
         return
       }
 
@@ -451,12 +442,12 @@ export class WebsocketConnection {
       }
 
       if (this.websocket.readyState === 0 /* CONNECTING */) {
-        logMessage(LOG, `${uri} timed out`)
+        log.info(`${uri} timed out`)
         this.closeConnection()
         this.stepFsm("CONNECTION_TIMED_OUT")
       }
     }, WEBSOCKET_TIMEOUT_MS)
-    logMessage(LOG, `Set WS timeout ${this.wsConnectionTimeoutId}`)
+    log.info(`Set WS timeout ${this.wsConnectionTimeoutId}`)
   }
 
   private closeConnection(): void {
@@ -472,7 +463,7 @@ export class WebsocketConnection {
     }
 
     if (notNullOrUndefined(this.wsConnectionTimeoutId)) {
-      logMessage(LOG, `Clearing WS timeout ${this.wsConnectionTimeoutId}`)
+      log.info(`Clearing WS timeout ${this.wsConnectionTimeoutId}`)
       window.clearTimeout(this.wsConnectionTimeoutId)
       this.wsConnectionTimeoutId = undefined
     }
@@ -505,24 +496,13 @@ export class WebsocketConnection {
     const messageIndex = this.nextMessageIndex
     this.nextMessageIndex += 1
 
-    PerformanceEvents.record({ name: "BeginHandleMessage", messageIndex })
-
     const encodedMsg = new Uint8Array(data)
     const msg = ForwardMsg.decode(encodedMsg)
-
-    PerformanceEvents.record({
-      name: "DecodedMessage",
-      messageIndex,
-      messageType: msg.type,
-      len: data.byteLength,
-    })
 
     this.messageQueue[messageIndex] = await this.cache.processMessagePayload(
       msg,
       encodedMsg
     )
-
-    PerformanceEvents.record({ name: "GotCachedPayload", messageIndex })
 
     // Dispatch any pending messages in the queue. This may *not* result
     // in our just-decoded message being dispatched: if there are other
@@ -531,23 +511,9 @@ export class WebsocketConnection {
     while (this.lastDispatchedMessageIndex + 1 in this.messageQueue) {
       const dispatchMessageIndex = this.lastDispatchedMessageIndex + 1
       this.args.onMessage(this.messageQueue[dispatchMessageIndex])
-      PerformanceEvents.record({
-        name: "DispatchedMessage",
-        messageIndex: dispatchMessageIndex,
-        messageType: this.messageQueue[dispatchMessageIndex].type,
-      })
+
       delete this.messageQueue[dispatchMessageIndex]
       this.lastDispatchedMessageIndex = dispatchMessageIndex
     }
   }
 }
-
-export const StyledBashCode = styled.code(({ theme }) => ({
-  fontFamily: theme.genericFonts.codeFont,
-  fontSize: theme.fontSizes.sm,
-  "&::before": {
-    content: '"$"',
-    // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
-    marginRight: "1ex",
-  },
-}))

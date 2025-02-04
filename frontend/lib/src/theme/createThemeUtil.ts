@@ -83,9 +83,7 @@ export const createThemeOverrides = (
     lineHeightTight: lineHeights.tight,
   }
 
-  const widgetBackgroundColor = colors.widgetBackgroundColor
-    ? colors.widgetBackgroundColor
-    : colors.secondaryBg
+  const widgetBackgroundColor = colors.secondaryBg
 
   // We want menuFill to always use bgColor. But when in sidebar, bgColor and secondaryBg are
   // swapped! So here we unswap them.
@@ -111,7 +109,7 @@ export const createThemeOverrides = (
       buttonBorderRadiusMini: radii.md, // Unused today.
       buttonBorderRadius: radii.default,
       /** Checkbox */
-      checkboxBorderRadius: radii.md,
+      checkboxBorderRadius: `min(${radii.md}, ${radii.maxCheckbox})`,
       /** Input, Select, Textarea */
       inputBorderRadiusMini: radii.md, // Unused today.
       inputBorderRadius: radii.default,

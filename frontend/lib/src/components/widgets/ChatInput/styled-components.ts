@@ -24,22 +24,34 @@ export interface StyledChatInputContainerProps {
 export const StyledChatInputContainer =
   styled.div<StyledChatInputContainerProps>(({ theme, width }) => {
     return {
+      border: `${theme.sizes.borderWidth} solid`,
+      borderColor: theme.colors.widgetBorderColor ?? theme.colors.transparent,
       borderRadius: theme.radii.chatInput,
       display: "flex",
-      backgroundColor:
-        theme.colors.widgetBackgroundColor ?? theme.colors.secondaryBg,
+      backgroundColor: theme.colors.secondaryBg,
       width: `${width}px`,
+      overflow: "hidden",
+
+      ":focus-within": {
+        borderColor: theme.colors.primary,
+      },
+
+      "&.dropzone": {
+        borderColor: theme.colors.primary,
+        borderRadius: theme.radii.full,
+        height: theme.sizes.emptyDropdownHeight,
+      },
     }
   })
 
 export const StyledChatInput = styled.div(({ theme }) => {
   return {
-    backgroundColor: theme.colors.transparent,
     position: "relative",
     flexGrow: 1,
-    borderRadius: theme.radii.chatInput,
     display: "flex",
     alignItems: "center",
+    paddingLeft: theme.spacing.lg,
+    gap: theme.spacing.sm,
   }
 })
 
