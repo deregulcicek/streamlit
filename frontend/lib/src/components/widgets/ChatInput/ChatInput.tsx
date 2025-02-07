@@ -466,7 +466,7 @@ function ChatInput({
                 }}
               />
               {/* Hide the character limit in small widget sizes */}
-              {width > theme.breakpoints.hideWidgetDetails && (
+              {/* {width > theme.breakpoints.hideWidgetDetails && (
                 <StyledInputInstructionsContainer>
                   <InputInstructions
                     dirty={dirty}
@@ -477,7 +477,7 @@ function ChatInput({
                     inForm={false}
                   />
                 </StyledInputInstructionsContainer>
-              )}
+              )} */}
               <StyledSendIconButtonContainer>
                 <StyledSendIconButton
                   onClick={handleSubmit}

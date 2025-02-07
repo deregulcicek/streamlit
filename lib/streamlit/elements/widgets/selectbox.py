@@ -86,6 +86,7 @@ class SelectboxMixin:
         key: Key | None = None,
         help: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -104,6 +105,7 @@ class SelectboxMixin:
         key: Key | None = None,
         help: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -122,6 +124,7 @@ class SelectboxMixin:
         key: Key | None = None,
         help: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -256,6 +259,7 @@ class SelectboxMixin:
             key=key,
             help=help,
             on_change=on_change,
+            flex=flex,
             args=args,
             kwargs=kwargs,
             placeholder=placeholder,
@@ -273,6 +277,7 @@ class SelectboxMixin:
         key: Key | None = None,
         help: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -331,6 +336,9 @@ class SelectboxMixin:
         selectbox_proto.label_visibility.value = get_label_visibility_proto_value(
             label_visibility
         )
+
+        if flex is not None:
+            selectbox_proto.flex = flex
 
         if help is not None:
             selectbox_proto.help = dedent(help)

@@ -46,22 +46,23 @@ message Block {
       BOTTOM_TO_TOP = 1;
     }
     optional Direction direction = 4;
-    enum HorizontalAlignment {
-      HORIZONTAL_START = 0;
-      HORIZONTAL_CENTER = 1;
-      HORIZONTAL_END = 2;
-      HORIZONTAL_STRETCH = 3;
-      HORIZONTAL_DISTRIBUTE = 4;
+    enum Justify {
+      JUSTIFY_START = 0;
+      JUSTIFY_END = 1;
+      JUSTIFY_CENTER = 2;
+      SPACE_BETWEEN = 3;
+      SPACE_AROUND = 4;
+      SPACE_EVENLY = 5;
     }
-    optional HorizontalAlignment horizontal_alignment = 5;
-    enum VerticalAlignment {
-      VERTICAL_TOP = 0;
-      VERTICAL_CENTER = 1;
-      VERTICAL_BOTTOM = 2;
-      VERTICAL_STRETCH = 3;
-      VERTICAL_DISTRIBUTE = 4;
+    optional Justify justify = 5;
+    enum Align {
+      ALIGN_START = 0;
+      ALIGN_END = 1;
+      ALIGN_CENTER = 2;
+      STRETCH = 3;
+      BASELINE = 4;
     }
-    optional VerticalAlignment vertical_alignment = 6;
+    optional Align align = 6;
     bool wrap = 7;
   }
 
@@ -72,23 +73,24 @@ message Block {
       END_TO_START = 1;
     }
     optional Direction direction = 2;
-    enum HorizontalAlignment {
-      HORIZONTAL_START = 0;
-      HORIZONTAL_CENTER = 1;
-      HORIZONTAL_END = 2;
-      HORIZONTAL_STRETCH = 3;
-      HORIZONTAL_DISTRIBUTE = 4;
+    enum Justify {
+      JUSTIFY_START = 0;
+      JUSTIFY_END = 1;
+      JUSTIFY_CENTER = 2;
+      SPACE_BETWEEN = 3;
+      SPACE_AROUND = 4;
+      SPACE_EVENLY = 5;
     }
-    optional HorizontalAlignment horizontal_alignment = 3;
-    enum VerticalAlignment {
-      VERTICAL_TOP = 0;
-      VERTICAL_CENTER = 1;
-      VERTICAL_BOTTOM = 2;
-      VERTICAL_STRETCH = 3;
-      VERTICAL_DISTRIBUTE = 4;
+    optional Justify justify = 5;
+    enum Align {
+      ALIGN_START = 0;
+      ALIGN_END = 1;
+      ALIGN_CENTER = 2;
+      STRETCH = 3;
+      BASELINE = 4;
     }
-    optional VerticalAlignment vertical_alignment = 4;
-    bool wrap = 6;
+    optional Align align = 6;
+    bool wrap = 7;
   }
 
   message Column {
