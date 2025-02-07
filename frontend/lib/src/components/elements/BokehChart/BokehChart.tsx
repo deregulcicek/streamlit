@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback, useEffect } from "react"
+import React, {
+  memo,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react"
 
 import { BokehChart as BokehChartProto } from "@streamlit/protobuf"
 
@@ -28,6 +35,30 @@ import "~lib/vendor/bokeh/bokeh-gl-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-mathjax-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-tables-2.4.3.esm.min"
 import "~lib/vendor/bokeh/bokeh-widgets-2.4.3.esm.min"
+
+//#region Manual types for Bokeh types
+interface BokehPlot {
+  type: string
+  attributes: {
+    plot_width: number
+    plot_height: number
+  }
+}
+
+interface BokehData {
+  doc?: {
+    roots?: {
+      references?: BokehPlot[]
+    }
+  }
+}
+//#endregion
+
+const removeAllChildNodes = (element: Node): void => {
+  while (element.lastChild) {
+    element.lastChild.remove()
+  }
+}
 
 export interface BokehChartProps {
   width: number
@@ -47,12 +78,12 @@ export function BokehChart({
 }: Readonly<BokehChartProps>): ReactElement {
   const chartId = `bokeh-chart-${element.elementId}`
 
-  const memoizedGetChartData = useCallback(() => {
+  const chartData = useMemo<BokehData>(() => {
     return JSON.parse(element.figure)
-  }, [element])
+  }, [element.figure])
 
   const getChartDimensions = useCallback(
-    (plot: any): Dimensions => {
+    (plot: BokehPlot): Dimensions => {
       // Default values
       let chartWidth: number = plot.attributes.plot_width
       let chartHeight: number = plot.attributes.plot_height
@@ -70,64 +101,82 @@ export function BokehChart({
     [element.useContainerWidth, height, width]
   )
 
-  const removeAllChildNodes = (element: Node): void => {
-    while (element.lastChild) {
-      element.lastChild.remove()
-    }
-  }
+  /**
+   * updateIdRef helps prevent race conditions when multiple updates are
+   * triggered in quick succession. Since Bokeh's embed_item is asynchronous, a
+   * newer update could complete before an older one, which would result in
+   * multiple Bokeh charts being rendered. By tracking the most recent update
+   * ID, we ensure only the latest update's results are displayed.
+   */
+  const updateIdRef = useRef(0)
+  const chartRef = useRef<HTMLDivElement>(null)
 
-  const updateChart = (data: any): void => {
-    const chart = document.getElementById(chartId)
-
-    /**
-     * When you create a bokeh chart in your python script, you can specify
-     * the width: p = figure(title="simple line example", x_axis_label="x", y_axis_label="y", plot_width=200);
-     * In that case, the json object will contains an attribute called
-     * plot_width (or plot_heigth) inside the plot reference.
-     * If that values are missing, we can set that values to make the chart responsive.
-     */
-    const plot =
-      data && data.doc && data.doc.roots && data.doc.roots.references
-        ? data.doc.roots.references.find((e: any) => e.type === "Plot")
-        : undefined
-
-    if (plot) {
-      const { chartWidth, chartHeight } = getChartDimensions(plot)
-
-      if (chartWidth > 0) {
-        plot.attributes.plot_width = chartWidth
+  const updateChart = useCallback(
+    (data: BokehData, updateId: number): void => {
+      if (!chartRef.current) {
+        return
       }
-      if (chartHeight > 0) {
-        plot.attributes.plot_height = chartHeight
+
+      /**
+       * When you create a bokeh chart in your python script, you can specify
+       * the width: p = figure(title="simple line example", x_axis_label="x", y_axis_label="y", plot_width=200);
+       * In that case, the json object will contains an attribute called
+       * plot_width (or plot_heigth) inside the plot reference.
+       * If that values are missing, we can set that values to make the chart responsive.
+       */
+      const plot = data?.doc?.roots?.references?.find(
+        (e: BokehPlot) => e.type === "Plot"
+      )
+
+      if (plot) {
+        const { chartWidth, chartHeight } = getChartDimensions(plot)
+        if (chartWidth > 0) {
+          plot.attributes.plot_width = chartWidth
+        }
+        if (chartHeight > 0) {
+          plot.attributes.plot_height = chartHeight
+        }
       }
-    }
 
-    if (chart !== null) {
-      removeAllChildNodes(chart)
-      // embed_item is actually an async function call, so a race condition
-      // can occur if updateChart is called twice, leading to two Bokeh charts
-      // to be embedded at the same time.
-      Bokeh.embed.embed_item(data, chartId)
-    }
-  }
+      removeAllChildNodes(chartRef.current)
 
-  // TODO: Update to match React best practices
-  // eslint-disable-next-line react-compiler/react-compiler
-  const memoizedUpdateChart = useCallback(updateChart, [
-    chartId,
-    getChartDimensions,
-  ])
+      Bokeh.embed.embed_item(data, chartId).then(() => {
+        // Only keep this update if it's still the most recent
+        if (updateId !== updateIdRef.current && chartRef.current) {
+          removeAllChildNodes(chartRef.current)
+        }
+      })
+    },
+    [chartId, getChartDimensions]
+  )
 
-  // We only want useEffect to run once per prop update, because of the embed_item
-  // race condition mentioned per run. Thus we pass in all props and methods
-  // into the useEffect dependency array.
   useEffect(() => {
-    memoizedUpdateChart(memoizedGetChartData())
-  }, [width, height, element, memoizedGetChartData, memoizedUpdateChart])
+    updateIdRef.current += 1
+    const currentUpdateId = updateIdRef.current
+
+    if (!chartRef.current) {
+      return
+    }
+
+    const cleanup = (): void => {
+      if (chartRef.current) {
+        removeAllChildNodes(chartRef.current)
+      }
+    }
+
+    updateChart(chartData, currentUpdateId)
+
+    return cleanup
+  }, [width, height, element, chartData, updateChart])
 
   return (
-    <div id={chartId} className="stBokehChart" data-testid="stBokehChart" />
+    <div
+      ref={chartRef}
+      id={chartId}
+      className="stBokehChart"
+      data-testid="stBokehChart"
+    />
   )
 }
 
-export default BokehChart
+export default memo(BokehChart)

@@ -33,7 +33,7 @@ vi.mock("~lib/vendor/bokeh/bokeh.esm", () => ({
     register_plugin: vi.fn(),
     // actual function that we need to mock and check
     embed: {
-      embed_item: vi.fn(),
+      embed_item: vi.fn().mockImplementation(() => Promise.resolve()),
     },
   },
 }))
@@ -289,10 +289,9 @@ const getProps = (
 
 expect.extend({
   toMatchBokehDimensions(data, width, height) {
-    const plot =
-      data && data.doc && data.doc.roots && data.doc.roots.references
-        ? data.doc.roots.references.find((e: any) => e.type === "Plot")
-        : undefined
+    const plot = data?.doc?.roots?.references?.find(
+      (e: any) => e.type === "Plot"
+    )
 
     if (!plot) {
       return {
@@ -364,10 +363,54 @@ describe("BokehChart element", () => {
     })
   })
 
-  it("should re-render the chart when the component updates", () => {
-    const props = getProps()
-    const { rerender } = render(<BokehChart {...props} />)
-    rerender(<BokehChart {...props} width={500} height={500} />)
-    expect(mockBokehEmbed.embed.embed_item).toHaveBeenCalledTimes(2)
+  describe("Chart updates", () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it("should re-render the chart when dimensions change", async () => {
+      const props = getProps()
+      const { rerender } = render(<BokehChart {...props} />)
+
+      expect(mockBokehEmbed.embed.embed_item).toHaveBeenCalledTimes(1)
+      await vi.runAllTimersAsync()
+      expect(mockBokehEmbed.embed.embed_item).toHaveBeenCalledTimes(1)
+
+      // Update dimensions
+      rerender(<BokehChart {...props} width={500} height={500} />)
+      await vi.runAllTimersAsync()
+
+      expect(mockBokehEmbed.embed.embed_item).toHaveBeenCalledTimes(2)
+
+      // Check the last call arguments (from the final update)
+      // @ts-expect-error
+      const lastCallArgs = mockBokehEmbed.embed.embed_item.mock.calls.at(-1)
+      // @ts-expect-error
+      expect(lastCallArgs[0]).toMatchBokehDimensions(500, 500)
+      expect(lastCallArgs[1]).toBe("bokeh-chart-1")
+    })
+
+    it("should handle race conditions during rapid updates", async () => {
+      const props = getProps()
+      const { rerender } = render(<BokehChart {...props} />)
+      await vi.runAllTimersAsync()
+
+      // Simulate multiple rapid updates
+      rerender(<BokehChart {...props} width={500} />)
+      rerender(<BokehChart {...props} width={600} />)
+      rerender(<BokehChart {...props} width={700} />)
+
+      await vi.runAllTimersAsync()
+
+      // @ts-expect-error
+      const lastCallArgs = mockBokehEmbed.embed.embed_item.mock.calls.at(-1)
+      // @ts-expect-error
+      expect(lastCallArgs[0]).toMatchBokehDimensions(700, 400)
+      expect(lastCallArgs[1]).toBe("bokeh-chart-1")
+    })
   })
 })
