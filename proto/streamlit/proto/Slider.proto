@@ -58,4 +58,6 @@ message Slider {
   LabelVisibilityMessage label_visibility = 16;
 
   Type type = 17;
+
+  string flex = 18;
 }

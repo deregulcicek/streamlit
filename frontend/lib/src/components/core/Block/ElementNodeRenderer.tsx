@@ -716,7 +716,7 @@ const RawElementNodeRenderer = (
 }
 
 const StyledElementContainer2: FC<
-  Omit<Parameters<typeof StyledElementContainer>[0], "width"> & {
+  Omit<Parameters<typeof StyledElementContainer>[0], "width" | "flex"> & {
     node: ElementNode
     width: number
   }
@@ -731,7 +731,8 @@ const StyledElementContainer2: FC<
       (node.element?.type && node.element[node.element.type]) || undefined,
   })
 
-  return <StyledElementContainer width={style.width} {...rest} style={style} />
+
+  return <StyledElementContainer width={style.width} flex={style.flex} {...rest} style={style} />
 }
 
 // Render ElementNodes (i.e. leaf nodes) wrapped in error catchers and all sorts of other //

@@ -91,6 +91,8 @@ class ButtonMixin:
         key: Key | None = None,
         help: str | None = None,
         on_click: WidgetCallback | None = None,
+        flex: str | None = None,
+        justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -246,6 +248,8 @@ class ButtonMixin:
             help,
             is_form_submitter=False,
             on_click=on_click,
+            flex=flex,
+            justify_right=justify_right,
             args=args,
             kwargs=kwargs,
             disabled=disabled,
@@ -900,6 +904,8 @@ class ButtonMixin:
         help: str | None,
         is_form_submitter: bool,
         on_click: WidgetCallback | None = None,
+        flex: str | None = None,
+        justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -959,6 +965,10 @@ class ButtonMixin:
         button_proto.type = type
         button_proto.use_container_width = use_container_width
         button_proto.disabled = disabled
+        button_proto.justify_right = justify_right
+
+        if flex is not None:
+            button_proto.flex = flex
 
         if help is not None:
             button_proto.help = dedent(help)

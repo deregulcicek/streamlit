@@ -200,11 +200,11 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return (
       <FlexContextProvider
         direction="row"
-        horizontalAlignment={
-          node.deltaBlock.horizontal?.horizontalAlignment ?? null
+        justify={
+          node.deltaBlock.horizontal?.justify ?? null
         }
-        verticalAlignment={
-          node.deltaBlock.horizontal?.verticalAlignment ?? null
+        align={
+          node.deltaBlock.horizontal?.align ?? null
         }
       >
         {child}
@@ -216,10 +216,10 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return (
       <FlexContextProvider
         direction="column"
-        horizontalAlignment={
-          node.deltaBlock.vertical?.horizontalAlignment ?? null
+        align={
+          node.deltaBlock.vertical?.align ?? null
         }
-        verticalAlignment={node.deltaBlock.vertical?.verticalAlignment ?? null}
+        justify={node.deltaBlock.vertical?.justify ?? null}
       >
         {child}
       </FlexContextProvider>
@@ -235,8 +235,8 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return (
       <FlexContextProvider
         direction={null}
-        horizontalAlignment={null}
-        verticalAlignment={null}
+        align={null}
+        justify={null}
       >
         {child}
       </FlexContextProvider>
@@ -364,10 +364,10 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined
   const gap = props.node.deltaBlock.vertical?.gap ?? null
-  const verticalAlignment =
-    props.node.deltaBlock.vertical?.verticalAlignment ?? null
-  const horizontalAlignment =
-    props.node.deltaBlock.vertical?.horizontalAlignment ?? null
+  const align =
+    props.node.deltaBlock.vertical?.align ?? null
+  const justify =
+    props.node.deltaBlock.vertical?.justify ?? null
   const wrap =
     props.node.deltaBlock.vertical?.wrap ??
     // "true" is the current behavior today and preserves it when there is no
@@ -436,8 +436,8 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
         <StyledVerticalBlock
           width={styles.width}
           gap={gap}
-          verticalAlignment={verticalAlignment}
-          horizontalAlignment={horizontalAlignment}
+          align={align}
+          justify={justify}
           wrap={wrap}
           className={classNames(
             "stVerticalBlock",
@@ -458,17 +458,17 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   // The children are always columns, but this is not checked. We just trust the Python side to
   // do the right thing, then we ask ChildRenderer to handle it.
   const gap = props.node.deltaBlock.horizontal?.gap ?? ""
-  const verticalAlignment =
-    props.node.deltaBlock.horizontal?.verticalAlignment ?? null
-  const horizontalAlignment =
-    props.node.deltaBlock.horizontal?.horizontalAlignment ?? null
+  const align =
+    props.node.deltaBlock.horizontal?.align ?? null
+  const justify =
+    props.node.deltaBlock.horizontal?.justify ?? null
   const wrap = props.node.deltaBlock.horizontal?.wrap ?? false
 
   return (
     <StyledHorizontalBlock
       gap={gap}
-      verticalAlignment={verticalAlignment}
-      horizontalAlignment={horizontalAlignment}
+      align={align}
+      justify={justify}
       wrap={wrap}
       className="stHorizontalBlock"
       data-testid="stHorizontalBlock"

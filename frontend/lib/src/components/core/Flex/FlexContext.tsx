@@ -20,8 +20,8 @@ import { Block as BlockProto } from "@streamlit/protobuf"
 
 export interface IFlexContext {
   direction: "row" | "column" | null
-  horizontalAlignment: BlockProto.Horizontal.HorizontalAlignment | null
-  verticalAlignment: BlockProto.Vertical.VerticalAlignment | null
+  align: BlockProto.Horizontal.Align | BlockProto.Vertical.Align | null
+  justify: BlockProto.Vertical.Justify | BlockProto.Vertical.Justify | null
 }
 
 export const FlexContext = createContext<IFlexContext | null>(null)
@@ -48,16 +48,16 @@ export const FlexContext = createContext<IFlexContext | null>(null)
 export const FlexContextProvider: FC<PropsWithChildren<IFlexContext>> = ({
   children,
   direction,
-  horizontalAlignment,
-  verticalAlignment,
+  align,
+  justify,
 }) => {
   const value = useMemo<IFlexContext>(() => {
     return {
       direction,
-      horizontalAlignment,
-      verticalAlignment,
+      align,
+      justify,
     }
-  }, [direction, horizontalAlignment, verticalAlignment])
+  }, [direction, align, justify])
 
   return <FlexContext.Provider value={value}>{children}</FlexContext.Provider>
 }
