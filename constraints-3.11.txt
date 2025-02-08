@@ -19,7 +19,7 @@ docutils==0.21.2
 emoji==2.14.1
 execnet==2.1.1
 filelock==3.17.0
-fonttools==4.55.8
+fonttools==4.56.0
 gitdb==4.0.12
 GitPython==3.1.44
 graphviz==0.20.3
@@ -105,7 +105,7 @@ tornado==6.4.2
 twine==6.1.0
 types-cachetools==5.5.0.20240820
 types-click==7.1.8
-types-protobuf==5.29.1.20241207
+types-protobuf==5.29.1.20250208
 types-pytz==2025.1.0.20250204
 types-requests==2.32.0.20241016
 types-setuptools==75.8.0.20250110
