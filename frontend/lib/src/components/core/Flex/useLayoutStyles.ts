@@ -104,13 +104,30 @@ export const useLayoutStyles = <T>({
            *
            * Flip this boolean to see differences on elements that have `use_container_width=True`
            */
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          const TEMPORARY_useContainerWidth = true
+          type Behaviors =
+            | "entire_width"
+            | "entire_flex"
+            | "entire_flex_with_min_width"
 
-          if (TEMPORARY_useContainerWidth) {
-            style.flex = "1 0 100%"
-          } else {
-            style.flex = "1"
+          const getBehavior = (): Behaviors => {
+            return "entire_flex_with_min_width"
+          }
+
+          switch (getBehavior()) {
+            case "entire_width": {
+              style.flex = "1 0 100%"
+              break
+            }
+            case "entire_flex": {
+              style.flex = "1"
+              break
+            }
+            case "entire_flex_with_min_width": {
+              style.flex = "1 0 100px"
+              break
+            }
+            default:
+              break
           }
         } else if (
           // @ts-expect-error We haven't yet added `hug` to the system
