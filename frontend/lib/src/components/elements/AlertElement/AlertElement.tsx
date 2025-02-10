@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactElement } from "react"
+import React, { ReactElement } from "react"
 
 import { useTheme } from "@emotion/react"
 

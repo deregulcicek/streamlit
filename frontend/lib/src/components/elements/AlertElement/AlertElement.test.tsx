@@ -24,7 +24,6 @@ import { render } from "~lib/test_util"
 import { Kind } from "~lib/components/shared/AlertContainer"
 
 import AlertElement, { AlertElementProps } from "./AlertElement"
-
 import { getAlertElementKind } from "./utils"
 
 const getProps = (
