@@ -50,9 +50,9 @@ if st.button("Open Dialog with Images"):
 
 @st.dialog("Simple Dialog")
 def simple_dialog():
-    st.write("Hello again!")
     st.text_input("Enter something!")
 
+    st.write("Hello again!")
     if st.button("Submit", key="dialog2-btn"):
         st.rerun()
 

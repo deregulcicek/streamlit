@@ -266,6 +266,14 @@ def test_dialog_displays_correctly(app: Page, assert_snapshot: ImageCompareFunct
     assert_snapshot(dialog, name="st_dialog-default")
 
 
+def test_first_input_is_not_auto_focused(app: Page):
+    open_dialog_without_images(app)
+    wait_for_app_run(app)
+    dialog = app.get_by_role("dialog")
+    dialog.locator("div", has_text="Simple Dialog").click()
+    expect(dialog.get_by_test_id("stTextInput")).not_to_be_focused()
+
+
 def test_largewidth_dialog_displays_correctly(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
