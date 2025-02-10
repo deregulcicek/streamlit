@@ -38,6 +38,10 @@ def test_popover_button_rendering(
     )
     assert_snapshot(
         get_popover(themed_app, "popover 2 (use_container_width)"),
+        name="st_popover-use_container_width",
+    )
+    assert_snapshot(
+        get_popover(themed_app, "popover 3 (with widgets)"),
         name="st_popover-normal",
     )
     # Popover button 4 is almost the same as 3, so we don't need to test it
