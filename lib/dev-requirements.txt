@@ -12,6 +12,8 @@ wheel
 pytz
 # Used for updating emojis via: scripts/update_emojis.py
 emoji
+# Used for codemods
+libcst
 
 # mypy types
 types-click
