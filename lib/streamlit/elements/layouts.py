@@ -50,11 +50,28 @@ class LayoutsMixin:
         # TODO: Move this Literal definition to somewhere shared
         gap: Literal["small", "medium", "large"] | None = None,
         direction: Literal["vertical", "horizontal"] | None = None,
-        justify: Literal[
-            "start", "center", "end", "space_between", "space_around", "space_evenly"
+        horizontal_alignment: Literal[
+            "start",
+            "center",
+            "end",
+            "stretch",
+            "baseline",
+            "space-between",
+            "space-around",
+            "space-evenly",
         ]
         | None = None,
-        align: Literal["start", "end", "center", "stretch", "baseline"] | None = None,
+        vertical_alignment: Literal[
+            "top",
+            "center",
+            "bottom",
+            "stretch",
+            "baseline",
+            "space-between",
+            "space-around",
+            "space-evenly",
+        ]
+        | None = None,
         wrap: bool | None = False,
     ) -> DeltaGenerator:
         """Insert a multi-element container.
@@ -181,62 +198,99 @@ class LayoutsMixin:
                 "container", user_key=key, form_id=None
             )
 
+        valid_align = ["start", "center", "end", "stretch", "baseline"]
+        valid_justify = [
+            "start",
+            "center",
+            "end",
+            "space-between",
+            "space-around",
+            "space-evenly",
+        ]
+
         if direction == "vertical":
             # Large is the default to match the previous behavior in `StyledVerticalBlock`
             block_proto.vertical.gap = gap if gap else "large"
             block_proto.vertical.direction = BlockProto.Vertical.Direction.TOP_TO_BOTTOM
             block_proto.vertical.wrap = wrap if wrap is not None else False
 
-            if justify is not None:
-                if justify in ["start", "end", "center"]:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"JUSTIFY_{justify.upper()}",
+            if horizontal_alignment is not None:
+                if horizontal_alignment not in valid_align:
+                    raise StreamlitAPIException(
+                        f"Invalid horizontal alignment: {horizontal_alignment}. "
+                        f"Valid options are: {valid_align}"
                     )
-                else:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"{justify.upper()}",
-                    )
-            if align is not None:
-                if align in ["start", "end", "center"]:
+
+                if horizontal_alignment in ["start", "end", "center"]:
                     block_proto.vertical.align = getattr(
                         BlockProto.Vertical.Align,
-                        f"ALIGN_{align.upper()}",
+                        f"ALIGN_{horizontal_alignment.upper()}",
                     )
                 else:
                     block_proto.vertical.align = getattr(
                         BlockProto.Vertical.Align,
-                        f"{align.upper()}",
+                        f"{horizontal_alignment.upper()}",
                     )
+
+            if vertical_alignment is not None:
+                if vertical_alignment not in valid_justify:
+                    raise StreamlitAPIException(
+                        f"Invalid vertical alignment: {vertical_alignment}. "
+                        f"Valid options are: {valid_justify}"
+                    )
+
+                if vertical_alignment in ["start", "end", "center"]:
+                    block_proto.vertical.justify = getattr(
+                        BlockProto.Vertical.Justify,
+                        f"JUSTIFY_{vertical_alignment.upper()}",
+                    )
+                else:
+                    block_proto.vertical.justify = getattr(
+                        BlockProto.Vertical.Justify,
+                        f"{vertical_alignment.upper()}",
+                    )
+
         elif direction == "horizontal":
             block_proto.horizontal.gap = gap if gap else "small"
             block_proto.horizontal.direction = (
                 BlockProto.Horizontal.Direction.START_TO_END
             )
-            block_proto.horizontal.wrap = wrap if wrap is not None else False
+            block_proto.horizontal.wrap = wrap if wrap is not None else True
 
-            if justify is not None:
-                if justify in ["start", "end", "center"]:
+            if horizontal_alignment is not None:
+                if horizontal_alignment not in valid_justify:
+                    raise StreamlitAPIException(
+                        f"Invalid horizontal alignment: {horizontal_alignment}. "
+                        f"Valid options are: {valid_justify}"
+                    )
+
+                if horizontal_alignment in ["start", "end", "center"]:
                     block_proto.horizontal.justify = getattr(
                         BlockProto.Horizontal.Justify,
-                        f"JUSTIFY_{justify.upper()}",
+                        f"ALIGN_{horizontal_alignment.upper()}",
                     )
                 else:
                     block_proto.horizontal.justify = getattr(
                         BlockProto.Horizontal.Justify,
-                        f"{justify.upper()}",
+                        f"{horizontal_alignment.upper()}",
                     )
-            if align is not None:
-                if align in ["start", "end", "center"]:
-                    block_proto.horizontal.align = getattr(
-                        BlockProto.Horizontal.Align,
-                        f"ALIGN_{align.upper()}",
+
+            if vertical_alignment is not None:
+                if vertical_alignment not in valid_align:
+                    raise StreamlitAPIException(
+                        f"Invalid vertical alignment: {vertical_alignment}. "
+                        f"Valid options are: {valid_align}"
+                    )
+
+                if vertical_alignment in ["start", "end", "center"]:
+                    block_proto.horizontal.justify = getattr(
+                        BlockProto.Horizontal.Justify,
+                        f"ALIGN_{vertical_alignment.upper()}",
                     )
                 else:
                     block_proto.horizontal.align = getattr(
                         BlockProto.Horizontal.Align,
-                        f"{align.upper()}",
+                        f"{vertical_alignment.upper()}",
                     )
 
         return self.dg._block(block_proto)
