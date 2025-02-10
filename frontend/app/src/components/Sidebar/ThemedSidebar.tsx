@@ -16,25 +16,40 @@
 
 import React, { ReactElement } from "react"
 
+import { getLuminance } from "color2k"
+
 import {
   createTheme,
   LibContext,
   ThemeConfig,
   ThemeProvider,
 } from "@streamlit/lib"
+import { CustomThemeConfig } from "@streamlit/protobuf"
 import { AppContext } from "@streamlit/app/src/components/AppContext"
 
 import Sidebar, { SidebarProps } from "./Sidebar"
 
 const createSidebarTheme = (theme: ThemeConfig): ThemeConfig => {
+  const sidebarBackground =
+    theme.emotion.colors.sidebarSecondaryBackgroundColor ??
+    theme.emotion.colors.bgColor
+
   return createTheme(
     "Sidebar",
     {
       ...theme.themeInput,
-      secondaryBackgroundColor: theme.emotion.colors.bgColor,
-      backgroundColor: theme.emotion.colors.secondaryBg,
+      base:
+        getLuminance(sidebarBackground) > 0.5
+          ? CustomThemeConfig.BaseTheme.LIGHT
+          : CustomThemeConfig.BaseTheme.DARK,
+      secondaryBackgroundColor: sidebarBackground,
+      backgroundColor:
+        theme.emotion.colors.sidebarBackgroundColor ??
+        theme.emotion.colors.secondaryBg,
+      textColor:
+        theme.emotion.colors.sidebarTextColor ?? theme.emotion.colors.bodyText,
     },
-    theme,
+    undefined,
     // inSidebar
     true
   )

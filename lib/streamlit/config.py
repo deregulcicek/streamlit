@@ -1073,6 +1073,36 @@ _create_option(
     type_=bool,
 )
 
+_create_option(
+    "theme.sidebarBackgroundColor",
+    description="""
+        Background color of the sidebar.
+    """,
+)
+
+_create_option(
+    "theme.sidebarSecondaryBackgroundColor",
+    description="""
+        Secondary background color of the sidebar.
+    """,
+)
+
+_create_option(
+    "theme.sidebarTextColor",
+    description="""
+        Text color used in the sidebar.
+    """,
+)
+
+_create_option(
+    "theme.showSidebarShadow",
+    description="""
+    Whether to always show the shadow of the sidebar (True) or only when the sidebar
+    overlaps the main area (False).
+    """,
+    type_=bool,
+)
+
 # Config Section: Secrets #
 
 _create_section("secrets", "Secrets configuration.")

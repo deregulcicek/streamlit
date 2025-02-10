@@ -157,6 +157,7 @@ export const createEmotionTheme = (
     showBorderAroundInputs,
     bodyFont,
     codeFont,
+    showSidebarShadow,
     ...customColors
   } = themeInput
 
@@ -185,6 +186,9 @@ export const createEmotionTheme = (
     widgetBorderColor,
     borderColor,
     linkColor,
+    sidebarTextColor,
+    sidebarBackgroundColor,
+    sidebarSecondaryBackgroundColor,
   } = parsedColors
 
   const newGenericColors = { ...colors }
@@ -194,6 +198,12 @@ export const createEmotionTheme = (
   if (secondaryBg) newGenericColors.secondaryBg = secondaryBg
   if (bgColor) newGenericColors.bgColor = bgColor
   if (linkColor) newGenericColors.link = linkColor
+  if (sidebarTextColor) newGenericColors.sidebarTextColor = sidebarTextColor
+  if (sidebarBackgroundColor)
+    newGenericColors.sidebarBackgroundColor = sidebarBackgroundColor
+  if (sidebarSecondaryBackgroundColor)
+    newGenericColors.sidebarSecondaryBackgroundColor =
+      sidebarSecondaryBackgroundColor
 
   // Secondary color is not yet configurable. Set secondary color to primary color
   // by default for all custom themes.
@@ -202,6 +212,10 @@ export const createEmotionTheme = (
   const conditionalOverrides: any = {}
 
   conditionalOverrides.colors = createEmotionColors(newGenericColors)
+
+  if (notNullOrUndefined(showSidebarShadow)) {
+    conditionalOverrides.alwaysShowSidebarShadow = showSidebarShadow
+  }
 
   if (notNullOrUndefined(borderColor)) {
     conditionalOverrides.colors.borderColor = borderColor

@@ -110,6 +110,14 @@ FD = FieldDescriptor
                 ("border_color", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
                 ("show_border_around_inputs", FD.LABEL_OPTIONAL, FD.TYPE_BOOL),
                 ("link_color", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                ("sidebar_background_color", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                ("sidebar_text_color", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                (
+                    "sidebar_secondary_background_color",
+                    FD.LABEL_OPTIONAL,
+                    FD.TYPE_STRING,
+                ),
+                ("show_sidebar_shadow", FD.LABEL_OPTIONAL, FD.TYPE_BOOL),
             },
         ),
         (

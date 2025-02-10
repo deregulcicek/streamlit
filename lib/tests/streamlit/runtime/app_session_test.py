@@ -701,6 +701,10 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         "secondaryBackgroundColor": "blue",
         "showBorderAroundInputs": True,
         "textColor": "black",
+        "sidebarBackgroundColor": "black",
+        "sidebarTextColor": "white",
+        "sidebarSecondaryBackgroundColor": "darkblue",
+        "showSidebarShadow": True,
     }
 
     for k, v in overrides.items():
@@ -1072,6 +1076,10 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "secondaryBackgroundColor": None,
                     "showBorderAroundInputs": None,
                     "textColor": None,
+                    "sidebarBackgroundColor": None,
+                    "sidebarTextColor": None,
+                    "sidebarSecondaryBackgroundColor": None,
+                    "showSidebarShadow": None,
                 }
             )
         )
@@ -1099,6 +1107,10 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "secondaryBackgroundColor": None,
                     "showBorderAroundInputs": None,
                     "textColor": None,
+                    "sidebarBackgroundColor": None,
+                    "sidebarTextColor": None,
+                    "sidebarSecondaryBackgroundColor": None,
+                    "showSidebarShadow": None,
                 }
             )
         )
@@ -1124,6 +1136,13 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
         assert not new_session_msg.custom_theme.HasField("link_color")
 
+        assert not new_session_msg.custom_theme.HasField("sidebar_background_color")
+        assert not new_session_msg.custom_theme.HasField("sidebar_text_color")
+        assert not new_session_msg.custom_theme.HasField(
+            "sidebar_secondary_background_color"
+        )
+        assert not new_session_msg.custom_theme.HasField("show_sidebar_shadow")
+
     @patch("streamlit.runtime.app_session.config")
     def test_can_specify_all_options(self, patched_config):
         patched_config.get_options_for_section.side_effect = (
@@ -1144,6 +1163,13 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.custom_theme.border_color == "#ff0000"
         assert new_session_msg.custom_theme.show_border_around_inputs is True
         assert new_session_msg.custom_theme.link_color == "#2EC163"
+        assert new_session_msg.custom_theme.sidebar_background_color == "black"
+        assert new_session_msg.custom_theme.sidebar_text_color == "white"
+        assert (
+            new_session_msg.custom_theme.sidebar_secondary_background_color
+            == "darkblue"
+        )
+        assert new_session_msg.custom_theme.show_sidebar_shadow is True
         # The value from `theme.font` will be placed in body_font since
         # font uses a deprecated enum:
         assert new_session_msg.custom_theme.body_font == "Inter"

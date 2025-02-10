@@ -399,6 +399,10 @@ class ConfigTest(unittest.TestCase):
                 "theme.borderColor",
                 "theme.showBorderAroundInputs",
                 "theme.linkColor",
+                "theme.sidebarBackgroundColor",
+                "theme.sidebarTextColor",
+                "theme.sidebarSecondaryBackgroundColor",
+                "theme.showSidebarShadow",
                 "global.appTest",
                 "global.developmentMode",
                 "global.disableWidgetStateDuplicationWarning",
@@ -562,6 +566,10 @@ class ConfigTest(unittest.TestCase):
             "font": None,
             "codeFont": None,
             "fontFaces": None,
+            "sidebarBackgroundColor": None,
+            "sidebarTextColor": None,
+            "sidebarSecondaryBackgroundColor": None,
+            "showSidebarShadow": None,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -591,6 +599,10 @@ class ConfigTest(unittest.TestCase):
             "test",
         )
         config._set_option("theme.codeFont", "Monaspace Argon", "test")
+        config._set_option("theme.sidebarBackgroundColor", "black", "test")
+        config._set_option("theme.sidebarTextColor", "white", "test")
+        config._set_option("theme.sidebarSecondaryBackgroundColor", "darkblue", "test")
+        config._set_option("theme.showSidebarShadow", True, "test")
 
         expected = {
             "base": "dark",
@@ -611,6 +623,10 @@ class ConfigTest(unittest.TestCase):
                     "weight": 400,
                 },
             ],
+            "sidebarBackgroundColor": "black",
+            "sidebarTextColor": "white",
+            "sidebarSecondaryBackgroundColor": "darkblue",
+            "showSidebarShadow": True,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
