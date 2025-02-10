@@ -15,3 +15,4 @@
  */
 
 export { default } from "./AlertElement"
+export { getAlertElementKind } from "./utils"
