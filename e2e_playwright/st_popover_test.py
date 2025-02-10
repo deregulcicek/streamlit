@@ -54,7 +54,7 @@ def test_popover_button_rendering(
         name="st_popover-emoji_icon",
     )
     assert_snapshot(
-        get_popover(themed_app, "popover 8 (material_icon)"),
+        get_popover(themed_app, "popover 8 (material icon)"),
         name="st_popover-material_icon",
     )
 
