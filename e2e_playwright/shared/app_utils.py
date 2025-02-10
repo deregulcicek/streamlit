@@ -154,9 +154,7 @@ def get_popover(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     Locator
         The element.
     """
-    element = locator.get_by_test_id("stPopover").filter(
-        has=locator.locator("stPopoverButton").filter(has_text=label)
-    )
+    element = locator.get_by_test_id("stPopover").filter(has_text=label)
     expect(element).to_be_visible()
     return element
 
@@ -178,7 +176,7 @@ def open_popover(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     Locator
         The popover container.
     """
-    get_popover(locator, label).locator("stPopoverButton").first.click()
+    get_popover(locator, label).get_by_role("button").first.click()
     popover_container = locator.get_by_test_id("stPopoverBody")
     expect(popover_container).to_be_visible()
     return popover_container
