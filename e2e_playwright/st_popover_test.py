@@ -100,9 +100,6 @@ def test_applying_changes_from_popover_container(app: Page):
     """Test that changes made in the popover container are applied correctly."""
     # Get the widgets popover container:
     popover_container = open_popover(app, "popover 3 (with widgets)")
-    # Click the button to open it:
-    popover_container.get_by_test_id("stPopoverButton").first.click()
-
     expect(popover_container.get_by_test_id("stMarkdown")).to_have_text(
         "Hello World 👋"
     )
