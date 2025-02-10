@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from "./Sidebar"
+export { default } from "./ThemedSidebar"
