@@ -70,6 +70,7 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
         onClick={() => (open ? setOpen(false) : undefined)}
         onEsc={() => setOpen(false)}
         ignoreBoundary={isInSidebar}
+        autoFocus={false}
         // TODO(lukasmasuch): We currently use renderAll to have a consistent
         // width during the first and subsequent opens of the popover. Once we ,
         // support setting an explicit width we should reconsider turning this to

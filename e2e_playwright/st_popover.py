@@ -56,5 +56,8 @@ with st.popover("popover 7 (emoji)", icon="🦄"):
 with st.popover("popover 8 (material icon)", icon=":material/thumb_up:"):
     st.markdown("Hello thumb up")
 
+with st.popover("popover 9 (auto focus)"):
+    st.date_input("Not active")
+
 with st.expander("Output"):
     st.markdown(text)

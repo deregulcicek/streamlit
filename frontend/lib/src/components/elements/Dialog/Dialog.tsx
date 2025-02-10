@@ -57,6 +57,7 @@ const Dialog: React.FC<React.PropsWithChildren<Props>> = ({
       closeable={dismissible}
       onClose={() => setIsOpen(false)}
       size={width === BlockProto.Dialog.DialogWidth.LARGE ? "full" : "default"}
+      autoFocus={false}
     >
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>{children}</ModalBody>
