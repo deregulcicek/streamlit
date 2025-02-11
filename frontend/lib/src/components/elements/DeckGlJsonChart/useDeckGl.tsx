@@ -21,6 +21,7 @@ import { PickingInfo, ViewStateChangeParameters } from "@deck.gl/core"
 import { TooltipContent } from "@deck.gl/core/dist/lib/tooltip"
 import isEqual from "lodash/isEqual"
 import { parseToRgba } from "color2k"
+import { flushSync } from "react-dom"
 
 import { DeckGlJsonChart as DeckGlJsonChartProto } from "@streamlit/protobuf"
 
@@ -362,8 +363,10 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
         {}
       )
 
-      setViewState({ ...viewState, ...diff })
-      setInitialViewState(deck.initialViewState)
+      flushSync(() => {
+        setViewState({ ...viewState, ...diff })
+        setInitialViewState(deck.initialViewState)
+      })
     }
   }, [deck.initialViewState, initialViewState, viewState])
 
@@ -388,7 +391,9 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
 
   const onViewStateChange = useCallback(
     ({ viewState }: ViewStateChangeParameters) => {
-      setViewState(viewState)
+      flushSync(() => {
+        setViewState(viewState)
+      })
     },
     [setViewState]
   )
