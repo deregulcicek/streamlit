@@ -194,8 +194,6 @@ interface State {
   inputsDisabled: boolean
 }
 
-const ELEMENT_LIST_BUFFER_TIMEOUT_MS = 10
-
 const INITIAL_SCRIPT_RUN_ID = "<null>"
 
 export const LOG = getLogger("App")
@@ -234,19 +232,6 @@ export class App extends PureComponent<Props, State> {
   private readonly hostCommunicationMgr: HostCommunicationManager
 
   private readonly uploadClient: FileUploadClient
-
-  /**
-   * When new Deltas are received, they are applied to `pendingElementsBuffer`
-   * rather than directly to `this.state.elements`. We assign
-   * `pendingElementsBuffer` to `this.state` on a timer, in order to
-   * decouple Delta updates from React re-renders, for performance reasons.
-   *
-   * (If `pendingElementsBuffer === this.state.elements` - the default state -
-   * then we have no pending elements.)
-   */
-  private pendingElementsBuffer: AppRoot
-
-  private pendingElementsTimerRunning: boolean
 
   private readonly componentRegistry: ComponentRegistry
 
@@ -399,8 +384,6 @@ export class App extends PureComponent<Props, State> {
 
     this.componentRegistry = new ComponentRegistry(this.endpoints)
 
-    this.pendingElementsTimerRunning = false
-    this.pendingElementsBuffer = this.state.elements
     this.appNavigation = new AppNavigation(
       this.hostCommunicationMgr,
       this.maybeUpdatePageUrl,
@@ -765,17 +748,11 @@ export class App extends PureComponent<Props, State> {
       scriptRunId: this.state.scriptRunId,
     }
 
-    this.setState(
-      {
-        elements: this.pendingElementsBuffer.appRootWithLogo(
-          logo,
-          logoMetadata
-        ),
-      },
-      () => {
-        this.pendingElementsBuffer = this.state.elements
+    this.setState(prevState => {
+      return {
+        elements: prevState.elements.appRootWithLogo(logo, logoMetadata),
       }
-    )
+    })
   }
 
   handlePageConfigChanged = (pageConfig: PageConfig): void => {
@@ -1205,11 +1182,11 @@ export class App extends PureComponent<Props, State> {
       status ===
         ForwardMsg.ScriptFinishedStatus.FINISHED_FRAGMENT_RUN_SUCCESSFULLY
     ) {
-      window.setTimeout(() => {
+      Promise.resolve().then(() => {
         // Notify any subscribers of this event (and do it on the next cycle of
         // the event loop)
-        this.state.scriptFinishedHandlers.map(handler => handler())
-      }, 0)
+        this.state.scriptFinishedHandlers.forEach(handler => handler())
+      })
 
       if (
         status === ForwardMsg.ScriptFinishedStatus.FINISHED_SUCCESSFULLY ||
@@ -1224,26 +1201,26 @@ export class App extends PureComponent<Props, State> {
         // We also don't do this if our script had a compilation error and didn't
         // finish successfully.
         this.setState(
-          ({ scriptRunId, fragmentIdsThisRun }) => ({
-            // Apply any pending elements that haven't been applied.
-            elements: this.pendingElementsBuffer.clearStaleNodes(
-              scriptRunId,
-              fragmentIdsThisRun
-            ),
-          }),
+          ({ scriptRunId, fragmentIdsThisRun, elements }) => {
+            return {
+              // Apply any pending elements that haven't been applied.
+              elements: elements.clearStaleNodes(
+                scriptRunId,
+                fragmentIdsThisRun
+              ),
+            }
+          },
           () => {
-            this.pendingElementsBuffer = this.state.elements
+            // Tell the WidgetManager which widgets still exist. It will remove
+            // widget state for widgets that have been removed.
+            const activeWidgetIds = new Set(
+              Array.from(this.state.elements.getElements())
+                .map(element => getElementId(element))
+                .filter(notUndefined)
+            )
+            this.widgetMgr.removeInactive(activeWidgetIds)
           }
         )
-
-        // Tell the WidgetManager which widgets still exist. It will remove
-        // widget state for widgets that have been removed.
-        const activeWidgetIds = new Set(
-          Array.from(this.state.elements.getElements())
-            .map(element => getElementId(element))
-            .filter(notUndefined)
-        )
-        this.widgetMgr.removeInactive(activeWidgetIds)
       }
 
       // Tell the ConnectionManager to increment the message cache run
@@ -1273,25 +1250,26 @@ export class App extends PureComponent<Props, State> {
     scriptName: string,
     mainScriptHash: string
   ): void {
-    const { hideSidebarNav, elements } = this.state
-    // Handle hideSidebarNav = true -> retain sidebar elements to avoid flicker
-    const sidebarElements = (hideSidebarNav && elements.sidebar) || undefined
-
     this.setState(
-      {
-        scriptRunId,
-        scriptName,
-        appHash,
-        elements: this.appNavigation.clearPageElements(
-          this.pendingElementsBuffer,
+      prevState => {
+        const { hideSidebarNav, elements } = prevState
+        const sidebarElements =
+          (hideSidebarNav && elements.sidebar) || undefined
+
+        const nextElements = this.appNavigation.clearPageElements(
+          prevState.elements,
           mainScriptHash,
           sidebarElements
-        ),
+        )
+
+        return {
+          scriptRunId,
+          scriptName,
+          appHash,
+          elements: nextElements,
+        }
       },
       () => {
-        this.pendingElementsBuffer = this.state.elements
-        // Tell the WidgetManager which widgets still exist. It will remove
-        // widget state for widgets that have been removed.
         const activeWidgetIds = new Set(
           Array.from(this.state.elements.getElements())
             .map(element => getElementId(element))
@@ -1341,27 +1319,14 @@ export class App extends PureComponent<Props, State> {
     deltaMsg: Delta,
     metadataMsg: ForwardMsgMetadata
   ): void => {
-    this.pendingElementsBuffer = this.pendingElementsBuffer.applyDelta(
-      this.state.scriptRunId,
-      deltaMsg,
-      metadataMsg
-    )
-
-    if (!this.pendingElementsTimerRunning) {
-      this.pendingElementsTimerRunning = true
-
-      // (BUG #685) When user presses stop, stop adding elements to
-      // the app immediately to avoid race condition.
-      const scriptIsRunning =
-        this.state.scriptRunState === ScriptRunState.RUNNING
-
-      setTimeout(() => {
-        this.pendingElementsTimerRunning = false
-        if (scriptIsRunning) {
-          this.setState({ elements: this.pendingElementsBuffer })
-        }
-      }, ELEMENT_LIST_BUFFER_TIMEOUT_MS)
-    }
+    // Use functional state update to ensure we have latest elements
+    this.setState(prevState => ({
+      elements: prevState.elements.applyDelta(
+        prevState.scriptRunId,
+        deltaMsg,
+        metadataMsg
+      ),
+    }))
   }
 
   /**
