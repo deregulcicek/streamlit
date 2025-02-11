@@ -56,9 +56,9 @@ class LayoutsMixin:
             "end",
             "stretch",
             "baseline",
-            "space-between",
-            "space-around",
-            "space-evenly",
+            "space_between",
+            "space_around",
+            "space_evenly",
         ]
         | None = None,
         vertical_alignment: Literal[
@@ -67,9 +67,9 @@ class LayoutsMixin:
             "bottom",
             "stretch",
             "baseline",
-            "space-between",
-            "space-around",
-            "space-evenly",
+            "space_between",
+            "space_around",
+            "space_evenly",
         ]
         | None = None,
         wrap: bool | None = False,
@@ -203,9 +203,9 @@ class LayoutsMixin:
             "start",
             "center",
             "end",
-            "space-between",
-            "space-around",
-            "space-evenly",
+            "space_between",
+            "space_around",
+            "space_evenly",
         ]
 
         if direction == "vertical":

@@ -14,6 +14,10 @@
 
 import streamlit as st
 
+st.write("""
+This app demonstrates some common horizontal alignment and responsiveness use cases.
+""")
+
 st.write("Some buttons that are aligned and responsive!")
 with st.container(direction="horizontal", horizontal_alignment="start"):
     st.button("button21")
