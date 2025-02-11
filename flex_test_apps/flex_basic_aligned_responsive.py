@@ -15,25 +15,30 @@
 import streamlit as st
 
 st.write("Some buttons that are aligned and responsive!")
-with st.container(direction="horizontal", justify="start"):
+with st.container(direction="horizontal", horizontal_alignment="start"):
     st.button("button21")
     st.button("button22")
     st.button("button23")
 
 st.write("Some buttons with icons that are aligned and responsive!")
-with st.container(direction="horizontal", justify="start"):
+with st.container(direction="horizontal", horizontal_alignment="start"):
     st.button("", icon=":material/menu:")
     st.button("", icon=":material/view_cozy:")
     st.button("", icon=":material/expand_circle_right:")
 
 st.write("Some widgets with different sizes and responsive!")
-with st.container(direction="horizontal", justify="start", align="end", gap="medium"):
+with st.container(
+    direction="horizontal",
+    horizontal_alignment="start",
+    vertical_alignment="end",
+    gap="medium",
+):
     st.button("", icon=":material/toolbar:", flex="0")
     st.selectbox("Select an option", options=["Yes", "No", "Maybe"], flex="1")
     st.slider("Confidence level", max_value=100, min_value=0, flex="3")
 
 st.write("Some buttons that are justified left and right!")
-with st.container(direction="horizontal", justify="start"):
+with st.container(direction="horizontal", horizontal_alignment="start"):
     st.button("button31")
     st.button("button32", justify_right=True)
     st.button("button33")

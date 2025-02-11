@@ -267,7 +267,7 @@ class LayoutsMixin:
                 if horizontal_alignment in ["start", "end", "center"]:
                     block_proto.horizontal.justify = getattr(
                         BlockProto.Horizontal.Justify,
-                        f"ALIGN_{horizontal_alignment.upper()}",
+                        f"JUSTIFY_{horizontal_alignment.upper()}",
                     )
                 else:
                     block_proto.horizontal.justify = getattr(
@@ -283,8 +283,8 @@ class LayoutsMixin:
                     )
 
                 if vertical_alignment in ["start", "end", "center"]:
-                    block_proto.horizontal.justify = getattr(
-                        BlockProto.Horizontal.Justify,
+                    block_proto.horizontal.align = getattr(
+                        BlockProto.Horizontal.Align,
                         f"ALIGN_{vertical_alignment.upper()}",
                     )
                 else:
