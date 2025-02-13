@@ -118,7 +118,7 @@ export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
 
 export interface StyledElementContainerProps {
   isStale: boolean
-  flex: number | string | undefined
+  flex?: number | string | undefined
   width: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
   elementType: string

@@ -19,7 +19,11 @@ import { useMemo } from "react"
 export type UseLayoutStylesArgs<T> = {
   width: React.CSSProperties["width"] | undefined
   element:
-    | (T & { width?: number; useContainerWidth?: boolean | null })
+    | (T & {
+        width?: number
+        useContainerWidth?: boolean | null
+        flex?: string
+      })
     | undefined
 }
 
@@ -29,6 +33,7 @@ const isNonZeroPositiveNumber = (value: unknown): value is number =>
 export type UseLayoutStylesShape = {
   width: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
+  flex?: React.CSSProperties["flex"]
 }
 
 /**
@@ -100,6 +105,14 @@ export const useLayoutStyles = <T>({
     }
 
     const widthWithFallback = width ?? "auto"
+
+    if (element.flex) {
+      return {
+        width: widthWithFallback,
+        maxWidth: "100%",
+        flex: element.flex,
+      }
+    }
 
     return {
       width: widthWithFallback,

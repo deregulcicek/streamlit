@@ -718,32 +718,6 @@ const RawElementNodeRenderer = (
   }
 }
 
-const StyledElementContainer2: FC<
-  Omit<Parameters<typeof StyledElementContainer>[0], "width" | "flex"> & {
-    node: ElementNode
-    width: number
-  }
-> = ({ width, node, ...rest }) => {
-  // TODO: We need a better way to ensure that anything that uses width is
-  // leveraging `useLayoutStyles`. Might we be able to hoist this logic higher
-  // up in the tree so that we only need `useLayoutStyles` in components that
-  // change the width?
-  const style = useLayoutStyles({
-    width,
-    element:
-      (node.element?.type && node.element[node.element.type]) || undefined,
-  })
-
-  return (
-    <StyledElementContainer
-      width={style.width}
-      flex={style.flex}
-      {...rest}
-      style={style}
-    />
-  )
-}
-
 // Render ElementNodes (i.e. leaf nodes) wrapped in error catchers and all sorts of other //
 // utilities.
 const ElementNodeRenderer = (
