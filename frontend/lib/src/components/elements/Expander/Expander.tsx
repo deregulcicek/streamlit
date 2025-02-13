@@ -27,8 +27,7 @@ import {
 } from "~lib/components/shared/Icon"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 import { notNullOrUndefined } from "~lib/util/utils"
-import { LibContext } from "~lib/components/core/LibContext"
-import { IconSize, isPresetTheme } from "~lib/theme"
+import { IconSize } from "~lib/theme"
 
 import {
   BORDER_SIZE,
@@ -55,7 +54,6 @@ export interface ExpanderIconProps {
  */
 export const ExpanderIcon = (props: ExpanderIconProps): ReactElement => {
   const { icon } = props
-  const { activeTheme } = React.useContext(LibContext)
 
   const iconProps = {
     size: "lg" as IconSize,
@@ -69,13 +67,8 @@ export const ExpanderIcon = (props: ExpanderIconProps): ReactElement => {
   }
 
   if (icon === "spinner") {
-    const usingCustomTheme = !isPresetTheme(activeTheme)
     return (
-      <StyledSpinnerIcon
-        usingCustomTheme={usingCustomTheme}
-        data-testid="stExpanderIconSpinner"
-        {...iconProps}
-      />
+      <StyledSpinnerIcon data-testid="stExpanderIconSpinner" {...iconProps} />
     )
   }
 

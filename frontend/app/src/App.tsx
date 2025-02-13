@@ -1163,12 +1163,14 @@ export class App extends PureComponent<Props, State> {
     this.setState({ themeHash })
 
     const usingCustomTheme = !isPresetTheme(this.props.theme.activeTheme)
+    console.log("processThemeInput: usingCustomTheme", usingCustomTheme)
     if (themeInput) {
       const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
       // For now, users can only add one custom theme.
       this.props.theme.addThemes([customTheme])
 
       const userPreference = getCachedTheme()
+      console.log("processThemeInput: userPreference", userPreference)
       if (userPreference === null || usingCustomTheme) {
         // Update the theme to be customTheme either if the user hasn't set a
         // preference (developer-provided custom themes should be the default

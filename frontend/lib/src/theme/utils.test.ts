@@ -164,7 +164,7 @@ describe("Cached theme helpers", () => {
         LocalStore.ACTIVE_THEME,
         JSON.stringify({ name: darkTheme.name })
       )
-      expect(getCachedTheme()).toEqual(darkTheme)
+      expect(getCachedTheme()).toEqual("dark")
     })
 
     it("returns a custom cached theme if localStorage is available and one is set", () => {
@@ -175,14 +175,12 @@ describe("Cached theme helpers", () => {
         textColor: "green",
       }
 
-      const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
-
       window.localStorage.setItem(
         LocalStore.ACTIVE_THEME,
         JSON.stringify({ name: CUSTOM_THEME_NAME, themeInput })
       )
 
-      expect(getCachedTheme()).toEqual(customTheme)
+      expect(getCachedTheme()).toEqual("custom")
     })
   })
 

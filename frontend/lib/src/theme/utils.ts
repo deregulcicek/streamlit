@@ -298,18 +298,17 @@ export type ExportedTheme = {
 
 export const toExportedTheme = (theme: EmotionTheme): ExportedTheme => {
   const { colors } = theme
-  const themeInput = toThemeInput(theme)
 
   // At this point, we know that all of the fields of themeInput are populated
   // (since we went "backwards" from a theme -> themeInput), but typescript
   // doesn't know this, so we have to cast each field to string.
   return {
-    primaryColor: themeInput.primaryColor as string,
-    backgroundColor: themeInput.backgroundColor as string,
-    secondaryBackgroundColor: themeInput.secondaryBackgroundColor as string,
-    textColor: themeInput.textColor as string,
+    primaryColor: colors.primary,
+    backgroundColor: colors.bgColor,
+    secondaryBackgroundColor: colors.secondaryBg,
+    textColor: colors.bodyText,
 
-    base: bgColorToBaseString(themeInput.backgroundColor),
+    base: bgColorToBaseString(colors.bgColor),
 
     ...computeDerivedColors(colors),
   }
@@ -372,7 +371,7 @@ export const createTheme = (
   }
 }
 
-export const getCachedTheme = (): ThemeConfig | null => {
+export const getCachedTheme = (): "light" | "dark" | "custom" | null => {
   if (!localStorageAvailable()) {
     return null
   }
@@ -382,67 +381,17 @@ export const getCachedTheme = (): ThemeConfig | null => {
     return null
   }
 
-  const { name: themeName, themeInput }: CachedTheme =
-    JSON.parse(cachedThemeStr)
+  const { name: themeName }: CachedTheme = JSON.parse(cachedThemeStr)
   switch (themeName) {
     case lightTheme.name:
-      return getMergedLightTheme()
+      return "light"
     case darkTheme.name:
-      return getMergedDarkTheme()
+      return "dark"
+    case AUTO_THEME_NAME:
+      return null
     default:
-      // At this point we're guaranteed that themeInput is defined.
-      return createTheme(themeName, themeInput as Partial<CustomThemeConfig>)
+      return "custom"
   }
-}
-
-const deleteOldCachedThemes = (): void => {
-  const { CACHED_THEME_VERSION, CACHED_THEME_BASE_KEY } = LocalStore
-  const { localStorage } = window
-
-  // Pre-release versions of theming stored cached themes under the key
-  // "stActiveTheme".
-  localStorage.removeItem("stActiveTheme")
-
-  // The first version of cached themes had keys of the form
-  // `stActiveTheme-${window.location.pathname}` with no version number.
-  localStorage.removeItem(CACHED_THEME_BASE_KEY)
-
-  for (let i = 1; i <= CACHED_THEME_VERSION; i++) {
-    localStorage.removeItem(`${CACHED_THEME_BASE_KEY}-v${i}`)
-  }
-}
-
-export const setCachedTheme = (themeConfig: ThemeConfig): void => {
-  if (!localStorageAvailable()) {
-    return
-  }
-
-  deleteOldCachedThemes()
-
-  // Do not set the theme if the app has a pre-defined theme from the embedder
-  if (isLightThemeInQueryParams() || isDarkThemeInQueryParams()) {
-    return
-  }
-
-  const cachedTheme: CachedTheme = {
-    name: themeConfig.name,
-    ...(!isPresetTheme(themeConfig) && {
-      themeInput: toThemeInput(themeConfig.emotion),
-    }),
-  }
-
-  window.localStorage.setItem(
-    LocalStore.ACTIVE_THEME,
-    JSON.stringify(cachedTheme)
-  )
-}
-
-export const removeCachedTheme = (): void => {
-  if (!localStorageAvailable()) {
-    return
-  }
-
-  window.localStorage.removeItem(LocalStore.ACTIVE_THEME)
 }
 
 export const getHostSpecifiedTheme = (): ThemeConfig => {
@@ -461,10 +410,12 @@ export const getDefaultTheme = (): ThemeConfig => {
   // Priority for default theme
   const cachedTheme = getCachedTheme()
 
-  // We shouldn't ever have auto saved in our storage in case
-  // OS theme changes but we explicitly check in case!
-  if (cachedTheme && cachedTheme.name !== AUTO_THEME_NAME) {
-    return cachedTheme
+  if (cachedTheme === "light") {
+    return getMergedLightTheme()
+  }
+
+  if (cachedTheme === "dark") {
+    return getMergedDarkTheme()
   }
 
   return getHostSpecifiedTheme()

@@ -24,12 +24,64 @@ import {
   CUSTOM_THEME_NAME,
   getDefaultTheme,
   getHostSpecifiedTheme,
+  isDarkThemeInQueryParams,
+  isLightThemeInQueryParams,
   isPresetTheme,
-  removeCachedTheme,
-  setCachedTheme,
+  LocalStore,
   ThemeConfig,
 } from "@streamlit/lib"
 import { CustomThemeConfig, ICustomThemeConfig } from "@streamlit/protobuf"
+import { localStorageAvailable } from "@streamlit/utils"
+
+const deleteOldCachedThemes = (): void => {
+  const { CACHED_THEME_VERSION, CACHED_THEME_BASE_KEY } = LocalStore
+  const { localStorage } = window
+
+  // Pre-release versions of theming stored cached themes under the key
+  // "stActiveTheme".
+  localStorage.removeItem("stActiveTheme")
+
+  // The first version of cached themes had keys of the form
+  // `stActiveTheme-${window.location.pathname}` with no version number.
+  localStorage.removeItem(CACHED_THEME_BASE_KEY)
+
+  for (let i = 1; i <= CACHED_THEME_VERSION; i++) {
+    localStorage.removeItem(`${CACHED_THEME_BASE_KEY}-v${i}`)
+  }
+}
+
+export const removeCachedTheme = (): void => {
+  if (!localStorageAvailable()) {
+    return
+  }
+
+  window.localStorage.removeItem(LocalStore.ACTIVE_THEME)
+}
+
+export const setCachedTheme = (themeConfig: ThemeConfig): void => {
+  if (!localStorageAvailable()) {
+    return
+  }
+
+  deleteOldCachedThemes()
+
+  // Do not set the theme if the app has a pre-defined theme from the embedder
+  if (isLightThemeInQueryParams() || isDarkThemeInQueryParams()) {
+    return
+  }
+
+  const cachedTheme: CachedTheme = {
+    name: themeConfig.name,
+    // ...(!isPresetTheme(themeConfig) && {
+    //   themeInput: toThemeInput(themeConfig.emotion),
+    // }),
+  }
+
+  window.localStorage.setItem(
+    LocalStore.ACTIVE_THEME,
+    JSON.stringify(cachedTheme)
+  )
+}
 
 export interface ThemeManager {
   activeTheme: ThemeConfig

@@ -98,8 +98,6 @@ export {
   hasLightBackgroundColor,
   isPresetTheme,
   lightTheme,
-  removeCachedTheme,
-  setCachedTheme,
   toExportedTheme,
   toThemeInput,
 } from "./theme"
