@@ -85,6 +85,8 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -105,6 +107,8 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -125,6 +129,8 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -242,6 +248,8 @@ class TextWidgetsMixin:
             help=help,
             autocomplete=autocomplete,
             on_change=on_change,
+            flex=flex,
+            width=width,
             args=args,
             kwargs=kwargs,
             placeholder=placeholder,
@@ -260,6 +268,8 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
+        flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -308,6 +318,9 @@ class TextWidgetsMixin:
         text_input_proto.label_visibility.value = get_label_visibility_proto_value(
             label_visibility
         )
+
+        if flex is not None:
+            text_input_proto.flex = flex
 
         if help is not None:
             text_input_proto.help = dedent(help)
