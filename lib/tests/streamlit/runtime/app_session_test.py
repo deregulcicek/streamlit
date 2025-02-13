@@ -705,6 +705,7 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         "sidebarTextColor": "white",
         "sidebarSecondaryBackgroundColor": "darkblue",
         "showSidebarShadow": True,
+        "baseFontSize": 14,
     }
 
     for k, v in overrides.items():
@@ -1080,6 +1081,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "sidebarTextColor": None,
                     "sidebarSecondaryBackgroundColor": None,
                     "showSidebarShadow": None,
+                    "baseFontSize": None,
                 }
             )
         )
@@ -1111,6 +1113,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "sidebarTextColor": None,
                     "sidebarSecondaryBackgroundColor": None,
                     "showSidebarShadow": None,
+                    "baseFontSize": None,
                 }
             )
         )
@@ -1135,6 +1138,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.HasField("border_color")
         assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
         assert not new_session_msg.custom_theme.HasField("link_color")
+        assert not new_session_msg.custom_theme.HasField("base_font_size")
 
         assert not new_session_msg.custom_theme.HasField("sidebar_background_color")
         assert not new_session_msg.custom_theme.HasField("sidebar_text_color")
@@ -1170,6 +1174,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
             == "darkblue"
         )
         assert new_session_msg.custom_theme.show_sidebar_shadow is True
+        assert new_session_msg.custom_theme.base_font_size == 14
         # The value from `theme.font` will be placed in body_font since
         # font uses a deprecated enum:
         assert new_session_msg.custom_theme.body_font == "Inter"

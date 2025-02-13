@@ -17,6 +17,7 @@
 import React, {
   ChangeEvent,
   KeyboardEvent,
+  memo,
   useCallback,
   useEffect,
   useRef,
@@ -110,6 +111,7 @@ function ChatInput({
   const [value, setValue] = useState(element.default)
   // The value of the height of the textarea. It depends on a variety of factors including the default height, and autogrowing
   const [scrollHeight, setScrollHeight] = useState(0)
+  const [isInputExtended, setIsInputExtended] = useState(false)
   const [files, setFiles] = useState<UploadFileInfo[]>([])
 
   const [fileDragged, setFileDragged] = useState(false)
@@ -384,13 +386,17 @@ function ChatInput({
     }
   }, [fileDragged])
 
-  const { disabled, placeholder, maxChars } = element
-  const { minHeight, maxHeight } = heightGuidance.current
+  useEffect(() => {
+    const { minHeight } = heightGuidance.current
+    setIsInputExtended(
+      scrollHeight > 0 && chatInputRef.current
+        ? Math.abs(scrollHeight - minHeight) > ROUNDING_OFFSET
+        : false
+    )
+  }, [scrollHeight])
 
-  const isInputExtended =
-    scrollHeight > 0 && chatInputRef.current
-      ? Math.abs(scrollHeight - minHeight) > ROUNDING_OFFSET
-      : false
+  const { disabled, placeholder, maxChars } = element
+  const { maxHeight } = heightGuidance.current
 
   const showDropzone = acceptFile !== AcceptFileValue.None && fileDragged
   const containerClass = "stChatInput"
@@ -495,4 +501,4 @@ function ChatInput({
   )
 }
 
-export default ChatInput
+export default memo(ChatInput)

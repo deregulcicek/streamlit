@@ -118,6 +118,7 @@ FD = FieldDescriptor
                     FD.TYPE_STRING,
                 ),
                 ("show_sidebar_shadow", FD.LABEL_OPTIONAL, FD.TYPE_BOOL),
+                ("base_font_size", FD.LABEL_OPTIONAL, FD.TYPE_INT32),
             },
         ),
         (

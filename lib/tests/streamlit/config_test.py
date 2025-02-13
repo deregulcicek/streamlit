@@ -392,6 +392,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.backgroundColor",
                 "theme.secondaryBackgroundColor",
                 "theme.textColor",
+                "theme.baseFontSize",
                 "theme.roundness",
                 "theme.font",
                 "theme.codeFont",
@@ -570,6 +571,7 @@ class ConfigTest(unittest.TestCase):
             "sidebarTextColor": None,
             "sidebarSecondaryBackgroundColor": None,
             "showSidebarShadow": None,
+            "baseFontSize": None,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -603,6 +605,7 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.sidebarTextColor", "white", "test")
         config._set_option("theme.sidebarSecondaryBackgroundColor", "darkblue", "test")
         config._set_option("theme.showSidebarShadow", True, "test")
+        config._set_option("theme.baseFontSize", 14, "test")
 
         expected = {
             "base": "dark",
@@ -627,6 +630,7 @@ class ConfigTest(unittest.TestCase):
             "sidebarTextColor": "white",
             "sidebarSecondaryBackgroundColor": "darkblue",
             "showSidebarShadow": True,
+            "baseFontSize": 14,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
