@@ -37,6 +37,17 @@ export interface Props {
 function Button(props: Props): ReactElement {
   const { disabled, element, widgetMgr, fragmentId } = props
 
+  let fluidWidth = true
+  if (
+    element.width === "stretch" ||
+    element.useContainerWidth ||
+    !!element.help
+  ) {
+    fluidWidth = true
+  } else if (element.width === "content") {
+    fluidWidth = false
+  }
+
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {
     kind = BaseButtonKind.PRIMARY
@@ -51,7 +62,7 @@ function Button(props: Props): ReactElement {
           kind={kind}
           size={BaseButtonSize.SMALL}
           disabled={disabled}
-          fluidWidth={element.useContainerWidth || !!element.help}
+          fluidWidth={fluidWidth}
           onClick={() =>
             widgetMgr.setTriggerValue(element, { fromUi: true }, fragmentId)
           }

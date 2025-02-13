@@ -92,6 +92,7 @@ class ButtonMixin:
         help: str | None = None,
         on_click: WidgetCallback | None = None,
         flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -249,6 +250,7 @@ class ButtonMixin:
             is_form_submitter=False,
             on_click=on_click,
             flex=flex,
+            width=width,
             justify_right=justify_right,
             args=args,
             kwargs=kwargs,
@@ -905,6 +907,7 @@ class ButtonMixin:
         is_form_submitter: bool,
         on_click: WidgetCallback | None = None,
         flex: str | None = None,
+        width: Literal["stretch", "content"] | int | None = None,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -969,6 +972,15 @@ class ButtonMixin:
 
         if flex is not None:
             button_proto.flex = flex
+
+        if width is not None:
+            if width == "stretch" or width == "content":
+                button_proto.width = str(width)
+            else:
+                button_proto.width = "stretch"
+                button_proto.flex = f"0 0 {width}"
+        else:
+            button_proto.width = "content"
 
         if help is not None:
             button_proto.help = dedent(help)
