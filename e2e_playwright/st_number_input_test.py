@@ -153,15 +153,24 @@ def test_number_input_has_correct_value_on_arrow_up(app: Page):
 
 def test_number_input_has_correct_value_on_blur(app: Page):
     """Test that st.number_input has the correct value on blur."""
+    first_number_input = app.get_by_test_id("stNumberInput").nth(0)
+    input_field = first_number_input.locator("input")
+    markdown_element = app.get_by_test_id("stMarkdown").nth(0)
 
-    first_number_input_field = (
-        app.get_by_test_id("stNumberInput").nth(0).locator("input")
+    # Ensure we start with default value
+    expect(markdown_element).to_have_text(
+        "number input 1 (default) - value: 0.0", use_inner_text=True
     )
-    first_number_input_field.focus()
-    first_number_input_field.fill("10")
-    first_number_input_field.blur()
 
-    expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text(
+    # Clear existing value and enter new value
+    input_field.click()
+    input_field.fill("")  # Clear first
+    input_field.fill("10")
+
+    # Force blur by clicking outside
+    app.mouse.click(0, 0)  # Click at coordinates outside the input
+
+    expect(markdown_element).to_have_text(
         "number input 1 (default) - value: 10.0", use_inner_text=True
     )
 
