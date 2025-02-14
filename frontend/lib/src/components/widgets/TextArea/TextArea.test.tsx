@@ -16,7 +16,7 @@
 
 import React from "react"
 
-import { screen } from "@testing-library/react"
+import { screen, waitFor } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
 import {
@@ -266,7 +266,7 @@ describe("TextArea widget", () => {
     props.widgetMgr.submitForm("form", undefined)
 
     // Our widget should be reset, and the widgetMgr should be updated
-    expect(textArea).toHaveValue(props.element.default)
+    await waitFor(() => expect(textArea).toHaveValue(props.element.default))
     expect(props.widgetMgr.setStringValue).toHaveBeenLastCalledWith(
       props.element,
       props.element.default,
@@ -319,11 +319,15 @@ describe("TextArea widget", () => {
 
     // Remove focus
     textArea.blur()
-    expect(screen.queryByTestId("InputInstructions")).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByTestId("InputInstructions")).not.toBeInTheDocument()
+    )
 
     // Then focus again
     textArea.focus()
-    expect(screen.getByText("Press ⌘+Enter to submit form")).toBeVisible()
+    expect(
+      await screen.findByText("Press ⌘+Enter to submit form")
+    ).toBeVisible()
   })
 
   it("hides Input Instructions if in form that doesn't allow submit on enter", async () => {
