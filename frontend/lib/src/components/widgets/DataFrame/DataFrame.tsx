@@ -533,7 +533,7 @@ function DataFrame({
     columns,
     getCellContent,
     // If dynamic editing is enabled, we need to ignore the last row (trailing row)
-    // because it would result in some undesired errors in the tooltips otherwise
+    // because it would result in some undesired errors in the tooltips.
     isDynamicAndEditable ? [numRows] : []
   )
 
