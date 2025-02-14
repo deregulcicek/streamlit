@@ -51,12 +51,14 @@ export type TooltipsReturn = {
  *
  * @param columns columns of the datagrid
  * @param getCellContent function that returns the cell content for a given cell position
+ * @param ignoredRowIdx array of row indices to ignore when showing tooltips.
  * @returns the tooltip to show (if any), a callback to clear the tooltip, and the
  * onItemHovered callback to pass to the datagrid
  */
 function useTooltips(
   columns: BaseColumn[],
-  getCellContent: ([col, row]: readonly [number, number]) => GridCell
+  getCellContent: ([col, row]: readonly [number, number]) => GridCell,
+  ignoredRowIdx: number[] = []
 ): TooltipsReturn {
   const [tooltip, setTooltip] = React.useState<
     { content: string; left: number; top: number } | undefined
@@ -81,13 +83,16 @@ function useTooltips(
           return
         }
 
+        if (ignoredRowIdx.includes(rowIdx)) {
+          // Ignore the row if it is in the configured ignoredRowIdx array.
+          return
+        }
+
         const column = columns[colIdx]
 
         if (args.kind === "header" && notNullOrUndefined(column)) {
           tooltipContent = column.help
         } else if (args.kind === "cell") {
-          // TODO(lukasmasuch): Ignore the last row if num_rows=dynamic (trailing row).
-
           const cell = getCellContent([colIdx, rowIdx])
 
           if (isErrorCell(cell)) {
@@ -117,7 +122,7 @@ function useTooltips(
         }
       }
     },
-    [columns, getCellContent, setTooltip, timeoutRef]
+    [columns, getCellContent, setTooltip, timeoutRef, ignoredRowIdx]
   )
 
   const clearTooltip = React.useCallback(() => {
