@@ -51,14 +51,14 @@ export type TooltipsReturn = {
  *
  * @param columns columns of the datagrid
  * @param getCellContent function that returns the cell content for a given cell position
- * @param ignoredRowIdx array of row indices to ignore when showing tooltips.
+ * @param ignoredRowIndices array of row indices to ignore when showing tooltips.
  * @returns the tooltip to show (if any), a callback to clear the tooltip, and the
  * onItemHovered callback to pass to the datagrid
  */
 function useTooltips(
   columns: BaseColumn[],
   getCellContent: ([col, row]: readonly [number, number]) => GridCell,
-  ignoredRowIdx: number[] = []
+  ignoredRowIndices: number[] = []
 ): TooltipsReturn {
   const [tooltip, setTooltip] = React.useState<
     { content: string; left: number; top: number } | undefined
@@ -83,8 +83,8 @@ function useTooltips(
           return
         }
 
-        if (ignoredRowIdx.includes(rowIdx)) {
-          // Ignore the row if it is in the configured ignoredRowIdx array.
+        if (ignoredRowIndices.includes(rowIdx)) {
+          // Ignore the row if it is in the configured ignoredRowIndices array.
           return
         }
 
@@ -122,7 +122,7 @@ function useTooltips(
         }
       }
     },
-    [columns, getCellContent, setTooltip, timeoutRef, ignoredRowIdx]
+    [columns, getCellContent, setTooltip, timeoutRef, ignoredRowIndices]
   )
 
   const clearTooltip = React.useCallback(() => {

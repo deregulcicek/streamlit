@@ -534,6 +534,8 @@ function DataFrame({
     getCellContent,
     // If dynamic editing is enabled, we need to ignore the last row (trailing row)
     // because it would result in some undesired errors in the tooltips.
+    // The index are 0-based -> therefore, numRows will point to the trailing row
+    // (which is not part of the actual data).
     isDynamicAndEditable ? [numRows] : []
   )
 
