@@ -501,11 +501,15 @@ export class App extends PureComponent<Props, State> {
       mark(this.state.scriptRunState)
 
       if (this.state.scriptRunState === ScriptRunState.NOT_RUNNING) {
-        measure(
-          "script-run-cycle",
-          ScriptRunState.RUNNING,
-          ScriptRunState.NOT_RUNNING
-        )
+        try {
+          measure(
+            "script-run-cycle",
+            ScriptRunState.RUNNING,
+            ScriptRunState.NOT_RUNNING
+          )
+        } catch (err) {
+          // It's okay if this fails, the `measure` call is for debugging/profiling
+        }
       }
 
       this.hostCommunicationMgr.sendMessageToHost({
