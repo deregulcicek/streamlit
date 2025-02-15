@@ -452,6 +452,44 @@ class _CacheFuncHasher:
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
 
+        elif type_util.is_type(obj, "polars.series.series.Series"):
+            import polars as pl
+
+            obj = cast(pl.Series, obj)
+            self.update(h, obj.estimated_size())
+            # self.update(h, obj.dtype)
+
+            if len(obj) >= _PANDAS_ROWS_LARGE:
+                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
+
+            try:
+                # This leads to infinite recursion, fix it :)
+                self.update(h, obj.hash(seed=0))
+                return h.digest()
+            except TypeError:
+                # Use pickle if polars cannot hash the object for example if
+                # it contains unhashable objects.
+                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
+        elif type_util.is_type(obj, "polars.dataframe.frame.DataFrame"):
+            import polars as pl
+
+            obj = cast(pl.DataFrame, obj)
+            self.update(h, obj.shape)
+
+            if len(obj) >= _PANDAS_ROWS_LARGE:
+                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
+            try:
+                column_hash_bytes = self.to_bytes(
+                    pl.util.hash_pandas_object(obj.dtypes)
+                )
+                self.update(h, column_hash_bytes)
+                values_hash_bytes = self.to_bytes(pl.util.hash_pandas_object(obj))
+                self.update(h, values_hash_bytes)
+                return h.digest()
+            except TypeError:
+                # Use pickle if polars cannot hash the object for example if
+                # it contains unhashable objects.
+                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "numpy.ndarray"):
             import numpy as np
 
