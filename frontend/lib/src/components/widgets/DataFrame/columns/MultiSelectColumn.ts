@@ -18,8 +18,8 @@ import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
 import { MultiSelectCellType } from "@glideapps/glide-data-grid-cells"
 import { unique } from "vega-lite"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
-import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import { EmotionTheme } from "~lib/theme"
+import { isNullOrUndefined } from "~lib/util/utils"
 
 import {
   arrayToCopyValue,
@@ -109,6 +109,7 @@ function MultiSelectColumn(
     kind: "multiselect",
     sortMode: "default",
     themeOverride: {
+      // eslint-disable-next-line streamlit-custom/no-hardcoded-theme-values
       roundingRadius: 4,
       bgBubble: theme.colors.primary,
       bgBubbleSelected: theme.colors.primary,
