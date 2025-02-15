@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback } from "react"
+import React, { memo, ReactElement, useCallback } from "react"
 
+import { createPortal } from "react-dom"
 import {
   CompactSelection,
   DataEditorRef,
@@ -199,6 +200,9 @@ function DataFrame({
   const isLargeTable = originalNumRows > LARGE_TABLE_ROWS_THRESHOLD
   const isSortingEnabled =
     !isLargeTable && !isEmptyTable && element.editingMode !== DYNAMIC
+
+  const isDynamicAndEditable =
+    !isEmptyTable && element.editingMode === DYNAMIC && !disabled
 
   const editingState = React.useRef<EditingState>(
     new EditingState(originalNumRows)
@@ -525,7 +529,15 @@ function DataFrame({
     tooltip,
     clearTooltip,
     onItemHovered: handleTooltips,
-  } = useTooltips(columns, getCellContent)
+  } = useTooltips(
+    columns,
+    getCellContent,
+    // If dynamic editing is enabled, we need to ignore the last row (trailing row)
+    // because it would result in some undesired errors in the tooltips.
+    // The index are 0-based -> therefore, numRows will point to the trailing row
+    // (which is not part of the actual data).
+    isDynamicAndEditable ? [numRows] : []
+  )
 
   const { drawCell, customRenderers } = useCustomRenderer(columns)
 
@@ -594,9 +606,6 @@ function DataFrame({
   }, [resetEditingState, clearSelection])
 
   useFormClearHelper({ element, widgetMgr, onFormCleared })
-
-  const isDynamicAndEditable =
-    !isEmptyTable && element.editingMode === DYNAMIC && !disabled
 
   const { pinColumn, unpinColumn, freezeColumns } = useColumnPinning(
     columns,
@@ -744,6 +753,8 @@ function DataFrame({
                 setIsFocused(true)
                 onRowAppended()
                 clearTooltip()
+                // Automatically scroll to the new row on the vertical axis:
+                dataEditorRef.current?.scrollTo(0, numRows, "vertical")
               }
             }}
           />
@@ -1042,34 +1053,42 @@ function DataFrame({
           clearTooltip={clearTooltip}
         ></Tooltip>
       )}
-      {showMenu && (
-        // A context menu that provides interactive features (sorting, pinning, show/hide)
-        // for a grid column.
-        <ColumnMenu
-          top={showMenu.headerBounds.y + showMenu.headerBounds.height}
-          left={showMenu.headerBounds.x + showMenu.headerBounds.width}
-          onCloseMenu={() => setShowMenu(undefined)}
-          onSortColumn={
-            isSortingEnabled
-              ? (direction: "asc" | "desc" | undefined) => {
-                  // Cell selection are kept on the old position,
-                  // which can be confusing. So we clear all cell selections before sorting.
-                  clearSelection(true, true)
-                  sortColumn(showMenu.columnIdx, direction, true)
-                }
-              : undefined
-          }
-          isColumnPinned={originalColumns[showMenu.columnIdx].isPinned}
-          onUnpinColumn={() => {
-            unpinColumn(originalColumns[showMenu.columnIdx].id)
-          }}
-          onPinColumn={() => {
-            pinColumn(originalColumns[showMenu.columnIdx].id)
-          }}
-        ></ColumnMenu>
-      )}
+      {showMenu &&
+        createPortal(
+          // A context menu that provides interactive features (sorting, pinning, show/hide)
+          // for a grid column.
+          <ColumnMenu
+            top={showMenu.headerBounds.y + showMenu.headerBounds.height}
+            left={showMenu.headerBounds.x + showMenu.headerBounds.width}
+            onCloseMenu={() => setShowMenu(undefined)}
+            onSortColumn={
+              isSortingEnabled
+                ? (direction: "asc" | "desc" | undefined) => {
+                    // Cell selection are kept on the old position,
+                    // which can be confusing. So we clear all cell selections before sorting.
+                    clearSelection(true, true)
+                    sortColumn(showMenu.columnIdx, direction, true)
+                  }
+                : undefined
+            }
+            isColumnPinned={originalColumns[showMenu.columnIdx].isPinned}
+            onUnpinColumn={() => {
+              unpinColumn(originalColumns[showMenu.columnIdx].id)
+            }}
+            onPinColumn={() => {
+              pinColumn(originalColumns[showMenu.columnIdx].id)
+            }}
+          />,
+          // We put the column menu into the portal element which is also
+          // used for the cell overlays. This allows us to correctly position
+          // the column menu also when the grid is used in a dialog, popover,
+          // or anything else that apply a transform (position fixed is influenced
+          // by the transform property of the parent element).
+          // The portal element is expected to always exist (-> PortalProvider).
+          document.querySelector("#portal") as HTMLElement
+        )}
     </StyledResizableContainer>
   )
 }
 
-export default withFullScreenWrapper(DataFrame)
+export default memo(withFullScreenWrapper(DataFrame))

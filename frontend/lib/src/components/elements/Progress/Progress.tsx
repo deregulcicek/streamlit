@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import { Progress as ProgressProto } from "@streamlit/protobuf"
 
 import ProgressBar from "~lib/components/shared/ProgressBar"
-import { StyledCaptionText } from "~lib/components/elements/Progress/styled-components"
+import { StyledProgressLabelContainer } from "~lib/components/elements/Progress/styled-components"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
 
 export interface ProgressProps {
@@ -30,13 +30,13 @@ export interface ProgressProps {
 function Progress({ element, width }: Readonly<ProgressProps>): ReactElement {
   return (
     <div className="stProgress" data-testid="stProgress">
-      <StyledCaptionText>
+      <StyledProgressLabelContainer>
         <StreamlitMarkdown source={element.text} allowHTML={false} isLabel />
-      </StyledCaptionText>
+      </StyledProgressLabelContainer>
 
       <ProgressBar value={element.value} width={width} />
     </div>
   )
 }
 
-export default Progress
+export default memo(Progress)

@@ -15,9 +15,10 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Mapping
 from pathlib import Path
 from textwrap import dedent
-from typing import TYPE_CHECKING, Any, Final, Literal, Mapping, Union, cast
+from typing import TYPE_CHECKING, Any, Final, Literal, Union, cast
 
 from typing_extensions import TypeAlias
 
@@ -171,7 +172,7 @@ def set_page_config(
           format ``":material/icon_name:"`` where "icon_name" is the name
           of the icon in snake case.
 
-          For example, ``icon=":material/thumb_up:"`` will display the
+          For example, ``page_icon=":material/thumb_up:"`` will display the
           Thumb Up icon. Find additional icons in the `Material Symbols \
           <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
           font library.

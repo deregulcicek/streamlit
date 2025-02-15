@@ -15,24 +15,22 @@
  */
 
 import pick from "lodash/pick"
+import { getLogger } from "loglevel"
 import { v4 as uuidv4 } from "uuid"
 
+import { IS_DEV_ENV } from "@streamlit/connection"
 import {
   DeployedAppMetadata,
-  getCookie,
   IGuestToHostMessage,
-  IMetricsEvent,
-  IS_DEV_ENV,
-  localStorageAvailable,
-  logAlways,
-  logError,
-  MetricsEvent,
   SessionInfo,
   setCookie,
 } from "@streamlit/lib"
+import { IMetricsEvent, MetricsEvent } from "@streamlit/protobuf"
+import { getCookie, localStorageAvailable } from "@streamlit/utils"
 
 // Default metrics config fetched when none provided by host config endpoint
 export const DEFAULT_METRICS_CONFIG = "https://data.streamlit.io/metrics.json"
+const log = getLogger("MetricsManager")
 
 type EventName = "viewReport" | "updateReport" | "pageProfile" | "menuClick"
 type Event = [EventName, Partial<IMetricsEvent>]
@@ -101,7 +99,7 @@ export class MetricsManager {
 
       // If metricsUrl still undefined, deactivate metrics
       if (!this.metricsUrl) {
-        logError("Undefined metrics config - deactivating metrics tracking.")
+        log.error("Undefined metrics config - deactivating metrics tracking.")
         this.actuallySendMetrics = false
       }
     }
@@ -110,7 +108,7 @@ export class MetricsManager {
       this.sendPendingEvents()
     }
 
-    logAlways("Gather usage stats: ", this.actuallySendMetrics)
+    log.info("Gather usage stats: ", this.actuallySendMetrics)
     this.initialized = true
   }
 
@@ -169,7 +167,7 @@ export class MetricsManager {
 
       if (!response.ok) {
         this.metricsUrl = undefined
-        logError("Failed to fetch metrics config: ", response.status)
+        log.error("Failed to fetch metrics config: ", response.status)
       } else {
         const data = await response.json()
         this.metricsUrl = data.url ?? undefined
@@ -178,7 +176,7 @@ export class MetricsManager {
         }
       }
     } catch (err) {
-      logError("Failed to fetch metrics config:", err)
+      log.error("Failed to fetch metrics config:", err)
     }
   }
 
@@ -190,7 +188,7 @@ export class MetricsManager {
 
     // Don't actually track events when in dev mode, just print them instead.
     if (IS_DEV_ENV) {
-      logAlways("[Dev mode] Not tracking stat datapoint: ", evName, data)
+      log.info("[Dev mode] Not tracking stat datapoint: ", evName, data)
     } else if (this.metricsUrl === "postMessage") {
       this.postMessageEvent(evName, data)
     } else {
@@ -317,8 +315,13 @@ export class MetricsManager {
         window.localStorage.setItem(anonymousIdKey, anonymousIdCookie)
       }
     } else if (anonymousIdLocalStorage) {
-      // Removes excess quotes from localStorage string value
-      this.anonymousId = JSON.parse(anonymousIdLocalStorage)
+      try {
+        // parse handles legacy anonymousId logic with excess quotes
+        this.anonymousId = JSON.parse(anonymousIdLocalStorage)
+      } catch {
+        // if parse fails, anonymousId is not legacy and we can use as is
+        this.anonymousId = anonymousIdLocalStorage
+      }
 
       setCookie(anonymousIdKey, this.anonymousId, expiration)
     } else {

@@ -15,10 +15,13 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sys
 import uuid
 from enum import Enum
 from typing import TYPE_CHECKING, Callable, Final
+
+from google.protobuf.json_format import ParseDict
 
 import streamlit.elements.exception as exception_utils
 from streamlit import config, runtime
@@ -30,6 +33,7 @@ from streamlit.proto.GitInfo_pb2 import GitInfo
 from streamlit.proto.NewSession_pb2 import (
     Config,
     CustomThemeConfig,
+    FontFace,
     NewSession,
     UserInfo,
 )
@@ -579,9 +583,9 @@ class AppSession:
             browser. Set only for the SCRIPT_STARTED event.
         """
 
-        assert (
-            self._event_loop == asyncio.get_running_loop()
-        ), "This function must only be called on the eventloop thread the AppSession was created on."
+        assert self._event_loop == asyncio.get_running_loop(), (
+            "This function must only be called on the eventloop thread the AppSession was created on."
+        )
 
         if sender is not self._scriptrunner:
             # This event was sent by a non-current ScriptRunner; ignore it.
@@ -597,9 +601,9 @@ class AppSession:
         if event == ScriptRunnerEvent.SCRIPT_STARTED:
             if self._state != AppSessionState.SHUTDOWN_REQUESTED:
                 self._state = AppSessionState.APP_IS_RUNNING
-            assert (
-                page_script_hash is not None
-            ), "page_script_hash must be set for the SCRIPT_STARTED event"
+            assert page_script_hash is not None, (
+                "page_script_hash must be set for the SCRIPT_STARTED event"
+            )
 
             # Update the client state with the new page_script_hash if
             # necessary. This handles an edge case where a script is never
@@ -647,9 +651,9 @@ class AppSession:
             else:
                 # The script didn't complete successfully: send the exception
                 # to the frontend.
-                assert (
-                    exception is not None
-                ), "exception must be set for the SCRIPT_STOPPED_WITH_COMPILE_ERROR event"
+                assert exception is not None, (
+                    "exception must be set for the SCRIPT_STOPPED_WITH_COMPILE_ERROR event"
+                )
                 msg = ForwardMsg()
                 exception_utils.marshall(
                     msg.session_event.script_compilation_exception, exception
@@ -667,9 +671,9 @@ class AppSession:
                 self._local_sources_watcher.update_watched_modules()
 
         elif event == ScriptRunnerEvent.SHUTDOWN:
-            assert (
-                client_state is not None
-            ), "client_state must be set for the SHUTDOWN event"
+            assert client_state is not None, (
+                "client_state must be set for the SHUTDOWN event"
+            )
 
             if self._state == AppSessionState.SHUTDOWN_REQUESTED:
                 # Only clear media files if the script is done running AND the
@@ -680,9 +684,9 @@ class AppSession:
             self._scriptrunner = None
 
         elif event == ScriptRunnerEvent.ENQUEUE_FORWARD_MSG:
-            assert (
-                forward_msg is not None
-            ), "null forward_msg in ENQUEUE_FORWARD_MSG event"
+            assert forward_msg is not None, (
+                "null forward_msg in ENQUEUE_FORWARD_MSG event"
+            )
             self._enqueue_forward_msg(forward_msg)
 
         # Send a message if our run state changed
@@ -920,14 +924,15 @@ def _populate_config_msg(msg: Config) -> None:
 
 
 def _populate_theme_msg(msg: CustomThemeConfig) -> None:
-    enum_encoded_options = {"base", "font"}
     theme_opts = config.get_options_for_section("theme")
 
     if not any(theme_opts.values()):
         return
 
     for option_name, option_val in theme_opts.items():
-        if option_name not in enum_encoded_options and option_val is not None:
+        # We need to ignore some config options here that need special handling
+        # and cannot directly be set on the protobuf.
+        if option_name not in {"base", "font", "fontFaces"} and option_val is not None:
             setattr(msg, to_snake_case(option_name), option_val)
 
     # NOTE: If unset, base and font will default to the protobuf enum zero
@@ -949,21 +954,36 @@ def _populate_theme_msg(msg: CustomThemeConfig) -> None:
         else:
             msg.base = base_map[base]
 
-    font_map = {
-        "sans serif": msg.FontFamily.SANS_SERIF,
-        "serif": msg.FontFamily.SERIF,
-        "monospace": msg.FontFamily.MONOSPACE,
-    }
-    font = theme_opts["font"]
-    if font is not None:
-        if font not in font_map:
+    # Since the font field uses the deprecated enum, we need to put the font
+    # config into the body_font field instead:
+    body_font = theme_opts["font"]
+    if body_font:
+        msg.body_font = body_font
+
+    font_faces = theme_opts["fontFaces"]
+    # If fontFaces was configured via config.toml, it's already a parsed list of
+    # dictionaries. However, if it was provided via env variable or via CLI arg,
+    # it's a json string that still needs to be parsed.
+    if isinstance(font_faces, str):
+        try:
+            font_faces = json.loads(font_faces)
+        except Exception as e:
             _LOGGER.warning(
-                f'"{font}" is an invalid value for theme.font.'
-                f" Allowed values include {list(font_map.keys())}."
-                ' Setting theme.font to "sans serif".'
+                "Failed to parse the theme.fontFaces config option with json.loads: "
+                f"{font_faces}.",
+                exc_info=e,
             )
-        else:
-            msg.font = font_map[font]
+            font_faces = None
+
+    if font_faces is not None:
+        for font_face in font_faces:
+            try:
+                msg.font_faces.append(ParseDict(font_face, FontFace()))
+            except Exception as e:
+                _LOGGER.warning(
+                    f"Failed to parse the theme.fontFaces config option: {font_face}.",
+                    exc_info=e,
+                )
 
 
 def _populate_user_info_msg(msg: UserInfo) -> None:

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import classNames from "classnames"
 
 import { Spinner as SpinnerProto } from "@streamlit/protobuf"
 
-import { isPresetTheme } from "~lib/theme"
 import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown"
-import { LibContext } from "~lib/components/core/LibContext"
 
 import {
   StyledSpinner,
@@ -73,8 +71,6 @@ export const formatTime = (seconds: number): string => {
 }
 
 function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
-  const { activeTheme } = React.useContext(LibContext)
-  const usingCustomTheme = !isPresetTheme(activeTheme)
   const { cache, showTime } = element
   const [elapsedTime, setElapsedTime] = React.useState(0)
 
@@ -96,7 +92,7 @@ function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
       cache={cache}
     >
       <StyledSpinnerContainer>
-        <ThemedStyledSpinner usingCustomTheme={usingCustomTheme} />
+        <ThemedStyledSpinner />
         <StreamlitMarkdown source={element.text} allowHTML={false} />
         {showTime && (
           <StyledSpinnerTimer>{formatTime(elapsedTime)}</StyledSpinnerTimer>
@@ -106,4 +102,4 @@ function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
   )
 }
 
-export default Spinner
+export default memo(Spinner)

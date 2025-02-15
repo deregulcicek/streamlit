@@ -15,9 +15,9 @@
  */
 
 import { defineConfig } from "vite"
+import { version } from "./package.json"
 import react from "@vitejs/plugin-react-swc"
 import viteTsconfigPaths from "vite-tsconfig-paths"
-import { default as checker } from "vite-plugin-checker"
 
 import path from "path"
 
@@ -25,8 +25,8 @@ const BASE = "./"
 const HASH = process.env.OMIT_HASH_FROM_MAIN_FILES ? "" : ".[hash]"
 // We do not explicitly set the DEV_BUILD in any of our processes
 // This is a convenience for developers for debugging purposes
-const DEV_BUILD = process.env.DEV_BUILD || false
-const IS_PROFILER_BUILD = process.env.IS_PROFILER_BUILD || false
+const DEV_BUILD = Boolean(process.env.DEV_BUILD)
+const IS_PROFILER_BUILD = Boolean(process.env.IS_PROFILER_BUILD)
 
 /**
  * If this is a profiler build, we need to alias react-dom and scheduler to
@@ -50,18 +50,17 @@ const profilerAliases = IS_PROFILER_BUILD
 // https://vitejs.dev/config/
 export default defineConfig({
   base: BASE,
+  define: {
+    PACKAGE_METADATA: {
+      version,
+    },
+  },
   plugins: [
     react({
       jsxImportSource: "@emotion/react",
       plugins: [["@swc/plugin-emotion", {}]],
     }),
     viteTsconfigPaths(),
-    // this plugin checks for type errors on a separate process
-    checker({
-      // Do not run during tests because it produces forking errors
-      // This is primarily a development feature anyways
-      typescript: !Boolean(process.env.VITEST),
-    }),
   ],
   resolve: {
     alias: [
