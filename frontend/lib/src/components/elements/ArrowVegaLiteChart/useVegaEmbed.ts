@@ -16,14 +16,14 @@
 
 import { RefObject, useCallback, useEffect, useRef } from "react"
 
+import { getLogger } from "loglevel"
 import { truthy, View as VegaView } from "vega"
 import embed from "vega-embed"
 import { expressionInterpreter } from "vega-interpreter"
 
-import { useFormClearHelper } from "@streamlit/lib/src/components/widgets/Form"
-import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
-import { logMessage } from "@streamlit/lib/src/util/log"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
+import { useFormClearHelper } from "~lib/components/widgets/Form"
+import { Quiver } from "~lib/dataframes/Quiver"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
 
 import {
   getDataArray,
@@ -36,6 +36,7 @@ import {
 import { useVegaLiteSelections } from "./useVegaLiteSelections"
 
 const DEFAULT_DATA_NAME = "source"
+const log = getLogger("useVegaEmbed")
 
 interface UseVegaEmbedOutput {
   createView: (
@@ -193,7 +194,7 @@ export function useVegaEmbed(
       if (data.hash !== prevData.hash) {
         // Clean the dataset and insert from scratch.
         view.data(name, getDataArray(data))
-        logMessage(
+        log.info(
           `Had to clear the ${name} dataset before inserting data through Vega view.`
         )
       }

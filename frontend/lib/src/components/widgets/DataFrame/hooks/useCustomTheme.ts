@@ -19,7 +19,7 @@ import { useTheme } from "@emotion/react"
 import { Theme as GlideTheme, SpriteMap } from "@glideapps/glide-data-grid"
 import { lighten, mix, transparentize } from "color2k"
 
-import { convertRemToPx, EmotionTheme } from "@streamlit/lib/src/theme"
+import { convertRemToPx, EmotionTheme } from "~lib/theme"
 
 export type CustomGridTheme = {
   // The theme configuration for the glide-data-grid
@@ -82,9 +82,9 @@ function useCustomTheme(): Readonly<CustomGridTheme> {
       textHeader: theme.colors.fadedText60,
       textHeaderSelected: theme.colors.white,
       textGroupHeader: theme.colors.fadedText60,
-      headerFontStyle: `${theme.fontSizes.sm}`,
+      headerFontStyle: `${convertRemToPx(theme.fontSizes.sm)}px`,
       // Cell styling:
-      baseFontStyle: theme.fontSizes.sm,
+      baseFontStyle: `${convertRemToPx(theme.fontSizes.sm)}px`,
       editorFontSize: theme.fontSizes.sm,
       textDark: theme.colors.bodyText,
       textMedium: transparentize(theme.colors.bodyText, 0.2),
@@ -98,7 +98,7 @@ function useCustomTheme(): Readonly<CustomGridTheme> {
       bgBubble: theme.colors.secondaryBg,
       bgBubbleSelected: lighten(theme.colors.secondaryBg, 0.1),
       textBubble: theme.colors.bodyText,
-      linkColor: theme.colors.linkText,
+      linkColor: theme.colors.link,
       drilldownBorder: theme.colors.darkenedBgMix25,
       // Unused settings:
       // lineHeight

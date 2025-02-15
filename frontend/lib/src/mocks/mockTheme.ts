@@ -19,9 +19,9 @@
 import { lightThemePrimitives } from "baseui"
 import { transparentize } from "color2k"
 
-import { ThemeConfig } from "@streamlit/lib/src/theme"
-import { createBaseUiTheme } from "@streamlit/lib/src/theme/createThemeUtil"
-import { createEmotionColors } from "@streamlit/lib/src/theme/getColors"
+import { ThemeConfig } from "~lib/theme"
+import { createBaseUiTheme } from "~lib/theme/createBaseUiTheme"
+import { createEmotionColors } from "~lib/theme/getColors"
 import {
   breakpoints,
   colors,
@@ -35,7 +35,7 @@ import {
   sizes,
   spacing,
   zIndices,
-} from "@streamlit/lib/src/theme/primitives"
+} from "~lib/theme/primitives"
 
 const requiredThemeColors = {
   bgColor: colors.white,
@@ -49,8 +49,10 @@ const requiredThemeColors = {
   info: colors.blue100,
   danger: colors.red100,
   dangerBg: transparentize(colors.red70, 0.8),
+  link: colors.blue80,
 
   primary: colors.red70,
+  secondary: colors.blue70,
   disabled: colors.gray40,
   lightestGray: colors.gray20,
   lightGray: colors.gray30,
@@ -63,8 +65,6 @@ const requiredThemeColors = {
 }
 
 interface OptionalThemeColors {
-  skeletonBackgroundColor?: string
-  widgetBackgroundColor?: string
   widgetBorderColor?: string
 }
 

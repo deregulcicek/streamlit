@@ -18,9 +18,9 @@ import React from "react"
 
 import { screen } from "@testing-library/react"
 
-import { render } from "@streamlit/lib/src/test_util"
+import { render } from "~lib/test_util"
 
-import FileDropzone, { Props } from "./FileDropzone"
+import FileDropzone, { Props, STREAMLIT_MIME_TYPE } from "./FileDropzone"
 
 const getProps = (props: Partial<Props> = {}): Props => ({
   disabled: false,
@@ -57,6 +57,6 @@ describe("FileDropzone widget", () => {
     render(<FileDropzone {...props} />)
     expect(
       screen.queryByTestId("stFileUploaderDropzoneInput")
-    ).toHaveAttribute("accept", ".jpg")
+    ).toHaveAttribute("accept", [STREAMLIT_MIME_TYPE, ".jpg"].join(","))
   })
 })

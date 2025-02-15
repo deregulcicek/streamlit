@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from "react"
+import React, { memo, useEffect, useRef } from "react"
 
 import Clipboard from "clipboard"
 import { Copy as CopyIcon } from "react-feather"
 import { useTheme } from "@emotion/react"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+import { EmotionTheme } from "~lib/theme"
 
 import { StyledCopyButton } from "./styled-components"
 
@@ -67,4 +67,4 @@ const CopyButton: React.FC<Props> = ({ text }) => {
   )
 }
 
-export default CopyButton
+export default memo(CopyButton)

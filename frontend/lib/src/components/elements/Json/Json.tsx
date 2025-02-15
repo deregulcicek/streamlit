@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useRef } from "react"
+import React, { memo, ReactElement, useRef } from "react"
 
 import JSON5 from "json5"
 import Clipboard from "clipboard"
 import ReactJson from "react-json-view"
 import { useTheme } from "@emotion/react"
 
-import ErrorElement from "@streamlit/lib/src/components/shared/ErrorElement"
-import { Json as JsonProto } from "@streamlit/lib/src/proto"
-import {
-  EmotionTheme,
-  hasLightBackgroundColor,
-} from "@streamlit/lib/src/theme"
-import { ensureError } from "@streamlit/lib/src/util/ErrorHandling"
+import { Json as JsonProto } from "@streamlit/protobuf"
+
+import ErrorElement from "~lib/components/shared/ErrorElement"
+import { EmotionTheme, hasLightBackgroundColor } from "~lib/theme"
+import { ensureError } from "~lib/util/ErrorHandling"
 
 import { StyledJsonWrapper } from "./styled-components"
 export interface JsonProps {
@@ -38,10 +36,7 @@ export interface JsonProps {
 /**
  * Functional element representing JSON structured text.
  */
-export default function Json({
-  width,
-  element,
-}: Readonly<JsonProps>): ReactElement {
+function Json({ width, element }: Readonly<JsonProps>): ReactElement {
   const theme: EmotionTheme = useTheme()
 
   const elementRef = useRef<HTMLDivElement>(null)
@@ -100,3 +95,5 @@ export default function Json({
     </StyledJsonWrapper>
   )
 }
+
+export default memo(Json)

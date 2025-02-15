@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
+import { Field, Utf8 } from "apache-arrow"
 import moment, { Moment } from "moment-timezone"
 
-import { withTimezones } from "@streamlit/lib/src/util/withTimezones"
+import { DataFrameCellType } from "~lib/dataframes/arrowTypeUtils"
+import { withTimezones } from "~lib/util/withTimezones"
 
 import {
   BaseColumnProps,
@@ -48,8 +50,15 @@ const MOCK_TEXT_COLUMN_PROPS = {
   title: "column_1",
   indexNumber: 0,
   arrowType: {
-    pandas_type: "unicode",
-    numpy_type: "object",
+    type: DataFrameCellType.DATA,
+    arrowField: new Field("test", new Utf8(), true),
+    pandasType: {
+      field_name: "test",
+      name: "test",
+      pandas_type: "unicode",
+      numpy_type: "object",
+      metadata: null,
+    },
   },
   isEditable: false,
   isHidden: false,
@@ -396,6 +405,7 @@ describe("toGlideColumn", () => {
       id: MOCK_TEXT_COLUMN_PROPS.id,
       title: MOCK_TEXT_COLUMN_PROPS.title,
       hasMenu: false,
+      menuIcon: "dots",
       themeOverride: MOCK_TEXT_COLUMN_PROPS.themeOverride,
       grow: undefined,
       width: undefined,

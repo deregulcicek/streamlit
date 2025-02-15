@@ -16,17 +16,14 @@
 
 import { GridCell, GridCellKind, NumberCell } from "@glideapps/glide-data-grid"
 
-import { format as formatArrowCell } from "@streamlit/lib/src/dataframes/arrowFormatUtils"
+import { format as formatArrowCell } from "~lib/dataframes/arrowFormatUtils"
 import {
   isDurationType,
   isIntegerType,
   isPeriodType,
   isUnsignedIntegerType,
-} from "@streamlit/lib/src/dataframes/arrowTypeUtils"
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+} from "~lib/dataframes/arrowTypeUtils"
+import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 import {
   BaseColumn,
@@ -92,7 +89,8 @@ function NumberColumn(props: BaseColumnProps): BaseColumn {
     displayData: "",
     readonly: !props.isEditable,
     allowOverlay: true,
-    contentAlign: props.contentAlignment || "right",
+    contentAlign:
+      props.contentAlignment || useArrowFormatting ? "left" : "right",
     // The text in pinned columns should be faded.
     style: props.isPinned ? "faded" : "normal",
     allowNegative,

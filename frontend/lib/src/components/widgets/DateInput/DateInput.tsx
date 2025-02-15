@@ -28,23 +28,25 @@ import { useTheme } from "@emotion/react"
 import { DENSITY, Datepicker as UIDatePicker } from "baseui/datepicker"
 import { PLACEMENT } from "baseui/popover"
 
+import { DateInput as DateInputProto } from "@streamlit/protobuf"
+
 import {
   isNullOrUndefined,
   labelVisibilityProtoValueToEnum,
-} from "@streamlit/lib/src/util/utils"
-import { DateInput as DateInputProto } from "@streamlit/lib/src/proto"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
+} from "~lib/util/utils"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
 import {
   useBasicWidgetState,
   ValueWithSource,
-} from "@streamlit/lib/src/hooks/useBasicWidgetState"
+} from "~lib/hooks/useBasicWidgetState"
 import {
   StyledWidgetLabelHelp,
   WidgetLabel,
-} from "@streamlit/lib/src/components/widgets/BaseWidget"
-import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
-import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
-import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
+} from "~lib/components/widgets/BaseWidget"
+import TooltipIcon from "~lib/components/shared/TooltipIcon"
+import { Placement } from "~lib/components/shared/Tooltip"
+import { LibContext } from "~lib/components/core/LibContext"
+import { EmotionTheme } from "~lib/theme"
 
 import { useIntlLocale } from "./useIntlLocale"
 
@@ -79,6 +81,8 @@ function DateInput({
   width,
   fragmentId,
 }: Props): ReactElement {
+  const theme: EmotionTheme = useTheme()
+
   /**
    * An array with start and end date specified by the user via the UI. If the user
    * didn't touch this widget's UI, the default value is used. End date is optional.
@@ -204,7 +208,7 @@ function DateInput({
               overrides: {
                 Body: {
                   style: {
-                    border: `${sizes.borderWidth} solid ${colors.borderColor}`,
+                    marginTop: theme.spacing.px,
                   },
                 },
               },

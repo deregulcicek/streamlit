@@ -29,10 +29,27 @@ def test_color_picker_widget_display(
 ):
     """Test that st.color_picker renders correctly."""
     color_pickers = themed_app.get_by_test_id("stColorPicker")
-    expect(color_pickers).to_have_count(7)
+    expect(color_pickers).to_have_count(8)
+    assert_snapshot(color_pickers.nth(0), name="st_color_picker-regular")
+    assert_snapshot(color_pickers.nth(1), name="st_color_picker-default_help")
+    assert_snapshot(color_pickers.nth(2), name="st_color_picker-disabled")
+    assert_snapshot(color_pickers.nth(3), name="st_color_picker-hidden_label")
+    assert_snapshot(color_pickers.nth(4), name="st_color_picker-collapsed_label")
+    # The other color pickers do not need to be snapshot tested since they
+    # don't have any visually interesting differences.
+    assert_snapshot(color_pickers.nth(7), name="st_color_picker-markdown_label")
 
-    for i in range(5):
-        assert_snapshot(color_pickers.nth(i), name=f"st_color_picker-{i}")
+
+def test_color_picker_popover_display(
+    themed_app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that color picker popover renders correctly in both themes."""
+    color_pickers = themed_app.get_by_test_id("stColorPicker")
+    color_pickers.nth(0).get_by_test_id("stColorPickerBlock").click()
+
+    popover = themed_app.get_by_test_id("stColorPickerPopover")
+    expect(popover).to_be_visible()
+    assert_snapshot(popover, name="st_color_picker-popover")
 
 
 def test_help_tooltip_works(app: Page):

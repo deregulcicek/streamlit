@@ -30,6 +30,9 @@ export const StyledWaveformContainerDiv = styled.div(({ theme }) => ({
   position: "relative",
   paddingLeft: theme.spacing.xs,
   paddingRight: theme.spacing.sm,
+  border: theme.colors.widgetBorderColor
+    ? `${theme.sizes.borderWidth} solid ${theme.colors.widgetBorderColor}`
+    : undefined,
 }))
 
 export const StyledWaveformInnerDiv = styled.div({
@@ -65,7 +68,7 @@ export const StyledErrorTextSpan = styled.span(({ theme }) => ({
 }))
 
 export const StyledNoMicInputLearnMoreLink = styled.a(({ theme }) => ({
-  color: theme.colors.linkText,
+  color: theme.colors.link,
   textDecoration: "underline",
 }))
 
@@ -142,12 +145,11 @@ export const StyledSpinner = styled(Spinner)(({ theme }) => {
     width: theme.sizes.spinnerSize,
     height: theme.sizes.spinnerSize,
     borderWidth: theme.sizes.spinnerThickness,
-    radius: theme.radii.md,
     justifyContents: "center",
     padding: theme.spacing.none,
     margin: theme.spacing.none,
     borderColor: theme.colors.borderColor,
-    borderTopColor: theme.colors.primary,
+    borderTopColor: theme.colors.secondary,
     flexGrow: 0,
     flexShrink: 0,
   }

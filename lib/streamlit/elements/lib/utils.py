@@ -19,7 +19,6 @@ from datetime import date, datetime, time, timedelta
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
     Literal,
     Union,
     overload,
@@ -30,6 +29,7 @@ from typing_extensions import TypeAlias
 
 from streamlit import config
 from streamlit.errors import StreamlitDuplicateElementId, StreamlitDuplicateElementKey
+from streamlit.proto.ChatInput_pb2 import ChatInput
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.runtime.scriptrunner_utils.script_run_context import (
     ScriptRunContext,
@@ -44,6 +44,7 @@ from streamlit.util import HASHLIB_KWARGS
 
 if TYPE_CHECKING:
     from builtins import ellipsis
+    from collections.abc import Iterable
 
 
 Key: TypeAlias = Union[str, int]
@@ -76,6 +77,21 @@ def get_label_visibility_proto_value(
         return LabelVisibilityMessage.LabelVisibilityOptions.COLLAPSED
 
     raise ValueError(f"Unknown label visibility value: {label_visibility_string}")
+
+
+def get_chat_input_accept_file_proto_value(
+    accept_file_value: bool | Literal["multiple"],
+) -> ChatInput.AcceptFile.ValueType:
+    """Returns one of ChatInput.AcceptFile enum value based on string value."""
+
+    if accept_file_value is False:
+        return ChatInput.AcceptFile.NONE
+    elif accept_file_value is True:
+        return ChatInput.AcceptFile.SINGLE
+    elif accept_file_value == "multiple":
+        return ChatInput.AcceptFile.MULTIPLE
+
+    raise ValueError(f"Unknown accept file value: {accept_file_value}")
 
 
 @overload

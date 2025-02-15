@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const path = require("path")
 const vitest = require("eslint-plugin-vitest")
 
 module.exports = {
@@ -45,8 +46,8 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     // make the parser resolve the project configuration relative to .eslintrc.js
-    tsconfigRootDir: __dirname,
-    project: "./tsconfig.dev.json",
+    tsconfigRootDir: path.resolve("."),
+    project: "tsconfig.json",
     ecmaFeatures: {
       jsx: true, // Allows for the parsing of JSX
     },
@@ -130,6 +131,12 @@ module.exports = {
       "ForInStatement",
       "LabeledStatement",
       "WithStatement",
+      {
+        selector: "CallExpression[callee.name='withTheme']",
+        message:
+          "The use of withTheme HOC is not allowed for functional components. " +
+          "Please use the useTheme hook instead.",
+      },
     ],
     "no-restricted-globals": [
       "error",
@@ -258,7 +265,7 @@ module.exports = {
     "import/resolver": {
       typescript: {
         // tell eslint to look at these tsconfigs for import statements
-        project: ["lib/tsconfig.json", "app/tsconfig.json"],
+        project: [path.resolve(".", "tsconfig.json")],
       },
     },
   },

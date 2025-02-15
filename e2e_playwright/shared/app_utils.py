@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import platform
 import re
-from typing import Literal, Pattern
+from re import Pattern
+from typing import Literal
 
 from playwright.sync_api import Frame, Locator, Page, expect
 
@@ -48,7 +49,7 @@ def get_checkbox(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     return element
 
 
-def get_radio_button(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
+def get_radio_option(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     """Get a radio button widget with the given label.
 
     Parameters
@@ -66,6 +67,23 @@ def get_radio_button(locator: Locator | Page, label: str | Pattern[str]) -> Loca
         The element.
     """
     element = locator.locator('[data-baseweb="radio"]').filter(has_text=label)
+    expect(element).to_be_visible()
+    return element
+
+
+def get_radio(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
+    """Get a radio widget with the given label.
+
+    Parameters
+    ----------
+
+    locator : Locator
+        The locator to search for the element.
+
+    label : str or Pattern[str]
+        The label of the element to get.
+    """
+    element = locator.get_by_test_id("stRadio").filter(has_text=label)
     expect(element).to_be_visible()
     return element
 
@@ -117,6 +135,51 @@ def get_button(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     )
     expect(element).to_be_visible()
     return element
+
+
+def get_popover(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
+    """Get a popover with the given label.
+
+    Parameters
+    ----------
+
+    locator : Locator
+        The locator to search for the element.
+
+    label : str or Pattern[str]
+        The label of the element to get.
+
+    Returns
+    -------
+    Locator
+        The element.
+    """
+    element = locator.get_by_test_id("stPopover").filter(has_text=label)
+    expect(element).to_be_visible()
+    return element
+
+
+def open_popover(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
+    """Open a popover with the given label and return the popover container.
+
+    Parameters
+    ----------
+
+    locator : Locator
+        The locator to search for the element.
+
+    label : str or Pattern[str]
+        The label of the element to get.
+
+    Returns
+    -------
+    Locator
+        The popover container.
+    """
+    get_popover(locator, label).get_by_role("button").first.click()
+    popover_container = locator.get_by_test_id("stPopoverBody")
+    expect(popover_container).to_be_visible()
+    return popover_container
 
 
 def get_form_submit_button(
@@ -362,21 +425,34 @@ def click_toggle(
     click_checkbox(page, label)
 
 
-def click_radio_button(page: Page, label: str | Pattern[str]) -> None:
-    """Click a radio button with the given label
+def select_radio_option(
+    page: Page,
+    option: str | Pattern[str],
+    label: str | Pattern[str] | None = None,
+) -> None:
+    """Click a radio option with the given option label
     and wait for the app to run.
 
     Parameters
     ----------
 
     page : Page
-        The page to click the radio button on.
+        The page to click the radio option on.
 
-    label : str or Pattern[str]
-        The label of the radio button to click.
+    option : str or Pattern[str]
+        The option label of the radio option to click.
+
+    label : str or Pattern[str] or None
+        The label of the radio group. If None, the radio option
+        is searched on the full page.
     """
-    radio_button = get_radio_button(page, label)
-    radio_button.click()
+    locator: Page | Locator = page
+
+    if label is not None:
+        # Get the radio group widget:
+        locator = get_radio(page, label)
+
+    get_radio_option(locator, option).click()
     wait_for_app_run(page)
 
 
@@ -677,3 +753,73 @@ def wait_for_all_images_to_be_loaded(page: Page) -> None:
         return images.every(img => img.complete && img.naturalHeight !== 0);
     }
     """)
+
+
+def expect_font(page: Page, font_family: str, timeout: int = 20000) -> None:
+    """
+    Wait until the given font_family is recognized as available by the browser.
+    Uses document.fonts.check within a wait_for_function call.
+
+    Only check if the browser supports the Font Loading API.
+    If the browser can render 'fontName' at 16px, it returns true.
+
+    Parameters
+    ----------
+
+        page: Page
+            The Playwright Page object.
+        font_family: str
+            The name of the font family to check.
+        timeout: int
+            How long to wait in milliseconds (default: 20000).
+
+    Raises:
+        TimeoutError: If the font isn't recognized in time
+    """
+    check_script = """
+    (fontName) => {
+        if (!('fonts' in document)) {
+            return false;
+        }
+        return document.fonts.check('16px ' + fontName);
+    }
+    """
+    page.wait_for_function(check_script, arg=font_family, timeout=timeout)
+
+
+def is_child_bounding_box_inside_parent(
+    child_locator: Locator, parent_locator: Locator
+) -> bool:
+    """
+    Checks if the bounding box of child_locator is fully within
+    the bounding box of parent_locator.
+
+    Parameters
+    ----------
+    child_locator : Locator
+        The locator of the child element.
+
+    parent_locator : Locator
+        The locator of the parent element.
+
+    Returns
+    -------
+    bool
+        True if the child's bounding box lies completely within
+        the parent's bounding box; otherwise, False.
+    """
+    parent_box = parent_locator.bounding_box()
+    child_box = child_locator.bounding_box()
+
+    # bounding_box() can return None if the element is invisible or not rendered.
+    if parent_box is None or child_box is None:
+        return False
+
+    return (
+        child_box["x"] >= parent_box["x"]
+        and child_box["y"] >= parent_box["y"]
+        and (child_box["x"] + child_box["width"])
+        <= (parent_box["x"] + parent_box["width"])
+        and (child_box["y"] + child_box["height"])
+        <= (parent_box["y"] + parent_box["height"])
+    )

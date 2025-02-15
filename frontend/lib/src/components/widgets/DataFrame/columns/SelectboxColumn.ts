@@ -17,11 +17,8 @@
 import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
 import { DropdownCellType } from "@glideapps/glide-data-grid-cells"
 
-import { isBooleanType } from "@streamlit/lib/src/dataframes/arrowTypeUtils"
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+import { isBooleanType } from "~lib/dataframes/arrowTypeUtils"
+import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 import {
   BaseColumn,
@@ -53,7 +50,9 @@ function SelectboxColumn(props: BaseColumnProps): BaseColumn {
   const parameters = mergeColumnParameters(
     // Default parameters:
     {
-      options: isBooleanType(props.arrowType) ? [true, false] : [],
+      options: isBooleanType(props.arrowType)
+        ? [true, false]
+        : props.arrowType.categoricalOptions ?? [],
     },
     // User parameters:
     props.columnTypeOptions

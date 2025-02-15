@@ -20,13 +20,14 @@ import * as reactDeviceDetect from "react-device-detect"
 import { screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
-import { IAppPage, mockEndpoints, render } from "@streamlit/lib"
+import { mockEndpoints, render } from "@streamlit/lib"
+import { IAppPage } from "@streamlit/protobuf"
 
 import SidebarNav, { Props } from "./SidebarNav"
 
-vi.mock("@streamlit/lib/src/util/Hooks", async () => ({
+vi.mock("~lib/util/Hooks", async () => ({
   __esModule: true,
-  ...(await vi.importActual("@streamlit/lib/src/util/Hooks")),
+  ...(await vi.importActual("~lib/util/Hooks")),
   useIsOverflowing: vi.fn(),
 }))
 

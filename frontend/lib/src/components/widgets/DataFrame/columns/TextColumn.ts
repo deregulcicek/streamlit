@@ -16,10 +16,7 @@
 
 import { GridCell, GridCellKind, TextCell } from "@glideapps/glide-data-grid"
 
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 import {
   BaseColumn,
@@ -62,6 +59,7 @@ function TextColumn(props: BaseColumnProps): BaseColumn {
     displayData: "",
     allowOverlay: true,
     contentAlignment: props.contentAlignment,
+    allowWrapping: props.isWrappingAllowed,
     readonly: !props.isEditable,
     // The text in pinned columns should be faded.
     style: props.isPinned ? "faded" : "normal",

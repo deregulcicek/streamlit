@@ -18,11 +18,11 @@ import React from "react"
 
 import { screen } from "@testing-library/react"
 
-import { ScriptRunState } from "@streamlit/lib/src/ScriptRunState"
-import { render } from "@streamlit/lib/src/test_util"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
+import { ScriptRunState } from "~lib/ScriptRunState"
+import { render } from "~lib/test_util"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
 
-import { Form, Props } from "./Form"
+import Form, { Props } from "./Form"
 
 describe("Form", () => {
   function getProps(props: Partial<Props> = {}): Props {

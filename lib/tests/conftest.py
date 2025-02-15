@@ -36,9 +36,12 @@ unitTest = true
 gatherUsageStats = false
 """
 
-with patch(
-    "streamlit.config.open", mock_open(read_data=CONFIG_FILE_CONTENTS), create=True
-), patch("streamlit.config.os.path.exists") as path_exists:
+with (
+    patch(
+        "streamlit.config.open", mock_open(read_data=CONFIG_FILE_CONTENTS), create=True
+    ),
+    patch("streamlit.config.os.path.exists") as path_exists,
+):
     # Import streamlit even if we don't do anything with it below as we want to
     # be sure to catch any instances of calling config.get_option() when
     # first importing a file. We disallow this because doing so means that we
@@ -46,9 +49,9 @@ with patch(
     import streamlit as st  # noqa: F401
     from streamlit import config, file_util, source_util
 
-    assert (
-        not config._config_options
-    ), "config.get_option() should not be called on file import!"
+    assert not config._config_options, (
+        "config.get_option() should not be called on file import!"
+    )
 
     config_path = file_util.get_streamlit_file_path("config.toml")
     path_exists.side_effect = lambda path: path == config_path
@@ -116,3 +119,36 @@ def pytest_runtest_setup(item: pytest.Item):
             f"The test is skipped because it does not have the right marker. "
             f"Only tests marked with pytest.mark.require_integration() are run. {item}"
         )
+
+
+def pytest_collection_modifyitems(config, items):
+    """
+    Adds the `@pytest.mark.benchmark` marker to tests that use the `benchmark`
+    fixture. This marker allows us to run only performance tests when needed.
+    """
+    for item in items:
+        markers = item.get_closest_marker("usefixtures")
+        if markers and "benchmark" in markers.args:
+            item.add_marker(pytest.mark.performance)
+
+
+@pytest.fixture(scope="function")
+def benchmark(
+    benchmark,
+    request: pytest.FixtureRequest,
+):
+    # Check to see that the test has the @pytest.mark.performance mark
+    if not request.node.get_closest_marker("performance"):
+        raise ValueError(
+            "The benchmark fixture can only be used with tests marked with @pytest.mark.performance"
+        )
+
+    # If the request is a class, add benchmark to the class so that it can be
+    # accessed via `self.benchmark()`. This is most commonly used in unittest
+    # classes.
+    if request.cls:
+        request.cls.benchmark = benchmark
+
+    # For pytest functions, return the benchmark function so that it can be
+    # accessed via the fixture.
+    return benchmark

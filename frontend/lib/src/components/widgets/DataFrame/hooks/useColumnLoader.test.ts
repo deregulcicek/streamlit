@@ -15,6 +15,9 @@
  */
 
 import { renderHook } from "@testing-library/react-hooks"
+import { Field, Int64, Utf8 } from "apache-arrow"
+
+import { Arrow as ArrowProto } from "@streamlit/protobuf"
 
 import {
   BaseColumn,
@@ -25,10 +28,10 @@ import {
   ObjectColumn,
   SelectboxColumn,
   TextColumn,
-} from "@streamlit/lib/src/components/widgets/DataFrame/columns"
-import { Quiver } from "@streamlit/lib/src/dataframes/Quiver"
-import { UNICODE } from "@streamlit/lib/src/mocks/arrow"
-import { Arrow as ArrowProto } from "@streamlit/lib/src/proto"
+} from "~lib/components/widgets/DataFrame/columns"
+import { DataFrameCellType } from "~lib/dataframes/arrowTypeUtils"
+import { Quiver } from "~lib/dataframes/Quiver"
+import { UNICODE } from "~lib/mocks/arrow"
 
 import useColumnLoader, {
   applyColumnConfig,
@@ -47,8 +50,15 @@ const MOCK_COLUMNS: BaseColumn[] = [
     title: "",
     indexNumber: 0,
     arrowType: {
-      pandas_type: "int64",
-      numpy_type: "int64",
+      type: DataFrameCellType.INDEX,
+      arrowField: new Field("index_col", new Int64(), true),
+      pandasType: {
+        field_name: "index_col",
+        name: "index_col",
+        pandas_type: "int64",
+        numpy_type: "int64",
+        metadata: null,
+      },
     },
     isEditable: false,
     isHidden: false,
@@ -62,8 +72,15 @@ const MOCK_COLUMNS: BaseColumn[] = [
     title: "column_1",
     indexNumber: 1,
     arrowType: {
-      pandas_type: "int64",
-      numpy_type: "int64",
+      type: DataFrameCellType.DATA,
+      arrowField: new Field("column_1", new Int64(), true),
+      pandasType: {
+        field_name: "column_1",
+        name: "column_1",
+        pandas_type: "int64",
+        numpy_type: "int64",
+        metadata: null,
+      },
     },
     isEditable: false,
     isHidden: false,
@@ -77,8 +94,15 @@ const MOCK_COLUMNS: BaseColumn[] = [
     title: "column_2",
     indexNumber: 2,
     arrowType: {
-      pandas_type: "unicode",
-      numpy_type: "object",
+      type: DataFrameCellType.DATA,
+      arrowField: new Field("column_2", new Utf8(), true),
+      pandasType: {
+        field_name: "column_2",
+        name: "column_2",
+        pandas_type: "unicode",
+        numpy_type: "object",
+        metadata: null,
+      },
     },
     isEditable: false,
     isHidden: false,
@@ -381,8 +405,15 @@ describe("getColumnType", () => {
         title: "column_1",
         indexNumber: 1,
         arrowType: {
-          pandas_type: "int64",
-          numpy_type: "int64",
+          type: DataFrameCellType.DATA,
+          arrowField: new Field("column_1", new Int64(), true),
+          pandasType: {
+            field_name: "column_1",
+            name: "column_1",
+            pandas_type: "int64",
+            numpy_type: "int64",
+            metadata: null,
+          },
         },
         isEditable: false,
         isHidden: false,

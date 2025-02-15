@@ -16,7 +16,7 @@
 
 import styled, { CSSObject } from "@emotion/styled"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+import { EmotionTheme } from "~lib/theme"
 
 export const StyledTableContainer = styled.div(({ theme }) => ({
   fontSize: theme.fontSizes.md,
@@ -24,16 +24,17 @@ export const StyledTableContainer = styled.div(({ theme }) => ({
   lineHeight: theme.lineHeights.small,
 
   captionSide: "bottom",
-  "& caption": {
-    fontFamily: theme.genericFonts.bodyFont,
-    fontSize: theme.fontSizes.sm,
-    paddingTop: theme.spacing.sm,
-    paddingBottom: 0,
-    color: theme.colors.fadedText60,
-    textAlign: "left",
-    wordWrap: "break-word",
-    display: "inline-block",
-  },
+}))
+
+export const StyledTableCaption = styled.div(({ theme }) => ({
+  fontFamily: theme.genericFonts.bodyFont,
+  fontSize: theme.fontSizes.sm,
+  paddingTop: theme.spacing.sm,
+  paddingBottom: 0,
+  color: theme.colors.fadedText60,
+  textAlign: "left",
+  wordWrap: "break-word",
+  display: "inline-block",
 }))
 
 export const StyledTableBorder = styled.div(({ theme }) => ({

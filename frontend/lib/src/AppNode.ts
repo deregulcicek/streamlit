@@ -17,16 +17,6 @@
 import { produce } from "immer"
 
 import {
-  getLoadingScreenType,
-  isNullOrUndefined,
-  LoadingScreenType,
-  makeAppSkeletonElement,
-  makeElementWithErrorText,
-  makeElementWithInfoText,
-  notUndefined,
-} from "@streamlit/lib/src/util/utils"
-
-import {
   ArrowNamedDataSet,
   Arrow as ArrowProto,
   ArrowVegaLiteChart as ArrowVegaLiteChartProto,
@@ -37,7 +27,18 @@ import {
   IArrow,
   IArrowNamedDataSet,
   Logo,
-} from "./proto"
+} from "@streamlit/protobuf"
+
+import {
+  getLoadingScreenType,
+  isNullOrUndefined,
+  LoadingScreenType,
+  makeAppSkeletonElement,
+  makeElementWithErrorText,
+  makeElementWithInfoText,
+  notUndefined,
+} from "~lib/util/utils"
+
 import {
   VegaLiteChartElement,
   WrappedNamedDataset,
@@ -570,7 +571,8 @@ export class AppRoot {
   /* The hash of the main script that creates this AppRoot. */
   readonly mainScriptHash: string
 
-  readonly appLogo: AppLogo | null
+  /* The app logo, if it exists. */
+  private appLogo: AppLogo | null
 
   /**
    * Create an empty AppRoot with a placeholder "skeleton" element.
@@ -820,8 +822,12 @@ export class AppRoot {
       this.bottom.clearStaleNodes(currentScriptRunId, fragmentIdsThisRun) ||
       new BlockNode(this.mainScriptHash)
 
+    // Check if we're running a fragment, ensure logo isn't cleared as stale (Issue #10350/#10382)
+    const isFragmentRun = fragmentIdsThisRun && fragmentIdsThisRun.length > 0
     const appLogo =
-      this.appLogo?.scriptRunId === currentScriptRunId ? this.appLogo : null
+      isFragmentRun || this.appLogo?.scriptRunId === currentScriptRunId
+        ? this.appLogo
+        : null
 
     return new AppRoot(
       this.mainScriptHash,

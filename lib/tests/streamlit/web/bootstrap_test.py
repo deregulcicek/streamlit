@@ -21,6 +21,7 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import Mock, patch
 
 from streamlit import config
+from streamlit.runtime.runtime import Runtime
 from streamlit.web import bootstrap
 from tests import testutil
 from tests.testutil import patch_config_options
@@ -49,8 +50,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
             {"browser.serverAddress": "the-address"}
         )
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(True)
 
@@ -66,8 +68,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
             {"browser.serverAddress": "the-address"}
         )
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -88,8 +91,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
         mock_get_internal_ip.return_value = "internal-ip"
         mock_get_external_ip.return_value = "external-ip"
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -113,8 +117,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
         mock_get_internal_ip.return_value = "internal-ip"
         mock_get_external_ip.return_value = None
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -138,8 +143,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
         mock_get_internal_ip.return_value = None
         mock_get_external_ip.return_value = "external-ip"
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -159,8 +165,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
 
         mock_get_internal_ip.return_value = "internal-ip"
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -183,8 +190,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
 
         mock_get_internal_ip.return_value = "internal-ip"
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -208,8 +216,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
 
         mock_get_internal_ip.return_value = "internal-ip"
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -233,8 +242,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
 
         mock_get_internal_ip.return_value = None
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -271,8 +281,9 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
             }
         )
 
-        with patch.object(config, "get_option", new=mock_get_option), patch.object(
-            config, "is_manually_set", new=mock_is_manually_set
+        with (
+            patch.object(config, "get_option", new=mock_get_option),
+            patch.object(config, "is_manually_set", new=mock_is_manually_set),
         ):
             bootstrap._print_url(False)
 
@@ -324,9 +335,10 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
         folder total size is too large.
         """
 
-        with testutil.patch_config_options(
-            {"server.enableStaticServing": True}
-        ), patch.object(config, "set_option") as mock_set_option:
+        with (
+            testutil.patch_config_options({"server.enableStaticServing": True}),
+            patch.object(config, "set_option") as mock_set_option,
+        ):
             bootstrap._maybe_print_static_folder_warning("app_root/main_script_path")
             mock_echo.assert_called_once_with(
                 "WARNING: Static folder size is larger than 1GB. "
@@ -406,3 +418,26 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
                 "server.port": 8502,
             },
         )
+
+
+class BootstrapRunTest(IsolatedAsyncioTestCase):
+    def tearDown(self):
+        #  Reset the Runtime._instance for subsequent test runs. Otherwise we will get
+        # a "Runtime already exists" error.
+        Runtime._instance = None
+
+    def test_bootstrap_run(self):
+        with testutil.patch_config_options({"server.headless": True}):
+            bootstrap.run("", False, [], {}, stop_immediately_for_testing=True)
+
+    def test_bootstrap_run_in_existing_event_loop(self):
+        import asyncio
+
+        event_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(event_loop)
+        with testutil.patch_config_options({"server.headless": True}):
+
+            async def _run():
+                bootstrap.run("", False, [], {}, stop_immediately_for_testing=True)
+
+            event_loop.run_until_complete(_run())

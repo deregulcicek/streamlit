@@ -24,6 +24,8 @@ from e2e_playwright.shared.dataframe_utils import (
     click_on_cell,
     expect_canvas_to_be_visible,
     get_open_cell_overlay,
+    open_column_menu,
+    unfocus_dataframe,
 )
 from e2e_playwright.shared.toolbar_utils import (
     assert_fullscreen_toolbar_button_interactions,
@@ -117,7 +119,9 @@ def test_data_editor_delete_row_via_hotkey(app: Page):
     expect(data_editor_element).to_have_css("height", "212px")
 
 
-def test_data_editor_add_row_via_toolbar(app: Page):
+def test_data_editor_add_row_via_toolbar(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
     """Test that a row can be added via the toolbar."""
     data_editor_element = app.get_by_test_id("stDataFrame").nth(1)
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
@@ -134,6 +138,17 @@ def test_data_editor_add_row_via_toolbar(app: Page):
 
     # The height should reflect that one row is added (247px+35px=282px):
     expect(data_editor_element).to_have_css("height", "282px")
+
+    # Add six more rows:
+    add_row_button.click()
+    add_row_button.click()
+    add_row_button.click()
+    add_row_button.click()
+    add_row_button.click()
+    add_row_button.click()
+
+    # Take a snapshot to check if rows are added:
+    assert_snapshot(data_editor_element, name="st_data_editor-added_rows_via_toolbar")
 
 
 def test_data_editor_add_row_via_trailing_row(app: Page):
@@ -541,6 +556,80 @@ def test_row_hover_highlight(themed_app: Page, assert_snapshot: ImageCompareFunc
     df.hover(position={"x": column_middle_width_px, "y": row_middle_height_px})
 
     assert_snapshot(df, name="st_dataframe-row_hover_highlight")
+
+
+def test_sorting_column_via_ui(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that a column can be sorted via the UI by clicking on the column
+    header and via the column menu."""
+    df = app.get_by_test_id("stDataFrame").nth(0)
+    expect_canvas_to_be_visible(df)
+
+    assert_snapshot(df, name="st_dataframe-no_sorting")
+
+    # Click on the column header to sort in ascending order:
+    click_on_cell(df, 0, 2, column_width="small")
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-sorted_ascending")
+
+    # Click on the column header again to sort in descending order:
+    click_on_cell(df, 0, 2, column_width="small")
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-sorted_descending")
+
+    # Click on the column header again to remove sorting:
+    click_on_cell(df, 0, 2, column_width="small")
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-no_sorting")
+
+    # Open the column menu and sort in ascending order:
+    open_column_menu(df, 2, "small")
+    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort ascending").click()
+    unfocus_dataframe(app)
+    # Use the same screenshots as above since we expect the same
+    # result
+    assert_snapshot(df, name="st_dataframe-sorted_ascending")
+
+    # Open the column menu and sort in descending order:
+    open_column_menu(df, 2, "small")
+    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort descending").click()
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-sorted_descending")
+
+    # Remove sorting by clicking again on the column header:
+    open_column_menu(df, 2, "small")
+    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort descending").click()
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-no_sorting")
+
+
+def test_opening_column_menu(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that the column menu can be opened."""
+    df = themed_app.get_by_test_id("stDataFrame").nth(0)
+    expect_canvas_to_be_visible(df)
+
+    open_column_menu(df, 2, "small")
+    expect(themed_app.get_by_test_id("stDataFrameColumnMenu")).to_be_visible()
+    assert_snapshot(df, name="st_dataframe-column_menu")
+
+
+def test_column_pinning_via_ui(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that a column can be pinned via the column menu."""
+
+    df = app.get_by_test_id("stDataFrame").nth(0)
+    expect_canvas_to_be_visible(df)
+
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-column_unpinned")
+
+    open_column_menu(df, 2, "small")
+    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Pin column").click()
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-column_pinned")
+
+    open_column_menu(df, 1, "small")
+    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Unpin column").click()
+    unfocus_dataframe(app)
+    assert_snapshot(df, name="st_dataframe-column_unpinned")
 
 
 # TODO(lukasmasuch): Add additional interactive tests:

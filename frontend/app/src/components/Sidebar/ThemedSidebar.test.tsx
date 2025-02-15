@@ -25,7 +25,7 @@ import ThemedSidebar from "./ThemedSidebar"
 
 function getProps(
   props: Partial<SidebarProps> = {}
-): Omit<SidebarProps, "chevronDownshift" | "theme"> {
+): Omit<SidebarProps, "chevronDownshift"> {
   return {
     endpoints: mockEndpoints(),
     appPages: [],
@@ -34,6 +34,8 @@ function getProps(
     currentPageScriptHash: "page_hash",
     hasElements: true,
     hideSidebarNav: false,
+    appLogo: null,
+    expandSidebarNav: false,
     ...props,
   }
 }

@@ -16,9 +16,10 @@
 
 import React from "react"
 
-import ErrorElement from "@streamlit/lib/src/components/shared/ErrorElement"
-import { logError } from "@streamlit/lib/src/util/log"
-import { StyledInlineCode } from "@streamlit/lib/src/components/elements/CodeBlock/styled-components"
+import { getLogger } from "loglevel"
+
+import ErrorElement from "~lib/components/shared/ErrorElement"
+import { StyledInlineCode } from "~lib/components/elements/CodeBlock/styled-components"
 
 export interface Props {
   width?: number
@@ -27,6 +28,8 @@ export interface Props {
 export interface State {
   error?: Error | null
 }
+
+const log = getLogger("ErrorBoundary")
 
 /**
  * A component that catches errors that take place when React is asynchronously
@@ -48,7 +51,7 @@ class ErrorBoundary extends React.PureComponent<
   }
 
   public componentDidCatch = (error: Error): void => {
-    logError(`${error.name}: ${error.message}\n${error.stack}`)
+    log.error(`${error.name}: ${error.message}\n${error.stack}`)
   }
 
   public render(): React.ReactNode {

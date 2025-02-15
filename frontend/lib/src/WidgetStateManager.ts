@@ -19,13 +19,10 @@ import { Long, util } from "protobufjs"
 import { Signal, SignalConnection } from "typed-signals"
 
 import {
-  isValidFormId,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
-
-import {
+  ChatInputValue,
   DoubleArray,
   IArrowTable,
+  IChatInputValue,
   IFileUploaderState,
   SInt64Array,
   StringArray,
@@ -33,8 +30,9 @@ import {
   Button as SubmitButtonProto,
   WidgetState,
   WidgetStates,
-} from "./proto"
+} from "@streamlit/protobuf"
 
+import { isValidFormId, notNullOrUndefined } from "~lib/util/utils"
 export interface Source {
   fromUi: boolean
 }
@@ -320,6 +318,19 @@ export class WidgetStateManager {
     this.createWidgetState(widget, source).stringTriggerValue =
       new StringTriggerValue({ data: value })
     return this.setTriggerValueAtEndOfEventLoop(widget, source, fragmentId)
+  }
+
+  public setChatInputValue(
+    widget: WidgetInfo,
+    value: IChatInputValue,
+    source: Source,
+    fragmentId: string | undefined
+  ): void {
+    this.createWidgetState(widget, source).chatInputValue = new ChatInputValue(
+      value
+    )
+    this.onWidgetValueChanged(widget.formId, source, fragmentId)
+    this.deleteWidgetState(widget.id)
   }
 
   /**

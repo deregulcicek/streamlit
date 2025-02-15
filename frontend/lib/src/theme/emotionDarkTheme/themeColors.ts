@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import { transparentize } from "color2k"
+import { lighten, transparentize } from "color2k"
 
-import { colors } from "@streamlit/lib/src/theme/primitives/colors"
+import { colors } from "~lib/theme/primitives/colors"
 
 export default {
   ...colors,
   bgColor: colors.gray100,
   secondaryBg: colors.gray90,
   bodyText: colors.gray10,
-  navTextColor: colors.gray50,
-  navActiveTextColor: colors.gray10,
-  navIconColor: colors.gray70,
-  sidebarControlColor: colors.gray10,
   warning: colors.yellow20,
   warningBg: transparentize(colors.yellow70, 0.8),
   success: colors.green10,
@@ -37,4 +33,6 @@ export default {
   dangerBg: transparentize(colors.red60, 0.8),
   primary: colors.red70,
   disabled: colors.gray70,
+  // Brighten link color a bit so they're easier to read:
+  link: lighten(colors.blue80, 0.2),
 }

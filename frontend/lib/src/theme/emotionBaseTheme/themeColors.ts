@@ -16,7 +16,7 @@
 
 import { transparentize } from "color2k"
 
-import { colors } from "@streamlit/lib/src/theme/primitives/colors"
+import { colors } from "~lib/theme/primitives/colors"
 
 const requiredThemeColors = {
   bgColor: colors.white,
@@ -30,8 +30,10 @@ const requiredThemeColors = {
   info: colors.blue100,
   danger: colors.red100,
   dangerBg: transparentize(colors.red70, 0.8),
+  link: colors.blue80,
 
   primary: colors.red70,
+  secondary: colors.blue70, // Used progressbar and spinners
   disabled: colors.gray40,
   lightestGray: colors.gray20,
   lightGray: colors.gray30,
@@ -44,8 +46,6 @@ const requiredThemeColors = {
 }
 
 interface OptionalThemeColors {
-  skeletonBackgroundColor?: string
-  widgetBackgroundColor?: string
   widgetBorderColor?: string
 }
 

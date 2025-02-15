@@ -15,7 +15,7 @@
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run, wait_until
-from e2e_playwright.shared.app_utils import check_top_level_class, get_radio_button
+from e2e_playwright.shared.app_utils import check_top_level_class, get_radio_option
 
 
 def get_first_graph_svg(app: Page):
@@ -110,7 +110,7 @@ def test_renders_with_specified_engines(
     expect(radios).to_have_count(len(engines))
 
     for engine in engines:
-        get_radio_button(radio_group, engine).click(force=True)
+        get_radio_option(radio_group, engine).click(force=True)
         wait_for_app_run(app)
         expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text(engine)
 
@@ -142,4 +142,12 @@ def test_use_container_width_true(app: Page, assert_snapshot: ImageCompareFuncti
     assert_snapshot(
         app.get_by_test_id("stGraphVizChart").nth(6).locator("svg"),
         name="st_graphviz_chart_use_container_width_true",
+    )
+
+
+def test_with_themed_app(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that it renders correctly in light and dark mode."""
+    assert_snapshot(
+        themed_app.get_by_test_id("stGraphVizChart").nth(1).locator("svg"),
+        name="st_graphviz_chart-theming",
     )

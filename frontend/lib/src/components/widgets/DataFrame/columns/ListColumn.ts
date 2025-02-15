@@ -17,7 +17,7 @@
 import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
 import { MultiSelectCellType } from "@glideapps/glide-data-grid-cells"
 
-import { isNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import { isNullOrUndefined } from "~lib/util/utils"
 
 import {
   arrayToCopyValue,

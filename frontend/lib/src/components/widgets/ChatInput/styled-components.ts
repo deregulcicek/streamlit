@@ -15,7 +15,7 @@
  */
 import styled from "@emotion/styled"
 
-import { hasLightBackgroundColor } from "@streamlit/lib/src/theme"
+import { hasLightBackgroundColor } from "~lib/theme"
 
 export interface StyledChatInputContainerProps {
   width: number
@@ -24,22 +24,34 @@ export interface StyledChatInputContainerProps {
 export const StyledChatInputContainer =
   styled.div<StyledChatInputContainerProps>(({ theme, width }) => {
     return {
-      borderRadius: theme.radii.xxxl,
+      border: `${theme.sizes.borderWidth} solid`,
+      borderColor: theme.colors.widgetBorderColor ?? theme.colors.transparent,
+      borderRadius: theme.radii.chatInput,
       display: "flex",
-      backgroundColor:
-        theme.colors.widgetBackgroundColor ?? theme.colors.secondaryBg,
+      backgroundColor: theme.colors.secondaryBg,
       width: `${width}px`,
+      overflow: "hidden",
+
+      ":focus-within": {
+        borderColor: theme.colors.primary,
+      },
+
+      "&.dropzone": {
+        borderColor: theme.colors.primary,
+        borderRadius: theme.radii.full,
+        height: theme.sizes.emptyDropdownHeight,
+      },
     }
   })
 
 export const StyledChatInput = styled.div(({ theme }) => {
   return {
-    backgroundColor: theme.colors.transparent,
     position: "relative",
     flexGrow: 1,
-    borderRadius: theme.radii.xxxl,
     display: "flex",
     alignItems: "center",
+    paddingLeft: theme.spacing.lg,
+    gap: theme.spacing.sm,
   }
 })
 
@@ -57,9 +69,9 @@ export const StyledSendIconButton = styled.button<StyledSendIconButtonProps>(
     return {
       border: "none",
       backgroundColor: theme.colors.transparent,
-      borderTopRightRadius: extended ? "0" : theme.radii.xxxl,
+      borderTopRightRadius: extended ? "0" : theme.radii.chatInput,
       borderTopLeftRadius: extended ? theme.radii.default : "0",
-      borderBottomRightRadius: theme.radii.xxxl,
+      borderBottomRightRadius: theme.radii.chatInput,
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",

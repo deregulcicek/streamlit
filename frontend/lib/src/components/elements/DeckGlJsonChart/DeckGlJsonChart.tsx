@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, { FC, memo, useCallback, useEffect, useState } from "react"
 
 import { DeckGL } from "@deck.gl/react"
 import { MapContext, NavigationControl, StaticMap } from "react-map-gl"
@@ -25,18 +25,14 @@ import { LayersList, PickingInfo } from "@deck.gl/core"
 import { useTheme } from "@emotion/react"
 import { Close } from "@emotion-icons/material-outlined"
 
-import {
-  EmotionTheme,
-  hasLightBackgroundColor,
-} from "@streamlit/lib/src/theme"
-import { DeckGlJsonChart as DeckGlJsonChartProto } from "@streamlit/lib/src/proto"
-import { assertNever } from "@streamlit/lib/src/util/assertNever"
-import Toolbar, {
-  ToolbarAction,
-} from "@streamlit/lib/src/components/shared/Toolbar"
-import { useRequiredContext } from "@streamlit/lib/src/hooks/useRequiredContext"
-import { ElementFullscreenContext } from "@streamlit/lib/src/components/shared/ElementFullscreen/ElementFullscreenContext"
-import { withFullScreenWrapper } from "@streamlit/lib/src/components/shared/FullScreenWrapper"
+import { DeckGlJsonChart as DeckGlJsonChartProto } from "@streamlit/protobuf"
+
+import { EmotionTheme, hasLightBackgroundColor } from "~lib/theme"
+import { assertNever } from "~lib/util/assertNever"
+import Toolbar, { ToolbarAction } from "~lib/components/shared/Toolbar"
+import { useRequiredContext } from "~lib/hooks/useRequiredContext"
+import { ElementFullscreenContext } from "~lib/components/shared/ElementFullscreen/ElementFullscreenContext"
+import { withFullScreenWrapper } from "~lib/components/shared/FullScreenWrapper"
 
 import withMapboxToken from "./withMapboxToken"
 import {
@@ -267,6 +263,6 @@ export const DeckGlJsonChart: FC<DeckGLProps> = props => {
   )
 }
 
-export default withFullScreenWrapper(
-  withMapboxToken("st.pydeck_chart")(DeckGlJsonChart)
+export default memo(
+  withFullScreenWrapper(withMapboxToken("st.pydeck_chart")(DeckGlJsonChart))
 )

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactElement } from "react"
+import React, { memo, MouseEvent, ReactElement } from "react"
 
-import { LinkButton as LinkButtonProto } from "@streamlit/lib/src/proto"
+import { LinkButton as LinkButtonProto } from "@streamlit/protobuf"
+
 import {
   BaseButtonKind,
   BaseButtonSize,
   BaseButtonTooltip,
   DynamicButtonLabel,
-} from "@streamlit/lib/src/components/shared/BaseButton"
+} from "~lib/components/shared/BaseButton"
 
 import BaseLinkButton from "./BaseLinkButton"
 
@@ -77,4 +78,4 @@ function LinkButton(props: Readonly<Props>): ReactElement {
   )
 }
 
-export default LinkButton
+export default memo(LinkButton)

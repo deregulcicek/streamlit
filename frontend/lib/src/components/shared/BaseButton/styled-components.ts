@@ -19,7 +19,7 @@ import { MouseEvent, ReactNode } from "react"
 import styled, { CSSObject } from "@emotion/styled"
 import { darken, transparentize } from "color2k"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+import { EmotionTheme } from "~lib/theme"
 
 export enum BaseButtonKind {
   PRIMARY = "primary",
@@ -345,7 +345,6 @@ const StyledButtonGroupBaseButton = styled(
       overflow: "hidden",
     },
     "& p": {
-      fontSize: theme.fontSizes.sm,
       textOverflow: "ellipsis",
       overflow: "hidden",
     },

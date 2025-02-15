@@ -16,16 +16,16 @@
 
 import { MockInstance } from "vitest"
 
-import { CustomThemeConfig } from "@streamlit/lib/src/proto"
+import { CustomThemeConfig } from "@streamlit/protobuf"
+
 import {
   baseTheme,
   createAutoTheme,
   darkTheme,
   lightTheme,
-} from "@streamlit/lib/src/theme/index"
-import { fonts } from "@streamlit/lib/src/theme/primitives/typography"
-import { ThemeConfig } from "@streamlit/lib/src/theme/types"
-import { LocalStore } from "@streamlit/lib/src/util/storageUtils"
+} from "~lib/theme/index"
+import { ThemeConfig } from "~lib/theme/types"
+import { LocalStore } from "~lib/util/storageUtils"
 
 import { hasLightBackgroundColor } from "./getColors"
 import {
@@ -35,8 +35,6 @@ import {
   createEmotionTheme,
   createTheme,
   CUSTOM_THEME_NAME,
-  fontEnumToString,
-  fontToEnum,
   getCachedTheme,
   getDefaultTheme,
   getHostSpecifiedTheme,
@@ -113,7 +111,6 @@ describe("isPresetTheme", () => {
       new CustomThemeConfig({
         primaryColor: "red",
         secondaryBackgroundColor: "blue",
-        font: CustomThemeConfig.FontFamily.SERIF,
       })
     )
 
@@ -176,7 +173,6 @@ describe("Cached theme helpers", () => {
         backgroundColor: "orange",
         secondaryBackgroundColor: "yellow",
         textColor: "green",
-        font: CustomThemeConfig.FontFamily.SERIF,
       }
 
       const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
@@ -221,7 +217,6 @@ describe("Cached theme helpers", () => {
       backgroundColor: "orange",
       secondaryBackgroundColor: "yellow",
       textColor: "green",
-      font: CustomThemeConfig.FontFamily.SERIF,
     }
     const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
 
@@ -282,7 +277,7 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "red",
       secondaryBackgroundColor: "blue",
-      font: CustomThemeConfig.FontFamily.SERIF,
+      bodyFont: "serif",
     })
     const customTheme = createTheme(CUSTOM_THEME_NAME, customThemeConfig)
     expect(customTheme.name).toBe(CUSTOM_THEME_NAME)
@@ -301,7 +296,7 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "red",
       secondaryBackgroundColor: "blue",
-      font: CustomThemeConfig.FontFamily.SERIF,
+      bodyFont: "serif",
     })
     const customTheme = createTheme(
       CUSTOM_THEME_NAME,
@@ -328,7 +323,7 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "eee",
       secondaryBackgroundColor: "fc9231",
-      font: CustomThemeConfig.FontFamily.SERIF,
+      bodyFont: "serif",
     })
     const customTheme = createTheme(
       CUSTOM_THEME_NAME,
@@ -573,7 +568,8 @@ describe("isColor", () => {
 describe("createEmotionTheme", () => {
   it("sets to light when matchMedia does not match dark", () => {
     const themeInput: Partial<CustomThemeConfig> = {
-      font: CustomThemeConfig.FontFamily.MONOSPACE,
+      bodyFont: "monospace",
+      codeFont: "monospace",
       primaryColor: "red",
       backgroundColor: "pink",
       secondaryBackgroundColor: "blue",
@@ -612,6 +608,19 @@ describe("createEmotionTheme", () => {
       baseTheme.emotion.genericFonts.codeFont
     )
   })
+
+  it("adapts the radii theme props if roundness is provided", () => {
+    const themeInput: Partial<CustomThemeConfig> = {
+      roundness: 0.8,
+    }
+
+    const theme = createEmotionTheme(themeInput)
+
+    expect(theme.radii.default).toBe("1.28rem")
+    expect(theme.radii.md).toBe("0.64rem")
+    expect(theme.radii.xl).toBe("1.92rem")
+    expect(theme.radii.xxl).toBe("2.56rem")
+  })
 })
 
 describe("toThemeInput", () => {
@@ -622,32 +631,7 @@ describe("toThemeInput", () => {
       backgroundColor: colors.bgColor,
       secondaryBackgroundColor: colors.secondaryBg,
       textColor: colors.bodyText,
-      font: CustomThemeConfig.FontFamily.SANS_SERIF,
     })
-  })
-})
-
-describe("converting font <> enum", () => {
-  it("fontEnumToString converts to enum", () => {
-    expect(fontEnumToString(CustomThemeConfig.FontFamily.SANS_SERIF)).toBe(
-      fonts.sansSerif
-    )
-    expect(fontEnumToString(CustomThemeConfig.FontFamily.SERIF)).toBe(
-      fonts.serif
-    )
-    expect(fontEnumToString(CustomThemeConfig.FontFamily.MONOSPACE)).toBe(
-      fonts.monospace
-    )
-  })
-
-  it("fontToEnum converts to string", () => {
-    expect(fontToEnum(fonts.monospace)).toBe(
-      CustomThemeConfig.FontFamily.MONOSPACE
-    )
-    expect(fontToEnum(fonts.sansSerif)).toBe(
-      CustomThemeConfig.FontFamily.SANS_SERIF
-    )
-    expect(fontToEnum(fonts.serif)).toBe(CustomThemeConfig.FontFamily.SERIF)
   })
 })
 

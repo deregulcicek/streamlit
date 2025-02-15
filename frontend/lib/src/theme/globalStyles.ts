@@ -17,7 +17,7 @@
 import { css, SerializedStyles } from "@emotion/react"
 import { transparentize } from "color2k"
 
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+import { EmotionTheme } from "~lib/theme"
 
 /**
  * Contains various styles that are applied globally to the app.
@@ -28,7 +28,7 @@ import { EmotionTheme } from "@streamlit/lib/src/theme"
 export const globalStyles = (theme: EmotionTheme): SerializedStyles => css`
   // Override the base font-size value here.
   html {
-    font-size: ${theme.fontSizes.mdPx}px;
+    font-size: ${theme.fontSizes.baseFontSize}px;
   }
 
   // Set height to 100% for printing, otherwise the page on Safari might be blank

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect, useMemo, useRef } from "react"
+import React, { memo, ReactElement, useEffect, useMemo, useRef } from "react"
 
-import { Audio as AudioProto } from "@streamlit/lib/src/proto"
-import { StreamlitEndpoints } from "@streamlit/lib/src/StreamlitEndpoints"
-import { WidgetStateManager as ElementStateManager } from "@streamlit/lib/src/WidgetStateManager"
+import { Audio as AudioProto } from "@streamlit/protobuf"
+
+import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
+import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManager"
+
+import { StyledAudio, StyledAudioContainer } from "./styled-components"
 
 export interface AudioProps {
   endpoints: StreamlitEndpoints
@@ -27,9 +30,8 @@ export interface AudioProps {
   elementMgr: ElementStateManager
 }
 
-export default function Audio({
+function Audio({
   element,
-  width,
   endpoints,
   elementMgr,
 }: Readonly<AudioProps>): ReactElement {
@@ -147,14 +149,17 @@ export default function Audio({
   const uri = endpoints.buildMediaURL(element.url)
 
   return (
-    <audio
-      className="stAudio"
-      data-testid="stAudio"
-      ref={audioRef}
-      controls
-      autoPlay={autoplay && !preventAutoplay}
-      src={uri}
-      style={{ width }}
-    />
+    <StyledAudioContainer>
+      <StyledAudio
+        className="stAudio"
+        data-testid="stAudio"
+        ref={audioRef}
+        controls
+        autoPlay={autoplay && !preventAutoplay}
+        src={uri}
+      />
+    </StyledAudioContainer>
   )
 }
+
+export default memo(Audio)

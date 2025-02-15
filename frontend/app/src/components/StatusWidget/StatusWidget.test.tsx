@@ -18,8 +18,9 @@ import React from "react"
 
 import { fireEvent, screen } from "@testing-library/react"
 
-import { render, ScriptRunState, SessionEvent } from "@streamlit/lib"
-import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
+import { render, ScriptRunState } from "@streamlit/lib"
+import { SessionEvent } from "@streamlit/protobuf"
+import { ConnectionState } from "@streamlit/connection"
 import { SessionEventDispatcher } from "@streamlit/app/src/SessionEventDispatcher"
 
 import StatusWidget, { StatusWidgetProps } from "./StatusWidget"

@@ -13,26 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
-import { IFrame as IFrameProto } from "@streamlit/lib/src/proto"
+import { IFrame as IFrameProto } from "@streamlit/protobuf"
+
+import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 import {
   DEFAULT_IFRAME_FEATURE_POLICY,
   DEFAULT_IFRAME_SANDBOX_POLICY,
-} from "@streamlit/lib/src/util/IFrameUtil"
+} from "~lib/util/IFrameUtil"
 
 import { StyledIframe } from "./styled-components"
+
+/**
+ * Return a string property from an element. If the string is
+ * null or empty, return undefined instead.
+ */
+function getNonEmptyString(
+  value: string | null | undefined
+): string | undefined {
+  return isNullOrUndefined(value) || value === "" ? undefined : value
+}
 
 export interface IFrameProps {
   element: IFrameProto
   width: number
 }
 
-export default function IFrame({
+function IFrame({
   element,
   width: propWidth,
 }: Readonly<IFrameProps>): ReactElement {
@@ -62,12 +70,4 @@ export default function IFrame({
   )
 }
 
-/**
- * Return a string property from an element. If the string is
- * null or empty, return undefined instead.
- */
-function getNonEmptyString(
-  value: string | null | undefined
-): string | undefined {
-  return isNullOrUndefined(value) || value === "" ? undefined : value
-}
+export default memo(IFrame)

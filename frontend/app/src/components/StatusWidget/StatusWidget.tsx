@@ -22,8 +22,7 @@ import React, {
   useState,
 } from "react"
 
-import { EmotionIcon } from "@emotion-icons/emotion-icon"
-import { Ellipses, Info, Warning } from "@emotion-icons/open-iconic"
+import { Info } from "@emotion-icons/open-iconic"
 import { useTheme } from "@emotion/react"
 import Hotkeys from "react-hot-keys"
 import { CSSTransition } from "react-transition-group"
@@ -33,17 +32,16 @@ import {
   BaseButton,
   BaseButtonKind,
   Icon,
-  isNullOrUndefined,
-  notNullOrUndefined,
   Placement,
   ScriptRunState,
-  SessionEvent,
   Timer,
   Tooltip,
 } from "@streamlit/lib"
+import { SessionEvent } from "@streamlit/protobuf"
+import { isNullOrUndefined, notNullOrUndefined } from "@streamlit/utils"
 import iconRunning from "@streamlit/app/src/assets/img/icon_running.gif"
 import newYearsRunning from "@streamlit/app/src/assets/img/fireworks.gif"
-import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
+import { ConnectionState } from "@streamlit/connection"
 import { SessionEventDispatcher } from "@streamlit/app/src/SessionEventDispatcher"
 
 import {
@@ -56,6 +54,7 @@ import {
   StyledShortcutLabel,
   StyledStatusWidget,
 } from "./styled-components"
+import { getConnectionStateUI } from "./getConnectionStateUI"
 
 /** Component props */
 export interface StatusWidgetProps {
@@ -82,12 +81,6 @@ export interface StatusWidgetProps {
 
   /** Allows users to change user settings to allow rerun on save */
   allowRunOnSave: boolean
-}
-
-interface ConnectionStateUI {
-  icon: EmotionIcon
-  label: string
-  tooltip: string
 }
 
 // Amount of time to display the "Script Changed. Rerun?" prompt when it first appears.
@@ -144,7 +137,7 @@ const StatusWidget: React.FC<StatusWidgetProps> = ({
   const [showRunningMan, setShowRunningMan] = useState(false)
   const minimizePromptTimer: React.MutableRefObject<Timer | null> =
     useRef(null)
-  const showRunningManTimer: React.MutableRefObject<Timer | null> =
+  const delayShowRunningManTimer: React.MutableRefObject<Timer | null> =
     useRef(null)
   const sessionEventConn = useRef<SignalConnection>()
   const theme = useTheme()
@@ -190,8 +183,8 @@ const StatusWidget: React.FC<StatusWidgetProps> = ({
 
   const showRunningManAfterInitialDelay = useCallback(
     (delay: number): void => {
-      if (showRunningManTimer.current !== null) {
-        showRunningManTimer.current.setTimeout(() => {
+      if (delayShowRunningManTimer.current !== null) {
+        delayShowRunningManTimer.current.setTimeout(() => {
           setShowRunningMan(true)
         }, delay)
       }
@@ -233,30 +226,6 @@ const StatusWidget: React.FC<StatusWidgetProps> = ({
     return false
   }
 
-  function getConnectionStateUI(
-    state: ConnectionState
-  ): ConnectionStateUI | undefined {
-    switch (state) {
-      case ConnectionState.INITIAL:
-      case ConnectionState.PINGING_SERVER:
-      case ConnectionState.CONNECTING:
-        return {
-          icon: Ellipses,
-          label: "Connecting",
-          tooltip: "Connecting to Streamlit server",
-        }
-      case ConnectionState.CONNECTED:
-        return undefined
-      case ConnectionState.DISCONNECTED_FOREVER:
-      default:
-        return {
-          icon: Warning,
-          label: "Error",
-          tooltip: "Unable to connect to Streamlit server",
-        }
-    }
-  }
-
   useEffect(() => {
     sessionEventConn.current =
       sessionEventDispatcher.onSessionEvent.connect(handleSessionEvent)
@@ -272,16 +241,16 @@ const StatusWidget: React.FC<StatusWidgetProps> = ({
     if (minimizePromptTimer.current === null) {
       minimizePromptTimer.current = new Timer()
     }
-    if (showRunningManTimer.current === null) {
-      showRunningManTimer.current = new Timer()
+    if (delayShowRunningManTimer.current === null) {
+      delayShowRunningManTimer.current = new Timer()
     }
 
     const minimizePromptTimerCurr = minimizePromptTimer.current
-    const showRunningManTimerCurr = minimizePromptTimer.current
+    const delayShowRunningManTimerCurr = minimizePromptTimer.current
 
     return () => {
       minimizePromptTimerCurr.cancel()
-      showRunningManTimerCurr.cancel()
+      delayShowRunningManTimerCurr.cancel()
     }
   }, [])
 

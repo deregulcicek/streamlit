@@ -14,37 +14,32 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect, useRef, useState } from "react"
+import React, { memo, ReactElement, useEffect, useRef, useState } from "react"
 
-import { withTheme } from "@emotion/react"
+import { useTheme } from "@emotion/react"
+import { getLogger } from "loglevel"
 import queryString from "query-string"
 
-import AlertElement from "@streamlit/lib/src/components/elements/AlertElement"
-import { Skeleton } from "@streamlit/lib/src/components/elements/Skeleton"
-import ErrorElement from "@streamlit/lib/src/components/shared/ErrorElement"
-import { Kind } from "@streamlit/lib/src/components/shared/AlertContainer"
-import useTimeout from "@streamlit/lib/src/hooks/useTimeout"
 import {
   ComponentInstance as ComponentInstanceProto,
   ISpecialArg,
   Skeleton as SkeletonProto,
-} from "@streamlit/lib/src/proto"
-import { EmotionTheme } from "@streamlit/lib/src/theme"
+} from "@streamlit/protobuf"
+
+import AlertElement from "~lib/components/elements/AlertElement"
+import { Skeleton } from "~lib/components/elements/Skeleton"
+import ErrorElement from "~lib/components/shared/ErrorElement"
+import { Kind } from "~lib/components/shared/AlertContainer"
+import useTimeout from "~lib/hooks/useTimeout"
+import { EmotionTheme } from "~lib/theme"
 import {
   DEFAULT_IFRAME_FEATURE_POLICY,
   DEFAULT_IFRAME_SANDBOX_POLICY,
-} from "@streamlit/lib/src/util/IFrameUtil"
-import { logWarning } from "@streamlit/lib/src/util/log"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
-import {
-  COMMUNITY_URL,
-  COMPONENT_DEVELOPER_URL,
-} from "@streamlit/lib/src/urls"
-import { ensureError } from "@streamlit/lib/src/util/ErrorHandling"
-import {
-  isNullOrUndefined,
-  notNullOrUndefined,
-} from "@streamlit/lib/src/util/utils"
+} from "~lib/util/IFrameUtil"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
+import { COMMUNITY_URL, COMPONENT_DEVELOPER_URL } from "~lib/urls"
+import { ensureError } from "~lib/util/ErrorHandling"
+import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 import { ComponentRegistry } from "./ComponentRegistry"
 import {
@@ -57,6 +52,7 @@ import {
 } from "./componentUtils"
 import { StyledComponentIframe } from "./styled-components"
 
+const log = getLogger("ComponentInstance")
 /**
  * If we haven't received a COMPONENT_READY message this many seconds
  * after the component has been created, explain to the user that there
@@ -70,7 +66,6 @@ export interface Props {
   disabled: boolean
   element: ComponentInstanceProto
   width: number
-  theme: EmotionTheme
   fragmentId?: string
 }
 
@@ -174,10 +169,10 @@ function compareDataframeArgs(
  * by {@link COMPONENT_READY_WARNING_TIME_MS}, a warning element is rendered instead.
  */
 function ComponentInstance(props: Props): ReactElement {
+  const theme: EmotionTheme = useTheme()
   const [componentError, setComponentError] = useState<Error>()
 
-  const { disabled, element, registry, theme, widgetMgr, width, fragmentId } =
-    props
+  const { disabled, element, registry, widgetMgr, width, fragmentId } = props
   const { componentName, jsonArgs, specialArgs, url } = element
 
   const [parsedNewArgs, parsedDataframeArgs] = tryParseArgs(
@@ -225,7 +220,7 @@ function ComponentInstance(props: Props): ReactElement {
 
   // Show a log in the console as a soft-warning to the developer before showing the more disrupting warning element
   const clearTimeoutLog = useTimeout(
-    () => logWarning(getWarnMessage(componentName, url)),
+    () => log.warn(getWarnMessage(componentName, url)),
     COMPONENT_READY_WARNING_TIME_MS / 4
   )
   const clearTimeoutWarningElement = useTimeout(
@@ -251,7 +246,7 @@ function ComponentInstance(props: Props): ReactElement {
   useEffect(() => {
     const handleSetFrameHeight = (height: number | undefined): void => {
       if (height === undefined) {
-        logWarning(`handleSetFrameHeight: missing 'height' prop`)
+        log.warn(`handleSetFrameHeight: missing 'height' prop`)
         return
       }
 
@@ -262,7 +257,7 @@ function ComponentInstance(props: Props): ReactElement {
 
       if (isNullOrUndefined(iframeRef.current)) {
         // This should not be possible.
-        logWarning(`handleSetFrameHeight: missing our iframeRef!`)
+        log.warn(`handleSetFrameHeight: missing our iframeRef!`)
         return
       }
 
@@ -417,4 +412,4 @@ function ComponentInstance(props: Props): ReactElement {
   )
 }
 
-export default withTheme(ComponentInstance)
+export default memo(ComponentInstance)

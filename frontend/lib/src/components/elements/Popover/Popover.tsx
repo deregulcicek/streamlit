@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import { useTheme } from "@emotion/react"
 import { ExpandLess, ExpandMore } from "@emotion-icons/material-outlined"
 import { PLACEMENT, TRIGGER_TYPE, Popover as UIPopover } from "baseui/popover"
 
-import { hasLightBackgroundColor } from "@streamlit/lib/src/theme"
-import { StyledIcon } from "@streamlit/lib/src/components/shared/Icon"
-import { Block as BlockProto } from "@streamlit/lib/src/proto"
+import { Block as BlockProto } from "@streamlit/protobuf"
+
+import { hasLightBackgroundColor } from "~lib/theme"
+import { StyledIcon } from "~lib/components/shared/Icon"
 import BaseButton, {
   BaseButtonKind,
   BaseButtonSize,
   BaseButtonTooltip,
   DynamicButtonLabel,
-} from "@streamlit/lib/src/components/shared/BaseButton"
-import IsSidebarContext from "@streamlit/lib/src/components/core/IsSidebarContext"
+} from "~lib/components/shared/BaseButton"
+import IsSidebarContext from "~lib/components/core/IsSidebarContext"
 
 import { StyledPopoverButtonIcon } from "./styled-components"
 
@@ -156,4 +157,4 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
   )
 }
 
-export default Popover
+export default memo(Popover)

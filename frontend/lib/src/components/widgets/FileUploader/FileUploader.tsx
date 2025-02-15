@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import axios from "axios"
 import isEqual from "lodash/isEqual"
@@ -22,30 +22,27 @@ import zip from "lodash/zip"
 import { FileRejection } from "react-dropzone"
 
 import {
-  isNullOrUndefined,
-  labelVisibilityProtoValueToEnum,
-} from "@streamlit/lib/src/util/utils"
-import {
   FileUploader as FileUploaderProto,
   FileUploaderState as FileUploaderStateProto,
   FileURLs as FileURLsProto,
   IFileURLs,
   UploadedFileInfo as UploadedFileInfoProto,
-} from "@streamlit/lib/src/proto"
-import { FormClearHelper } from "@streamlit/lib/src/components/widgets/Form"
+} from "@streamlit/protobuf"
+
 import {
-  FileSize,
-  getSizeDisplay,
-  sizeConverter,
-} from "@streamlit/lib/src/util/FileHelper"
-import { FileUploadClient } from "@streamlit/lib/src/FileUploadClient"
-import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
+  isNullOrUndefined,
+  labelVisibilityProtoValueToEnum,
+} from "~lib/util/utils"
+import { FormClearHelper } from "~lib/components/widgets/Form"
+import { FileSize, getSizeDisplay, sizeConverter } from "~lib/util/FileHelper"
+import { FileUploadClient } from "~lib/FileUploadClient"
+import { WidgetStateManager } from "~lib/WidgetStateManager"
 import {
   StyledWidgetLabelHelp,
   WidgetLabel,
-} from "@streamlit/lib/src/components/widgets/BaseWidget"
-import TooltipIcon from "@streamlit/lib/src/components/shared/TooltipIcon"
-import { Placement } from "@streamlit/lib/src/components/shared/Tooltip"
+} from "~lib/components/widgets/BaseWidget"
+import TooltipIcon from "~lib/components/shared/TooltipIcon"
+import { Placement } from "~lib/components/shared/Tooltip"
 
 import FileDropzone from "./FileDropzone"
 import { StyledFileUploader } from "./styled-components"
@@ -512,7 +509,7 @@ class FileUploader extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { files } = this.state
-    const { element, disabled, widgetMgr } = this.props
+    const { element, disabled, widgetMgr, width } = this.props
     const acceptedExtensions = element.type
 
     // Manage our form-clear event handler.
@@ -531,6 +528,7 @@ class FileUploader extends React.PureComponent<Props, State> {
       <StyledFileUploader
         className="stFileUploader"
         data-testid="stFileUploader"
+        width={width}
       >
         <WidgetLabel
           label={element.label}
@@ -573,4 +571,4 @@ class FileUploader extends React.PureComponent<Props, State> {
   }
 }
 
-export default FileUploader
+export default memo(FileUploader)

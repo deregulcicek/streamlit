@@ -24,14 +24,14 @@ import {
   Item,
   ValidatedGridCell,
 } from "@glideapps/glide-data-grid"
+import { getLogger } from "loglevel"
 
-import { logWarning } from "@streamlit/lib/src/util/log"
-import { notNullOrUndefined } from "@streamlit/lib/src/util/utils"
+import { notNullOrUndefined } from "~lib/util/utils"
 import {
   BaseColumn,
   isErrorCell,
-} from "@streamlit/lib/src/components/widgets/DataFrame/columns"
-import EditingState from "@streamlit/lib/src/components/widgets/DataFrame/EditingState"
+} from "~lib/components/widgets/DataFrame/columns"
+import EditingState from "~lib/components/widgets/DataFrame/EditingState"
 
 /**
  * Create return type for useDataLoader hook based on the DataEditorProps.
@@ -40,6 +40,8 @@ type DataEditorReturn = Pick<
   DataEditorProps,
   "onCellEdited" | "onPaste" | "onRowAppended" | "onDelete" | "validateCell"
 >
+
+const log = getLogger("useDataEditor")
 
 /**
  * Custom hook to handle all aspects related to data editing. This includes editing cells,
@@ -110,7 +112,7 @@ function useDataEditor(
 
         syncEditState()
       } else {
-        logWarning(
+        log.warn(
           `Not applying the cell edit since it causes this error:\n ${newCell.data}`
         )
       }

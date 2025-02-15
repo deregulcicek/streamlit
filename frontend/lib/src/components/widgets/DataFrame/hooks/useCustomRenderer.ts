@@ -37,7 +37,7 @@ import {
   CustomCells,
   isErrorCell,
   isMissingValueCell,
-} from "@streamlit/lib/src/components/widgets/DataFrame/columns"
+} from "~lib/components/widgets/DataFrame/columns"
 
 // Token used for missing values (null, NaN, etc.)
 const NULL_VALUE_TOKEN = "None"
