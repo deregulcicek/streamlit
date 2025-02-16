@@ -33,6 +33,7 @@ from unittest.mock import MagicMock, Mock
 
 import numpy as np
 import pandas as pd
+import polars as pl
 from parameterized import parameterized
 from PIL import Image
 
@@ -352,6 +353,19 @@ class HashTest(unittest.TestCase):
 
         series4 = pd.Series(range(_PANDAS_ROWS_LARGE))
         series5 = pd.Series(range(_PANDAS_ROWS_LARGE))
+
+        self.assertEqual(get_hash(series4), get_hash(series5))
+
+    def test_polars_series(self):
+        series1 = pl.Series([1, 2])
+        series2 = pl.Series([1, 3])
+        series3 = pl.Series([1, 2])
+
+        self.assertEqual(get_hash(series1), get_hash(series3))
+        self.assertNotEqual(get_hash(series1), get_hash(series2))
+
+        series4 = pl.Series(range(_PANDAS_ROWS_LARGE))
+        series5 = pl.Series(range(_PANDAS_ROWS_LARGE))
 
         self.assertEqual(get_hash(series4), get_hash(series5))
 

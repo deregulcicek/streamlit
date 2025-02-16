@@ -457,7 +457,7 @@ class _CacheFuncHasher:
 
             obj = cast(pl.Series, obj)
             self.update(h, obj.estimated_size())
-            # self.update(h, obj.dtype)
+            self.update(h, obj.dtype.__hash__())
 
             if len(obj) >= _PANDAS_ROWS_LARGE:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
