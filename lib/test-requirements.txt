@@ -12,6 +12,9 @@ watchdog>=2.1.5
 # in Community Cloud:
 rich>=10.14.0
 
+# We need polars to test the polars dataframe/series hashing support
+polars
+
 # We still need numpy < 2 for our bokeh tests since
 # bokeh 2.4.3 is incompatible with numpy 2.x:
 numpy<2
