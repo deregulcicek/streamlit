@@ -369,6 +369,27 @@ class HashTest(unittest.TestCase):
 
         self.assertEqual(get_hash(series4), get_hash(series5))
 
+    @parameterized.expand(
+        [
+            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [12]}), True),
+            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [42]}), False),
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                True,
+            ),
+            # Extra column
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
+                False,
+            ),
+        ]
+    )
+    def test_polars_dataframe(self, df1, df2, expected):
+        result = get_hash(df1) == get_hash(df2)
+        self.assertEqual(result, expected)
+
     def test_pandas_series_similar_dtypes(self):
         series1 = pd.Series([1, 2], dtype="UInt64")
         series2 = pd.Series([1, 2], dtype="Int64")

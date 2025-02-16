@@ -479,11 +479,13 @@ class _CacheFuncHasher:
             if len(obj) >= _PANDAS_ROWS_LARGE:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
             try:
-                column_hash_bytes = self.to_bytes(
-                    pl.util.hash_pandas_object(obj.dtypes)
+                for c, t in obj.schema.items():
+                    self.update(h, c.encode())
+                    self.update(h, hash(t))
+                obj.hash_rows(seed=0)
+                values_hash_bytes = self.to_bytes(
+                    obj.hash_rows(seed=0).hash(seed=0).to_numpy().tobytes()
                 )
-                self.update(h, column_hash_bytes)
-                values_hash_bytes = self.to_bytes(pl.util.hash_pandas_object(obj))
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
