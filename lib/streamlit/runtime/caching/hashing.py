@@ -471,7 +471,7 @@ class _CacheFuncHasher:
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "polars.dataframe.frame.DataFrame"):
-            import polars as pl  # type: ignore[import-not-found]
+            import polars as pl
 
             obj = cast(pl.DataFrame, obj)
             self.update(h, obj.shape)
