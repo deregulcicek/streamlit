@@ -33,7 +33,7 @@ from unittest.mock import MagicMock, Mock
 
 import numpy as np
 import pandas as pd
-import polars as pl
+import polars as pl  # type: ignore[import-not-found]
 from parameterized import parameterized
 from PIL import Image
 

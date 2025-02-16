@@ -463,15 +463,15 @@ class _CacheFuncHasher:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
 
             try:
-                # This leads to infinite recursion, fix it :)
-                self.update(h, obj.hash(seed=0))
+                # Get the raw bytes of the series data instead of hashing recursively
+                self.update(h, obj.hash(seed=0).to_numpy().tobytes())
                 return h.digest()
             except TypeError:
                 # Use pickle if polars cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "polars.dataframe.frame.DataFrame"):
-            import polars as pl
+            import polars as pl  # type: ignore[import-not-found]
 
             obj = cast(pl.DataFrame, obj)
             self.update(h, obj.shape)
