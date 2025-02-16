@@ -463,7 +463,8 @@ class _CacheFuncHasher:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
 
             try:
-                # Get the raw bytes of the series data instead of hashing recursively
+                # Get the raw bytes of the series data
+                # Check, maybe calling to_arrow() is better
                 self.update(h, obj.hash(seed=0).to_numpy().tobytes())
                 return h.digest()
             except TypeError:
