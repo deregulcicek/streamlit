@@ -384,6 +384,65 @@ class HashTest(unittest.TestCase):
                 pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
                 False,
             ),
+            # Different values
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 5]}),
+                False,
+            ),
+            # Different order
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"B": [1, 2, 3], "A": [2, 3, 4]}),
+                False,
+            ),
+            # Polars does not use an index and each row is indexed by its integer position in the table.
+            # # Different index
+            # (
+            #     pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}, index=[1, 2, 3]),
+            #     pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}, index=[1, 2, 4]),
+            #     False,
+            # ),
+            # Missing column
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3]}),
+                False,
+            ),
+            # Different sort
+            # TODO[kajarenc] check with Lukas that polars .sort(by=...)
+            #  is equivalent to pandas .sort_values(by=...)
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                    by=["A"], descending=False
+                ),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                    by=["B"], descending=True
+                ),
+                False,
+            ),
+            # Different headers
+            (
+                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+                pd.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                False,
+            ),
+            # Reordered columns
+            (
+                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+                pd.DataFrame(data={"C": [2, 3, 4], "A": [1, 2, 3]}),
+                False,
+            ),
+            # Slightly different dtypes
+            (
+                pd.DataFrame(
+                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="UInt64")}
+                ),
+                pd.DataFrame(
+                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="Int64")}
+                ),
+                False,
+            ),
         ]
     )
     def test_polars_dataframe(self, df1, df2, expected):
