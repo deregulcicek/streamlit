@@ -410,7 +410,7 @@ class HashTest(unittest.TestCase):
                 False,
             ),
             # Different sort
-            # TODO[kajarenc] check with Lukas that polars .sort(by=...)
+            # TODO[kajarenc] Check with Lukas that polars .sort(by=...)
             #  is equivalent to pandas .sort_values(by=...)
             (
                 pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
