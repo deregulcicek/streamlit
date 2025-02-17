@@ -1,0 +1,30 @@
+[theme]
+base = "light"
+primaryColor = "#005885"
+backgroundColor = "white"
+secondaryBackgroundColor = "white"
+textColor = "black"
+roundness = 1
+showBorderAroundInputs = true
+sidebarBackgroundColor = "black"
+sidebarSecondaryBackgroundColor = "black"
+sidebarTextColor = "white"
+showSidebarShadow = true
+baseFontSize = 16
+
+# linkColor = "black"
+# font = "Signika"
+# codeFont = "sans-serif"
+
+# see: https://fonts.googleapis.com/css2?family=Inter:wght@400
+# [[theme.fontFaces]]
+# url = "https://fonts.gstatic.com/s/playwritegbs/v5/oPWW_kFkk-s1Xclhmlemy7jsNR5ybH6ezg.woff2"
+# family = "Playwrite"
+# style = "normal"
+# weight = 200
+
+# [[theme.fontFaces]]
+# url = "https://fonts.gstatic.com/s/signika/v25/vEFO2_JTCgwQ5ejvMV0Ox_Kg1UwJ0tKfX6bBjM7-f7e0.woff2"
+# weight = 200
+# family = "Signika"
+# style = "normal"
