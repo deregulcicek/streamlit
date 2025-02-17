@@ -15,6 +15,7 @@
  */
 
 import React, {
+  memo,
   ReactElement,
   useCallback,
   useEffect,
@@ -23,10 +24,11 @@ import React, {
 } from "react"
 
 import { Minus, Plus } from "@emotion-icons/open-iconic"
-import { withTheme } from "@emotion/react"
+import { useTheme } from "@emotion/react"
 import { sprintf } from "sprintf-js"
 import { Input as UIInput } from "baseui/input"
 import uniqueId from "lodash/uniqueId"
+import { getLogger } from "loglevel"
 
 import { NumberInput as NumberInputProto } from "@streamlit/protobuf"
 
@@ -37,7 +39,6 @@ import {
   notNullOrUndefined,
 } from "~lib/util/utils"
 import { useFormClearHelper } from "~lib/components/widgets/Form"
-import { logWarning } from "~lib/util/log"
 import { Source, WidgetStateManager } from "~lib/WidgetStateManager"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
@@ -55,6 +56,8 @@ import {
   StyledInputControls,
   StyledInstructionsContainer,
 } from "./styled-components"
+
+const log = getLogger("NumberInput")
 
 /**
  * Return a string property from an element. If the string is
@@ -133,7 +136,7 @@ export const formatValue = ({
   try {
     return sprintf(formatString, value)
   } catch (e) {
-    logWarning(`Error in sprintf(${formatString}, ${value}): ${e}`)
+    log.warn(`Error in sprintf(${formatString}, ${value}): ${e}`)
     return String(value)
   }
 }
@@ -165,18 +168,18 @@ export interface Props {
   element: NumberInputProto
   widgetMgr: WidgetStateManager
   width: number
-  theme: EmotionTheme
   fragmentId?: string
 }
 
-export const NumberInput: React.FC<Props> = ({
+const NumberInput: React.FC<Props> = ({
   disabled,
   element,
   widgetMgr,
   width,
-  theme,
   fragmentId,
 }: Props): ReactElement => {
+  const theme: EmotionTheme = useTheme()
+
   const {
     dataType: elementDataType,
     id: elementId,
@@ -493,6 +496,8 @@ export const NumberInput: React.FC<Props> = ({
                 // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
                 borderLeftWidth: 0,
                 borderRightWidth: 0,
                 borderTopWidth: 0,
@@ -514,7 +519,7 @@ export const NumberInput: React.FC<Props> = ({
               <Icon
                 content={Minus}
                 size="xs"
-                color={canDec ? "inherit" : "disabled"}
+                color={canDec ? "inherit" : theme.colors.disabled}
               />
             </StyledInputControl>
             <StyledInputControl
@@ -526,7 +531,7 @@ export const NumberInput: React.FC<Props> = ({
               <Icon
                 content={Plus}
                 size="xs"
-                color={canInc ? "inherit" : "disabled"}
+                color={canInc ? "inherit" : theme.colors.disabled}
               />
             </StyledInputControl>
           </StyledInputControls>
@@ -546,4 +551,4 @@ export const NumberInput: React.FC<Props> = ({
   )
 }
 
-export default withTheme(NumberInput)
+export default memo(NumberInput)

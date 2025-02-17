@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import axios from "axios"
 import isEqual from "lodash/isEqual"
@@ -509,7 +509,7 @@ class FileUploader extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { files } = this.state
-    const { element, disabled, widgetMgr } = this.props
+    const { element, disabled, widgetMgr, width } = this.props
     const acceptedExtensions = element.type
 
     // Manage our form-clear event handler.
@@ -528,6 +528,7 @@ class FileUploader extends React.PureComponent<Props, State> {
       <StyledFileUploader
         className="stFileUploader"
         data-testid="stFileUploader"
+        width={width}
       >
         <WidgetLabel
           label={element.label}
@@ -570,4 +571,4 @@ class FileUploader extends React.PureComponent<Props, State> {
   }
 }
 
-export default FileUploader
+export default memo(FileUploader)

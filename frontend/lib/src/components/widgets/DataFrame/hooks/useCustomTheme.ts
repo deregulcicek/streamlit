@@ -82,9 +82,9 @@ function useCustomTheme(): Readonly<CustomGridTheme> {
       textHeader: theme.colors.fadedText60,
       textHeaderSelected: theme.colors.white,
       textGroupHeader: theme.colors.fadedText60,
-      headerFontStyle: `${theme.fontSizes.sm}`,
+      headerFontStyle: `${convertRemToPx(theme.fontSizes.sm)}px`,
       // Cell styling:
-      baseFontStyle: theme.fontSizes.sm,
+      baseFontStyle: `${convertRemToPx(theme.fontSizes.sm)}px`,
       editorFontSize: theme.fontSizes.sm,
       textDark: theme.colors.bodyText,
       textMedium: transparentize(theme.colors.bodyText, 0.2),
@@ -98,7 +98,7 @@ function useCustomTheme(): Readonly<CustomGridTheme> {
       // Special cells:
       bgBubble: theme.colors.secondaryBg,
       bgBubbleSelected: theme.colors.secondaryBg,
-      linkColor: theme.colors.linkText,
+      linkColor: theme.colors.link,
       drilldownBorder: theme.colors.darkenedBgMix25,
       // Unused settings:
       // lineHeight

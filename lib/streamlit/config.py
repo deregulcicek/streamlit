@@ -474,8 +474,9 @@ _create_option(
     description="""
         Controls whether uncaught app exceptions are logged via the rich library.
 
-        If True and if rich is installed, exception tracebacks will be logged with syntax highlighting and formatting.
-        Rich tracebacks are easier to read and show more code than standard Python tracebacks.
+        If True and if rich is installed, exception tracebacks will be logged with
+        syntax highlighting and formatting. Rich tracebacks are easier to read and
+        show more code than standard Python tracebacks.
 
         If set to False, the default Python traceback formatting will be used.
     """,
@@ -1018,11 +1019,67 @@ _create_option(
 )
 
 _create_option(
+    "theme.linkColor",
+    description="Color used for all links.",
+)
+
+_create_option(
     "theme.font",
     description="""
-        Font family for all text in the app, except code blocks. One of "sans serif",
+        The font family for all text in the app, except code blocks. One of "sans serif",
         "serif", or "monospace".
+        To use a custom font, it needs to be added via [theme.fontFaces].
     """,
+)
+
+_create_option(
+    "theme.codeFont",
+    description="""
+        The font family to use for code (monospace) in the app.
+        To use a custom font, it needs to be added via [theme.fontFaces].
+    """,
+)
+
+_create_option(
+    "theme.fontFaces",
+    description="""
+    Configure a list of font faces that you can use for the app & code fonts.
+""",
+)
+
+
+_create_option(
+    "theme.roundness",
+    description="""
+        The roundness of the corners for most UI elements. Can be between 0 and 1,
+        where 0 is no-roundness and 1 is maximum roundness.
+    """,
+    type_=float,
+)
+
+_create_option(
+    "theme.borderColor",
+    description="""
+        The color of the border around elements.
+    """,
+)
+
+_create_option(
+    "theme.showBorderAroundInputs",
+    description="""
+        Whether to show a border around input elements (e.g. text_input, number_input,
+        file_uploader, etc).
+    """,
+    type_=bool,
+)
+
+_create_option(
+    "theme.baseFontSize",
+    description="""
+        Sets the root font size (in pixels) for the app, which determines the overall
+        scale of text and UI elements. The default base font size is 16.
+    """,
+    type_=int,
 )
 
 # Config Section: Secrets #

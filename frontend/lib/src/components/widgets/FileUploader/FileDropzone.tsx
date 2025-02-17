@@ -39,11 +39,12 @@ export interface Props {
 // to allow file types defined in acceptedExtensions.
 export const STREAMLIT_MIME_TYPE = "application/streamlit"
 
-function getAccept(acceptedExtensions: string[]): Accept | undefined {
-  // Remove mimetype when this component moves to functional
-  return acceptedExtensions.length
-    ? { STREAMLIT_MIME_TYPE: acceptedExtensions }
-    : undefined
+// Remove mimetype when this component moves to functional
+export function getAccept(acceptedExtensions: string[]): Accept | undefined {
+  const accept: Accept = {}
+  accept[STREAMLIT_MIME_TYPE] = acceptedExtensions
+
+  return acceptedExtensions.length ? accept : undefined
 }
 
 const FileDropzone = ({

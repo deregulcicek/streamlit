@@ -20,6 +20,7 @@ import isArray from "lodash/isArray"
 import isEmpty from "lodash/isEmpty"
 import merge from "lodash/merge"
 import mergeWith from "lodash/mergeWith"
+import { getLogger } from "loglevel"
 
 import { Arrow as ArrowProto } from "@streamlit/protobuf"
 
@@ -36,8 +37,7 @@ import {
   ObjectColumn,
 } from "~lib/components/widgets/DataFrame/columns"
 import { Quiver } from "~lib/dataframes/Quiver"
-import { EmotionTheme } from "~lib/theme"
-import { logError, logWarning } from "~lib/util/log"
+import { convertRemToPx, EmotionTheme } from "~lib/theme"
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 // Using this ID for column config will apply the config to all index columns
@@ -51,6 +51,8 @@ export const COLUMN_WIDTH_MAPPING = {
   medium: 200,
   large: 400,
 }
+
+const log = getLogger("useColumnLoader")
 
 /**
  * Options to configure columns.
@@ -215,7 +217,7 @@ export function getColumnConfig(configJson: string): Map<string, any> {
   } catch (error) {
     // This is not expected to happen, but if it does, we'll return an empty map
     // and log the error to the console.
-    logError(error)
+    log.error(error)
     return new Map()
   }
 }
@@ -242,7 +244,7 @@ export function getColumnType(column: BaseColumnProps): ColumnCreator {
     if (ColumnTypes.has(customType)) {
       ColumnType = ColumnTypes.get(customType)
     } else {
-      logWarning(
+      log.warn(
         `Unknown column type configured in column configuration: ${customType}`
       )
     }
@@ -295,6 +297,13 @@ function useColumnLoader(
     element.useContainerWidth ||
     (notNullOrUndefined(element.width) && element.width > 0)
 
+  // Allow content wrapping if the configured row height is greater than 4rem.
+  // 4rem was arbitrarily chosen because it looks and feels good. Its using rem
+  // so that it adapts to changes in the root font size (configurable by the user).
+  const isWrappingAllowed: boolean =
+    notNullOrUndefined(element.rowHeight) &&
+    element.rowHeight > convertRemToPx("4rem")
+
   // Converts the columns from Arrow into columns compatible with glide-data-grid
   const columns: BaseColumn[] = React.useMemo(() => {
     const visibleColumns = initAllColumnsFromArrow(data)
@@ -304,6 +313,7 @@ function useColumnLoader(
           ...column,
           ...applyColumnConfig(column, columnConfigMapping),
           isStretched: stretchColumns,
+          isWrappingAllowed: isWrappingAllowed,
         } as BaseColumnProps
         const ColumnType = getColumnType(updatedColumn)
 
@@ -405,6 +415,7 @@ function useColumnLoader(
   }, [
     data,
     columnConfigMapping,
+    isWrappingAllowed,
     stretchColumns,
     disabled,
     element.editingMode,
