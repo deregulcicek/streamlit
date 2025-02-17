@@ -19,14 +19,7 @@ from __future__ import annotations
 import dataclasses
 import functools
 import hashlib
-import sys
 from typing import Any, Callable
-
-# Due to security issue in md5 and sha1, usedforsecurity
-# argument is added to hashlib for python versions higher than 3.8
-HASHLIB_KWARGS: dict[str, Any] = (
-    {"usedforsecurity": False} if sys.version_info >= (3, 9) else {}
-)
 
 
 def memoize(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -70,7 +63,8 @@ def calc_md5(s: bytes | str) -> str:
 
     This should not be used for security-related purposes.
     """
-    h = hashlib.new("md5", **HASHLIB_KWARGS)  # noqa: S324
+    # Due to security issue in md5 and sha1, usedforsecurity
+    h = hashlib.new("md5", usedforsecurity=False)
 
     b = s.encode("utf-8") if isinstance(s, str) else s
 
