@@ -164,7 +164,7 @@ def _compute_element_id(
     use it to be distinct. The element ID includes an easily identified prefix, and the
     user_key as a suffix, to make it easy to identify it and know if a key maps to it.
     """
-    h = hashlib.new("md5", **HASHLIB_KWARGS)
+    h = hashlib.new("md5", **HASHLIB_KWARGS)  # noqa: S324
     h.update(element_type.encode("utf-8"))
     if user_key:
         # Adding this to the hash isn't necessary for uniqueness since the

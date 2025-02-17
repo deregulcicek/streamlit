@@ -351,7 +351,7 @@ class _CacheFuncHasher:
         runs.
         """
 
-        h = hashlib.new("md5", **HASHLIB_KWARGS)
+        h = hashlib.new("md5", **HASHLIB_KWARGS)  # noqa: S324
 
         if type_util.is_type(obj, "unittest.mock.Mock") or type_util.is_type(
             obj, "unittest.mock.MagicMock"

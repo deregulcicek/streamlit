@@ -66,8 +66,11 @@ def repr_(self: Any) -> str:
 
 
 def calc_md5(s: bytes | str) -> str:
-    """Return the md5 hash of the given string."""
-    h = hashlib.new("md5", **HASHLIB_KWARGS)
+    """Return the md5 hash of the given string.
+
+    This should not be used for security-related purposes.
+    """
+    h = hashlib.new("md5", **HASHLIB_KWARGS)  # noqa: S324
 
     b = s.encode("utf-8") if isinstance(s, str) else s
 

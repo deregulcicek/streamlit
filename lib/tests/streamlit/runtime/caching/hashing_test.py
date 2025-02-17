@@ -54,7 +54,7 @@ get_main_script_director = MagicMock(return_value=os.getcwd())
 
 
 def get_hash(value, hash_funcs=None, cache_type=None):
-    hasher = hashlib.new("md5", **HASHLIB_KWARGS)
+    hasher = hashlib.new("md5", **HASHLIB_KWARGS)  # noqa: S324
     update_hash(
         value, hasher, cache_type=cache_type or MagicMock(), hash_funcs=hash_funcs
     )
