@@ -21,8 +21,8 @@ import {
   canDecrement,
   canIncrement,
   formatValue,
-  getStep,
   getInitialValue,
+  getStep,
 } from "./utils"
 
 describe("canDecrement function", () => {
@@ -131,7 +131,7 @@ describe("formatValue function", () => {
 })
 
 describe("getStep function", () => {
-  it("returns step when provided ", () => {
+  it("returns step when provided", () => {
     const element = NumberInputProto.create({
       label: "Label",
       step: 3,
@@ -158,7 +158,7 @@ describe("getStep function", () => {
 })
 
 describe("getInitialValue function", () => {
-  it("returns widget value when dataType is INT and the widget has a value ", () => {
+  it("returns widget value when dataType is INT and the widget has a value", () => {
     const props = {
       element: NumberInputProto.create({
         label: "Label",
@@ -173,7 +173,7 @@ describe("getInitialValue function", () => {
     expect(getInitialValue(props)).toBe(3)
   })
 
-  it("returns widget value when the dataType is FLOAT and the widget has a value ", () => {
+  it("returns widget value when the dataType is FLOAT and the widget has a value", () => {
     const props = {
       element: NumberInputProto.create({
         label: "Label",
@@ -188,7 +188,7 @@ describe("getInitialValue function", () => {
     expect(getInitialValue(props)).toBe(0.03)
   })
 
-  it("returns default value when widget has no value ", () => {
+  it("returns default value when widget has no value", () => {
     const props = {
       element: NumberInputProto.create({
         label: "Label",
@@ -203,7 +203,7 @@ describe("getInitialValue function", () => {
     expect(getInitialValue(props)).toBe(0.01)
   })
 
-  it("returns null when widget has no value and no default is provided ", () => {
+  it("returns null when widget has no value and no default is provided", () => {
     const props = {
       element: NumberInputProto.create({
         label: "Label",

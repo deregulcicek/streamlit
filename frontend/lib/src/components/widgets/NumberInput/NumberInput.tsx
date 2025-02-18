@@ -51,9 +51,9 @@ import { EmotionTheme } from "~lib/theme"
 import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
-  formatValue,
   canDecrement,
   canIncrement,
+  formatValue,
   getInitialValue,
   getStep,
 } from "./utils"
