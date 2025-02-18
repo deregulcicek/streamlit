@@ -33,4 +33,8 @@ message Selectbox {
   bool disabled = 9;
   LabelVisibilityMessage label_visibility = 10;
   string placeholder = 11;
+
+  // this is set when the
+  optional bool accept_new_options = 12;
+  optional string new_value = 13;
 }

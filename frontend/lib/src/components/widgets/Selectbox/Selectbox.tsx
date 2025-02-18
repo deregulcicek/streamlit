@@ -40,7 +40,7 @@ export interface Props {
  * The value specified by the user via the UI. If the user didn't touch this
  * widget's UI, the default value is used.
  */
-type SelectboxValue = number | null
+type SelectboxValue = number | string | null
 
 const getStateFromWidgetMgr = (
   widgetMgr: WidgetStateManager,
@@ -54,7 +54,7 @@ const getDefaultStateFromProto = (element: SelectboxProto): SelectboxValue => {
 }
 
 const getCurrStateFromProto = (element: SelectboxProto): SelectboxValue => {
-  return element.value ?? null
+  return element.value ?? element.newValue ?? null
 }
 
 const updateWidgetMgrState = (
@@ -63,12 +63,22 @@ const updateWidgetMgrState = (
   valueWithSource: ValueWithSource<SelectboxValue>,
   fragmentId?: string
 ): void => {
-  widgetMgr.setIntValue(
-    element,
-    valueWithSource.value,
-    { fromUi: valueWithSource.fromUi },
-    fragmentId
-  )
+  if (element.acceptNewOptions && typeof valueWithSource.value === "string") {
+    widgetMgr.setStringValue(
+      element,
+      valueWithSource.value,
+      { fromUi: valueWithSource.fromUi },
+      fragmentId
+    )
+  } else {
+    widgetMgr.setIntValue(
+      element,
+      // @ts-expect-error
+      valueWithSource.value,
+      { fromUi: valueWithSource.fromUi },
+      fragmentId
+    )
+  }
 }
 
 const Selectbox: FC<Props> = ({
@@ -77,7 +87,16 @@ const Selectbox: FC<Props> = ({
   widgetMgr,
   fragmentId,
 }) => {
-  const { options, help, label, labelVisibility, placeholder } = element
+  const {
+    options,
+    help,
+    label,
+    labelVisibility,
+    placeholder,
+    acceptNewOptions,
+  } = element
+  // eslint-disable-next-line no-console
+  console.log("[DEBUG] Selectbox::props", acceptNewOptions)
 
   const [value, setValueWithSource] = useBasicWidgetState<
     SelectboxValue,
@@ -112,6 +131,7 @@ const Selectbox: FC<Props> = ({
       help={help}
       placeholder={placeholder}
       clearable={clearable}
+      acceptNewOptions={acceptNewOptions}
     />
   )
 }

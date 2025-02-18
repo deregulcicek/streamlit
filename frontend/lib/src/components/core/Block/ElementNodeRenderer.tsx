@@ -659,6 +659,8 @@ const RawElementNodeRenderer = (
     case "selectbox": {
       const selectboxProto = node.element.selectbox as SelectboxProto
       widgetProps.disabled = widgetProps.disabled || selectboxProto.disabled
+      // eslint-disable-next-line no-console
+      console.log("[DEBUG] selectboxProto", selectboxProto)
       return (
         <Selectbox
           key={selectboxProto.id}

@@ -58,19 +58,25 @@ if TYPE_CHECKING:
 class SelectboxSerde(Generic[T]):
     options: Sequence[T]
     index: int | None
+    accept_new_options: bool
 
-    def serialize(self, v: object) -> int | None:
+    def serialize(self, v: object) -> int | str | None:
         if v is None:
             return None
         if len(self.options) == 0:
             return 0
-        return index_(self.options, v)
+        return index_(self.options, v) if not self.accept_new_options else str(v)
 
     def deserialize(
         self,
-        ui_value: int | None,
+        ui_value: int | str | None,
         widget_id: str = "",
     ) -> T | None:
+        # if ui_value is a string, it means the user has entered a new option
+        # and we need to add it to the list of options
+        if isinstance(ui_value, str):
+            self.options.append(ui_value)
+            return ui_value
         idx = ui_value if ui_value is not None else self.index
         return self.options[idx] if idx is not None and len(self.options) > 0 else None
 
@@ -92,6 +98,7 @@ class SelectboxMixin:
         placeholder: str = "Choose an option",
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        accept_new_options: bool = False,
     ) -> T: ...
 
     @overload
@@ -110,6 +117,7 @@ class SelectboxMixin:
         placeholder: str = "Choose an option",
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        accept_new_options: bool = False,
     ) -> T | None: ...
 
     @gather_metrics("selectbox")
@@ -128,6 +136,7 @@ class SelectboxMixin:
         placeholder: str = "Choose an option",
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        accept_new_options: bool = False,
     ) -> T | None:
         r"""Display a select widget.
 
@@ -209,6 +218,11 @@ class SelectboxMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        accept_new_options : bool
+            If ``True``, the user can enter a new option that is not in the
+            list. The new option will be added to the list and selected by
+            default.
+
         Returns
         -------
         any
@@ -261,6 +275,7 @@ class SelectboxMixin:
             placeholder=placeholder,
             disabled=disabled,
             label_visibility=label_visibility,
+            accept_new_options=accept_new_options,
             ctx=ctx,
         )
 
@@ -279,6 +294,7 @@ class SelectboxMixin:
         placeholder: str = "Choose an option",
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        accept_new_options: bool = False,
         ctx: ScriptRunContext | None = None,
     ) -> T | None:
         key = to_key(key)
@@ -303,6 +319,7 @@ class SelectboxMixin:
             index=index,
             help=help,
             placeholder=placeholder,
+            accept_new_options=accept_new_options,
         )
 
         if not isinstance(index, int) and index is not None:
@@ -312,7 +329,8 @@ class SelectboxMixin:
 
         if index is not None and len(opt) > 0 and not 0 <= index < len(opt):
             raise StreamlitAPIException(
-                "Selectbox index must be greater than or equal to 0 and less than the length of options."
+                "Selectbox index must be greater than or equal to 0 "
+                "and less than the length of options."
             )
 
         session_state = get_session_state().filtered_state
@@ -331,11 +349,14 @@ class SelectboxMixin:
         selectbox_proto.label_visibility.value = get_label_visibility_proto_value(
             label_visibility
         )
+        selectbox_proto.accept_new_options = accept_new_options
+
+        print("[DEBUG] selectbox_proto", selectbox_proto)
 
         if help is not None:
             selectbox_proto.help = dedent(help)
 
-        serde = SelectboxSerde(opt, index)
+        serde = SelectboxSerde(opt, index, accept_new_options)
 
         widget_state = register_widget(
             selectbox_proto.id,
@@ -352,7 +373,10 @@ class SelectboxMixin:
         if widget_state.value_changed:
             serialized_value = serde.serialize(widget_state.value)
             if serialized_value is not None:
-                selectbox_proto.value = serialized_value
+                if isinstance(serialized_value, int):
+                    selectbox_proto.value = serialized_value
+                elif isinstance(serialized_value, str):
+                    selectbox_proto.new_value = serialized_value
             selectbox_proto.set_value = True
 
         if ctx:

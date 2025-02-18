@@ -34,4 +34,6 @@ message MultiSelect {
   LabelVisibilityMessage label_visibility = 10;
   int32 max_selections = 11;
   string placeholder = 12;
+
+  repeated string new_values = 13;
 }
