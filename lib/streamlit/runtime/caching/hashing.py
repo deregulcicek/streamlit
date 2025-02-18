@@ -46,12 +46,12 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 from streamlit.util import HASHLIB_KWARGS
 
 # If a dataframe has more than this many rows, we consider it large and hash a sample.
-_PANDAS_ROWS_LARGE: Final = 100000
-_PANDAS_SAMPLE_SIZE: Final = 10000
+_PANDAS_ROWS_LARGE: Final = 50_000
+_PANDAS_SAMPLE_SIZE: Final = 10_000
 
 # Similar to dataframes, we also sample large numpy arrays.
-_NP_SIZE_LARGE: Final = 1000000
-_NP_SAMPLE_SIZE: Final = 100000
+_NP_SIZE_LARGE: Final = 500_000
+_NP_SAMPLE_SIZE: Final = 100_000
 
 HashFuncsDict: TypeAlias = dict[Union[str, type[Any]], Callable[[Any], Any]]
 
@@ -483,10 +483,18 @@ class _CacheFuncHasher:
                 for c, t in obj.schema.items():
                     self.update(h, c.encode())
                     self.update(h, hash(t))
+
                 obj.hash_rows(seed=0)
-                values_hash_bytes = self.to_bytes(
-                    obj.hash_rows(seed=0).hash(seed=0).to_numpy().tobytes()
+                # # version 1
+                # values_hash_bytes = obj.hash_rows(
+                #     seed=0
+                # ).hash(seed=0).to_numpy().tobytes()
+
+                # version 2
+                values_hash_bytes = (
+                    obj.hash_rows(seed=0).hash(seed=0).to_arrow().to_string().encode()
                 )
+
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
