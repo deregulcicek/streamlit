@@ -21,11 +21,10 @@ import {
   MemoExoticComponent,
 } from "react"
 
-import isEqual from "lodash/isEqual"
+import { ElementNode } from "~lib/AppNode"
 
 export type ComponentPropsWithElementHash = {
-  elementHash?: string
-  element: any
+  node: ElementNode
   [key: string]: any
 }
 
@@ -35,20 +34,33 @@ export function compareComponentProps<
   prevProps: Readonly<ComponentProps<T>>,
   nextProps: Readonly<ComponentProps<T>>
 ): boolean {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+
   const {
-    elementHash: prevElementHash,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    element: ignorePrevElement,
+    node: prevNode,
+
+    // the following props change on every rerun, but we don't have to rerender elements based on them
+    scriptRunId: prevScriptRunId,
+    scriptRunState: prevScriptRunState,
+
     ...prevOthers
   } = prevProps
   const {
-    elementHash: nextElementHash,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    element: ignoreNextElement,
+    node: nextNode,
+
+    scriptRunId: nextScriptRunId,
+    scriptRunState: nextScriptRunState,
+
     ...nextOthers
   } = nextProps
 
-  return prevElementHash === nextElementHash && isEqual(prevOthers, nextOthers)
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+
+  return (
+    prevNode.elementHash === nextNode.elementHash &&
+    Object.keys(prevOthers).length === Object.keys(nextOthers).length &&
+    Object.keys(prevOthers).every(key => prevOthers[key] === nextOthers[key])
+  )
 }
 
 /**
