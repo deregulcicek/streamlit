@@ -22,10 +22,13 @@ import streamlit as st
 # dispatched correctly when the rerun from the textArea's onBlur event
 # is too fast which leads to a changing number of elements per rerun (because the
 # callback's write would disappear briefly).
+default_input = "Input: "
 if "btn_callback" not in st.session_state:
-    st.session_state.btn_callback = "Input: "
+    st.session_state.btn_callback = default_input
 
 st.write(st.session_state.btn_callback)
+# reset to harden the test against reruns
+st.session_state.btn_callback = default_input
 
 st.header("Widget State - Heavy Usage Test")
 # Test for https://github.com/streamlit/streamlit/issues/4836
