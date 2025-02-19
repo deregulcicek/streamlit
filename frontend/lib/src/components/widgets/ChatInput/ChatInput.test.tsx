@@ -27,6 +27,7 @@ import {
 
 import { render } from "~lib/test_util"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
+import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 
 import ChatInput, { Props } from "./ChatInput"
 
@@ -43,7 +44,7 @@ const getProps = (
     ...elementProps,
   }),
   width: 300,
-  disabled: false,
+  disabled: elementProps.disabled ?? false,
   widgetMgr: new WidgetStateManager({
     sendRerunBackMsg: vi.fn(),
     formsDataChanged: vi.fn(),
@@ -81,6 +82,14 @@ const mockChatInputValue = (text: string): IChatInputValue => {
 describe("ChatInput widget", () => {
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  beforeEach(() => {
+    vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+      elementRef: React.createRef(),
+      forceRecalculate: vitest.fn(),
+      values: [250],
+    })
   })
 
   it("renders without crashing", () => {
@@ -286,14 +295,18 @@ describe("ChatInput widget", () => {
   })
 
   it("disables the textarea and button", () => {
-    const props = getProps({ disabled: true })
+    const props = getProps({
+      disabled: true,
+      acceptFile: ChatInputProto.AcceptFile.SINGLE,
+    })
     render(<ChatInput {...props} />)
 
     const chatInput = screen.getByTestId("stChatInputTextArea")
     expect(chatInput).toBeDisabled()
 
-    const button = screen.getByRole("button")
-    expect(button).toBeDisabled()
+    screen.getAllByRole("button").forEach(button => {
+      expect(button).toBeDisabled()
+    })
   })
 
   it("not disable the textarea by default", () => {
@@ -327,7 +340,6 @@ describe("ChatInput widget", () => {
     expect(button).not.toBeDisabled()
 
     await user.clear(chatInput)
-    // await user.type(chatInput, "")
     expect(button).toBeDisabled()
   })
 })
