@@ -19,45 +19,81 @@ import { compareComponentProps } from "./elementMemo"
 describe("elementMemo", () => {
   describe("compareComponentProps", () => {
     it("should compare element and elementHash props", () => {
-      const element = {}
-      const elementHash = "hash123"
-      const prevProps = { element, elementHash }
-      const nextProps = { element, elementHash }
-
-      expect(compareComponentProps(prevProps, nextProps)).toBe(true)
-    })
-
-    it("should return true when hash is equal and other props are equal", () => {
-      const element = {}
-      const elementHash = "hash123"
-      const prevProps = { element, elementHash, otherProp: "otherValue" }
-      const nextProps = { element, elementHash, otherProp: "otherValue" }
+      const node = {
+        elementHash: "hash123",
+      }
+      const prevProps = {
+        node,
+        scriptRunId: "run1",
+        scriptRunState: "running",
+        otherProp: "someValue",
+      }
+      const nextProps = {
+        node,
+        scriptRunId: "run2",
+        scriptRunState: "running2",
+        otherProp: "someValue",
+      }
 
       expect(compareComponentProps(prevProps, nextProps)).toBe(true)
     })
 
     it("should return false when other props differ (different values)", () => {
-      const element = {}
-      const elementHash = "hash123"
-      const prevProps = { element, elementHash, otherProp: "otherValue" }
-      const nextProps = { element, elementHash, otherProp: "otherValue2" }
-
+      const prevProps = {
+        node: {
+          elementHash: "hash123",
+        },
+        scriptRunId: "run1",
+        scriptRunState: "running",
+        otherProp: "someValue",
+      }
+      const nextProps = {
+        node: {
+          elementHash: "hash123",
+        },
+        scriptRunId: "run2",
+        scriptRunState: "running2",
+        otherProp: "otherValue",
+      }
       expect(compareComponentProps(prevProps, nextProps)).toBe(false)
     })
 
     it("should return false when other props differ (different props lengths)", () => {
-      const element = {}
-      const elementHash = "hash123"
-      const prevProps = { element, elementHash, otherProp: "otherValue" }
-      const nextProps = { element, elementHash }
-
+      const prevProps = {
+        node: {
+          elementHash: "hash123",
+        },
+        scriptRunId: "run1",
+        scriptRunState: "running",
+      }
+      const nextProps = {
+        node: {
+          elementHash: "hash123",
+        },
+        scriptRunId: "run2",
+        scriptRunState: "running2",
+        extraProp: "someValue",
+      }
       expect(compareComponentProps(prevProps, nextProps)).toBe(false)
     })
 
     it("should return false when elementHash differs", () => {
-      const element = {}
-      const prevProps = { element, elementHash: "hash1" }
-      const nextProps = { element, elementHash: "hash2" }
+      const prevProps = {
+        node: {
+          elementHash: "hash123",
+        },
+        scriptRunId: "run1",
+        scriptRunState: "running",
+        otherProp: "someValue",
+      }
+      const nextProps = {
+        node: {
+          elementHash: "hash456",
+        },
+        scriptRunId: "run2",
+        scriptRunState: "running2",
+        otherProp: "someValue",
+      }
 
       expect(compareComponentProps(prevProps, nextProps)).toBe(false)
     })

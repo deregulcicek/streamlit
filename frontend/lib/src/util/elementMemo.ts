@@ -21,10 +21,10 @@ import {
   MemoExoticComponent,
 } from "react"
 
-import { ElementNode } from "~lib/AppNode"
-
 export type ComponentPropsWithElementHash = {
-  node: ElementNode
+  node: { elementHash?: string }
+  scriptRunId: string
+  scriptRunState: string
   [key: string]: any
 }
 
@@ -59,7 +59,9 @@ export function compareComponentProps<
   return (
     prevNode.elementHash === nextNode.elementHash &&
     Object.keys(prevOthers).length === Object.keys(nextOthers).length &&
-    Object.keys(prevOthers).every(key => prevOthers[key] === nextOthers[key])
+    Object.keys(prevOthers).every(key =>
+      Object.is(prevOthers[key], nextOthers[key])
+    )
   )
 }
 
