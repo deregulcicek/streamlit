@@ -190,7 +190,8 @@ class StreamlitLibExample extends PureComponent<Props, State> {
   /** Process a DeltaMsg and its associated ForwardMsgMetadata. */
   public handleDeltaMsg = (
     deltaMsg: DeltaProto,
-    metadataMsg: ForwardMsgMetadataProto
+    metadataMsg: ForwardMsgMetadataProto,
+    elementHash: string
   ): void => {
     // Apply the Delta to our root AppNode to produce a new root and
     // trigger a re-render.
@@ -198,7 +199,8 @@ class StreamlitLibExample extends PureComponent<Props, State> {
       elements: prevState.elements.applyDelta(
         prevState.scriptRunId,
         deltaMsg,
-        metadataMsg
+        metadataMsg,
+        elementHash
       ),
     }))
   }
@@ -262,7 +264,7 @@ describe("StreamlitLibExample", () => {
 
     // Send the delta to our app
     streamlitLibInstance.beginScriptRun("newScriptRun")
-    streamlitLibInstance.handleDeltaMsg(delta, metadata)
+    streamlitLibInstance.handleDeltaMsg(delta, metadata, "123")
     streamlitLibInstance.endScriptRun()
 
     // our "Please wait..." alert should be gone, because it
