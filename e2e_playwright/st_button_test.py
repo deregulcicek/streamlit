@@ -48,8 +48,8 @@ def test_button_widget_rendering(
 
 
 def test_material_icon_hover(app: Page, assert_snapshot: ImageCompareFunction):
-    material_icon_button = app.get_by_test_id("stButton").nth(7)
-    app.get_by_text("Like Button").hover()
+    material_icon_button = app.get_by_role("button", name="Like Button")
+    material_icon_button.hover()
     assert_snapshot(material_icon_button, name="st_button-material_icon_hover")
 
 
@@ -62,7 +62,7 @@ def test_buttons_in_columns(themed_app: Page, assert_snapshot: ImageCompareFunct
 
 
 def test_value_correct_on_click(app: Page):
-    button_element = app.get_by_test_id("stButton").locator("button").first
+    button_element = app.get_by_role("button", name="button 1")
     button_element.click()
     expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text("value: True")
     expect(app.get_by_test_id("stMarkdown").nth(1)).to_have_text(
@@ -71,14 +71,14 @@ def test_value_correct_on_click(app: Page):
 
 
 def test_value_not_reset_on_reclick(app: Page):
-    button_element = app.get_by_test_id("stButton").locator("button").first
+    button_element = app.get_by_role("button", name="button 1")
     button_element.click()
     button_element.click()
     expect(app.get_by_test_id("stMarkdown").first).to_have_text("value: True")
 
 
 def test_click_calls_callback(app: Page):
-    button_element = app.get_by_test_id("stButton").locator("button").first
+    button_element = app.get_by_role("button", name="button 1")
     expect(app.get_by_test_id("stMarkdown").nth(2)).to_contain_text(
         "Button was clicked: False"
     )
@@ -92,7 +92,7 @@ def test_click_calls_callback(app: Page):
 
 
 def test_click_increment_count(app: Page):
-    button_element = app.get_by_test_id("stButton").locator("button").first
+    button_element = app.get_by_role("button", name="button 1")
     button_element.click()
     expect(app.get_by_test_id("stMarkdown").nth(3)).to_have_text("times clicked: 1")
     button_element.click()
@@ -116,7 +116,7 @@ def test_reset_on_other_widget_change(app: Page):
 
 
 def test_show_tooltip_on_hover(app: Page, assert_snapshot: ImageCompareFunction):
-    button_element = app.get_by_test_id("stButton").nth(5)
+    button_element = app.get_by_role("button", name="button 6 (container_width + help)")
     button_element.hover()
     assert_snapshot(button_element, name="st_button-on_hover")
     expect(app.get_by_test_id("stTooltipContent")).to_have_text("help text")
@@ -134,5 +134,5 @@ def test_custom_css_class_via_key(app: Page):
 
 def test_shows_cursor_pointer(app: Page):
     """Test that the button shows cursor pointer when hovered."""
-    button_element = app.get_by_test_id("stButton").first
-    expect(button_element.locator("button")).to_have_css("cursor", "pointer")
+    button_element = app.get_by_role("button", name="button 1")
+    expect(button_element).to_have_css("cursor", "pointer")
