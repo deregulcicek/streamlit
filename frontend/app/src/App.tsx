@@ -22,6 +22,7 @@ import { enableAllPlugins as enableImmerPlugins } from "immer"
 import classNames from "classnames"
 import without from "lodash/without"
 import { getLogger } from "loglevel"
+import { flushSync } from "react-dom"
 
 import {
   AppRoot,
@@ -663,7 +664,14 @@ export class App extends PureComponent<Props, State> {
       }
     }
 
-    this.setState({ connectionState: newState })
+    // We are using `flushSync` here because there is code that expects every
+    // state to be observed. With React batched updates, it is possible that
+    // multiple `connectionState` changes are applied in 1 render cycle, leading
+    // to the last state change being the only one observed. Utilizing
+    // `flushSync` ensures that we apply every state change.
+    flushSync(() => {
+      this.setState({ connectionState: newState })
+    })
   }
 
   handleGitInfoChanged = (gitInfo: IGitInfo): void => {
