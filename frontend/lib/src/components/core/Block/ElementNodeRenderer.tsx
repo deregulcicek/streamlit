@@ -221,6 +221,7 @@ const RawElementNodeRenderer = (
     widgetMgr: props.widgetMgr,
     disabled: props.widgetsDisabled,
     fragmentId: node.fragmentId,
+    elementHash: node.elementHash,
   }
 
   switch (node.element.type) {

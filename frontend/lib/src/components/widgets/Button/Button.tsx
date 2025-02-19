@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement } from "react"
+import React, { ReactElement } from "react"
 
 import { Button as ButtonProto } from "@streamlit/protobuf"
 
+import elementMemo from "~lib/util/elementMemo"
 import BaseButton, {
   BaseButtonKind,
   BaseButtonSize,
@@ -32,6 +33,7 @@ export interface Props {
   element: ButtonProto
   widgetMgr: WidgetStateManager
   fragmentId?: string
+  elementHash?: string
 }
 
 function Button(props: Props): ReactElement {
@@ -63,4 +65,4 @@ function Button(props: Props): ReactElement {
   )
 }
 
-export default memo(Button)
+export default elementMemo<typeof Button, Props>(Button)

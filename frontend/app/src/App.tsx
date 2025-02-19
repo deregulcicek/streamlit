@@ -723,7 +723,8 @@ export class App extends PureComponent<Props, State> {
         delta: (deltaMsg: Delta) =>
           this.handleDeltaMsg(
             deltaMsg,
-            msgProto.metadata as ForwardMsgMetadata
+            msgProto.metadata as ForwardMsgMetadata,
+            msgProto.hash
           ),
         pageConfigChanged: (pageConfig: PageConfig) =>
           this.handlePageConfigChanged(pageConfig),
@@ -1347,12 +1348,14 @@ export class App extends PureComponent<Props, State> {
    */
   handleDeltaMsg = (
     deltaMsg: Delta,
-    metadataMsg: ForwardMsgMetadata
+    metadataMsg: ForwardMsgMetadata,
+    elementHash?: string
   ): void => {
     this.pendingElementsBuffer = this.pendingElementsBuffer.applyDelta(
       this.state.scriptRunId,
       deltaMsg,
-      metadataMsg
+      metadataMsg,
+      elementHash
     )
 
     if (!this.pendingElementsTimerRunning) {

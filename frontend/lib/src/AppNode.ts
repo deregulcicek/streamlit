@@ -165,6 +165,8 @@ export interface AppNode {
 export class ElementNode implements AppNode {
   public readonly element: Element
 
+  public readonly elementHash?: string
+
   public readonly metadata: ForwardMsgMetadata
 
   public readonly scriptRunId: string
@@ -184,13 +186,15 @@ export class ElementNode implements AppNode {
     metadata: ForwardMsgMetadata,
     scriptRunId: string,
     activeScriptHash: string,
-    fragmentId?: string
+    fragmentId?: string,
+    elementHash?: string
   ) {
     this.element = element
     this.metadata = metadata
     this.scriptRunId = scriptRunId
     this.activeScriptHash = activeScriptHash
     this.fragmentId = fragmentId
+    this.elementHash = elementHash
   }
 
   public get quiverElement(): Quiver {
@@ -717,7 +721,8 @@ export class AppRoot {
   public applyDelta(
     scriptRunId: string,
     delta: Delta,
-    metadata: ForwardMsgMetadata
+    metadata: ForwardMsgMetadata,
+    elementHash?: string
   ): AppRoot {
     // The full path to the AppNode within the element tree.
     // Used to find and update the element node specified by this Delta.
@@ -731,7 +736,8 @@ export class AppRoot {
           element,
           metadata,
           activeScriptHash,
-          delta.fragmentId
+          delta.fragmentId,
+          elementHash
         )
       }
 
@@ -857,14 +863,16 @@ export class AppRoot {
     element: Element,
     metadata: ForwardMsgMetadata,
     activeScriptHash: string,
-    fragmentId?: string
+    fragmentId?: string,
+    elementHash?: string
   ): AppRoot {
     const elementNode = new ElementNode(
       element,
       metadata,
       scriptRunId,
       activeScriptHash,
-      fragmentId
+      fragmentId,
+      elementHash
     )
     return new AppRoot(
       this.mainScriptHash,
