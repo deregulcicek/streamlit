@@ -300,7 +300,8 @@ export class ElementNode implements AppNode {
 
   public arrowAddRows(
     namedDataSet: ArrowNamedDataSet,
-    scriptRunId: string
+    scriptRunId: string,
+    elementHash?: string
   ): ElementNode {
     const elementType = this.element.type
     const newNode = new ElementNode(
@@ -308,7 +309,8 @@ export class ElementNode implements AppNode {
       this.metadata,
       scriptRunId,
       this.activeScriptHash,
-      this.fragmentId
+      this.fragmentId,
+      elementHash
     )
 
     switch (elementType) {
@@ -758,7 +760,8 @@ export class AppRoot {
           return this.arrowAddRows(
             deltaPath,
             delta.arrowAddRows as ArrowNamedDataSet,
-            scriptRunId
+            scriptRunId,
+            elementHash
           )
         } catch (error) {
           const errorElement = makeElementWithErrorText(
@@ -921,14 +924,19 @@ export class AppRoot {
   private arrowAddRows(
     deltaPath: number[],
     namedDataSet: ArrowNamedDataSet,
-    scriptRunId: string
+    scriptRunId: string,
+    elementHash?: string
   ): AppRoot {
     const existingNode = this.root.getIn(deltaPath) as ElementNode
     if (isNullOrUndefined(existingNode)) {
       throw new Error(`Can't arrowAddRows: invalid deltaPath: ${deltaPath}`)
     }
 
-    const elementNode = existingNode.arrowAddRows(namedDataSet, scriptRunId)
+    const elementNode = existingNode.arrowAddRows(
+      namedDataSet,
+      scriptRunId,
+      elementHash
+    )
     return new AppRoot(
       this.mainScriptHash,
       this.root.setIn(deltaPath, elementNode, scriptRunId),
