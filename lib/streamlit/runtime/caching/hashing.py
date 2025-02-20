@@ -452,7 +452,7 @@ class _CacheFuncHasher:
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
 
         elif type_util.is_type(obj, "polars.series.series.Series"):
-            import polars as pl
+            import polars as pl  # type: ignore[import-not-found]
 
             obj = cast(pl.Series, obj)
             self.update(h, obj.estimated_size())
