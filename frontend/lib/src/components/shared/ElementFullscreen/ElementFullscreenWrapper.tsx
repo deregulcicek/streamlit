@@ -44,21 +44,13 @@ const ElementFullscreenWrapper: FC<ElementFullscreenWrapperProps> = ({
 
   const fullscreenContextValue = useMemo(() => {
     return {
-      width: expanded ? fullWidth : calculatedWidthAsInt,
+      width: expanded ? fullWidth : width,
       height: expanded ? fullHeight : height,
       expanded,
       expand: zoomIn,
       collapse: zoomOut,
     }
-  }, [
-    expanded,
-    fullHeight,
-    fullWidth,
-    height,
-    calculatedWidthAsInt,
-    zoomIn,
-    zoomOut,
-  ])
+  }, [expanded, fullHeight, fullWidth, height, width, zoomIn, zoomOut])
 
   return (
     <ElementFullscreenContext.Provider value={fullscreenContextValue}>

@@ -92,7 +92,8 @@ class ButtonMixin:
         help: str | None = None,
         on_click: WidgetCallback | None = None,
         flex: str | None = None,
-        width: Literal["stretch", "content"] | int | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -251,6 +252,7 @@ class ButtonMixin:
             on_click=on_click,
             flex=flex,
             width=width,
+            scale=scale,
             justify_right=justify_right,
             args=args,
             kwargs=kwargs,
@@ -907,7 +909,8 @@ class ButtonMixin:
         is_form_submitter: bool,
         on_click: WidgetCallback | None = None,
         flex: str | None = None,
-        width: Literal["stretch", "content"] | int | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -969,18 +972,13 @@ class ButtonMixin:
         button_proto.use_container_width = use_container_width
         button_proto.disabled = disabled
         button_proto.justify_right = justify_right
+        button_proto.width = str(width)
 
         if flex is not None:
             button_proto.flex = flex
 
-        if width is not None:
-            if width == "stretch" or width == "content":
-                button_proto.width = str(width)
-            else:
-                button_proto.width = "stretch"
-                button_proto.flex = f"0 0 {width}"
-        else:
-            button_proto.width = "content"
+        if scale is not None:
+            button_proto.scale = scale
 
         if help is not None:
             button_proto.help = dedent(help)

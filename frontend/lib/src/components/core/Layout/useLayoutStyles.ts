@@ -23,6 +23,7 @@ export type UseLayoutStylesArgs<T> = {
         width?: number
         useContainerWidth?: boolean | null
         flex?: string
+        scale?: number
       })
     | undefined
 }
@@ -34,6 +35,46 @@ export type UseLayoutStylesShape = {
   width: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
   flex?: React.CSSProperties["flex"]
+}
+
+const validateWidth = (
+  width: React.CSSProperties["width"] | undefined
+): React.CSSProperties["width"] => {
+  if (typeof width === "number") {
+    if (width === 0) {
+      // An element with no width should be treated as if it has no width set
+      // This is likely from the proto, where the default value is 0
+      return "auto"
+    }
+
+    if (width && width < 0) {
+      return "auto"
+    }
+
+    if (width !== undefined && isNaN(width)) {
+      return "auto"
+    }
+  }
+
+  return width
+}
+
+const checkAndFixOverflow = (
+  width: React.CSSProperties["width"],
+  containerWidth: React.CSSProperties["width"]
+) => {
+  if (width === undefined || containerWidth === undefined) {
+    return width
+  }
+  if (
+    Number.isInteger(Number(width)) &&
+    Number.isInteger(Number(containerWidth))
+  ) {
+    if (width > containerWidth) {
+      return containerWidth
+    }
+  }
+  return width
 }
 
 /**
@@ -76,46 +117,62 @@ export const useLayoutStyles = <T>({
       }
     }
 
-    let width =
-      useContainerWidth && isNonZeroPositiveNumber(containerWidth)
-        ? containerWidth
-        : commandWidth
+    if (useContainerWidth) {
+      let validatedContainerWidth = validateWidth(containerWidth)
 
-    if (width === 0) {
-      // An element with no width should be treated as if it has no width set
-      // This is likely from the proto, where the default value is 0
-      width = undefined
-    }
-
-    if (width && width < 0) {
-      width = undefined
-    }
-
-    if (width !== undefined && isNaN(width)) {
-      width = undefined
-    }
-
-    if (
-      width !== undefined &&
-      containerWidth !== undefined &&
-      typeof containerWidth === "number" &&
-      width > containerWidth
-    ) {
-      width = containerWidth
-    }
-
-    const widthWithFallback = width ?? "auto"
-
-    if (element.flex) {
       return {
-        width: widthWithFallback,
+        width: validatedContainerWidth,
         maxWidth: "100%",
-        flex: element.flex,
+        flex: `1 0 ${validatedContainerWidth}px`,
       }
     }
 
+    if (Number.isInteger(Number(commandWidth))) {
+      let validatedCommandWidth = validateWidth(commandWidth)
+      // Without this, maxWidth: 100% stops the container overflow as well
+      // so maybe we don't need this check.
+      validatedCommandWidth = checkAndFixOverflow(
+        validatedCommandWidth,
+        containerWidth
+      )
+
+      return {
+        width: "auto",
+        maxWidth: "100%",
+        flex: `0 0 ${validatedCommandWidth}px`,
+      }
+    }
+
+    if (typeof commandWidth === "string" && commandWidth === "stretch") {
+      if (element.scale) {
+        return {
+          width: "100%",
+          maxWidth: "100%",
+          flex: `${element.scale}`,
+        }
+      }
+
+      return {
+        width: "100%",
+        maxWidth: "100%",
+      }
+    }
+
+    // commandWidth should be "content" if we reach here.
+
+    // This is commented out because we will ignore scale
+    // when the width is "content"
+
+    // if (element.flex) {
+    //   return {
+    //     width: "auto",
+    //     maxWidth: "100%",
+    //     flex: element.flex
+    //   }
+    // }
+
     return {
-      width: widthWithFallback,
+      width: "auto",
       maxWidth: "100%",
     }
   }, [useContainerWidth, commandWidth, containerWidth, element])

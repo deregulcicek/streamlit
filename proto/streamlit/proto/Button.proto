@@ -37,4 +37,5 @@ message Button {
   string flex = 11;
   bool justify_right = 12;
   string width = 13;
+  int32 scale = 14;
 }
