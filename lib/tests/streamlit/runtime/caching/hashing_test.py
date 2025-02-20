@@ -34,6 +34,7 @@ from unittest.mock import MagicMock, Mock
 import numpy as np
 import pandas as pd
 import polars as pl  # type: ignore[import-not-found]
+import pytest
 from parameterized import parameterized
 from PIL import Image
 
@@ -265,6 +266,13 @@ class HashTest(unittest.TestCase):
         self.assertEqual(get_hash(df1), get_hash(df3))
         self.assertNotEqual(get_hash(df1), get_hash(df2))
 
+    @pytest.mark.usefixtures("benchmark")
+    def test_pandas_large_dataframe_performance(self):
+        df1 = pd.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
+        df2 = pd.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
+        self.benchmark(get_hash(df1))
+        self.benchmark(get_hash(df2))
+
     @parameterized.expand(
         [
             (pd.DataFrame({"foo": [12]}), pd.DataFrame({"foo": [12]}), True),
@@ -447,6 +455,21 @@ class HashTest(unittest.TestCase):
     def test_polars_dataframe(self, df1, df2, expected):
         result = get_hash(df1) == get_hash(df2)
         self.assertEqual(result, expected)
+
+    def test_polars_large_dataframe(self):
+        df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+        df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+        df3 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+
+        self.assertEqual(get_hash(df1), get_hash(df3))
+        self.assertNotEqual(get_hash(df1), get_hash(df2))
+
+    @pytest.mark.usefixtures("benchmark")
+    def test_polars_large_dataframe_performance(self):
+        df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+        df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+        self.benchmark(get_hash(df1))
+        self.benchmark(get_hash(df2))
 
     def test_pandas_series_similar_dtypes(self):
         series1 = pd.Series([1, 2], dtype="UInt64")

@@ -462,9 +462,7 @@ class _CacheFuncHasher:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
 
             try:
-                # Get the raw bytes of the series data
-                # Check, maybe calling to_arrow() is better
-                self.update(h, obj.hash(seed=0).to_numpy().tobytes())
+                self.update(h, obj.hash(seed=0).to_arrow().to_string().encode())
                 return h.digest()
             except TypeError:
                 # Use pickle if polars cannot hash the object for example if
@@ -493,6 +491,10 @@ class _CacheFuncHasher:
                 values_hash_bytes = (
                     obj.hash_rows(seed=0).hash(seed=0).to_arrow().to_string().encode()
                 )
+
+                # # version 3
+                # hash_str = "".join(str(h) for h in obj.hash_rows(seed=0).hash(seed=0))
+                # values_hash_bytes = hash_str.encode()
 
                 self.update(h, values_hash_bytes)
                 return h.digest()
