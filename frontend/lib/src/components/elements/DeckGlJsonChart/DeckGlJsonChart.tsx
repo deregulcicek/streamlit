@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, { FC, memo, useCallback, useEffect, useState } from "react"
 
 import { DeckGL } from "@deck.gl/react"
 import { MapContext, NavigationControl, StaticMap } from "react-map-gl"
@@ -208,7 +208,6 @@ export const DeckGlJsonChart: FC<DeckGLProps> = props => {
     <StyledDeckGlChart
       className="stDeckGlJsonChart"
       data-testid="stDeckGlJsonChart"
-      width={width}
       height={height}
     >
       <Toolbar
@@ -263,6 +262,6 @@ export const DeckGlJsonChart: FC<DeckGLProps> = props => {
   )
 }
 
-export default withFullScreenWrapper(
-  withMapboxToken("st.pydeck_chart")(DeckGlJsonChart)
+export default memo(
+  withFullScreenWrapper(withMapboxToken("st.pydeck_chart")(DeckGlJsonChart))
 )

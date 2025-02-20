@@ -37,7 +37,6 @@ import StreamlitMarkdown from "~lib/components/shared/StreamlitMarkdown/Streamli
 export interface Props {
   disabled: boolean
   horizontal: boolean
-  width?: number
   value: number | null
   onChange: (selectedIndex: number) => any
   options: any[]
@@ -50,7 +49,6 @@ export interface Props {
 function Radio({
   disabled,
   horizontal,
-  width,
   value: defaultValue,
   onChange,
   options,
@@ -84,8 +82,6 @@ function Radio({
   )
 
   const theme = useTheme()
-  const { colors, radii } = theme
-  const style = { width }
   const hasCaptions = captions.length > 0
   const hasOptions = options.length > 0
   const cleanedOptions = hasOptions ? options : ["No options to select."]
@@ -101,7 +97,7 @@ function Radio({
   }
 
   return (
-    <div className="stRadio" data-testid="stRadio" style={style}>
+    <div className="stRadio" data-testid="stRadio">
       <WidgetLabel
         label={label}
         disabled={shouldDisable}
@@ -150,12 +146,8 @@ function Radio({
                   alignItems: "start",
                   paddingRight: theme.spacing.threeXS,
                   backgroundColor: $isFocusVisible
-                    ? colors.darkenedBgMix25
+                    ? theme.colors.darkenedBgMix25
                     : "",
-                  borderTopLeftRadius: radii.md,
-                  borderTopRightRadius: radii.md,
-                  borderBottomLeftRadius: radii.md,
-                  borderBottomRightRadius: radii.md,
                 }),
               },
               RadioMarkOuter: {
@@ -173,8 +165,8 @@ function Radio({
                   marginLeft: theme.spacing.none,
                   backgroundColor:
                     $checked && !shouldDisable
-                      ? colors.primary
-                      : colors.fadedText40,
+                      ? theme.colors.primary
+                      : theme.colors.fadedText40,
                 }),
               },
               RadioMarkInner: {
@@ -191,7 +183,9 @@ function Radio({
               },
               Label: {
                 style: {
-                  color: shouldDisable ? colors.fadedText40 : colors.bodyText,
+                  color: shouldDisable
+                    ? theme.colors.fadedText40
+                    : theme.colors.bodyText,
                   position: "relative",
                   top: theme.spacing.px,
                 },

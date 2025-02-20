@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ReactNode, useEffect, useState } from "react"
+import React, {
+  memo,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react"
 
 import AlertElement from "~lib/components/elements/AlertElement"
 import { Kind } from "~lib/components/shared/AlertContainer"
@@ -27,7 +33,6 @@ export interface Props {
   formId: string
   clearOnSubmit: boolean
   enterToSubmit: boolean
-  width: number
   hasSubmitButton: boolean
   scriptRunState: ScriptRunState
   children?: ReactNode
@@ -43,13 +48,12 @@ export const MISSING_SUBMIT_BUTTON_WARNING =
   "\n\nFor more information, refer to the " +
   "[documentation for forms](https://docs.streamlit.io/develop/api-reference/execution-flow/st.form)."
 
-export function Form(props: Props): ReactElement {
+function Form(props: Props): ReactElement {
   const {
     formId,
     widgetMgr,
     hasSubmitButton,
     children,
-    width,
     scriptRunState,
     clearOnSubmit,
     enterToSubmit,
@@ -83,11 +87,7 @@ export function Form(props: Props): ReactElement {
   if (showWarning) {
     submitWarning = (
       <StyledErrorContainer>
-        <AlertElement
-          body={MISSING_SUBMIT_BUTTON_WARNING}
-          kind={Kind.ERROR}
-          width={width}
-        />
+        <AlertElement body={MISSING_SUBMIT_BUTTON_WARNING} kind={Kind.ERROR} />
       </StyledErrorContainer>
     )
   }
@@ -99,3 +99,5 @@ export function Form(props: Props): ReactElement {
     </StyledForm>
   )
 }
+
+export default memo(Form)

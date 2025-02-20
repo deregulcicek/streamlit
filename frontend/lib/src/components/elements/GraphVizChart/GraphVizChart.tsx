@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect } from "react"
+import React, { memo, ReactElement, useEffect } from "react"
 
 import { select } from "d3"
 import { Engine, graphviz } from "d3-graphviz"
+import { getLogger } from "loglevel"
 
 import { GraphVizChart as GraphVizChartProto } from "@streamlit/protobuf"
 
-import { logError } from "~lib/util/log"
 import Toolbar, {
   StyledToolbarElementContainer,
 } from "~lib/components/shared/Toolbar"
@@ -33,9 +33,9 @@ import { StyledGraphVizChart } from "./styled-components"
 
 export interface GraphVizChartProps {
   element: GraphVizChartProto
-  width: number
   disableFullscreenMode?: boolean
 }
+export const log = getLogger("GraphVizChart")
 
 function GraphVizChart({
   element,
@@ -68,7 +68,7 @@ function GraphVizChart({
         node.removeAttribute("height")
       }
     } catch (error) {
-      logError(error)
+      log.error(error)
     }
   }, [
     chartId,
@@ -80,7 +80,7 @@ function GraphVizChart({
 
   return (
     <StyledToolbarElementContainer
-      width={width}
+      width={width ?? 0}
       height={height}
       useContainerWidth={isFullScreen || element.useContainerWidth}
     >
@@ -102,4 +102,4 @@ function GraphVizChart({
   )
 }
 
-export default withFullScreenWrapper(GraphVizChart)
+export default memo(withFullScreenWrapper(GraphVizChart))

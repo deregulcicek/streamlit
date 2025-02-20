@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import { Exception as ExceptionProto } from "@streamlit/protobuf"
 
@@ -33,7 +33,6 @@ import {
 } from "./styled-components"
 
 export interface ExceptionElementProps {
-  width: number
   element: ExceptionProto
 }
 
@@ -106,16 +105,12 @@ function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
 /**
  * Functional element representing formatted text.
  */
-export default function ExceptionElement({
+function ExceptionElement({
   element,
-  width,
 }: Readonly<ExceptionElementProps>): ReactElement {
   return (
     <div className="stException" data-testid="stException">
-      <AlertContainer
-        kind={element.isWarning ? Kind.WARNING : Kind.ERROR}
-        width={width}
-      >
+      <AlertContainer kind={element.isWarning ? Kind.WARNING : Kind.ERROR}>
         <StyledExceptionMessage data-testid="stExceptionMessage">
           <ExceptionMessage
             type={element.type}
@@ -130,3 +125,5 @@ export default function ExceptionElement({
     </div>
   )
 }
+
+export default memo(ExceptionElement)

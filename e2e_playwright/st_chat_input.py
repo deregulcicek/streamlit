@@ -20,7 +20,9 @@ st.write("Chat input 1 (inline) - value:", v1)
 
 col1, _ = st.columns(2)
 
-v2 = col1.chat_input("Chat input 2 (in column, disabled)", disabled=True)
+v2 = col1.chat_input(
+    "Chat input 2 (in column, disabled)", accept_file=True, disabled=True
+)
 st.write("Chat input 2 (in column, disabled) - value:", v2)
 
 if runtime.exists():
@@ -33,5 +35,11 @@ if runtime.exists():
     )
     st.write("Chat input 3 (callback) - value:", st.session_state.get("chat_input_3"))
 
-v4 = st.chat_input("Chat input 4 (bottom, max_chars)", max_chars=200)
-st.write("Chat input 4 (bottom, max_chars) - value:", v4)
+v4 = st.container().chat_input("Chat input 4 (single file)", accept_file=True)
+st.write("Chat input 4 (single file) - value:", v4)
+
+v5 = st.container().chat_input("Chat input 5 (multiple files)", accept_file="multiple")
+st.write("Chat input 5 (multiple files) - value:", v5)
+
+v6 = st.chat_input("Chat input 6 (bottom, max_chars)", max_chars=200)
+st.write("Chat input 6 (bottom, max_chars) - value:", v6)

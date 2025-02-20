@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback } from "react"
+import React, { memo, ReactElement, useCallback } from "react"
 
 import { createPortal } from "react-dom"
 import {
@@ -104,7 +104,6 @@ export interface DataFrameProps {
   widgetMgr: WidgetStateManager
   disableFullscreenMode?: boolean
   fragmentId?: string
-  width: number
   height?: number
 }
 
@@ -576,7 +575,7 @@ function DataFrame({
     gridTheme,
     numRows,
     usesGroupRow,
-    containerWidth,
+    containerWidth || 0,
     containerHeight,
     isFullScreen
   )
@@ -610,7 +609,7 @@ function DataFrame({
   const { pinColumn, unpinColumn, freezeColumns } = useColumnPinning(
     columns,
     isEmptyTable,
-    containerWidth,
+    containerWidth || 0,
     gridTheme.minColumnWidth,
     clearSelection,
     setColumnConfigMapping
@@ -753,6 +752,8 @@ function DataFrame({
                 setIsFocused(true)
                 onRowAppended()
                 clearTooltip()
+                // Automatically scroll to the new row on the vertical axis:
+                dataEditorRef.current?.scrollTo(0, numRows, "vertical")
               }
             }}
           />
@@ -1089,4 +1090,4 @@ function DataFrame({
   )
 }
 
-export default withFullScreenWrapper(DataFrame)
+export default memo(withFullScreenWrapper(DataFrame))
