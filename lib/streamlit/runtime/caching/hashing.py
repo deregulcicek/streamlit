@@ -496,6 +496,12 @@ class _CacheFuncHasher:
                 # hash_str = "".join(str(h) for h in obj.hash_rows(seed=0).hash(seed=0))
                 # values_hash_bytes = hash_str.encode()
 
+                # # version 4
+                # df_hash = bytes()
+                # for h in obj.hash_rows(seed=0).hash(seed=0):
+                #     df_hash ^= h
+                # values_hash_bytes = df_hash
+
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:

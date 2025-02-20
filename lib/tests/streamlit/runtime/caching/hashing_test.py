@@ -270,8 +270,8 @@ class HashTest(unittest.TestCase):
     def test_pandas_large_dataframe_performance(self):
         df1 = pd.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
         df2 = pd.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
-        self.benchmark(get_hash(df1))
-        self.benchmark(get_hash(df2))
+        self.benchmark(lambda: get_hash(df1))
+        self.benchmark(lambda: get_hash(df2))
 
     @parameterized.expand(
         [
@@ -468,8 +468,8 @@ class HashTest(unittest.TestCase):
     def test_polars_large_dataframe_performance(self):
         df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
-        self.benchmark(get_hash(df1))
-        self.benchmark(get_hash(df2))
+        self.benchmark(lambda: get_hash(df1))
+        self.benchmark(lambda: get_hash(df2))
 
     def test_pandas_series_similar_dtypes(self):
         series1 = pd.Series([1, 2], dtype="UInt64")
