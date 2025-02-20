@@ -91,7 +91,6 @@ class ButtonMixin:
         key: Key | None = None,
         help: str | None = None,
         on_click: WidgetCallback | None = None,
-        flex: str | None = None,
         width: Literal["stretch", "content"] | int = "content",
         scale: int | None = None,
         justify_right: bool = False,
@@ -250,7 +249,6 @@ class ButtonMixin:
             help,
             is_form_submitter=False,
             on_click=on_click,
-            flex=flex,
             width=width,
             scale=scale,
             justify_right=justify_right,
@@ -908,7 +906,6 @@ class ButtonMixin:
         help: str | None,
         is_form_submitter: bool,
         on_click: WidgetCallback | None = None,
-        flex: str | None = None,
         width: Literal["stretch", "content"] | int = "content",
         scale: int | None = None,
         justify_right: bool = False,
@@ -973,9 +970,6 @@ class ButtonMixin:
         button_proto.disabled = disabled
         button_proto.justify_right = justify_right
         button_proto.width = str(width)
-
-        if flex is not None:
-            button_proto.flex = flex
 
         if scale is not None:
             button_proto.scale = scale
