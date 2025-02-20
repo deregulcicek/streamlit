@@ -338,9 +338,7 @@ class HashTest(unittest.TestCase):
     @pytest.mark.usefixtures("benchmark")
     def test_pandas_large_dataframe_performance(self):
         df1 = pd.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
-        df2 = pd.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), columns=list("ABCD"))
         self.benchmark(lambda: get_hash(df1))
-        self.benchmark(lambda: get_hash(df2))
 
     @parameterized.expand(
         [
@@ -471,9 +469,7 @@ class HashTest(unittest.TestCase):
         import polars as pl
 
         df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
-        df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         self.benchmark(lambda: get_hash(df1))
-        self.benchmark(lambda: get_hash(df2))
 
     def test_pandas_series_similar_dtypes(self):
         series1 = pd.Series([1, 2], dtype="UInt64")
