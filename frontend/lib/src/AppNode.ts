@@ -180,6 +180,12 @@ export class ElementNode implements AppNode {
   // The hash of the script that created this element.
   public readonly activeScriptHash: string
 
+  // A timestamp indicating based on which delta message the node was created.
+  // If the node was created without a delta message, this field is undefined.
+  // This helps us to update React components based on a new backend message even though other
+  // props have not changed; this can happen for UI-only interactions such as dimissing a dialog.
+  public readonly deltaMsgReceivedAt?: number
+
   /** Create a new ElementNode. */
   public constructor(
     element: Element,
@@ -187,7 +193,8 @@ export class ElementNode implements AppNode {
     scriptRunId: string,
     activeScriptHash: string,
     fragmentId?: string,
-    elementHash?: string
+    elementHash?: string,
+    deltaMsgReceivedAt?: number
   ) {
     this.element = element
     this.metadata = metadata
@@ -195,6 +202,7 @@ export class ElementNode implements AppNode {
     this.activeScriptHash = activeScriptHash
     this.fragmentId = fragmentId
     this.elementHash = elementHash
+    this.deltaMsgReceivedAt = deltaMsgReceivedAt
   }
 
   public get quiverElement(): Quiver {
@@ -729,6 +737,7 @@ export class AppRoot {
     // The full path to the AppNode within the element tree.
     // Used to find and update the element node specified by this Delta.
     const { deltaPath, activeScriptHash } = metadata
+    const deltaMsgReceivedAt = Date.now()
     switch (delta.type) {
       case "newElement": {
         const element = delta.newElement as Element
@@ -739,12 +748,12 @@ export class AppRoot {
           metadata,
           activeScriptHash,
           delta.fragmentId,
-          elementHash
+          elementHash,
+          deltaMsgReceivedAt
         )
       }
 
       case "addBlock": {
-        const deltaMsgReceivedAt = Date.now()
         return this.addBlock(
           deltaPath,
           delta.addBlock as BlockProto,
@@ -867,7 +876,8 @@ export class AppRoot {
     metadata: ForwardMsgMetadata,
     activeScriptHash: string,
     fragmentId?: string,
-    elementHash?: string
+    elementHash?: string,
+    deltaMsgReceivedAt?: number
   ): AppRoot {
     const elementNode = new ElementNode(
       element,
@@ -875,7 +885,8 @@ export class AppRoot {
       scriptRunId,
       activeScriptHash,
       fragmentId,
-      elementHash
+      elementHash,
+      deltaMsgReceivedAt
     )
     return new AppRoot(
       this.mainScriptHash,

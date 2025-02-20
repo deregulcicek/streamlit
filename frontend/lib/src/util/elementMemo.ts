@@ -22,7 +22,11 @@ import {
 } from "react"
 
 export type ComponentPropsWithElementHash = {
-  node: { elementHash?: string }
+  node: {
+    elementHash?: string
+    deltaMsgReceivedAt?: number
+    element: { type?: string }
+  }
   scriptRunId: string
   scriptRunState: string
   [key: string]: any
@@ -56,7 +60,17 @@ export function compareComponentProps<
 
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
+  // Some elements are supposed to be shown on every rerun, e.g. toast.
+  const eventBasedElementTypes = ["toast"]
+  const receivedAtSameTime =
+    prevNode.element.type === nextNode.element.type &&
+    prevNode.element.type &&
+    eventBasedElementTypes.includes(prevNode.element.type)
+      ? prevNode.deltaMsgReceivedAt === nextNode.deltaMsgReceivedAt
+      : true
+
   return (
+    receivedAtSameTime &&
     prevNode.elementHash === nextNode.elementHash &&
     Object.keys(prevOthers).length === Object.keys(nextOthers).length &&
     Object.keys(prevOthers).every(key =>
