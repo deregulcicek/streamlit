@@ -33,7 +33,6 @@ from unittest.mock import MagicMock, Mock
 
 import numpy as np
 import pandas as pd
-import polars as pl  # type: ignore[import-not-found]
 import pytest
 from parameterized import parameterized
 from PIL import Image
@@ -60,6 +59,76 @@ def get_hash(value, hash_funcs=None, cache_type=None):
         value, hasher, cache_type=cache_type or MagicMock(), hash_funcs=hash_funcs
     )
     return hasher.digest()
+
+
+def prepare_polars_data():
+    import polars as pl
+
+    return [
+        (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [12]}), True),
+        (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [42]}), False),
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            True,
+        ),
+        # Extra column
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
+            False,
+        ),
+        # Different values
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 5]}),
+            False,
+        ),
+        # Different order
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            pl.DataFrame(data={"B": [1, 2, 3], "A": [2, 3, 4]}),
+            False,
+        ),
+        # Missing column
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            pl.DataFrame(data={"A": [1, 2, 3]}),
+            False,
+        ),
+        # Different sort
+        (
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                by=["A"], descending=False
+            ),
+            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                by=["B"], descending=True
+            ),
+            False,
+        ),
+        # Different headers
+        (
+            pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+            pd.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+            False,
+        ),
+        # Reordered columns
+        (
+            pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+            pd.DataFrame(data={"C": [2, 3, 4], "A": [1, 2, 3]}),
+            False,
+        ),
+        # Slightly different dtypes
+        (
+            pd.DataFrame(
+                data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="UInt64")}
+            ),
+            pd.DataFrame(
+                data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="Int64")}
+            ),
+            False,
+        ),
+    ]
 
 
 class HashTest(unittest.TestCase):
@@ -363,7 +432,10 @@ class HashTest(unittest.TestCase):
 
         self.assertEqual(get_hash(series4), get_hash(series5))
 
+    @pytest.mark.require_integration
     def test_polars_series(self):
+        import polars as pl  # type: ignore[import-not-found]
+
         series1 = pl.Series([1, 2])
         series2 = pl.Series([1, 3])
         series3 = pl.Series([1, 2])
@@ -376,87 +448,16 @@ class HashTest(unittest.TestCase):
 
         self.assertEqual(get_hash(series4), get_hash(series5))
 
-    @parameterized.expand(
-        [
-            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [12]}), True),
-            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [42]}), False),
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                True,
-            ),
-            # Extra column
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
-                False,
-            ),
-            # Different values
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 5]}),
-                False,
-            ),
-            # Different order
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                pl.DataFrame(data={"B": [1, 2, 3], "A": [2, 3, 4]}),
-                False,
-            ),
-            # Polars does not use an index and each row is indexed by its integer position in the table.
-            # # Different index
-            # (
-            #     pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}, index=[1, 2, 3]),
-            #     pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}, index=[1, 2, 4]),
-            #     False,
-            # ),
-            # Missing column
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                pl.DataFrame(data={"A": [1, 2, 3]}),
-                False,
-            ),
-            # Different sort
-            # TODO[kajarenc] Check with Lukas that polars .sort(by=...)
-            #  is equivalent to pandas .sort_values(by=...)
-            (
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
-                    by=["A"], descending=False
-                ),
-                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
-                    by=["B"], descending=True
-                ),
-                False,
-            ),
-            # Different headers
-            (
-                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
-                pd.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-                False,
-            ),
-            # Reordered columns
-            (
-                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
-                pd.DataFrame(data={"C": [2, 3, 4], "A": [1, 2, 3]}),
-                False,
-            ),
-            # Slightly different dtypes
-            (
-                pd.DataFrame(
-                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="UInt64")}
-                ),
-                pd.DataFrame(
-                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="Int64")}
-                ),
-                False,
-            ),
-        ]
-    )
+    @pytest.mark.require_integration
+    @parameterized.expand(prepare_polars_data())
     def test_polars_dataframe(self, df1, df2, expected):
         result = get_hash(df1) == get_hash(df2)
         self.assertEqual(result, expected)
 
+    @pytest.mark.require_integration
     def test_polars_large_dataframe(self):
+        import polars as pl
+
         df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         df3 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
@@ -464,8 +465,11 @@ class HashTest(unittest.TestCase):
         self.assertEqual(get_hash(df1), get_hash(df3))
         self.assertNotEqual(get_hash(df1), get_hash(df2))
 
+    @pytest.mark.require_integration
     @pytest.mark.usefixtures("benchmark")
     def test_polars_large_dataframe_performance(self):
+        import polars as pl
+
         df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         df2 = pl.DataFrame(np.ones((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
         self.benchmark(lambda: get_hash(df1))
