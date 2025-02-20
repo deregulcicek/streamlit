@@ -461,6 +461,7 @@ st.dataframe(
         ),
         "col_1": st.column_config.LineChartColumn(),
     },
+    use_container_width=False,
 )
 
 st.header("Area chart column:")
