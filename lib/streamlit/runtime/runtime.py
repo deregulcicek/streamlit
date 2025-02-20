@@ -716,9 +716,8 @@ Please report this bug at https://github.com/streamlit/streamlit/issues.
         """
         msg.metadata.cacheable = is_cacheable_msg(msg)
         msg_to_send = msg
+        populate_hash_if_needed(msg)
         if msg.metadata.cacheable:
-            populate_hash_if_needed(msg)
-
             if self._message_cache.has_message_reference(
                 msg, session_info.session, session_info.script_run_count
             ):
