@@ -47,7 +47,7 @@ jobs:
       - name: Install integration dependencies
         run: |
           source venv/bin/activate
-          uv pip install -r lib/integration-requirements.txt --force-reinstall
+          uv pip install polars
       - name: Run make frontend-build-with-profiler
         run: make frontend-build-with-profiler
       - name: Run make performance-playwright
