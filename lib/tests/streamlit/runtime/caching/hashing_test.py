@@ -62,73 +62,76 @@ def get_hash(value, hash_funcs=None, cache_type=None):
 
 
 def prepare_polars_data():
-    import polars as pl
+    try:
+        import polars as pl
 
-    return [
-        (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [12]}), True),
-        (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [42]}), False),
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            True,
-        ),
-        # Extra column
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
-            False,
-        ),
-        # Different values
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 5]}),
-            False,
-        ),
-        # Different order
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            pl.DataFrame(data={"B": [1, 2, 3], "A": [2, 3, 4]}),
-            False,
-        ),
-        # Missing column
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            pl.DataFrame(data={"A": [1, 2, 3]}),
-            False,
-        ),
-        # Different sort
-        (
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
-                by=["A"], descending=False
+        return [
+            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [12]}), True),
+            (pl.DataFrame({"foo": [12]}), pl.DataFrame({"foo": [42]}), False),
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                True,
             ),
-            pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
-                by=["B"], descending=True
+            # Extra column
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4], "C": [1, 2, 3]}),
+                False,
             ),
-            False,
-        ),
-        # Different headers
-        (
-            pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
-            pd.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
-            False,
-        ),
-        # Reordered columns
-        (
-            pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
-            pd.DataFrame(data={"C": [2, 3, 4], "A": [1, 2, 3]}),
-            False,
-        ),
-        # Slightly different dtypes
-        (
-            pd.DataFrame(
-                data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="UInt64")}
+            # Different values
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 5]}),
+                False,
             ),
-            pd.DataFrame(
-                data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="Int64")}
+            # Different order
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"B": [1, 2, 3], "A": [2, 3, 4]}),
+                False,
             ),
-            False,
-        ),
-    ]
+            # Missing column
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                pl.DataFrame(data={"A": [1, 2, 3]}),
+                False,
+            ),
+            # Different sort
+            (
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                    by=["A"], descending=False
+                ),
+                pl.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}).sort(
+                    by=["B"], descending=True
+                ),
+                False,
+            ),
+            # Different headers
+            (
+                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+                pd.DataFrame(data={"A": [1, 2, 3], "B": [2, 3, 4]}),
+                False,
+            ),
+            # Reordered columns
+            (
+                pd.DataFrame(data={"A": [1, 2, 3], "C": [2, 3, 4]}),
+                pd.DataFrame(data={"C": [2, 3, 4], "A": [1, 2, 3]}),
+                False,
+            ),
+            # Slightly different dtypes
+            (
+                pd.DataFrame(
+                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="UInt64")}
+                ),
+                pd.DataFrame(
+                    data={"A": [1, 2, 3], "C": pd.array([1, 2, 3], dtype="Int64")}
+                ),
+                False,
+            ),
+        ]
+    except ImportError:
+        return []
 
 
 class HashTest(unittest.TestCase):
@@ -447,7 +450,7 @@ class HashTest(unittest.TestCase):
         self.assertEqual(get_hash(series4), get_hash(series5))
 
     @pytest.mark.require_integration
-    @parameterized.expand(prepare_polars_data())
+    @parameterized.expand(prepare_polars_data(), skip_on_empty=True)
     def test_polars_dataframe(self, df1, df2, expected):
         result = get_hash(df1) == get_hash(df2)
         self.assertEqual(result, expected)
