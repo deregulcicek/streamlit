@@ -137,7 +137,7 @@ export const useLayoutStyles = <T>({
       )
 
       return {
-        width: "auto",
+        width: `${validatedCommandWidth}px`,
         maxWidth: "100%",
         flex: `0 0 ${validatedCommandWidth}px`,
       }
