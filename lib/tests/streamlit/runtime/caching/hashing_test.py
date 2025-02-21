@@ -466,13 +466,19 @@ class HashTest(unittest.TestCase):
         self.assertEqual(get_hash(df1), get_hash(df3))
         self.assertNotEqual(get_hash(df1), get_hash(df2))
 
-    @pytest.mark.require_integration
     @pytest.mark.usefixtures("benchmark")
     def test_polars_large_dataframe_performance(self):
-        import polars as pl
+        # We put the try/except here to avoid the test failing if polars is not
+        # installed rather than marking it as `require_integration`,
+        # because it should participate in the benchmarking.
+        try:
+            import polars as pl
 
-        df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
-        self.benchmark(lambda: get_hash(df1))
+            df1 = pl.DataFrame(np.zeros((_PANDAS_ROWS_LARGE, 4)), schema=list("abcd"))
+            self.benchmark(lambda: get_hash(df1))
+        except ImportError:
+            # Skip if polars is not installed.
+            pass
 
     def test_pandas_series_similar_dtypes(self):
         series1 = pd.Series([1, 2], dtype="UInt64")
