@@ -17,85 +17,139 @@
 import { compareComponentProps } from "./elementMemo"
 
 describe("elementMemo", () => {
-  describe("compareComponentProps", () => {
-    it("should compare element and elementHash props", () => {
-      const node = {
+  it("should compare element and elementHash props", () => {
+    const node = {
+      elementHash: "hash123",
+      element: { type: "button" },
+    }
+    const prevProps = {
+      node,
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    const nextProps = {
+      node,
+      scriptRunId: "run2",
+      scriptRunState: "running2",
+      otherProp: "someValue",
+    }
+
+    expect(compareComponentProps(prevProps, nextProps)).toBe(true)
+  })
+
+  it("should return false when other props differ (different values)", () => {
+    const prevProps = {
+      node: {
         elementHash: "hash123",
-      }
-      const prevProps = {
-        node,
-        scriptRunId: "run1",
-        scriptRunState: "running",
-        otherProp: "someValue",
-      }
-      const nextProps = {
-        node,
-        scriptRunId: "run2",
-        scriptRunState: "running2",
-        otherProp: "someValue",
-      }
+        element: { type: "button" },
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    const nextProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "button" },
+      },
+      scriptRunId: "run2",
+      scriptRunState: "running2",
+      otherProp: "otherValue",
+    }
+    expect(compareComponentProps(prevProps, nextProps)).toBe(false)
+  })
 
-      expect(compareComponentProps(prevProps, nextProps)).toBe(true)
-    })
+  it("should return false when other props differ (different props lengths)", () => {
+    const prevProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "button" },
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+    }
+    const nextProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "button" },
+      },
+      scriptRunId: "run2",
+      scriptRunState: "running2",
+      extraProp: "someValue",
+    }
+    expect(compareComponentProps(prevProps, nextProps)).toBe(false)
+  })
 
-    it("should return false when other props differ (different values)", () => {
-      const prevProps = {
-        node: {
-          elementHash: "hash123",
-        },
-        scriptRunId: "run1",
-        scriptRunState: "running",
-        otherProp: "someValue",
-      }
-      const nextProps = {
-        node: {
-          elementHash: "hash123",
-        },
-        scriptRunId: "run2",
-        scriptRunState: "running2",
-        otherProp: "otherValue",
-      }
-      expect(compareComponentProps(prevProps, nextProps)).toBe(false)
-    })
+  it("should return false when elementHash differs", () => {
+    const prevProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "button" },
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    const nextProps = {
+      node: {
+        elementHash: "hash456",
+        element: { type: "button" },
+      },
+      scriptRunId: "run2",
+      scriptRunState: "running2",
+      otherProp: "someValue",
+    }
 
-    it("should return false when other props differ (different props lengths)", () => {
-      const prevProps = {
-        node: {
-          elementHash: "hash123",
-        },
-        scriptRunId: "run1",
-        scriptRunState: "running",
-      }
-      const nextProps = {
-        node: {
-          elementHash: "hash123",
-        },
-        scriptRunId: "run2",
-        scriptRunState: "running2",
-        extraProp: "someValue",
-      }
-      expect(compareComponentProps(prevProps, nextProps)).toBe(false)
-    })
+    expect(compareComponentProps(prevProps, nextProps)).toBe(false)
+  })
 
-    it("should return false when elementHash differs", () => {
-      const prevProps = {
-        node: {
-          elementHash: "hash123",
-        },
-        scriptRunId: "run1",
-        scriptRunState: "running",
-        otherProp: "someValue",
-      }
-      const nextProps = {
-        node: {
-          elementHash: "hash456",
-        },
-        scriptRunId: "run2",
-        scriptRunState: "running2",
-        otherProp: "someValue",
-      }
+  it("should return true for toast when deltaMsgReceivedAt is the same", () => {
+    const prevProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "toast" },
+        deltaMsgReceivedAt: 1000,
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    const nextProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "toast" },
+        deltaMsgReceivedAt: 1000,
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    expect(compareComponentProps(prevProps, nextProps)).toBe(true)
+  })
 
-      expect(compareComponentProps(prevProps, nextProps)).toBe(false)
-    })
+  it("should return false for toast when deltaMsgReceivedAt differs", () => {
+    const prevProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "toast" },
+        deltaMsgReceivedAt: 1000,
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+    const nextProps = {
+      node: {
+        elementHash: "hash123",
+        element: { type: "toast" },
+        deltaMsgReceivedAt: 2000,
+      },
+      scriptRunId: "run1",
+      scriptRunState: "running",
+      otherProp: "someValue",
+    }
+
+    expect(compareComponentProps(prevProps, nextProps)).toBe(false)
   })
 })
