@@ -67,6 +67,8 @@ class LayoutsMixin:
         ]
         | None = None,
         wrap: bool | None = False,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
     ) -> DeltaGenerator:
         """Insert a multi-element container.
 
@@ -104,6 +106,13 @@ class LayoutsMixin:
             Additionally, if ``key`` is provided, it will be used as CSS
             class name prefixed with ``st-key-``.
 
+        width : "stretch", "content", or int
+            The width of the container. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
 
         Examples
         --------
@@ -171,6 +180,9 @@ class LayoutsMixin:
         block_proto = BlockProto()
         block_proto.allow_empty = False
         block_proto.vertical.border = border or False
+        block_proto.width = str(width)
+        if scale is not None:
+            block_proto.scale = scale
 
         if height:
             # Activate scrolling container behavior:

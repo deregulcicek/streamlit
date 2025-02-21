@@ -28,4 +28,6 @@ message PageLink {
   optional bool use_container_width = 6;
   bool disabled = 7;
   bool external = 8;
+  string width = 9;
+  int32 scale = 10;
 }

@@ -21,4 +21,6 @@ option java_outer_classname = "EmptyProto";
 
 // A python empty.
 message Empty {
+  string width = 1;
+  int32 scale = 2;
 }

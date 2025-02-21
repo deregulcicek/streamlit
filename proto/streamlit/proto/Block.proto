@@ -35,6 +35,8 @@ message Block {
 
   bool allow_empty = 8;
   optional string id = 12;
+  string width = 15;
+  int32 scale = 16;
 
   message Vertical {
     bool border = 1;

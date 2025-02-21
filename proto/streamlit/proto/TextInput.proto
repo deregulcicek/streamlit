@@ -43,6 +43,6 @@ message TextInput {
   string placeholder = 11;
   bool disabled = 12;
   LabelVisibilityMessage label_visibility = 13;
-  string flex = 14;
-  string width = 15;
+  string width = 14;
+  int32 scale = 15;
 }

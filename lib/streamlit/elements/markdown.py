@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, cast
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 from streamlit.proto.Markdown_pb2 import Markdown as MarkdownProto
 from streamlit.runtime.metrics_util import gather_metrics
@@ -37,6 +37,8 @@ class MarkdownMixin:
         unsafe_allow_html: bool = False,
         *,  # keyword-only arguments:
         help: str | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
     ) -> DeltaGenerator:
         r"""Display string formatted as Markdown.
 
@@ -101,6 +103,14 @@ class MarkdownMixin:
             including the Markdown directives described in the ``body``
             parameter of ``st.markdown``.
 
+        width : "stretch", "content", or int
+            The width of the markdown element. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+
         Examples
         --------
         >>> import streamlit as st
@@ -132,6 +142,11 @@ class MarkdownMixin:
         if help:
             markdown_proto.help = help
 
+        # Add new parameters
+        markdown_proto.width = str(width)
+        if scale is not None:
+            markdown_proto.scale = scale
+
         return self.dg._enqueue("markdown", markdown_proto)
 
     @gather_metrics("code")
@@ -139,6 +154,9 @@ class MarkdownMixin:
         self,
         body: SupportsStr,
         language: str | None = "python",
+        *,  # keyword-only arguments:
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
     ) -> DeltaGenerator:
         """Display a code block with optional syntax highlighting.
 
@@ -157,6 +175,14 @@ class MarkdownMixin:
 
             https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/master/AVAILABLE_LANGUAGES_PRISM.MD
 
+        width : "stretch", "content", or int
+            The width of the code block. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+
         Example
         -------
         >>> import streamlit as st
@@ -170,6 +196,9 @@ class MarkdownMixin:
         markdown = f"```{language or ''}\n{body}\n```"
         code_proto.body = clean_text(markdown)
         code_proto.element_type = MarkdownProto.Type.CODE
+        code_proto.width = str(width)
+        if scale is not None:
+            code_proto.scale = scale
         return self.dg._enqueue("markdown", code_proto)
 
     @gather_metrics("caption")
@@ -179,6 +208,8 @@ class MarkdownMixin:
         unsafe_allow_html: bool = False,
         *,  # keyword-only arguments:
         help: str | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
     ) -> DeltaGenerator:
         """Display text in small font.
 
@@ -218,6 +249,14 @@ class MarkdownMixin:
             including the Markdown directives described in the ``body``
             parameter of ``st.markdown``.
 
+        width : "stretch", "content", or int
+            The width of the caption. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+
         Examples
         --------
         >>> import streamlit as st
@@ -233,6 +272,9 @@ class MarkdownMixin:
         caption_proto.element_type = MarkdownProto.Type.CAPTION
         if help:
             caption_proto.help = help
+        caption_proto.width = str(width)
+        if scale is not None:
+            caption_proto.scale = scale
         return self.dg._enqueue("markdown", caption_proto)
 
     @gather_metrics("latex")
@@ -241,6 +283,8 @@ class MarkdownMixin:
         body: SupportsStr | sympy.Expr,
         *,  # keyword-only arguments:
         help: str | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
     ) -> DeltaGenerator:
         # This docstring needs to be "raw" because of the backslashes in the
         # example below.
@@ -264,6 +308,14 @@ class MarkdownMixin:
             including the Markdown directives described in the ``body``
             parameter of ``st.markdown``.
 
+        width : "stretch", "content", or int
+            The width of the LaTeX element. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+
         Example
         -------
         >>> import streamlit as st
@@ -285,15 +337,33 @@ class MarkdownMixin:
         latex_proto.element_type = MarkdownProto.Type.LATEX
         if help:
             latex_proto.help = help
+        latex_proto.width = str(width)
+        if scale is not None:
+            latex_proto.scale = scale
         return self.dg._enqueue("markdown", latex_proto)
 
     @gather_metrics("divider")
-    def divider(self) -> DeltaGenerator:
+    def divider(
+        self,
+        *,  # keyword-only arguments:
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int | None = None,
+    ) -> DeltaGenerator:
         """Display a horizontal rule.
 
         .. note::
             You can achieve the same effect with st.write("---") or
             even just "---" in your script (via magic).
+
+        Parameters
+        ----------
+        width : "stretch", "content", or int
+            The width of the divider. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int or None
+            An optional integer scale factor to apply to the element. If None, no scaling is applied.
 
         Example
         -------
@@ -305,6 +375,9 @@ class MarkdownMixin:
         divider_proto = MarkdownProto()
         divider_proto.body = MARKDOWN_HORIZONTAL_RULE_EXPRESSION
         divider_proto.element_type = MarkdownProto.Type.DIVIDER
+        divider_proto.width = str(width)
+        if scale is not None:
+            divider_proto.scale = scale
         return self.dg._enqueue("markdown", divider_proto)
 
     @property

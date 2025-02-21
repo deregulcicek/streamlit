@@ -38,4 +38,6 @@ message Markdown {
   Type element_type = 4;
 
   string help = 5;
+  string width = 6;
+  int32 scale = 7;
 }
