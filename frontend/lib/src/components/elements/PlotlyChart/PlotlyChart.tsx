@@ -805,5 +805,7 @@ const PlotlyChartWidthCheck: FC<Omit<PlotlyChartProps, "width">> = props => {
   return <PlotlyChart width={width} {...props} />
 }
 
-const PlotlyChartWithFullScreenWrapper = withFullScreenWrapper(PlotlyChart)
+const PlotlyChartWithFullScreenWrapper = withFullScreenWrapper(
+  PlotlyChartWidthCheck
+)
 export default memo(PlotlyChartWithFullScreenWrapper)
