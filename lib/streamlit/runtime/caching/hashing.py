@@ -455,8 +455,8 @@ class _CacheFuncHasher:
             import polars as pl  # type: ignore[import-not-found]
 
             obj = cast(pl.Series, obj)
-            self.update(h, obj.estimated_size())
             self.update(h, str(obj.dtype).encode())
+            self.update(h, obj.shape)
 
             if len(obj) >= _PANDAS_ROWS_LARGE:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
