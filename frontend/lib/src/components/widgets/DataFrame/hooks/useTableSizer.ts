@@ -131,18 +131,24 @@ function useTableSizer(
   // The maximum width of the data grid can be resized to.
   let maxWidth = availableWidth
 
-  if (element.useContainerWidth) {
+  if (element.useContainerWidth || element.width === "stretch") {
     // If user has set use_container_width,
     // use the full container (available) width.
     initialWidth = availableWidth
-  } else if (element.width) {
+  } else if (Number.isInteger(Number(element.width))) {
     // The user has explicitly configured a width
     // use it but keep between the MIN_TABLE_WIDTH
     // and the available width.
-    initialWidth = Math.min(Math.max(element.width, minWidth), availableWidth)
+    initialWidth = Math.min(
+      Math.max(Number(element.width), minWidth),
+      availableWidth
+    )
     // Make sure that the max width we configure is between the user
     // configured width and the available (container) width.
-    maxWidth = Math.min(Math.max(element.width, maxWidth), availableWidth)
+    maxWidth = Math.min(
+      Math.max(Number(element.width), maxWidth),
+      availableWidth
+    )
   }
 
   const [resizableSize, setResizableSize] = React.useState<ResizableSize>({
@@ -186,7 +192,8 @@ function useTableSizer(
     if (isFullScreen) {
       const stretchColumns: boolean =
         element.useContainerWidth ||
-        (notNullOrUndefined(element.width) && element.width > 0)
+        element.width === "stretch" ||
+        (notNullOrUndefined(element.width) && Number(element.width) > 0)
       setResizableSize({
         width: stretchColumns ? maxWidth : "100%",
         height: maxHeight,

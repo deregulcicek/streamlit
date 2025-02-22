@@ -295,7 +295,8 @@ function useColumnLoader(
 
   const stretchColumns: boolean =
     element.useContainerWidth ||
-    (notNullOrUndefined(element.width) && element.width > 0)
+    element.width === "stretch" ||
+    (notNullOrUndefined(element.width) && Number(element.width) > 0)
 
   // Converts the columns from Arrow into columns compatible with glide-data-grid
   const columns: BaseColumn[] = React.useMemo(() => {
