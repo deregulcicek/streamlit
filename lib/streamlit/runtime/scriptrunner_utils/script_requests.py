@@ -21,7 +21,6 @@ from typing import cast
 
 from streamlit import util
 from streamlit.proto.Common_pb2 import ChatInputValue as ChatInputValueProto
-from streamlit.proto.Common_pb2 import StringTriggerValue as StringTriggerValueProto
 from streamlit.proto.WidgetStates_pb2 import WidgetState, WidgetStates
 
 
@@ -116,7 +115,6 @@ def _coalesce_widget_states(
 
     trigger_value_types = [
         ("trigger_value", False),
-        ("string_trigger_value", StringTriggerValueProto(data=None)),
         ("chat_input_value", ChatInputValueProto(data=None)),
     ]
     for old_state in old_states.widgets:
