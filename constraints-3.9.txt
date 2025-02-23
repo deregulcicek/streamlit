@@ -27,7 +27,7 @@ graphviz==0.20.3
 greenlet==3.1.1
 hypothesis==6.126.0
 id==1.5.0
-identify==2.6.7
+identify==2.6.8
 idna==3.10
 importlib_metadata==8.6.1
 importlib_resources==6.5.2
