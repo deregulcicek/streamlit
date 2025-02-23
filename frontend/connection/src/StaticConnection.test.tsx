@@ -25,7 +25,7 @@ import {
   establishStaticConnection,
   getProtoResponse,
   getStaticConfig,
-  log,
+  LOG,
 } from "./StaticConnection"
 
 describe("StaticConnection", () => {
