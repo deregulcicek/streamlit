@@ -1079,6 +1079,11 @@ function DataFrame({
             onPinColumn={() => {
               pinColumn(originalColumns[showMenu.columnIdx].id)
             }}
+            onAutosize={() => {
+              dataEditorRef.current?.remeasureColumns(
+                CompactSelection.fromSingleSelection(showMenu.columnIdx)
+              )
+            }}
           />,
           // We put the column menu into the portal element which is also
           // used for the cell overlays. This allows us to correctly position
@@ -1092,4 +1097,5 @@ function DataFrame({
   )
 }
 
-export default memo(withFullScreenWrapper(DataFrame))
+const DataFrameWithFullscreen = withFullScreenWrapper(DataFrame)
+export default memo(DataFrameWithFullscreen)
