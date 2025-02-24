@@ -94,7 +94,7 @@ st.caption(
 st.data_editor(
     pd.DataFrame(
         {
-            "col_0": ["Hello World", "Lorem ipsum", "", None],
+            "col_0": ["Hello World", '{"foo": "bar", "baz": 123}', "", None],
             "col_1": ["1", "2", "3", None],
         }
     ),
@@ -113,6 +113,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Number column:")
@@ -144,6 +145,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Checkbox column:")
@@ -166,6 +168,7 @@ st.data_editor(
         "col_1": st.column_config.CheckboxColumn(),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Selectbox column:")
@@ -190,6 +193,7 @@ st.data_editor(
         "col_1": st.column_config.SelectboxColumn(options=["a", "b", "c", "d"]),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Link column:")
@@ -234,6 +238,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Datetime column:")
@@ -267,6 +272,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Date column:")
@@ -299,6 +305,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Time column:")
@@ -331,6 +338,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Progress column:")
@@ -353,6 +361,7 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("List column:")
@@ -373,6 +382,7 @@ st.data_editor(
         "col_1": st.column_config.ListColumn(),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Bar chart column:")
@@ -395,6 +405,7 @@ st.data_editor(
         "col_1": st.column_config.BarChartColumn(),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 
@@ -418,6 +429,7 @@ st.data_editor(
         "col_1": st.column_config.LineChartColumn(),
     },
     use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Image column:")
@@ -441,4 +453,5 @@ st.data_editor(
         ),
     },
     use_container_width=False,
+    hide_index=True,
 )

@@ -28,10 +28,13 @@ describe("DataFrame ColumnMenu", () => {
     top: 100,
     left: 100,
     isColumnPinned: false,
+    columnKind: "number",
     onPinColumn: vi.fn(),
     onUnpinColumn: vi.fn(),
     onCloseMenu: vi.fn(),
     onSortColumn: vi.fn(),
+    onChangeFormat: vi.fn(),
+    onAutosize: vi.fn(),
   }
 
   beforeEach(() => {
@@ -118,6 +121,42 @@ describe("DataFrame ColumnMenu", () => {
 
       await userEvent.click(screen.getByText("Unpin column"))
       expect(defaultProps.onUnpinColumn).toHaveBeenCalled()
+      expect(defaultProps.onCloseMenu).toHaveBeenCalled()
+    })
+  })
+
+  describe("format menu functionality", () => {
+    test("renders format option when onChangeFormat is provided", () => {
+      render(<ColumnMenu {...defaultProps} onChangeFormat={() => {}} />)
+
+      expect(screen.getByText("Format")).toBeInTheDocument()
+    })
+
+    test("does not render format option when onChangeFormat is undefined", () => {
+      render(<ColumnMenu {...defaultProps} onChangeFormat={undefined} />)
+
+      expect(screen.queryByText("Format")).not.toBeInTheDocument()
+    })
+  })
+
+  describe("autosize functionality", () => {
+    test("renders 'Autosize' when onAutosize is defined", () => {
+      render(<ColumnMenu {...defaultProps} />)
+
+      expect(screen.getByText("Autosize")).toBeInTheDocument()
+    })
+
+    test("does not render 'Autosize' when onAutosize is undefined", () => {
+      render(<ColumnMenu {...defaultProps} onAutosize={undefined} />)
+
+      expect(screen.queryByText("Autosize")).not.toBeInTheDocument()
+    })
+
+    test("calls onAutosize when clicking 'Autosize'", async () => {
+      render(<ColumnMenu {...defaultProps} />)
+
+      await userEvent.click(screen.getByText("Autosize"))
+      expect(defaultProps.onAutosize).toHaveBeenCalled()
       expect(defaultProps.onCloseMenu).toHaveBeenCalled()
     })
   })

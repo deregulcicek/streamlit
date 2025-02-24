@@ -53,11 +53,13 @@ import { useDebouncedCallback } from "~lib/hooks/useDebouncedCallback"
 import ColumnMenu from "./ColumnMenu"
 import EditingState, { getColumnName } from "./EditingState"
 import {
+  useColumnFormatting,
   useColumnLoader,
   useColumnPinning,
   useColumnReordering,
   useColumnSizer,
   useColumnSort,
+  useCustomEditors,
   useCustomRenderer,
   useCustomTheme,
   useDataEditor,
@@ -539,7 +541,7 @@ function DataFrame({
   )
 
   const { drawCell, customRenderers } = useCustomRenderer(columns)
-
+  const { provideEditor } = useCustomEditors()
   // Callback that can be used to configure the column menu for the columns
   const configureColumnMenu = useCallback(
     (column: GridColumn): GridColumn => {
@@ -614,6 +616,8 @@ function DataFrame({
     clearSelection,
     setColumnConfigMapping
   )
+
+  const { changeColumnFormat } = useColumnFormatting(setColumnConfigMapping)
 
   const { onColumnMoved } = useColumnReordering(
     columns,
@@ -947,6 +951,7 @@ function DataFrame({
                 : undefined,
             }),
           }}
+          provideEditor={provideEditor}
           // Apply custom rendering (e.g. for missing or required cells):
           drawCell={drawCell}
           // Add support for additional cells:
@@ -1059,6 +1064,7 @@ function DataFrame({
           <ColumnMenu
             top={showMenu.headerBounds.y + showMenu.headerBounds.height}
             left={showMenu.headerBounds.x + showMenu.headerBounds.width}
+            columnKind={originalColumns[showMenu.columnIdx].kind}
             onCloseMenu={() => setShowMenu(undefined)}
             onSortColumn={
               isSortingEnabled
@@ -1077,6 +1083,27 @@ function DataFrame({
             onPinColumn={() => {
               pinColumn(originalColumns[showMenu.columnIdx].id)
             }}
+            onChangeFormat={(format: string) => {
+              changeColumnFormat(
+                originalColumns[showMenu.columnIdx].id,
+                format
+              )
+              // After changing the format, remeasure the column to ensure that
+              // the column width is updated to the new format.
+              // We need to apply a short timeout here to ensure that
+              // the column format already has been fully applied to all cells
+              // before we remeasure the column.
+              setTimeout(() => {
+                dataEditorRef.current?.remeasureColumns(
+                  CompactSelection.fromSingleSelection(showMenu.columnIdx)
+                )
+              }, 100)
+            }}
+            onAutosize={() => {
+              dataEditorRef.current?.remeasureColumns(
+                CompactSelection.fromSingleSelection(showMenu.columnIdx)
+              )
+            }}
           />,
           // We put the column menu into the portal element which is also
           // used for the cell overlays. This allows us to correctly position
@@ -1090,4 +1117,5 @@ function DataFrame({
   )
 }
 
-export default memo(withFullScreenWrapper(DataFrame))
+const DataFrameWithFullscreen = withFullScreenWrapper(DataFrame)
+export default memo(DataFrameWithFullscreen)
