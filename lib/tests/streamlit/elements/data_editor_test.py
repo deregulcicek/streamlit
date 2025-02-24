@@ -350,6 +350,8 @@ class DataEditorTest(DeltaGeneratorTestCase):
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         self.assertEqual(proto.width, 300)
         self.assertEqual(proto.height, 400)
+        # Uses false as default for use_container_width in this case
+        self.assertEqual(proto.use_container_width, False)
 
     def test_num_rows_fixed(self):
         """Test that it can be called with num_rows fixed."""

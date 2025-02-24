@@ -77,6 +77,15 @@ class ArrowDataFrameProtoTest(DeltaGeneratorTestCase):
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         pd.testing.assert_frame_equal(convert_arrow_bytes_to_pandas_df(proto.data), df)
 
+    def test_dataframe_width_parameter(self):
+        """Test that it can be called with width and uses use_container_width=False
+        as default."""
+        st.dataframe(pd.DataFrame(), width=100)
+
+        proto = self.get_delta_from_queue().new_element.arrow_data_frame
+        self.assertEqual(proto.width, 100)
+        self.assertEqual(proto.use_container_width, False)
+
     def test_column_order_parameter(self):
         """Test that it can be called with column_order."""
         st.dataframe(pd.DataFrame(), column_order=["a", "b"])

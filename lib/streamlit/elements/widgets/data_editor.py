@@ -543,7 +543,7 @@ class DataEditorMixin:
         *,
         width: int | None = None,
         height: int | None = None,
-        use_container_width: bool = True,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -564,7 +564,7 @@ class DataEditorMixin:
         *,
         width: int | None = None,
         height: int | None = None,
-        use_container_width: bool = True,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -585,7 +585,7 @@ class DataEditorMixin:
         *,
         width: int | None = None,
         height: int | None = None,
-        use_container_width: bool = True,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -910,6 +910,11 @@ class DataEditorMixin:
 
         proto = ArrowProto()
         proto.id = element_id
+
+        if use_container_width is None:
+            # If use_container_width was not explicitly set by the user, we set
+            # it to True if width was not set explicitly, and False otherwise.
+            use_container_width = True if width is None else False
 
         proto.use_container_width = use_container_width
 
