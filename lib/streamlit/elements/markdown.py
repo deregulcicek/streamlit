@@ -38,7 +38,7 @@ class MarkdownMixin:
         *,  # keyword-only arguments:
         help: str | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         r"""Display string formatted as Markdown.
 
@@ -109,7 +109,7 @@ class MarkdownMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Examples
         --------
@@ -156,7 +156,7 @@ class MarkdownMixin:
         language: str | None = "python",
         *,  # keyword-only arguments:
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display a code block with optional syntax highlighting.
 
@@ -181,7 +181,7 @@ class MarkdownMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Example
         -------
@@ -209,7 +209,7 @@ class MarkdownMixin:
         *,  # keyword-only arguments:
         help: str | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display text in small font.
 
@@ -255,7 +255,7 @@ class MarkdownMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Examples
         --------
@@ -284,7 +284,7 @@ class MarkdownMixin:
         *,  # keyword-only arguments:
         help: str | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         # This docstring needs to be "raw" because of the backslashes in the
         # example below.
@@ -314,7 +314,7 @@ class MarkdownMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Example
         -------
@@ -347,7 +347,7 @@ class MarkdownMixin:
         self,
         *,  # keyword-only arguments:
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display a horizontal rule.
 
@@ -363,7 +363,7 @@ class MarkdownMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Example
         -------

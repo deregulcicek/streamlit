@@ -30,7 +30,7 @@ class EmptyMixin:
         self,
         *,  # keyword-only arguments
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Insert a single-element container.
 
@@ -108,7 +108,7 @@ class EmptyMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
         """
         empty_proto = EmptyProto()
         empty_proto.width = str(width)

@@ -93,7 +93,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> T: ...
 
     @overload
@@ -113,7 +113,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> T | None: ...
 
     @gather_metrics("selectbox")
@@ -133,7 +133,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> T | None:
         r"""Display a select widget.
 
@@ -221,7 +221,7 @@ class SelectboxMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Returns
         -------
@@ -296,7 +296,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         ctx: ScriptRunContext | None = None,
     ) -> T | None:
         key = to_key(key)

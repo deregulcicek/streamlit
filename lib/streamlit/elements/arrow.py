@@ -235,7 +235,7 @@ class ArrowMixin:
         key: Key | None = None,
         on_select: Literal["ignore"] = "ignore",
         selection_mode: SelectionMode | Iterable[SelectionMode] = "multi-row",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator: ...
 
     @overload
@@ -252,7 +252,7 @@ class ArrowMixin:
         key: Key | None = None,
         on_select: Literal["rerun"] | WidgetCallback,
         selection_mode: SelectionMode | Iterable[SelectionMode] = "multi-row",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DataframeState: ...
 
     @gather_metrics("dataframe")
@@ -269,7 +269,7 @@ class ArrowMixin:
         key: Key | None = None,
         on_select: Literal["ignore", "rerun"] | WidgetCallback = "ignore",
         selection_mode: SelectionMode | Iterable[SelectionMode] = "multi-row",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator | DataframeState:
         """Display a dataframe as an interactive table.
 
@@ -419,7 +419,7 @@ class ArrowMixin:
             When column selections are enabled, column sorting is disabled.
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Returns
         -------

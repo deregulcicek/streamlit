@@ -86,7 +86,7 @@ class TextWidgetsMixin:
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -108,7 +108,7 @@ class TextWidgetsMixin:
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -130,7 +130,7 @@ class TextWidgetsMixin:
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -226,7 +226,7 @@ class TextWidgetsMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Returns
         -------
@@ -277,7 +277,7 @@ class TextWidgetsMixin:
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -394,7 +394,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> str:
         pass
 
@@ -415,7 +415,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> str | None:
         pass
 
@@ -436,7 +436,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> str | None:
         r"""Display a multi-line text input widget.
 
@@ -520,7 +520,7 @@ class TextWidgetsMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Returns
         -------
@@ -589,7 +589,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
         key = to_key(key)

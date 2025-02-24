@@ -92,7 +92,7 @@ class ButtonMixin:
         help: str | None = None,
         on_click: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -279,7 +279,7 @@ class ButtonMixin:
         disabled: bool = False,
         use_container_width: bool = False,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> bool:
         r"""Display a download button widget.
 
@@ -398,7 +398,7 @@ class ButtonMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Returns
         -------
@@ -497,7 +497,7 @@ class ButtonMixin:
         disabled: bool = False,
         use_container_width: bool = False,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         r"""Display a link button element.
 
@@ -582,7 +582,7 @@ class ButtonMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Example
         -------
@@ -625,7 +625,7 @@ class ButtonMixin:
         disabled: bool = False,
         use_container_width: bool | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         r"""Display a link to another page in a multipage app or to an external page.
 
@@ -702,7 +702,7 @@ class ButtonMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Example
         -------
@@ -764,7 +764,7 @@ class ButtonMixin:
         use_container_width: bool = False,
         ctx: ScriptRunContext | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> bool:
         key = to_key(key)
 
@@ -842,7 +842,7 @@ class ButtonMixin:
         disabled: bool = False,
         use_container_width: bool = False,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         link_button_proto = LinkButtonProto()
         link_button_proto.label = label
@@ -872,7 +872,7 @@ class ButtonMixin:
         disabled: bool = False,
         use_container_width: bool | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         page_link_proto = PageLinkProto()
 
@@ -959,7 +959,7 @@ class ButtonMixin:
         is_form_submitter: bool,
         on_click: WidgetCallback | None = None,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
         justify_right: bool = False,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,

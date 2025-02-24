@@ -68,7 +68,7 @@ class LayoutsMixin:
         | None = None,
         wrap: bool | None = False,
         width: Literal["stretch", "content"] | int = "content",
-        scale: int | None = None,
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Insert a multi-element container.
 
@@ -112,7 +112,7 @@ class LayoutsMixin:
             that specific width in pixels. Defaults to "content".
 
         scale : int or None
-            An optional integer scale factor to apply to the element. If None, no scaling is applied.
+            An optional integer scale factor to apply to the element.
 
         Examples
         --------
