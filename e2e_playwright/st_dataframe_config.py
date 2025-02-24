@@ -757,4 +757,5 @@ st.dataframe(
         "incompatible values": st.column_config.JsonColumn(width="medium"),
     },
     hide_index=True,
+    use_container_width=False,
 )
