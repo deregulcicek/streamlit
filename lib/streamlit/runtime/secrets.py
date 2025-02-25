@@ -198,7 +198,6 @@ class Secrets(Mapping[str, Any]):
         self._secrets: Mapping[str, Any] | None = None
         self._lock = threading.RLock()
         self._file_watchers_installed = False
-        self._suppress_print_error_on_exception = False
 
         self.file_change_listener = Signal(
             doc="Emitted when a `secrets.toml` file has been changed."
@@ -213,34 +212,13 @@ class Secrets(Mapping[str, Any]):
 
         Thread-safe.
         """
-        prev_suppress_print_error_on_exception = self._suppress_print_error_on_exception
         try:
-            # temporarily suppress printing errors on exceptions, we don't want to print errors
-            # in this method since it only loads secrets if they exist
-
-            self._suppress_print_error_on_exception = True
             self._parse()
 
             return True
         except FileNotFoundError:
             # No secrets.toml files exist. That's fine.
             return False
-        finally:
-            self._suppress_print_error_on_exception = (
-                prev_suppress_print_error_on_exception
-            )
-
-    def set_suppress_print_error_on_exception(
-        self, suppress_print_error_on_exception: bool
-    ) -> None:
-        """Set whether exceptions should be printed when accessing secrets.
-        For internal use, may change in future releases without notice."""
-        self._suppress_print_error_on_exception = suppress_print_error_on_exception
-
-    def _print_exception_if_not_suppressed(self, error_msg: str) -> None:
-        """Print the given error message if exceptions are not suppressed."""
-        if not self._suppress_print_error_on_exception:
-            st.error(str(error_msg))
 
     def _reset(self) -> None:
         """Clear the secrets dictionary and remove any secrets that were
@@ -275,13 +253,11 @@ class Secrets(Mapping[str, Any]):
 
             secrets.update(toml.loads(secrets_file_str))
         except (TypeError, toml.TomlDecodeError) as ex:
-            error_msg = (
+            raise TypeError(
                 secret_error_messages_singleton.get_error_parsing_file_at_path_message(
                     path, ex
                 )
             )
-            self._print_exception_if_not_suppressed(error_msg)
-            raise
 
         return secrets, found_secrets_file
 
@@ -385,7 +361,6 @@ class Secrets(Mapping[str, Any]):
                         file_paths
                     )
                 )
-                self._print_exception_if_not_suppressed(error_msg)
                 raise FileNotFoundError(error_msg)
 
             for k, v in secrets.items():
