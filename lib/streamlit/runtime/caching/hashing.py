@@ -429,7 +429,8 @@ class _CacheFuncHasher:
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(
-                    "Pandas Series hash failed. Falling back to pickling the object."
+                    "Pandas Series hash failed. Falling back to pickling the object.",
+                    exc_info=True,
                 )
 
                 # Use pickle if pandas cannot hash the object for example if
@@ -454,7 +455,8 @@ class _CacheFuncHasher:
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(
-                    "Pandas DataFrame hash failed. Falling back to pickling the object."
+                    "Pandas DataFrame hash failed. Falling back to pickling the object.",
+                    exc_info=True,
                 )
 
                 # Use pickle if pandas cannot hash the object for example if
@@ -476,7 +478,8 @@ class _CacheFuncHasher:
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(
-                    "Polars Series hash failed. Falling back to pickling the object."
+                    "Polars Series hash failed. Falling back to pickling the object.",
+                    exc_info=True,
                 )
 
                 # Use pickle if polars cannot hash the object for example if
@@ -503,7 +506,8 @@ class _CacheFuncHasher:
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(
-                    "Polars DataFrame hash failed. Falling back to pickling the object."
+                    "Polars DataFrame hash failed. Falling back to pickling the object.",
+                    exc_info=True,
                 )
 
                 # Use pickle if polars cannot hash the object for example if
