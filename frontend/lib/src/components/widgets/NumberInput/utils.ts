@@ -22,7 +22,7 @@ import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
 import { Props } from "./NumberInput"
 
-const log = getLogger("NumberInput")
+const LOG = getLogger("NumberInput")
 
 /**
  * Return a string property from an element. If the string is
@@ -74,7 +74,7 @@ export const formatValue = ({
   try {
     return sprintf(formatString, value)
   } catch (e) {
-    log.warn(`Error in sprintf(${formatString}, ${value}): ${e}`)
+    LOG.warn(`Error in sprintf(${formatString}, ${value}): ${e}`)
     return String(value)
   }
 }
