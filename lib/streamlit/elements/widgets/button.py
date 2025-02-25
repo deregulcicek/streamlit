@@ -125,9 +125,14 @@ class ButtonMixin:
             An optional string or integer to use as the unique key for the widget.
             If this is omitted, a key will be generated for the widget
             based on its content. No two widgets may have the same key.
-        help : str
-            An optional tooltip that gets displayed when the button is
-            hovered over.
+
+        help : str or None
+            A tooltip that gets displayed when the button is hovered over. If
+            this is ``None`` (default), no tooltip is displayed.
+
+            The tooltip can optionally contain GitHub-flavored Markdown,
+            including the Markdown directives described in the ``body``
+            parameter of ``st.markdown``.
 
         on_click : callable
             An optional callback invoked when this button is clicked.
@@ -259,7 +264,7 @@ class ButtonMixin:
         mime: str | None = None,
         key: Key | None = None,
         help: str | None = None,
-        on_click: WidgetCallback | None = None,
+        on_click: WidgetCallback | Literal["rerun", "ignore"] | None = "rerun",
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -321,9 +326,13 @@ class ButtonMixin:
             If this is omitted, a key will be generated for the widget
             based on its content. No two widgets may have the same key.
 
-        help : str
-            An optional tooltip that gets displayed when the button is
-            hovered over.
+        help : str or None
+            A tooltip that gets displayed when the button is hovered over. If
+            this is ``None`` (default), no tooltip is displayed.
+
+            The tooltip can optionally contain GitHub-flavored Markdown,
+            including the Markdown directives described in the ``body``
+            parameter of ``st.markdown``.
 
         on_click : callable
             An optional callback invoked when this button is clicked.
@@ -498,9 +507,13 @@ class ButtonMixin:
         url : str
             The url to be opened on user click
 
-        help : str
-            An optional tooltip that gets displayed when the button is
-            hovered over.
+        help : str or None
+            A tooltip that gets displayed when the button is hovered over. If
+            this is ``None`` (default), no tooltip is displayed.
+
+            The tooltip can optionally contain GitHub-flavored Markdown,
+            including the Markdown directives described in the ``body``
+            parameter of ``st.markdown``.
 
         type : "primary", "secondary", or "tertiary"
             An optional string that specifies the button type. This can be one
@@ -634,9 +647,13 @@ class ButtonMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
 
-        help : str
-            An optional tooltip that gets displayed when the link is
-            hovered over.
+        help : str or None
+            A tooltip that gets displayed when the link is hovered over. If
+            this is ``None`` (default), no tooltip is displayed.
+
+            The tooltip can optionally contain GitHub-flavored Markdown,
+            including the Markdown directives described in the ``body``
+            parameter of ``st.markdown``.
 
         disabled : bool
             An optional boolean that disables the page link if set to ``True``.
@@ -695,7 +712,7 @@ class ButtonMixin:
         mime: str | None = None,
         key: Key | None = None,
         help: str | None = None,
-        on_click: WidgetCallback | None = None,
+        on_click: WidgetCallback | Literal["rerun", "ignore"] | None = "rerun",
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         *,  # keyword-only arguments:
@@ -707,10 +724,15 @@ class ButtonMixin:
     ) -> bool:
         key = to_key(key)
 
+        if on_click == "ignore" or on_click == "rerun":
+            on_click_callback = None
+        else:
+            on_click_callback = on_click
+
         check_widget_policies(
             self.dg,
             key,
-            on_click,
+            on_click_callback,
             default_value=None,
             writes_allowed=False,
         )
@@ -751,11 +773,16 @@ class ButtonMixin:
         if icon is not None:
             download_button_proto.icon = validate_icon_or_emoji(icon)
 
+        if on_click == "ignore":
+            download_button_proto.ignore_rerun = True
+        else:
+            download_button_proto.ignore_rerun = False
+
         serde = ButtonSerde()
 
         button_state = register_widget(
             download_button_proto.id,
-            on_change_handler=on_click,
+            on_change_handler=on_click_callback,
             args=args,
             kwargs=kwargs,
             deserializer=serde.deserialize,

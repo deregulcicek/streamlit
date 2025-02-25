@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from "react"
+import React, { memo, useEffect, useRef } from "react"
 
 import Clipboard from "clipboard"
 import { Copy as CopyIcon } from "react-feather"
 import { useTheme } from "@emotion/react"
 
-import { EmotionTheme } from "~lib/theme"
+import { convertRemToPx, EmotionTheme } from "~lib/theme"
 
 import { StyledCopyButton } from "./styled-components"
 
@@ -62,9 +62,10 @@ const CopyButton: React.FC<Props> = ({ text }) => {
         right: 0,
       }}
     >
-      <CopyIcon size={theme.iconSizes.base} />
+      {/* Convert size to px because using rem works but logs a console error (at least on webkit) */}
+      <CopyIcon size={convertRemToPx(theme.iconSizes.base)} />
     </StyledCopyButton>
   )
 }
 
-export default CopyButton
+export default memo(CopyButton)

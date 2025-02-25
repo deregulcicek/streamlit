@@ -36,7 +36,6 @@ import { useVegaEmbed } from "./useVegaEmbed"
 
 export interface Props {
   element: VegaLiteChartElement
-  width: number
   widgetMgr: WidgetStateManager
   fragmentId?: string
   disableFullscreenMode?: boolean
@@ -120,4 +119,6 @@ const ArrowVegaLiteChart: FC<Props> = ({
   )
 }
 
-export default withFullScreenWrapper(ArrowVegaLiteChart)
+const ArrowVegaLiteChartWithFullScreen =
+  withFullScreenWrapper(ArrowVegaLiteChart)
+export default ArrowVegaLiteChartWithFullScreen

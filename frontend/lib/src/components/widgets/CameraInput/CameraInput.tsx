@@ -48,6 +48,7 @@ import {
   UploadFileInfo,
   UploadingStatus,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import CameraInputButton from "./CameraInputButton"
 import { FacingMode } from "./SwitchFacingModeButton"
@@ -104,7 +105,7 @@ export interface State {
 }
 
 const MIN_SHUTTER_EFFECT_TIME_MS = 150
-const log = getLogger("CameraInput")
+const LOG = getLogger("CameraInput")
 
 class CameraInput extends React.PureComponent<Props, State> {
   private localFileIdCounter = 1
@@ -178,7 +179,7 @@ class CameraInput extends React.PureComponent<Props, State> {
         })
       })
       .catch(err => {
-        log.error(err)
+        LOG.error(err)
       })
   }
 
@@ -593,4 +594,9 @@ function urltoFile(url: string, filename: string): Promise<File> {
     .then(buf => new File([buf], filename, { type: "image/jpeg" }))
 }
 
-export default CameraInput
+/**
+ * This component should be refactored to remove the width calculation from JS
+ * entirely and instead utilize width: 100%; height: 100%; aspect-ratio: 16 / 9;
+ * on the StyledBox CSS instead.
+ */
+export default withCalculatedWidth(CameraInput)

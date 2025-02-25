@@ -18,20 +18,19 @@ import pick from "lodash/pick"
 import { getLogger } from "loglevel"
 import { v4 as uuidv4 } from "uuid"
 
+import { IS_DEV_ENV } from "@streamlit/connection"
 import {
   DeployedAppMetadata,
-  getCookie,
   IGuestToHostMessage,
-  IS_DEV_ENV,
-  localStorageAvailable,
   SessionInfo,
   setCookie,
 } from "@streamlit/lib"
 import { IMetricsEvent, MetricsEvent } from "@streamlit/protobuf"
+import { getCookie, localStorageAvailable } from "@streamlit/utils"
 
 // Default metrics config fetched when none provided by host config endpoint
 export const DEFAULT_METRICS_CONFIG = "https://data.streamlit.io/metrics.json"
-const log = getLogger("MetricsManager")
+const LOG = getLogger("MetricsManager")
 
 type EventName = "viewReport" | "updateReport" | "pageProfile" | "menuClick"
 type Event = [EventName, Partial<IMetricsEvent>]
@@ -100,7 +99,7 @@ export class MetricsManager {
 
       // If metricsUrl still undefined, deactivate metrics
       if (!this.metricsUrl) {
-        log.error("Undefined metrics config - deactivating metrics tracking.")
+        LOG.error("Undefined metrics config - deactivating metrics tracking.")
         this.actuallySendMetrics = false
       }
     }
@@ -109,7 +108,7 @@ export class MetricsManager {
       this.sendPendingEvents()
     }
 
-    log.info("Gather usage stats: ", this.actuallySendMetrics)
+    LOG.info("Gather usage stats: ", this.actuallySendMetrics)
     this.initialized = true
   }
 
@@ -168,7 +167,7 @@ export class MetricsManager {
 
       if (!response.ok) {
         this.metricsUrl = undefined
-        log.error("Failed to fetch metrics config: ", response.status)
+        LOG.error("Failed to fetch metrics config: ", response.status)
       } else {
         const data = await response.json()
         this.metricsUrl = data.url ?? undefined
@@ -177,7 +176,7 @@ export class MetricsManager {
         }
       }
     } catch (err) {
-      log.error("Failed to fetch metrics config:", err)
+      LOG.error("Failed to fetch metrics config:", err)
     }
   }
 
@@ -189,7 +188,7 @@ export class MetricsManager {
 
     // Don't actually track events when in dev mode, just print them instead.
     if (IS_DEV_ENV) {
-      log.info("[Dev mode] Not tracking stat datapoint: ", evName, data)
+      LOG.info("[Dev mode] Not tracking stat datapoint: ", evName, data)
     } else if (this.metricsUrl === "postMessage") {
       this.postMessageEvent(evName, data)
     } else {

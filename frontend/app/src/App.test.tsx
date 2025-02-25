@@ -35,7 +35,6 @@ import {
   HostCommunicationManager,
   lightTheme,
   LocalStore,
-  mockEndpoints,
   mockSessionInfoProps,
   mockWindowLocation,
   RootStyleProvider,
@@ -67,15 +66,18 @@ import {
   TextInput,
 } from "@streamlit/protobuf"
 import { MetricsManager } from "@streamlit/app/src/MetricsManager"
-import { ConnectionManager } from "@streamlit/app/src/connection/ConnectionManager"
-import { ConnectionState } from "@streamlit/app/src/connection/ConnectionState"
+import {
+  ConnectionManager,
+  ConnectionState,
+  mockEndpoints,
+} from "@streamlit/connection"
 import {
   getMenuStructure,
   openMenu,
 } from "@streamlit/app/src/components/MainMenu/mainMenuTestHelpers"
 
 import { showDevelopmentOptions } from "./showDevelopmentOptions"
-import { App, log, Props } from "./App"
+import { App, LOG, Props } from "./App"
 
 vi.mock("~lib/baseconsts", async () => {
   return {
@@ -83,10 +85,8 @@ vi.mock("~lib/baseconsts", async () => {
   }
 })
 
-vi.mock("@streamlit/app/src/connection/ConnectionManager", async () => {
-  const actualModule = await vi.importActual(
-    "@streamlit/app/src/connection/ConnectionManager"
-  )
+vi.mock("@streamlit/connection", async () => {
+  const actualModule = await vi.importActual("@streamlit/connection")
 
   const MockedClass = vi.fn().mockImplementation(props => {
     return {
@@ -105,10 +105,14 @@ vi.mock("@streamlit/app/src/connection/ConnectionManager", async () => {
       },
     }
   })
+  const MockedEndpoints = vi.fn().mockImplementation(() => {
+    return mockEndpoints()
+  })
 
   return {
     ...actualModule,
     ConnectionManager: MockedClass,
+    DefaultStreamlitEndpoints: MockedEndpoints,
   }
 })
 vi.mock("~lib/SessionInfo", async () => {
@@ -147,24 +151,6 @@ vi.mock("~lib/hostComm/HostCommunicationManager", async () => {
     default: MockedClass,
   }
 })
-
-vi.mock(
-  "@streamlit/app/src/connection/DefaultStreamlitEndpoints",
-  async () => {
-    const actualModule = await vi.importActual(
-      "@streamlit/app/src/connection/DefaultStreamlitEndpoints"
-    )
-
-    const MockedClass = vi.fn().mockImplementation(() => {
-      return mockEndpoints()
-    })
-
-    return {
-      ...actualModule,
-      DefaultStreamlitEndpoints: MockedClass,
-    }
-  }
-)
 
 vi.mock("~lib/WidgetStateManager", async () => {
   const actualModule = await vi.importActual<any>("~lib/WidgetStateManager")
@@ -2222,6 +2208,56 @@ describe("App", () => {
         expect(screen.queryByTestId("stLogo")).not.toBeInTheDocument()
       })
     })
+
+    it("will not clear logo as stale on fragment re-run", async () => {
+      renderApp(getProps())
+
+      // Initial script run, creates logo
+      sendForwardMessage("newSession", NEW_SESSION_JSON)
+      sendForwardMessage(
+        "logo",
+        {
+          image:
+            "https://global.discourse-cdn.com/business7/uploads/streamlit/original/2X/8/8cb5b6c0e1fe4e4ebfd30b769204c0d30c332fec.png",
+        },
+        {
+          activeScriptHash: "page_script_hash",
+        }
+      )
+      sendForwardMessage(
+        "scriptFinished",
+        ForwardMsg.ScriptFinishedStatus.FINISHED_SUCCESSFULLY
+      )
+      await waitFor(() => {
+        expect(screen.getByTestId("stLogo")).toBeInTheDocument()
+      })
+
+      // Fragment run - logo is not sent, but should persist (triggers scriptRunId to be updated)
+      sendForwardMessage("newSession", {
+        ...NEW_SESSION_JSON,
+        fragmentIdsThisRun: ["myFragmentId"],
+      })
+      sendForwardMessage(
+        "scriptFinished",
+        ForwardMsg.ScriptFinishedStatus.FINISHED_FRAGMENT_RUN_SUCCESSFULLY
+      )
+      await waitFor(() => {
+        expect(screen.getByTestId("stLogo")).toBeInTheDocument()
+      })
+
+      // Full re-run - logo is not sent, should be removed as stale (scriptRunId is different)
+      sendForwardMessage("newSession", {
+        ...NEW_SESSION_JSON,
+        scriptRunId: "different_script_run_id",
+      })
+      sendForwardMessage(
+        "scriptFinished",
+        ForwardMsg.ScriptFinishedStatus.FINISHED_SUCCESSFULLY
+      )
+      await waitFor(() => {
+        expect(screen.queryByTestId("stLogo")).not.toBeInTheDocument()
+      })
+    })
   })
 
   //   * handlePageNotFound has branching error messages depending on pageName
@@ -2526,7 +2562,12 @@ describe("App", () => {
   })
 
   describe("App.handleConnectionStateChanged", () => {
-    it("Sends WEBSOCKET_CONNECTED and WEBSOCKET_DISCONNECTED messages", () => {
+    beforeEach(() => {
+      // Clean all mocks
+      vi.clearAllMocks()
+    })
+
+    it("sends WEBSOCKET_CONNECTED and WEBSOCKET_DISCONNECTED messages", () => {
       renderApp(getProps())
 
       const connectionManager = getMockConnectionManager(false)
@@ -2559,7 +2600,7 @@ describe("App", () => {
       })
     })
 
-    it("Correctly sets the data-test-connection-state attribute", () => {
+    it("correctly sets the data-test-connection-state attribute", () => {
       renderApp(getProps())
 
       const connectionManager = getMockConnectionManager(false)
@@ -2592,7 +2633,7 @@ describe("App", () => {
       )
     })
 
-    it("Sets attemptingToReconnect to false if DISCONNECTED_FOREVER", () => {
+    it("sets attemptingToReconnect to false if DISCONNECTED_FOREVER", () => {
       renderApp(getProps())
 
       const connectionManager = getMockConnectionManager(false)
@@ -2620,6 +2661,157 @@ describe("App", () => {
         type: "WEBSOCKET_DISCONNECTED",
         attemptingToReconnect: false,
       })
+    })
+
+    it("requests script rerun if this is the first time we've connected", () => {
+      renderApp(getProps())
+      const widgetStateManager =
+        getStoredValue<WidgetStateManager>(WidgetStateManager)
+      const sendUpdateWidgetsMessageSpy = vi.spyOn(
+        widgetStateManager,
+        "sendUpdateWidgetsMessage"
+      )
+
+      sendForwardMessage("newSession", NEW_SESSION_JSON)
+
+      // Confirm previous session info does not exist
+      const sessionInfo = getStoredValue<SessionInfo>(SessionInfo)
+      expect(sessionInfo.last).toBeFalsy()
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+      expect(sendUpdateWidgetsMessageSpy).toHaveBeenCalled()
+    })
+
+    it("requests script rerun if script run was interrupted", () => {
+      renderApp(getProps())
+      const widgetStateManager =
+        getStoredValue<WidgetStateManager>(WidgetStateManager)
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+
+      sendForwardMessage("newSession", NEW_SESSION_JSON)
+
+      // trigger a state transition to RUNNING
+      getMockConnectionManager(true)
+      sendForwardMessage("sessionStatusChanged", {
+        runOnSave: false,
+        scriptIsRunning: true,
+      })
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.DISCONNECTED_FOREVER
+        )
+      })
+
+      // Ensure sessionInfo.last exists so check based on lastRunWasInterrupted
+      const sessionInfo = getStoredValue<SessionInfo>(SessionInfo)
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      expect(sessionInfo.last).toBeTruthy()
+
+      // Initialize spy here to verify triggered from handleConnectionStateChanged
+      const sendUpdateWidgetsMessageSpy = vi.spyOn(
+        widgetStateManager,
+        "sendUpdateWidgetsMessage"
+      )
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+      expect(sendUpdateWidgetsMessageSpy).toHaveBeenCalled()
+    })
+
+    it("requests script rerun if wasRerunRequested is true", () => {
+      renderApp(getProps())
+      const widgetStateManager =
+        getStoredValue<WidgetStateManager>(WidgetStateManager)
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+
+      sendForwardMessage("newSession", NEW_SESSION_JSON)
+
+      // trigger a state transition to RERUN_REQUESTED
+      getMockConnectionManager(true)
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.keyDown(document.body, {
+        key: "r",
+        which: 82,
+      })
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.DISCONNECTED_FOREVER
+        )
+      })
+
+      // Ensure sessionInfo.last exists
+      const sessionInfo = getStoredValue<SessionInfo>(SessionInfo)
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      expect(sessionInfo.last).toBeTruthy()
+
+      // Initialize spy here to verify triggered from handleConnectionStateChanged
+      const sendUpdateWidgetsMessageSpy = vi.spyOn(
+        widgetStateManager,
+        "sendUpdateWidgetsMessage"
+      )
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+      expect(sendUpdateWidgetsMessageSpy).toHaveBeenCalled()
+    })
+
+    it("does not request script rerun by default for subsequent run", () => {
+      renderApp(getProps())
+      const widgetStateManager =
+        getStoredValue<WidgetStateManager>(WidgetStateManager)
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+
+      sendForwardMessage("newSession", NEW_SESSION_JSON)
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.DISCONNECTED_FOREVER
+        )
+      })
+      // Initialize spy here to verify triggered from handleConnectionStateChanged
+      const sendUpdateWidgetsMessageSpy = vi.spyOn(
+        widgetStateManager,
+        "sendUpdateWidgetsMessage"
+      )
+      // Somehow the spy still registers one previous call to the function.
+      // To work around this, we clear the spy
+      sendUpdateWidgetsMessageSpy.mockClear()
+
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+      expect(sendUpdateWidgetsMessageSpy).not.toHaveBeenCalled()
     })
   })
 
@@ -3232,7 +3424,7 @@ describe("App", () => {
     it("does not relay custom parent messages by default", () => {
       const hostCommunicationMgr = prepareHostCommunicationManager()
 
-      const logErrorSpy = vi.spyOn(log, "error").mockImplementation(() => {})
+      const logErrorSpy = vi.spyOn(LOG, "error").mockImplementation(() => {})
 
       sendForwardMessage("parentMessage", {
         message: "random string",
@@ -3264,23 +3456,45 @@ describe("App", () => {
       })
     })
 
-    it("properly handles TERMINATE_WEBSOCKET_CONNECTION and RESTART_WEBSOCKET_CONNECTION messages", () => {
+    it("properly handles TERMINATE_WEBSOCKET_CONNECTION & RESTART_WEBSOCKET_CONNECTION messages", () => {
       prepareHostCommunicationManager()
-
-      const originalConnectionManager = getMockConnectionManager()
+      const connectionMgr = getMockConnectionManager()
 
       fireWindowPostMessage({
         type: "TERMINATE_WEBSOCKET_CONNECTION",
       })
 
-      expect(originalConnectionManager.disconnect).toHaveBeenCalled()
+      expect(connectionMgr.disconnect).toHaveBeenCalled()
 
       fireWindowPostMessage({
         type: "RESTART_WEBSOCKET_CONNECTION",
       })
 
       const newConnectionManager = getMockConnectionManager()
-      expect(newConnectionManager).not.toBe(originalConnectionManager)
+      expect(newConnectionManager).not.toBe(connectionMgr)
+
+      // Ensure sessionInfo.last exists so check based on scriptRunState (wasRerunRequested)
+      const sessionInfo = getStoredValue<SessionInfo>(SessionInfo)
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      expect(sessionInfo.current).toBeTruthy()
+      sessionInfo.setCurrent(mockSessionInfoProps())
+      expect(sessionInfo.last).toBeTruthy()
+
+      // Set up spy to verify triggered from handleConnectionStateChanged
+      const sendUpdateWidgetsMessageSpy = vi.spyOn(
+        getStoredValue<WidgetStateManager>(WidgetStateManager),
+        "sendUpdateWidgetsMessage"
+      )
+
+      // Mock the connection manager's state change
+      act(() => {
+        getMockConnectionManagerProp("connectionStateChanged")(
+          ConnectionState.CONNECTED
+        )
+      })
+
+      // Ensure rerun back message triggered
+      expect(sendUpdateWidgetsMessageSpy).toHaveBeenCalled()
     })
   })
 })

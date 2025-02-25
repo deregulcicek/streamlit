@@ -20,7 +20,7 @@ import datetime
 import json
 import unittest
 from decimal import Decimal
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -52,6 +52,9 @@ from streamlit.errors import StreamlitAPIException
 from streamlit.proto.Arrow_pb2 import Arrow as ArrowProto
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 from tests.streamlit.data_test_cases import SHARED_TEST_CASES, CaseMetadata
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 def _get_arrow_schema(df: pd.DataFrame) -> pa.Schema:
@@ -303,6 +306,29 @@ class DataEditorUtilTest(unittest.TestCase):
 
 
 class DataEditorTest(DeltaGeneratorTestCase):
+    def test_default_params(self):
+        """Test that it can be called with a dataframe."""
+        df = pd.DataFrame({"a": [1, 2, 3]})
+        st.data_editor(df)
+
+        proto = self.get_delta_from_queue().new_element.arrow_data_frame
+        pd.testing.assert_frame_equal(convert_arrow_bytes_to_pandas_df(proto.data), df)
+
+        self.assertEqual(proto.use_container_width, True)
+        self.assertEqual(proto.width, 0)
+        self.assertEqual(proto.height, 0)
+        self.assertEqual(proto.editing_mode, ArrowProto.EditingMode.FIXED)
+        self.assertEqual(proto.selection_mode, [])
+        self.assertEqual(proto.disabled, False)
+        self.assertEqual(proto.column_order, [])
+        self.assertEqual(proto.row_height, 0)
+        self.assertEqual(proto.form_id, "")
+        self.assertEqual(proto.columns, "{}")
+        # ID should be set
+        self.assertNotEqual(proto.id, "")
+        # Row height should not be set if not specified
+        self.assertEqual(proto.HasField("row_height"), False)
+
     def test_just_disabled_true(self):
         """Test that it can be called with disabled=True param."""
         st.data_editor(pd.DataFrame(), disabled=True)
@@ -324,6 +350,8 @@ class DataEditorTest(DeltaGeneratorTestCase):
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         self.assertEqual(proto.width, 300)
         self.assertEqual(proto.height, 400)
+        # Uses false as default for use_container_width in this case
+        self.assertEqual(proto.use_container_width, False)
 
     def test_num_rows_fixed(self):
         """Test that it can be called with num_rows fixed."""
@@ -346,12 +374,19 @@ class DataEditorTest(DeltaGeneratorTestCase):
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         self.assertEqual(proto.column_order, ["a", "b"])
 
-    def test_just_use_container_width(self):
-        """Test that it can be called with use_container_width."""
-        st.data_editor(pd.DataFrame(), use_container_width=True)
+    def test_row_height_parameter(self):
+        """Test that it can be called with row_height."""
+        st.data_editor(pd.DataFrame(), row_height=100)
 
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
-        self.assertEqual(proto.use_container_width, True)
+        self.assertEqual(proto.row_height, 100)
+
+    def test_just_use_container_width(self):
+        """Test that it can be called with use_container_width."""
+        st.data_editor(pd.DataFrame(), use_container_width=False)
+
+        proto = self.get_delta_from_queue().new_element.arrow_data_frame
+        self.assertEqual(proto.use_container_width, False)
 
     def test_disable_individual_columns(self):
         """Test that disable can be used to disable individual columns."""

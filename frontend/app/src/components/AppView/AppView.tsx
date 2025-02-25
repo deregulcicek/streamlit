@@ -16,6 +16,7 @@
 
 import React, { ReactElement } from "react"
 
+import { StreamlitEndpoints } from "@streamlit/connection"
 import {
   AppRoot,
   BlockNode,
@@ -26,12 +27,11 @@ import {
   LibContext,
   Profiler,
   ScriptRunState,
-  StreamlitEndpoints,
   VerticalBlock,
   WidgetStateManager,
 } from "@streamlit/lib"
 import { IAppPage, Logo } from "@streamlit/protobuf"
-import { ThemedSidebar } from "@streamlit/app/src/components/Sidebar"
+import ThemedSidebar from "@streamlit/app/src/components/Sidebar"
 import EventContainer from "@streamlit/app/src/components/EventContainer"
 import {
   StyledLogo,

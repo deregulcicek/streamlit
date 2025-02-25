@@ -33,11 +33,11 @@ df = pd.DataFrame(
 
 
 st.header("Hide index parameter:")
-st.dataframe(df, hide_index=True)
-st.dataframe(df, hide_index=False)
+st.dataframe(df, hide_index=True, use_container_width=False)
+st.dataframe(df, hide_index=False, use_container_width=False)
 
 st.header("Column order parameter:")
-st.dataframe(df, column_order=["col_4", "col_3", "col_0"])
+st.dataframe(df, column_order=["col_4", "col_3", "col_0"], use_container_width=False)
 
 st.header("Set column labels:")
 st.dataframe(
@@ -50,7 +50,11 @@ st.dataframe(
 )
 
 st.header("Hide columns:")
-st.dataframe(df, column_config={"col_1": None, "col_3": {"hidden": True}})
+st.dataframe(
+    df,
+    column_config={"col_1": None, "col_3": {"hidden": True}},
+    use_container_width=False,
+)
 
 st.header("Set column width:")
 st.dataframe(
@@ -60,6 +64,7 @@ st.dataframe(
         "col_1": st.column_config.Column(width="medium"),
         "col_4": {"width": "large"},
     },
+    use_container_width=False,
 )
 
 st.header("Set help tooltips:")
@@ -74,6 +79,7 @@ st.dataframe(
         "col_0": st.column_config.Column(help="This :red[is] a **tooltip** 🌟"),
         "_index": {"help": "Index tooltip!"},
     },
+    use_container_width=False,
 )
 
 
@@ -85,6 +91,7 @@ st.dataframe(
         }
     ),
     column_config={"col_0": st.column_config.Column(disabled=False, required=True)},
+    use_container_width=False,
 )
 
 
@@ -93,7 +100,7 @@ st.header("Text column:")
 st.dataframe(
     pd.DataFrame(
         {
-            "col_0": ["Hello World", "Lorem ipsum", "", None],
+            "col_0": ["Hello World", "{'foo': 'bar', 'baz': 123}", "", None],
             "col_1": [1, 2, 3, None],
         }
     ),
@@ -110,6 +117,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.TextColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Number column:")
@@ -136,6 +145,8 @@ st.dataframe(
             format="%.2f%%",
         ),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Checkbox column:")
@@ -157,6 +168,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.CheckboxColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Selectbox column:")
@@ -180,6 +193,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.SelectboxColumn(options=["a", "b", "c", "d"]),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Link column:")
@@ -229,6 +244,8 @@ st.dataframe(
             display_text="Open link",
         ),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Datetime column:")
@@ -274,6 +291,8 @@ st.dataframe(
         ),
         "col_2": st.column_config.DatetimeColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Date column:")
@@ -316,6 +335,8 @@ st.dataframe(
         "col_1": st.column_config.DateColumn(),
         "col_2": st.column_config.DateColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Time column:")
@@ -360,6 +381,8 @@ st.dataframe(
         ),
         "col_2": st.column_config.TimeColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Progress column:")
@@ -381,6 +404,8 @@ st.dataframe(
             format="$%f", min_value=0, max_value=1000
         ),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("List column:")
@@ -400,6 +425,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.ListColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Bar chart column:")
@@ -421,6 +448,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.BarChartColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 
@@ -443,6 +472,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.LineChartColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.header("Area chart column:")
@@ -464,6 +495,8 @@ st.dataframe(
         ),
         "col_1": st.column_config.AreaChartColumn(),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 
@@ -488,6 +521,8 @@ st.dataframe(
             help="This is a image column",
         ),
     },
+    use_container_width=False,
+    hide_index=True,
 )
 
 st.subheader("Long colum header")
@@ -515,6 +550,7 @@ st.dataframe(
             "K",
         ],
     ),
+    use_container_width=False,
 )
 
 st.subheader("Hierarchical headers")
@@ -534,7 +570,8 @@ st.dataframe(
             ],
             names=["first", "second", "third"],
         ),
-    )
+    ),
+    use_container_width=False,
 )
 
 df = pd.DataFrame(
@@ -553,4 +590,172 @@ st.dataframe(
     # Use reversed column order to test that pinned columns
     # use the column order as well.
     column_order=reversed(df.columns.tolist()),
+    use_container_width=False,
+)
+
+st.header("Configurable row height:")
+
+streamlit_logo = "data:image/svg+xml,%3Csvg width='301' height='165' viewBox='0 0 301 165' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M150.731 101.547L98.1387 73.7471L6.84674 25.4969C6.7634 25.4136 6.59674 25.4136 6.51341 25.4136C3.18007 23.8303 -0.236608 27.1636 1.0134 30.497L47.5302 149.139L47.5385 149.164C47.5885 149.281 47.6302 149.397 47.6802 149.514C49.5885 153.939 53.7552 156.672 58.2886 157.747C58.6719 157.831 58.9461 157.906 59.4064 157.998C59.8645 158.1 60.5052 158.239 61.0552 158.281C61.1469 158.289 61.2302 158.289 61.3219 158.297H61.3886C61.4552 158.306 61.5219 158.306 61.5886 158.314H61.6802C61.7386 158.322 61.8052 158.322 61.8636 158.322H61.9719C62.0386 158.331 62.1052 158.331 62.1719 158.331V158.331C121.084 164.754 180.519 164.754 239.431 158.331V158.331C240.139 158.331 240.831 158.297 241.497 158.231C241.714 158.206 241.922 158.181 242.131 158.156C242.156 158.147 242.189 158.147 242.214 158.139C242.356 158.122 242.497 158.097 242.639 158.072C242.847 158.047 243.056 158.006 243.264 157.964C243.681 157.872 243.87 157.806 244.436 157.611C245.001 157.417 245.94 157.077 246.527 156.794C247.115 156.511 247.522 156.239 248.014 155.931C248.622 155.547 249.201 155.155 249.788 154.715C250.041 154.521 250.214 154.397 250.397 154.222L250.297 154.164L150.731 101.547Z' fill='%23FF4B4B'/%3E%3Cpath d='M294.766 25.4981H294.683L203.357 73.7483L254.124 149.357L300.524 30.4981V30.3315C301.691 26.8314 298.108 23.6648 294.766 25.4981' fill='%237D353B'/%3E%3Cpath d='M155.598 2.55572C153.264 -0.852624 148.181 -0.852624 145.931 2.55572L98.1389 73.7477L150.731 101.548L250.398 154.222C251.024 153.609 251.526 153.012 252.056 152.381C252.806 151.456 253.506 150.465 254.123 149.356L203.356 73.7477L155.598 2.55572Z' fill='%23BD4043'/%3E%3C/svg%3E%0A"
+st.dataframe(
+    pd.DataFrame(
+        {
+            "col_0": [
+                "this is a very long sentence that does not contain any reasonable content.this is a very long sentence that does not contain any reasonable content.",
+                "Hello World",
+            ],
+            "col_1": [
+                streamlit_logo,
+                streamlit_logo,
+            ],
+        },
+    ),
+    column_config={
+        "col_0": st.column_config.TextColumn("Text", width="large"),
+        "col_1": st.column_config.ImageColumn("Logo", width="medium"),
+    },
+    row_height=100,
+    use_container_width=False,
+)
+
+st.header("NumberColumn Formatting:")
+
+st.dataframe(
+    pd.DataFrame(
+        {
+            "default": [0.0123123, -1234.567, 12, 0],
+            "percent": [0.0123123, -1234.567, 12, 0],
+            "compact": [0.0123123, -1234.567, 12, 0],
+            "scientific": [0.0123123, -1234.567, 12, 0],
+            "engineering": [0.0123123, -1234.567, 12, 0],
+            "plain": [0.0123123, -1234.567, 12, 0],
+            "dollar": [0.0123123, -1234.567, 12, 0],
+            "euro": [0.0123123, -1234.567, 12, 0],
+            "localized": [0.0123123, -1234.567, 12, 0],
+            "accounting": [0.0123123, -1234.567, 12, 0],
+            "custom format": [0.0123123, -1234.567, 12, 0],
+        }
+    ),
+    column_config={
+        "percent": st.column_config.NumberColumn(format="percent"),
+        "compact": st.column_config.NumberColumn(format="compact"),
+        "scientific": st.column_config.NumberColumn(format="scientific"),
+        "engineering": st.column_config.NumberColumn(format="engineering"),
+        "plain": st.column_config.NumberColumn(format="plain"),
+        "dollar": st.column_config.NumberColumn(format="dollar"),
+        "euro": st.column_config.NumberColumn(format="euro"),
+        "localized": st.column_config.NumberColumn(format="localized"),
+        "accounting": st.column_config.NumberColumn(format="accounting"),
+        "custom format": st.column_config.NumberColumn(format="%.2f"),
+    },
+    hide_index=True,
+    use_container_width=False,
+)
+
+st.header("Date Time Formatting:")
+
+st.dataframe(
+    pd.DataFrame(
+        {
+            "default": [
+                datetime.datetime(2022, 4, 6, 9, 30, 0),
+                datetime.datetime(2024, 1, 1, 15, 45, 30),
+                datetime.datetime(2019, 8, 9, 12, 0, 0),
+            ],
+            "localized": [
+                datetime.datetime(2022, 4, 6, 9, 30, 0),
+                datetime.datetime(2024, 1, 1, 15, 45, 30),
+                datetime.datetime(2019, 8, 9, 12, 0, 0),
+            ],
+            "calendar": [
+                datetime.datetime(2022, 4, 6, 9, 30, 0),
+                datetime.datetime(2024, 1, 1, 15, 45, 30),
+                datetime.datetime(2019, 8, 9, 12, 0, 0),
+            ],
+            "iso8601": [
+                datetime.datetime(2022, 4, 6, 9, 30, 0),
+                datetime.datetime(2024, 1, 1, 15, 45, 30),
+                datetime.datetime(2019, 8, 9, 12, 0, 0),
+            ],
+            "localized date": [
+                datetime.date(2022, 4, 6),
+                datetime.date(2024, 1, 1),
+                datetime.date(2019, 8, 9),
+            ],
+            "localized time": [
+                datetime.time(9, 30, 0),
+                datetime.time(15, 45, 30),
+                datetime.time(12, 0, 0),
+            ],
+            "custom format": [
+                datetime.datetime(2022, 4, 6, 9, 30, 0),
+                datetime.datetime(2024, 1, 1, 15, 45, 30),
+                datetime.datetime(2019, 8, 9, 12, 0, 0),
+            ],
+        }
+    ),
+    column_config={
+        "localized": st.column_config.DatetimeColumn(format="localized"),
+        "calendar": st.column_config.DatetimeColumn(format="calendar"),
+        "custom format": st.column_config.DatetimeColumn(
+            format="MMM DD, YYYY - hh:mm A"
+        ),
+        "localized date": st.column_config.DateColumn(format="localized"),
+        "localized time": st.column_config.TimeColumn(format="localized"),
+        "iso8601": st.column_config.DatetimeColumn(format="iso8601"),
+        # We cannot reliably test distance via e2e tests because it wouldn't
+        # stay stable.
+        # "distance": st.column_config.DatetimeColumn(format="distance"),
+    },
+    hide_index=True,
+    use_container_width=False,
+)
+
+st.header("Json column:")
+
+st.dataframe(
+    pd.DataFrame(
+        {
+            "dict": [
+                {"name": "test", "value": 123},
+                {"name": "test2", "value": 456},
+                {},
+                None,
+            ],
+            "string json": [
+                '{"name": {"foo": "bar"}, "value": 456}',
+                '{"name": "test", "value": 123}',
+                "",
+                None,
+            ],
+            "list": [
+                ["Foo", "Bar", "Baz"],
+                ["Hello", "World"],
+                [],
+                None,
+            ],
+            "string list": [
+                "[1, 2, 3]",
+                "[4, 5]",
+                "[]",
+                None,
+            ],
+            "incompatible values": [
+                "{hello world}",
+                "foo",
+                "{ this is no JSON!",
+                None,
+            ],
+        }
+    ),
+    column_config={
+        "dict": st.column_config.JsonColumn(width="medium"),
+        # We explicitly don't set the string json column to json
+        # to test the behavior that text based columns should auto activate
+        # the json renderer.
+        "list": st.column_config.JsonColumn(width="medium"),
+        "string list": st.column_config.JsonColumn(width="medium"),
+        "incompatible values": st.column_config.JsonColumn(width="medium"),
+    },
+    hide_index=True,
+    use_container_width=False,
 )

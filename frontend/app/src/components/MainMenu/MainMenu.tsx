@@ -24,13 +24,14 @@ import { useTheme } from "@emotion/react"
 import {
   BaseButton,
   BaseButtonKind,
+  convertRemToPx,
   EmotionTheme,
   Icon,
   IGuestToHostMessage,
   IMenuItem,
-  notNullOrUndefined,
 } from "@streamlit/lib"
 import { Config, PageConfig } from "@streamlit/protobuf"
+import { notNullOrUndefined } from "@streamlit/utils"
 import ScreenCastRecorder from "@streamlit/app/src/util/ScreenCastRecorder"
 import { MetricsManager } from "@streamlit/app/src/MetricsManager"
 
@@ -379,7 +380,7 @@ function MainMenu(props: Readonly<Props>): ReactElement {
       noHighlight: true,
       interactions: {},
       styleProps: {
-        fontSize: theme.fontSizes.twoSmPx,
+        fontSize: convertRemToPx(theme.fontSizes.twoSm),
         margin: `-${theme.spacing.sm} 0 0 0`,
         padding: `${theme.spacing.twoXS} ${theme.spacing.none} ${theme.spacing.twoXS} ${theme.spacing.twoXL}`,
         pointerEvents: "none",

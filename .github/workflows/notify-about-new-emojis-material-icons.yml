@@ -32,14 +32,16 @@ jobs:
         uses: ./.github/actions/make_init
 
       - name: Run make develop
-        run: make develop
-
+        run: |
+          source venv/bin/activate
+          make develop
       - name: Install newest version of emoji package
         run: pip install emoji --upgrade
 
       - name: Check new Material Icons
         id: check-material-icons
-        run: python scripts/check_new_material_icons.py
+        continue-on-error: true
+        run: python scripts/check_new_material_symbols.py
 
       - name: New Material Icons Release Slack Message
         if: steps.check-material-icons.outcome == 'failure'

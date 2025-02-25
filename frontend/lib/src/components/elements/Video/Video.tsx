@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect, useMemo, useRef } from "react"
+import React, { memo, ReactElement, useEffect, useMemo, useRef } from "react"
 
 import { ISubtitleTrack, Video as VideoProto } from "@streamlit/protobuf"
 
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
-import { IS_DEV_ENV } from "~lib/baseconsts"
 import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManager"
+import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import { StyledVideoIframe } from "./styled-components"
 
@@ -38,7 +38,7 @@ export interface Subtitle {
   url: string
 }
 
-export default function Video({
+function Video({
   element,
   width,
   endpoints,
@@ -217,7 +217,9 @@ export default function Video({
       src={endpoints.buildMediaURL(url)}
       style={{ width, height: width === 0 ? DEFAULT_HEIGHT : undefined }}
       crossOrigin={
-        IS_DEV_ENV && subtitles.length > 0 ? "anonymous" : undefined
+        process.env.NODE_ENV === "development" && subtitles.length > 0
+          ? "anonymous"
+          : undefined
       }
     >
       {subtitles &&
@@ -233,3 +235,5 @@ export default function Video({
     </video>
   )
 }
+
+export default withCalculatedWidth(memo(Video))

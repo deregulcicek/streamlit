@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import { useTheme } from "@emotion/react"
 
@@ -37,7 +37,6 @@ import {
 export interface Props {
   disabled: boolean
   element: PageLinkProto
-  width: number
 }
 
 function shouldUseContainerWidth(
@@ -58,8 +57,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
 
   const { colors }: EmotionTheme = useTheme()
 
-  const { disabled, element, width } = props
-  const style = { width }
+  const { disabled, element } = props
 
   const useContainerWidth = shouldUseContainerWidth(
     element.useContainerWidth,
@@ -84,14 +82,14 @@ function PageLink(props: Readonly<Props>): ReactElement {
   }
 
   return (
-    <div className="stPageLink" data-testid="stPageLink" style={style}>
+    <div className="stPageLink" data-testid="stPageLink">
       <BaseButtonTooltip help={element.help} placement={Placement.TOP_RIGHT}>
         <StyledNavLinkContainer>
           <StyledNavLink
             data-testid="stPageLink-NavLink"
             disabled={disabled}
             isCurrentPage={isCurrentPage}
-            fluidWidth={useContainerWidth ? width : false}
+            fluidWidth={useContainerWidth || !!element.help}
             href={element.page}
             target={element.external ? "_blank" : ""}
             rel="noreferrer"
@@ -100,7 +98,7 @@ function PageLink(props: Readonly<Props>): ReactElement {
             {element.icon && (
               <DynamicIcon
                 size="lg"
-                color={colors.bodyText}
+                color={disabled ? colors.fadedText40 : colors.bodyText}
                 iconValue={element.icon}
               />
             )}
@@ -121,4 +119,4 @@ function PageLink(props: Readonly<Props>): ReactElement {
   )
 }
 
-export default PageLink
+export default memo(PageLink)

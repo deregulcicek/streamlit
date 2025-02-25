@@ -28,19 +28,18 @@ import {
   DEFAULT_IFRAME_FEATURE_POLICY,
   DEFAULT_IFRAME_SANDBOX_POLICY,
 } from "~lib/util/IFrameUtil"
-import { buildHttpUri } from "~lib/util/UriUtil"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { bgColorToBaseString, toExportedTheme } from "~lib/theme"
-import { fonts } from "~lib/theme/primitives/typography"
 import { mockEndpoints } from "~lib/mocks/mocks"
 import { mockTheme } from "~lib/mocks/mockTheme"
 import { render } from "~lib/test_util"
+import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 
 import ComponentInstance, {
   COMPONENT_READY_WARNING_TIME_MS,
 } from "./ComponentInstance"
 import {
-  log as componentUtilsLog,
+  LOG as componentUtilsLog,
   CUSTOM_COMPONENT_API_VERSION,
 } from "./componentUtils"
 import { ComponentRegistry } from "./ComponentRegistry"
@@ -50,9 +49,15 @@ import { ComponentMessageType, StreamlitMessageType } from "./enums"
 vi.useFakeTimers()
 
 // Mock uri utils.
-vi.mock("~lib/util/UriUtil")
-const mockedBuildHttpUri = buildHttpUri as Mock
-mockedBuildHttpUri.mockImplementation(() => "registry/url")
+vi.mock("@streamlit/utils", async () => {
+  const actualModule = await vi.importActual("@streamlit/utils")
+  const mockedBuildHttpUri = vi.fn().mockImplementation(() => "registry/url")
+
+  return {
+    ...actualModule,
+    buildHttpUri: mockedBuildHttpUri,
+  }
+})
 
 // Mock our WidgetStateManager
 vi.mock("~lib/WidgetStateManager")
@@ -75,6 +80,12 @@ describe("ComponentInstance", () => {
     logWarnSpy = vi
       .spyOn(componentUtilsLog, "warn")
       .mockImplementation(() => {})
+
+    vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+      elementRef: React.createRef(),
+      forceRecalculate: vitest.fn(),
+      values: [250],
+    })
   })
 
   it("registers a message listener on render", () => {
@@ -84,9 +95,7 @@ describe("ComponentInstance", () => {
       <ComponentInstance
         element={createElementProp()}
         registry={componentRegistry}
-        width={100}
         disabled={false}
-        theme={mockTheme.emotion}
         widgetMgr={
           new WidgetStateManager({
             sendRerunBackMsg: vi.fn(),
@@ -108,9 +117,7 @@ describe("ComponentInstance", () => {
       <ComponentInstance
         element={createElementProp()}
         registry={componentRegistry}
-        width={100}
         disabled={false}
-        theme={mockTheme.emotion}
         widgetMgr={
           new WidgetStateManager({
             sendRerunBackMsg: vi.fn(),
@@ -129,9 +136,7 @@ describe("ComponentInstance", () => {
       <ComponentInstance
         element={createElementProp()}
         registry={componentRegistry}
-        width={100}
         disabled={false}
-        theme={mockTheme.emotion}
         widgetMgr={
           new WidgetStateManager({
             sendRerunBackMsg: vi.fn(),
@@ -156,9 +161,7 @@ describe("ComponentInstance", () => {
       <ComponentInstance
         element={createElementProp()}
         registry={componentRegistry}
-        width={100}
         disabled={false}
-        theme={mockTheme.emotion}
         widgetMgr={
           new WidgetStateManager({
             sendRerunBackMsg: vi.fn(),
@@ -181,9 +184,7 @@ describe("ComponentInstance", () => {
       <ComponentInstance
         element={createElementProp({ height: 0 })}
         registry={componentRegistry}
-        width={100}
         disabled={false}
-        theme={mockTheme.emotion}
         widgetMgr={
           new WidgetStateManager({
             sendRerunBackMsg: vi.fn(),
@@ -206,9 +207,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -242,9 +241,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp()}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -280,9 +277,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -307,9 +302,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -357,9 +350,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -389,9 +380,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -405,16 +394,20 @@ describe("ComponentInstance", () => {
     })
 
     it("send render message when viewport changes", () => {
-      const jsonArgs = { foo: "string", bar: 5 }
       let width = 100
+      vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+        elementRef: React.createRef(),
+        forceRecalculate: vitest.fn(),
+        values: [width],
+      })
+
+      const jsonArgs = { foo: "string", bar: 5 }
       const componentRegistry = getComponentRegistry()
       const { rerender } = render(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={width}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -440,13 +433,19 @@ describe("ComponentInstance", () => {
         })
       )
       width = width + 1
+
+      // Update the spy to return the new width
+      vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+        elementRef: React.createRef(),
+        forceRecalculate: vitest.fn(),
+        values: [width],
+      })
+
       rerender(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={width}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -467,9 +466,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -505,9 +502,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={element}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -527,9 +522,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={createElementProp()}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -561,9 +554,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={element}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -622,9 +613,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={element}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -691,9 +680,7 @@ describe("ComponentInstance", () => {
         <ComponentInstance
           element={element}
           registry={componentRegistry}
-          width={100}
           disabled={false}
-          theme={mockTheme.emotion}
           widgetMgr={
             new WidgetStateManager({
               sendRerunBackMsg: vi.fn(),
@@ -735,9 +722,7 @@ describe("ComponentInstance", () => {
           <ComponentInstance
             element={element}
             registry={componentRegistry}
-            width={100}
             disabled={false}
-            theme={mockTheme.emotion}
             widgetMgr={
               new WidgetStateManager({
                 sendRerunBackMsg: vi.fn(),
@@ -794,9 +779,7 @@ describe("ComponentInstance", () => {
           <ComponentInstance
             element={element}
             registry={componentRegistry}
-            width={100}
             disabled={false}
-            theme={mockTheme.emotion}
             widgetMgr={
               new WidgetStateManager({
                 sendRerunBackMsg: vi.fn(),
@@ -837,7 +820,6 @@ describe("ComponentInstance", () => {
     theme = {
       ...toExportedTheme(mockTheme.emotion),
       base: bgColorToBaseString(mockTheme.emotion.colors.bgColor),
-      font: fonts.sansSerif,
     }
   ): any {
     return forwardMsg(StreamlitMessageType.RENDER, {
