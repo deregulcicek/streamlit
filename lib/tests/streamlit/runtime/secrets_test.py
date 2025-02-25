@@ -267,10 +267,6 @@ class MultipleSecretsFilesTest(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 secrets.get("no_such_secret", None)
 
-            # mock_st_error.assert_called_once_with(
-            #     "No secrets found. Valid paths for a secrets.toml file or secret directories are: /mock1/secrets.toml, /mock2/secrets.toml"
-            # )
-
     @patch("streamlit.runtime.secrets._LOGGER")
     def test_only_one_secrets_file_fine(self, patched_logger):
         with os.fdopen(self._fd1, "w") as tmp:

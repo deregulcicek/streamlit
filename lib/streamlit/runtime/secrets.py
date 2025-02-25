@@ -268,7 +268,7 @@ class Secrets(Mapping[str, Any]):
             # The TomlDecodeError constructor requires 3 arguments: message, doc, and pos
             # Extract doc and pos from the original exception
             doc = ex.doc if hasattr(ex, "doc") else ""
-            pos = ex.pos if hasattr(ex, "pos") else (0, 0)
+            pos = ex.pos if hasattr(ex, "pos") else 0
             raise toml.TomlDecodeError(msg, doc, pos) from ex
 
         return secrets, found_secrets_file
