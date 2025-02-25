@@ -284,7 +284,6 @@ class Secrets(Mapping[str, Any]):
                 error_msg = secret_error_messages_singleton.get_subfolder_path_is_not_a_folder_message(
                     sub_folder_path
                 )
-                self._print_exception_if_not_suppressed(error_msg)
                 raise ValueError(error_msg)
             sub_secrets = {}
 
@@ -317,7 +316,6 @@ class Secrets(Mapping[str, Any]):
         error_msg = secret_error_messages_singleton.get_invalid_secret_path_message(
             path
         )
-        self._print_exception_if_not_suppressed(error_msg)
         raise ValueError(error_msg)
 
     def _parse(self) -> Mapping[str, Any]:
