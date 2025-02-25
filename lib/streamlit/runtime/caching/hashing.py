@@ -38,11 +38,13 @@ from typing import Any, Callable, Final, Union, cast
 
 from typing_extensions import TypeAlias
 
-from streamlit import type_util, util
+from streamlit import logger, type_util, util
 from streamlit.errors import StreamlitAPIException
 from streamlit.runtime.caching.cache_errors import UnhashableTypeError
 from streamlit.runtime.caching.cache_type import CacheType
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+
+_LOGGER: Final = logger.get_logger(__name__)
 
 # If a dataframe has more than this many rows, we consider it large and hash a sample.
 _PANDAS_ROWS_LARGE: Final = 50_000
@@ -426,8 +428,9 @@ class _CacheFuncHasher:
                 self.update(h, pd.util.hash_pandas_object(obj).values.tobytes())
                 return h.digest()
             except TypeError:
-                # TODO[kajarenc]: Figure out how to best show this kind of warning to
-                #  the user (and could they even happen). In the meantime, show nothing.
+                _LOGGER.warning(
+                    "Pandas Series hash failed. Falling back to pickling the object."
+                )
 
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
@@ -450,8 +453,9 @@ class _CacheFuncHasher:
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
-                # TODO[kajarenc]: Figure out how to best show this kind of warning to
-                #  the user (and could they even happen). In the meantime, show nothing.
+                _LOGGER.warning(
+                    "Pandas DataFrame hash failed. Falling back to pickling the object."
+                )
 
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
@@ -471,8 +475,9 @@ class _CacheFuncHasher:
                 self.update(h, obj.hash(seed=0).to_arrow().to_string().encode())
                 return h.digest()
             except TypeError:
-                # TODO[kajarenc]: Figure out how to best show this kind of warning to
-                #  the user (and could they even happen). In the meantime, show nothing.
+                _LOGGER.warning(
+                    "Polars Series hash failed. Falling back to pickling the object."
+                )
 
                 # Use pickle if polars cannot hash the object for example if
                 # it contains unhashable objects.
@@ -497,8 +502,9 @@ class _CacheFuncHasher:
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
-                # TODO[kajarenc]: Figure out how to best show this kind of warning to
-                #  the user (and could they even happen). In the meantime, show nothing.
+                _LOGGER.warning(
+                    "Polars DataFrame hash failed. Falling back to pickling the object."
+                )
 
                 # Use pickle if polars cannot hash the object for example if
                 # it contains unhashable objects.
