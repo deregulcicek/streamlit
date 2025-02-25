@@ -426,6 +426,9 @@ class _CacheFuncHasher:
                 self.update(h, pd.util.hash_pandas_object(obj).values.tobytes())
                 return h.digest()
             except TypeError:
+                # TODO[kajarenc]: Figure out how to best show this kind of warning to
+                #  the user (and could they even happen). In the meantime, show nothing.
+
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
@@ -447,6 +450,9 @@ class _CacheFuncHasher:
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
+                # TODO[kajarenc]: Figure out how to best show this kind of warning to
+                #  the user (and could they even happen). In the meantime, show nothing.
+
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
@@ -465,6 +471,9 @@ class _CacheFuncHasher:
                 self.update(h, obj.hash(seed=0).to_arrow().to_string().encode())
                 return h.digest()
             except TypeError:
+                # TODO[kajarenc]: Figure out how to best show this kind of warning to
+                #  the user (and could they even happen). In the meantime, show nothing.
+
                 # Use pickle if polars cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
@@ -488,6 +497,9 @@ class _CacheFuncHasher:
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
+                # TODO[kajarenc]: Figure out how to best show this kind of warning to
+                #  the user (and could they even happen). In the meantime, show nothing.
+
                 # Use pickle if polars cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
