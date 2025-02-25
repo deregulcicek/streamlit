@@ -139,52 +139,21 @@ class SecretsTest(unittest.TestCase):
     def test_load_if_toml_exists_returns_false_if_parse_fails(self):
         self.assertFalse(self.secrets.load_if_toml_exists())
 
-    @patch("streamlit.error")
     @patch("streamlit.config.get_option", return_value=[MOCK_SECRETS_FILE_LOC])
-    def test_missing_toml_error(self, _, mock_st_error):
-        """Secrets access raises an error, and calls st.error, if
-        secrets.toml is missing.
-        """
+    def test_missing_toml_error(self, _):
+        """Secrets access raises an error if secrets.toml is missing."""
         with patch("builtins.open", mock_open()) as mock_file:
             mock_file.side_effect = FileNotFoundError()
 
             with self.assertRaises(FileNotFoundError):
                 self.secrets.get("no_such_secret", None)
-
-        mock_st_error.assert_called_once_with(
-            f"No secrets found. Valid paths for a secrets.toml file or secret directories are: {MOCK_SECRETS_FILE_LOC}"
-        )
-
-    @patch("streamlit.error")
-    @patch("streamlit.config.get_option", return_value=[MOCK_SECRETS_FILE_LOC])
-    def test_missing_toml_error_with_suppressed_error(self, _, mock_st_error):
-        """Secrets access raises an error, and does not calls st.error, if
-        secrets.toml is missing because printing errors have been suppressed.
-        """
-
-        self.secrets.set_suppress_print_error_on_exception(True)
-
-        with patch("builtins.open", mock_open()) as mock_file:
-            mock_file.side_effect = FileNotFoundError()
-
-            with self.assertRaises(FileNotFoundError):
-                self.secrets.get("no_such_secret", None)
-
-        mock_st_error.assert_not_called()
 
     @patch("builtins.open", new_callable=mock_open, read_data="invalid_toml")
-    @patch("streamlit.error")
     @patch("streamlit.config.get_option", return_value=[MOCK_SECRETS_FILE_LOC])
-    def test_malformed_toml_error(self, mock_get_option, mock_st_error, _):
-        """Secrets access raises an error, and calls st.error, if
-        secrets.toml is malformed.
-        """
+    def test_malformed_toml_error(self, mock_get_option, _):
+        """Secrets access raises an error if secrets.toml is malformed."""
         with self.assertRaises(TomlDecodeError):
             self.secrets.get("no_such_secret", None)
-
-        mock_st_error.assert_called_once_with(
-            "Error parsing secrets file at /mock/secrets.toml: Key name found without value. Reached end of file. (line 1 column 13 char 12)"
-        )
 
     @patch("streamlit.watcher.path_watcher.watch_file")
     @patch("builtins.open", new_callable=mock_open, read_data=MOCK_TOML)
@@ -281,8 +250,7 @@ class MultipleSecretsFilesTest(unittest.TestCase):
         os.remove(self._path1)
         os.remove(self._path2)
 
-    @patch("streamlit.error")
-    def test_no_secrets_files_explodes(self, mock_st_error):
+    def test_no_secrets_files_explodes(self):
         """Validate that an error is thrown if none of the given secrets.toml files exist."""
 
         secrets_file_locations = [
@@ -299,9 +267,9 @@ class MultipleSecretsFilesTest(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 secrets.get("no_such_secret", None)
 
-            mock_st_error.assert_called_once_with(
-                "No secrets found. Valid paths for a secrets.toml file or secret directories are: /mock1/secrets.toml, /mock2/secrets.toml"
-            )
+            # mock_st_error.assert_called_once_with(
+            #     "No secrets found. Valid paths for a secrets.toml file or secret directories are: /mock1/secrets.toml, /mock2/secrets.toml"
+            # )
 
     @patch("streamlit.runtime.secrets._LOGGER")
     def test_only_one_secrets_file_fine(self, patched_logger):

@@ -252,12 +252,24 @@ class Secrets(Mapping[str, Any]):
             import toml
 
             secrets.update(toml.loads(secrets_file_str))
-        except (TypeError, toml.TomlDecodeError) as ex:
-            raise TypeError(
+        except TypeError as ex:
+            msg = (
                 secret_error_messages_singleton.get_error_parsing_file_at_path_message(
                     path, ex
                 )
             )
+            raise TypeError(msg) from ex
+        except toml.TomlDecodeError as ex:
+            msg = (
+                secret_error_messages_singleton.get_error_parsing_file_at_path_message(
+                    path, ex
+                )
+            )
+            # The TomlDecodeError constructor requires 3 arguments: message, doc, and pos
+            # Extract doc and pos from the original exception
+            doc = ex.doc if hasattr(ex, "doc") else ""
+            pos = ex.pos if hasattr(ex, "pos") else (0, 0)
+            raise toml.TomlDecodeError(msg, doc, pos) from ex
 
         return secrets, found_secrets_file
 
