@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from textwrap import dedent
 from typing import TYPE_CHECKING, Literal, Union, cast, overload
@@ -34,6 +35,7 @@ from streamlit.elements.lib.utils import (
     get_label_visibility_proto_value,
     to_key,
 )
+from streamlit.errors import StreamlitAPIException
 from streamlit.proto.Common_pb2 import FileUploaderState as FileUploaderStateProto
 from streamlit.proto.Common_pb2 import UploadedFileInfo as UploadedFileInfoProto
 from streamlit.proto.FileUploader_pb2 import FileUploader as FileUploaderProto
@@ -97,11 +99,29 @@ def _get_upload_files(
 @dataclass
 class FileUploaderSerde:
     accept_multiple_files: bool
+    allowed_types: list[str] | None = None
+
+    def enforce_filename_restriction(self, filename: str):
+        """
+        Ensure the uploaded file's extension matches the allowed types set by the app developer.
+        """
+        extension = os.path.splitext(filename)[1].lower()
+        if extension not in self.allowed_types:
+            raise StreamlitAPIException(
+                f"Invalid file extension: {extension}. Allowed: {self.allowed_types}"
+            )
 
     def deserialize(
         self, ui_value: FileUploaderStateProto | None, widget_id: str
     ) -> SomeUploadedFiles:
         upload_files = _get_upload_files(ui_value)
+
+        for file in upload_files:
+            if isinstance(file, DeletedFile):
+                continue
+
+            if self.allowed_types:
+                self.enforce_filename_restriction(file.name)
 
         if len(upload_files) == 0:
             return_value: SomeUploadedFiles = [] if self.accept_multiple_files else None
@@ -109,6 +129,7 @@ class FileUploaderSerde:
             return_value = (
                 upload_files if self.accept_multiple_files else upload_files[0]
             )
+
         return return_value
 
     def serialize(self, files: SomeUploadedFiles) -> FileUploaderStateProto:
@@ -434,7 +455,7 @@ class FileUploaderMixin:
         if help is not None:
             file_uploader_proto.help = dedent(help)
 
-        serde = FileUploaderSerde(accept_multiple_files)
+        serde = FileUploaderSerde(accept_multiple_files, allowed_types=type)
 
         # FileUploader's widget value is a list of file IDs
         # representing the current set of files that this uploader should

@@ -107,13 +107,14 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
             return
 
         uploaded_files: list[UploadedFileRec] = []
+        from random import randint
 
         for _, flist in files.items():
             for file in flist:
                 uploaded_files.append(
                     UploadedFileRec(
                         file_id=file_id,
-                        name=file["filename"],
+                        name=f"myfile{randint(0, 400)}.png",  # file["filename"],
                         type=file["content_type"],
                         data=file["body"],
                     )
