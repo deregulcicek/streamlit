@@ -666,7 +666,7 @@ describe("createEmotionTheme", () => {
   ])(
     "logs an error and falls back to default for invalid baseRadius '%s'",
     invalidBaseRadius => {
-      const logErrorSpy = vi.spyOn(LOG, "error")
+      const logErrorSpy = vi.spyOn(LOG, "warn")
       const themeInput: Partial<CustomThemeConfig> = {
         baseRadius: invalidBaseRadius,
       }

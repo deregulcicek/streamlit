@@ -260,8 +260,8 @@ export const createEmotionTheme = (
         cssUnit
       )
     } else {
-      LOG.error(
-        `Invalid base radius: ${baseRadius}. Fallback to default base radius.`
+      LOG.warn(
+        `Invalid base radius: ${baseRadius}. Falling back to default base radius.`
       )
     }
   }
