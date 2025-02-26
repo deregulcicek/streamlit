@@ -227,9 +227,7 @@ export const createEmotionTheme = (
     let radiusValue: number | undefined = undefined
     const processedBaseRadius = baseRadius.trim().toLowerCase()
 
-    if (processedBaseRadius === "full") {
-      radiusValue = 1.5
-    } else if (processedBaseRadius === "none") {
+    if (processedBaseRadius === "none") {
       radiusValue = 0
     } else if (processedBaseRadius === "small") {
       radiusValue = 0.35
@@ -237,6 +235,8 @@ export const createEmotionTheme = (
       radiusValue = 0.5
     } else if (processedBaseRadius === "large") {
       radiusValue = 1
+    } else if (processedBaseRadius === "full") {
+      radiusValue = 1.5
     } else if (processedBaseRadius.endsWith("rem")) {
       radiusValue = parseFloat(processedBaseRadius)
     } else if (processedBaseRadius.endsWith("px")) {
