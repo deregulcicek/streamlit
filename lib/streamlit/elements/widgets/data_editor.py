@@ -697,7 +697,8 @@ class DataEditorMixin:
 
         row_height : int or None
             The height of each row in the data editor in pixels. If ``row_height``
-            is ``None`` (default), Streamlit will use a default row height.
+            is ``None`` (default), Streamlit will use a default row height,
+            which fits one line of text.
 
         Returns
         -------
