@@ -1049,12 +1049,12 @@ _create_option(
 
 
 _create_option(
-    "theme.roundness",
+    "theme.baseRadius",
     description="""
-        The roundness of the corners for most UI elements. Can be between 0 and 1,
-        where 0 is no-roundness and 1 is maximum roundness.
+        The radius used as basis for the corners of most UI elements. Can be:
+        "none", "small", "medium", "full", or the number in pixel or rem. For example:
+        "10px", "0.5rem", "1.2rem", "2rem".
     """,
-    type_=float,
 )
 
 _create_option(
