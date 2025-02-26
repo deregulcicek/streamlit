@@ -664,9 +664,9 @@ describe("createEmotionTheme", () => {
     "px", // Missing number
     "", // Empty string
   ])(
-    "logs an error and falls back to default for invalid baseRadius '%s'",
+    "logs an warning and falls back to default for invalid baseRadius '%s'",
     invalidBaseRadius => {
-      const logErrorSpy = vi.spyOn(LOG, "warn")
+      const logWarningSpy = vi.spyOn(LOG, "warn")
       const themeInput: Partial<CustomThemeConfig> = {
         baseRadius: invalidBaseRadius,
       }
@@ -674,8 +674,8 @@ describe("createEmotionTheme", () => {
       const theme = createEmotionTheme(themeInput)
 
       // Should log an error
-      expect(logErrorSpy).toHaveBeenCalledWith(
-        `Invalid base radius: ${invalidBaseRadius}. Fallback to default base radius.`
+      expect(logWarningSpy).toHaveBeenCalledWith(
+        `Invalid base radius: ${invalidBaseRadius}. Falling back to default base radius.`
       )
 
       // Should fall back to default values
