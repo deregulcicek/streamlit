@@ -1052,9 +1052,10 @@ _create_option(
     "theme.baseRadius",
     description="""
         The radius used as basis for the corners of most UI elements. Can be:
-        "none", "small", "medium", "full", or the number in pixel or rem. For example:
-        "10px", "0.5rem", "1.2rem", "2rem".
+        "none", "small", "medium", "large", "full", or the number in pixel or rem.
+        For example: "10px", "0.5rem", "1.2rem", "2rem".
     """,
+    visibility="hidden",
 )
 
 _create_option(
@@ -1081,6 +1082,7 @@ _create_option(
         scale of text and UI elements. The default base font size is 16.
     """,
     type_=int,
+    visibility="hidden",
 )
 
 # Config Section: Secrets #
