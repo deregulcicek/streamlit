@@ -1021,6 +1021,7 @@ _create_option(
 _create_option(
     "theme.linkColor",
     description="Color used for all links.",
+    visibility="hidden",
 )
 
 _create_option(
@@ -1038,6 +1039,7 @@ _create_option(
         The font family to use for code (monospace) in the app.
         To use a custom font, it needs to be added via [theme.fontFaces].
     """,
+    visibility="hidden",
 )
 
 _create_option(
@@ -1045,6 +1047,7 @@ _create_option(
     description="""
     Configure a list of font faces that you can use for the app & code fonts.
 """,
+    visibility="hidden",
 )
 
 
@@ -1063,6 +1066,7 @@ _create_option(
     description="""
         The color of the border around elements.
     """,
+    visibility="hidden",
 )
 
 _create_option(
