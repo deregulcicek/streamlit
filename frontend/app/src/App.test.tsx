@@ -275,14 +275,6 @@ const NAVIGATION_JSON: INavigation = {
   sections: [],
 }
 
-// Prevent "moment-timezone requires moment" exception when mocking "moment".
-vi.mock("moment-timezone", () => ({ default: vi.fn() }))
-vi.mock("moment", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    format: () => "date",
-  })),
-}))
-
 // Mock needed for Block.tsx
 class ResizeObserver {
   observe(): void {}

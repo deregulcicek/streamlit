@@ -16,7 +16,14 @@
 
 import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
 import { DatePickerType } from "@glideapps/glide-data-grid-cells"
-import moment, { Moment } from "moment-timezone"
+import dayjs, { Dayjs } from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+import advancedFormat from "dayjs/plugin/advancedFormat"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advancedFormat)
 
 import { getTimezone } from "~lib/dataframes/arrowTypeUtils"
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
@@ -32,22 +39,22 @@ import {
 } from "./utils"
 
 /**
- * Apply a timezone to a MomentJS date.
+ * Apply a timezone to a Dayjs date.
  *
- * @param momentDate The date to apply the timezone to
+ * @param dayjsDate The date to apply the timezone to
  * @param timezone The timezone to apply. This can be a timezone name
  * (e.g. "America/New_York" or "UTC") or a UTC offset (e.g. "+05:00" or "-08:00")
  * @returns The date with the timezone applied
  */
-function applyTimezone(momentDate: Moment, timezone: string): Moment {
+function applyTimezone(dayjsDate: Dayjs, timezone: string): Dayjs {
   if (timezone.startsWith("+") || timezone.startsWith("-")) {
     // Timezone is a UTC offset (e.g. "+05:00" or "-08:00")
-    momentDate = momentDate.utcOffset(timezone, false)
+    dayjsDate = dayjsDate.utcOffset(timezone, false)
   } else {
     // Timezone is a timezone name (e.g. "America/New_York" or "UTC")
-    momentDate = momentDate.tz(timezone)
+    dayjsDate = dayjsDate.tz(timezone)
   }
-  return momentDate
+  return dayjsDate
 }
 
 export interface DateTimeColumnParams {
@@ -103,11 +110,11 @@ function BaseDateTimeColumn(
   if (notNullOrUndefined(parameters.timezone)) {
     // We try to determine the timezone offset based on today's date
     // This is needed for the date picker to work correctly when the value is null
-    // TODO(lukasmasuch): But this might not be correct for dates in the past or future
+    // TODO: But this might not be correct for dates in the past or future
     // since the timezone offset might have changed based on a timezone name.
     try {
       defaultTimezoneOffset =
-        applyTimezone(moment(), parameters.timezone)?.utcOffset() || undefined
+        applyTimezone(dayjs(), parameters.timezone)?.utcOffset() || undefined
     } catch (error) {
       // Do nothing
     }
@@ -211,44 +218,44 @@ function BaseDateTimeColumn(
       }
 
       if (cellData !== null) {
-        // Convert to moment object
-        let momentDate = moment.utc(cellData)
+        // Convert to dayjs object
+        let dayjsDate = dayjs.utc(cellData)
 
-        if (!momentDate.isValid()) {
-          // The moment date should never be invalid here.
+        if (!dayjsDate.isValid()) {
+          // The dayjs date should never be invalid here.
           return getErrorCell(
             toSafeString(cellData),
-            `Invalid moment date. This should never happen. Please report this bug. \nError: ${momentDate.toString()}`
+            `Invalid dayjs date. This should never happen. Please report this bug. \nError: ${dayjsDate.toString()}`
           )
         }
 
         if (parameters.timezone) {
           try {
-            momentDate = applyTimezone(momentDate, parameters.timezone)
+            dayjsDate = applyTimezone(dayjsDate, parameters.timezone)
           } catch (error) {
             return getErrorCell(
-              momentDate.toISOString(),
+              dayjsDate.toISOString(),
               `Failed to adjust to the provided timezone: ${parameters.timezone}. \nError: ${error}`
             )
           }
 
-          timezoneOffset = momentDate.utcOffset()
+          timezoneOffset = dayjsDate.utcOffset()
         }
 
         try {
           displayDate = formatMoment(
-            momentDate,
+            dayjsDate,
             parameters.format || defaultFormat,
             kind
           )
         } catch (error) {
           return getErrorCell(
-            momentDate.toISOString(),
+            dayjsDate.toISOString(),
             `Failed to format the date for rendering with: ${parameters.format}. \nError: ${error}`
           )
         }
         // Copy data should always use the default format
-        copyData = formatMoment(momentDate, defaultFormat, kind)
+        copyData = formatMoment(dayjsDate, defaultFormat, kind)
       }
 
       return {

@@ -25,15 +25,28 @@ import {
 } from "@glideapps/glide-data-grid"
 import merge from "lodash/merge"
 import toString from "lodash/toString"
-import moment, { Moment } from "moment"
-import "moment-duration-format"
-import "moment-timezone"
+import dayjs, { Dayjs } from "dayjs"
+import calendar from "dayjs/plugin/calendar"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+import duration from "dayjs/plugin/duration"
+import relativeTime from "dayjs/plugin/relativeTime"
+import advancedFormat from "dayjs/plugin/advancedFormat"
+import customParseFormat from "dayjs/plugin/customParseFormat"
 import numbro from "numbro"
 import { sprintf } from "sprintf-js"
 
 import { ArrowType } from "~lib/dataframes/arrowTypeUtils"
 import { EmotionTheme } from "~lib/theme"
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(duration)
+dayjs.extend(advancedFormat)
+dayjs.extend(customParseFormat)
+dayjs.extend(relativeTime)
+dayjs.extend(calendar)
 
 /**
  * Interface used for defining the properties (configuration options) of a column.
@@ -580,7 +593,7 @@ export function formatNumber(
 /**
  * Formats the given date to a string with the given format.
  *
- * @param momentDate The moment date to format.
+ * @param dayjsDate The dayjs date to format.
  * @param format The format to use.
  *   If the format is `localized` the date will be formatted according to the user's locale.
  *   If the format is `distance` the date will be formatted as a relative time distance (e.g. "2 hours ago").
@@ -589,32 +602,32 @@ export function formatNumber(
  *     - For date: YYYY-MM-DD
  *     - For time: HH:mm:ss.sssZ
  *     - For datetime: YYYY-MM-DDTHH:mm:ss.sssZ
- *   Otherwise, it is interpreted as momentJS format string: https://momentjs.com/docs/#/displaying/format/
+ *   Otherwise, it is interpreted as dayjs format string: https://day.js.org/docs/en/display/format
  * @returns The formatted date as a string.
  */
 export function formatMoment(
-  momentDate: Moment,
+  dayjsDate: Dayjs,
   format: string,
-  momentKind: "date" | "time" | "datetime" = "datetime"
+  dayjsKind: "date" | "time" | "datetime" = "datetime"
 ): string {
   if (format === "localized") {
     return new Intl.DateTimeFormat(undefined, {
-      dateStyle: momentKind === "time" ? undefined : "medium",
-      timeStyle: momentKind === "date" ? undefined : "medium",
-    }).format(momentDate.toDate())
+      dateStyle: dayjsKind === "time" ? undefined : "medium",
+      timeStyle: dayjsKind === "date" ? undefined : "medium",
+    }).format(dayjsDate.toDate())
   } else if (format === "distance") {
-    return momentDate.fromNow()
+    return dayjsDate.fromNow()
   } else if (format === "calendar") {
-    return momentDate.calendar()
+    return dayjsDate.calendar()
   } else if (format === "iso8601") {
-    if (momentKind === "date") {
-      return momentDate.format("YYYY-MM-DD")
-    } else if (momentKind === "time") {
-      return momentDate.format("HH:mm:ss.SSS[Z]")
+    if (dayjsKind === "date") {
+      return dayjsDate.format("YYYY-MM-DD")
+    } else if (dayjsKind === "time") {
+      return dayjsDate.format("HH:mm:ss.SSS[Z]")
     }
-    return momentDate.toISOString()
+    return dayjsDate.toISOString()
   }
-  return momentDate.format(format)
+  return dayjsDate.format(format)
 }
 
 /**
@@ -670,28 +683,30 @@ export function toSafeDate(value: any): Date | null | undefined {
       }
 
       // Parse it as a unix timestamp in seconds
-      const parsedMomentDate = moment.unix(timestampInSeconds).utc()
-      if (parsedMomentDate.isValid()) {
-        return parsedMomentDate.toDate()
+      const parsedDayjsDate = dayjs.unix(timestampInSeconds).utc()
+      if (parsedDayjsDate.isValid()) {
+        return parsedDayjsDate.toDate()
       }
     }
 
     if (typeof value === "string") {
-      // Try to parse string via momentJS:
-      const parsedMomentDate = moment.utc(value)
-      if (parsedMomentDate.isValid()) {
-        return parsedMomentDate.toDate()
+      // Try to parse string via dayjs:
+      const parsedDayjsDate = dayjs.utc(value)
+      if (parsedDayjsDate.isValid()) {
+        return parsedDayjsDate.toDate()
       }
+
       // The pasted value was not a valid date string
       // Try to interpret value as time string instead (HH:mm:ss)
-      const parsedMomentTime = moment.utc(value, [
-        moment.HTML5_FMT.TIME_MS, // HH:mm:ss.SSS
-        moment.HTML5_FMT.TIME_SECONDS, // HH:mm:ss
-        moment.HTML5_FMT.TIME, // HH:mm
-      ])
-      if (parsedMomentTime.isValid()) {
-        return parsedMomentTime.toDate()
+      const formats = ["HH:mm:ss.SSS", "HH:mm:ss", "HH:mm"]
+      for (const format of formats) {
+        const parsedDayjsTime = dayjs.utc(value, format)
+        if (parsedDayjsTime.isValid()) {
+          return parsedDayjsTime.toDate()
+        }
       }
+
+      return undefined
     }
   } catch (error) {
     return undefined

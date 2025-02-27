@@ -16,7 +16,7 @@
 
 import React, { PureComponent, ReactNode } from "react"
 
-import moment from "moment"
+import dayjs from "dayjs"
 import Hotkeys from "react-hot-keys"
 import { enableAllPlugins as enableImmerPlugins } from "immer"
 import classNames from "classnames"
@@ -1754,7 +1754,7 @@ export class App extends PureComponent<Props, State> {
   screencastCallback = (): void => {
     const { scriptName } = this.state
     const { startRecording } = this.props.screenCast
-    const date = moment().format("YYYY-MM-DD-HH-MM-SS")
+    const date = dayjs().format("YYYY-MM-DD-HH-MM-SS")
 
     startRecording(`streamlit-${scriptName}-${date}`)
   }

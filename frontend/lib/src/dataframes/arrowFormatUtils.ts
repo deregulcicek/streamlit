@@ -21,7 +21,12 @@
 
 import { Field, Struct, StructRow, TimeUnit, util } from "apache-arrow"
 import trimEnd from "lodash/trimEnd"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
+import quarterOfYear from "dayjs/plugin/quarterOfYear"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+import duration from "dayjs/plugin/duration"
+import advancedFormat from "dayjs/plugin/advancedFormat"
 import numbro from "numbro"
 import { getLogger } from "loglevel"
 
@@ -42,6 +47,12 @@ import {
   isPeriodType,
   isTimeType,
 } from "./arrowTypeUtils"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(duration)
+dayjs.extend(advancedFormat)
+dayjs.extend(quarterOfYear)
 
 /**
  * The frequency strings defined in pandas.
@@ -82,29 +93,27 @@ type PandasPeriodFrequency =
 const LOG = getLogger("arrowFormatUtils")
 const WEEKDAY_SHORT = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 const formatMs = (duration: number): string =>
-  moment("19700101", "YYYYMMDD")
-    .add(duration, "ms")
+  dayjs("1970-01-01")
+    .add(duration, "millisecond")
     .format("YYYY-MM-DD HH:mm:ss.SSS")
 
 const formatSec = (duration: number): string =>
-  moment("19700101", "YYYYMMDD")
-    .add(duration, "s")
-    .format("YYYY-MM-DD HH:mm:ss")
+  dayjs("1970-01-01").add(duration, "second").format("YYYY-MM-DD HH:mm:ss")
 
 const formatMin = (duration: number): string =>
-  moment("19700101", "YYYYMMDD").add(duration, "m").format("YYYY-MM-DD HH:mm")
+  dayjs("1970-01-01").add(duration, "minute").format("YYYY-MM-DD HH:mm")
 
 const formatHours = (duration: number): string =>
-  moment("19700101", "YYYYMMDD").add(duration, "h").format("YYYY-MM-DD HH:mm")
+  dayjs("1970-01-01").add(duration, "hour").format("YYYY-MM-DD HH:mm")
 
 const formatDay = (duration: number): string =>
-  moment("19700101", "YYYYMMDD").add(duration, "d").format("YYYY-MM-DD")
+  dayjs("1970-01-01").add(duration, "day").format("YYYY-MM-DD")
 
 const formatMonth = (duration: number): string =>
-  moment("19700101", "YYYYMMDD").add(duration, "M").format("YYYY-MM")
+  dayjs("1970-01-01").add(duration, "month").format("YYYY-MM")
 
 const formatYear = (duration: number): string =>
-  moment("19700101", "YYYYMMDD").add(duration, "y").format("YYYY")
+  dayjs("1970-01-01").add(duration, "year").format("YYYY")
 
 const formatWeeks = (duration: number, freqParam?: string): string => {
   if (!freqParam) {
@@ -118,12 +127,12 @@ const formatWeeks = (duration: number, freqParam?: string): string => {
       )}`
     )
   }
-  const startDate = moment("19700101", "YYYYMMDD")
-    .add(duration, "w")
+  const startDate = dayjs("1970-01-01")
+    .add(duration, "week")
     .day(dayIndex - 6)
     .format("YYYY-MM-DD")
-  const endDate = moment("19700101", "YYYYMMDD")
-    .add(duration, "w")
+  const endDate = dayjs("1970-01-01")
+    .add(duration, "week")
     .day(dayIndex)
     .format("YYYY-MM-DD")
 
@@ -131,8 +140,8 @@ const formatWeeks = (duration: number, freqParam?: string): string => {
 }
 
 const formatQuarter = (duration: number): string =>
-  moment("19700101", "YYYYMMDD")
-    .add(duration, "Q")
+  dayjs("1970-01-01")
+    .add(duration, "quarter")
     .endOf("quarter")
     .format("YYYY[Q]Q")
 
@@ -232,7 +241,7 @@ export function convertTimeToDate(
     // Though we believe that actually always a unit is populated by arrow.
     field?.type?.unit ?? TimeUnit.SECOND
   )
-  return moment.unix(timeInSeconds).utc().toDate()
+  return dayjs.unix(timeInSeconds).utc().toDate()
 }
 
 /**
@@ -244,7 +253,7 @@ export function convertTimeToDate(
  */
 function formatTime(timestamp: number | bigint, field?: Field): string {
   const date = convertTimeToDate(timestamp, field)
-  return moment(date)
+  return dayjs(date)
     .utc()
     .format(date.getMilliseconds() === 0 ? "HH:mm:ss" : "HH:mm:ss.SSS")
 }
@@ -269,7 +278,16 @@ function formatDate(date: number | Date): string {
     return String(date)
   }
 
-  return moment.utc(date).format(formatPattern)
+  return dayjs.utc(date).format(formatPattern)
+}
+
+function isValidTimezone(timezone: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone })
+    return true
+  } catch (e) {
+    return false
+  }
 }
 
 /**
@@ -291,11 +309,11 @@ function formatDatetime(date: number | Date, field?: Field): string {
     return String(date)
   }
 
-  let datetime = moment.utc(date)
+  let datetime = dayjs.utc(date)
 
   const timezone = field?.type?.timezone
   if (timezone) {
-    if (moment.tz.zone(timezone)) {
+    if (isValidTimezone(timezone)) {
       // If timezone is a valid timezone name (e.g., "America/New_York")
       datetime = datetime.tz(timezone)
     } else {
@@ -318,7 +336,7 @@ function formatDatetime(date: number | Date, field?: Field): string {
  */
 function formatDuration(duration: number | bigint, field?: Field): string {
   // unit: 0 is seconds, 1 is milliseconds, 2 is microseconds, 3 is nanoseconds.
-  return moment
+  return dayjs
     .duration(
       convertTimestampToSeconds(
         duration,

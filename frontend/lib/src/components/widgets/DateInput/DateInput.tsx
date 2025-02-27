@@ -23,7 +23,7 @@ import React, {
   useState,
 } from "react"
 
-import moment from "moment"
+import dayjs from "dayjs"
 import { useTheme } from "@emotion/react"
 import { DENSITY, Datepicker as UIDatePicker } from "baseui/datepicker"
 import { PLACEMENT } from "baseui/popover"
@@ -70,7 +70,7 @@ function datesToStrings(dates: Date[]): string[] {
   if (!dates) {
     return []
   }
-  return dates.map((value: Date) => moment(value as Date).format(DATE_FORMAT))
+  return dates.map((value: Date) => dayjs(value as Date).format(DATE_FORMAT))
 }
 
 function DateInput({
@@ -105,7 +105,7 @@ function DateInput({
   const { locale } = useContext(LibContext)
   const loadedLocale = useIntlLocale(locale)
 
-  const minDate = moment(element.min, DATE_FORMAT).toDate()
+  const minDate = dayjs(element.min, DATE_FORMAT).toDate()
   const maxDate = getMaxDate(element)
   const clearable = element.default.length === 0 && !disabled
 
@@ -388,7 +388,7 @@ function getMaxDate(element: DateInputProto): Date | undefined {
   const maxDate = element.max
 
   return maxDate && maxDate.length > 0
-    ? moment(maxDate, DATE_FORMAT).toDate()
+    ? dayjs(maxDate, DATE_FORMAT).toDate()
     : undefined
 }
 
