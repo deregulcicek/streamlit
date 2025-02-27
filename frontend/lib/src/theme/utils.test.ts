@@ -627,10 +627,11 @@ describe("createEmotionTheme", () => {
 
   it.each([
     // Test keyword values
-    ["full", "1.5rem", "0.75rem", "2.25rem", "3rem"],
+    ["full", "1.4rem", "0.7rem", "2.1rem", "2.8rem"],
     ["none", "0rem", "0rem", "0rem", "0rem"],
     ["small", "0.35rem", "0.17rem", "0.52rem", "0.7rem"],
     ["medium", "0.5rem", "0.25rem", "0.75rem", "1rem"],
+    ["large", "1rem", "0.5rem", "1.5rem", "2rem"],
     // Test rem values
     ["0.8rem", "0.8rem", "0.4rem", "1.2rem", "1.6rem"],
     ["2rem", "2rem", "1rem", "3rem", "4rem"],
@@ -638,7 +639,7 @@ describe("createEmotionTheme", () => {
     ["10px", "10px", "5px", "15px", "20px"],
     ["24px", "24px", "12px", "36px", "48px"],
     // Test with whitespace and uppercase
-    [" FULL ", "1.5rem", "0.75rem", "2.25rem", "3rem"],
+    [" FULL ", "1.4rem", "0.7rem", "2.1rem", "2.8rem"],
     ["  medium  ", "0.5rem", "0.25rem", "0.75rem", "1rem"],
     ["2 rem ", "2rem", "1rem", "3rem", "4rem"],
   ])(

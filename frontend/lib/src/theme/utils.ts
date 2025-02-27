@@ -236,7 +236,7 @@ export const createEmotionTheme = (
     } else if (processedBaseRadius === "large") {
       radiusValue = 1
     } else if (processedBaseRadius === "full") {
-      radiusValue = 1.5
+      radiusValue = 1.4
     } else if (processedBaseRadius.endsWith("rem")) {
       radiusValue = parseFloat(processedBaseRadius)
     } else if (processedBaseRadius.endsWith("px")) {
