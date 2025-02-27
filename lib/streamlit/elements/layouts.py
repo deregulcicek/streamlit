@@ -48,25 +48,22 @@ class LayoutsMixin:
         border: bool | None = None,
         key: Key | None = None,
         # TODO: Move this Literal definition to somewhere shared
-        gap: Literal["small", "medium", "large"] | None = None,
-        direction: Literal["vertical", "horizontal"] | None = None,
+        gap: Literal["small", "medium", "large"] = "small",
+        direction: Literal["vertical", "horizontal", "wrap"] = "vertical",
         horizontal_alignment: Literal[
-            "start",
+            "left",
             "center",
-            "end",
+            "right",
             "stretch",
             "distribute",
-        ]
-        | None = None,
+        ] = "left",
         vertical_alignment: Literal[
             "top",
             "center",
             "bottom",
             "stretch",
             "distribute",
-        ]
-        | None = None,
-        wrap: bool | None = False,
+        ] = "top",
         width: Literal["stretch", "content"] | int = "content",
         scale: int = 1,
     ) -> DeltaGenerator:
@@ -174,25 +171,30 @@ class LayoutsMixin:
         .. output ::
             https://doc-container4.streamlit.app/
             height: 400px
-
+        # These are flexbox containers.
         """
         key = to_key(key)
         block_proto = BlockProto()
         block_proto.allow_empty = False
-        block_proto.vertical.border = border or False
-        block_proto.width = str(width)
-        if scale is not None:
-            block_proto.scale = scale
+        block_proto.flex_container.border = border or False
+        block_proto.flex_container.width = str(width)
+
+        if scale < 1:
+            raise StreamlitAPIException("scale must be a positive integer")
+        block_proto.flex_container.scale = scale
+
+        block_proto.flex_container.gap = gap
+        block_proto.flex_container.wrap = True if direction == "wrap" else False
 
         if height:
             # Activate scrolling container behavior:
             block_proto.allow_empty = True
-            block_proto.vertical.height = height
+            block_proto.flex_container.height = height
             if border is None:
                 # If border is None, we activated the
                 # border as default setting for scrolling
                 # containers.
-                block_proto.vertical.border = True
+                block_proto.flex_container.border = True
 
         if key:
             # At the moment, the ID is only used for extracting the
@@ -203,333 +205,58 @@ class LayoutsMixin:
             block_proto.id = compute_and_register_element_id(
                 "container", user_key=key, form_id=None
             )
+
+        map_to_flex_terminology = {
+            "left": "start",
+            "center": "center",
+            "right": "end",
+            "top": "start",
+            "bottom": "end",
+        }
 
         valid_align = ["start", "center", "end", "stretch"]
         valid_justify = ["start", "center", "end", "distribute"]
 
-        if direction == "vertical":
-            # Large is the default to match the previous behavior in `StyledVerticalBlock`
-            block_proto.vertical.gap = gap if gap else "large"
-            block_proto.vertical.direction = BlockProto.Vertical.Direction.TOP_TO_BOTTOM
-            block_proto.vertical.wrap = wrap if wrap is not None else False
+        def convert_align_to_proto(align):
+            if align in ["start", "end", "center"]:
+                return getattr(BlockProto.FlexContainer.Align, f"ALIGN_{align.upper()}")
+            else:
+                return getattr(BlockProto.FlexContainer.Align, f"{align.upper()}")
 
-            if horizontal_alignment is not None:
-                if horizontal_alignment in valid_align:
-                    if horizontal_alignment in ["start", "end", "center"]:
-                        block_proto.vertical.align = getattr(
-                            BlockProto.Vertical.Align,
-                            f"ALIGN_{horizontal_alignment.upper()}",
-                        )
-                    else:
-                        block_proto.vertical.align = getattr(
-                            BlockProto.Vertical.Align,
-                            f"{horizontal_alignment.upper()}",
-                        )
+        def convert_justify_to_proto(justify):
+            if justify in ["start", "end", "center"]:
+                return getattr(
+                    BlockProto.FlexContainer.Justify, f"JUSTIFY_{justify.upper()}"
+                )
+            else:
+                return getattr(BlockProto.FlexContainer.Justify, f"{justify.upper()}")
 
-            if vertical_alignment is not None:
-                if vertical_alignment in valid_justify:
-                    if vertical_alignment in ["start", "end", "center"]:
-                        block_proto.vertical.justify = getattr(
-                            BlockProto.Vertical.Justify,
-                            f"JUSTIFY_{vertical_alignment.upper()}",
-                        )
-                    elif vertical_alignment == "distribute":
-                        block_proto.vertical.justify = (
-                            BlockProto.Vertical.Justify.SPACE_BETWEEN
-                        )
+        def add_justify_align_to_proto(align, justify, proto):
+            if align in valid_align:
+                block_proto.flex_container.align = convert_align_to_proto(align)
 
-        elif direction == "horizontal":
-            block_proto.horizontal.gap = gap if gap else "small"
-            block_proto.horizontal.direction = (
-                BlockProto.Horizontal.Direction.START_TO_END
-            )
-            block_proto.horizontal.wrap = wrap if wrap is not None else True
-
-            if horizontal_alignment is not None:
-                if horizontal_alignment in valid_justify:
-                    if horizontal_alignment in ["start", "end", "center"]:
-                        block_proto.horizontal.justify = getattr(
-                            BlockProto.Horizontal.Justify,
-                            f"JUSTIFY_{horizontal_alignment.upper()}",
-                        )
-                    elif vertical_alignment == "distribute":
-                        block_proto.horizontal.justify = (
-                            BlockProto.Horizontal.Justify.SPACE_BETWEEN
-                        )
-
-            if vertical_alignment is not None:
-                if vertical_alignment in valid_align:
-                    if vertical_alignment in ["start", "end", "center"]:
-                        block_proto.horizontal.align = getattr(
-                            BlockProto.Horizontal.Align,
-                            f"ALIGN_{vertical_alignment.upper()}",
-                        )
-                    else:
-                        block_proto.horizontal.align = getattr(
-                            BlockProto.Horizontal.Align,
-                            f"{vertical_alignment.upper()}",
-                        )
-
-        return self.dg._block(block_proto)
-
-    @gather_metrics("container")
-    # This container has all options for align/justify. It throws an error if
-    # you use the wrong one.
-    def container_alternate_one(
-        self,
-        *,
-        height: int | None = None,
-        border: bool | None = None,
-        key: Key | None = None,
-        # TODO: Move this Literal definition to somewhere shared
-        gap: Literal["small", "medium", "large"] | None = None,
-        direction: Literal["vertical", "horizontal"] | None = None,
-        horizontal_alignment: Literal[
-            "start",
-            "center",
-            "end",
-            "stretch",
-            "baseline",
-            "space_between",
-            "space_around",
-            "space_evenly",
-        ]
-        | None = None,
-        vertical_alignment: Literal[
-            "top",
-            "center",
-            "bottom",
-            "stretch",
-            "baseline",
-            "space_between",
-            "space_around",
-            "space_evenly",
-        ]
-        | None = None,
-        wrap: bool | None = False,
-    ) -> DeltaGenerator:
-        key = to_key(key)
-        block_proto = BlockProto()
-        block_proto.allow_empty = False
-        block_proto.vertical.border = border or False
-
-        if height:
-            # Activate scrolling container behavior:
-            block_proto.allow_empty = True
-            block_proto.vertical.height = height
-            if border is None:
-                # If border is None, we activated the
-                # border as default setting for scrolling
-                # containers.
-                block_proto.vertical.border = True
-
-        if key:
-            # At the moment, the ID is only used for extracting the
-            # key on the frontend and setting it as CSS class.
-            # There are plans to use the ID for other container features
-            # in the future. This might require including more container
-            # parameters in the ID calculation.
-            block_proto.id = compute_and_register_element_id(
-                "container", user_key=key, form_id=None
-            )
-
-        valid_align = ["start", "center", "end", "stretch", "baseline"]
-        valid_justify = [
-            "start",
-            "center",
-            "end",
-            "space_between",
-            "space_around",
-            "space_evenly",
-        ]
+            if justify in valid_justify:
+                block_proto.flex_container.justify = convert_justify_to_proto(justify)
 
         if direction == "vertical":
-            # Large is the default to match the previous behavior in `StyledVerticalBlock`
-            block_proto.vertical.gap = gap if gap else "large"
-            block_proto.vertical.direction = BlockProto.Vertical.Direction.TOP_TO_BOTTOM
-            block_proto.vertical.wrap = wrap if wrap is not None else False
+            block_proto.flex_container.direction = (
+                BlockProto.FlexContainer.Direction.VERTICAL
+            )
 
-            if horizontal_alignment is not None:
-                if horizontal_alignment not in valid_align:
-                    raise StreamlitAPIException(
-                        f"Invalid horizontal alignment: {horizontal_alignment}. "
-                        f"Valid options are: {valid_align}"
-                    )
+            align = map_to_flex_terminology[horizontal_alignment]
+            justify = map_to_flex_terminology[vertical_alignment]
 
-                if horizontal_alignment in ["start", "end", "center"]:
-                    block_proto.vertical.align = getattr(
-                        BlockProto.Vertical.Align,
-                        f"ALIGN_{horizontal_alignment.upper()}",
-                    )
-                else:
-                    block_proto.vertical.align = getattr(
-                        BlockProto.Vertical.Align,
-                        f"{horizontal_alignment.upper()}",
-                    )
-
-            if vertical_alignment is not None:
-                if vertical_alignment not in valid_justify:
-                    raise StreamlitAPIException(
-                        f"Invalid vertical alignment: {vertical_alignment}. "
-                        f"Valid options are: {valid_justify}"
-                    )
-
-                if vertical_alignment in ["start", "end", "center"]:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"JUSTIFY_{vertical_alignment.upper()}",
-                    )
-                else:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"{vertical_alignment.upper()}",
-                    )
+            add_justify_align_to_proto(align, justify, block_proto)
 
         elif direction == "horizontal":
-            block_proto.horizontal.gap = gap if gap else "small"
-            block_proto.horizontal.direction = (
-                BlockProto.Horizontal.Direction.START_TO_END
-            )
-            block_proto.horizontal.wrap = wrap if wrap is not None else True
-
-            if horizontal_alignment is not None:
-                if horizontal_alignment not in valid_justify:
-                    raise StreamlitAPIException(
-                        f"Invalid horizontal alignment: {horizontal_alignment}. "
-                        f"Valid options are: {valid_justify}"
-                    )
-
-                if horizontal_alignment in ["start", "end", "center"]:
-                    block_proto.horizontal.justify = getattr(
-                        BlockProto.Horizontal.Justify,
-                        f"JUSTIFY_{horizontal_alignment.upper()}",
-                    )
-                else:
-                    block_proto.horizontal.justify = getattr(
-                        BlockProto.Horizontal.Justify,
-                        f"{horizontal_alignment.upper()}",
-                    )
-
-            if vertical_alignment is not None:
-                if vertical_alignment not in valid_align:
-                    raise StreamlitAPIException(
-                        f"Invalid vertical alignment: {vertical_alignment}. "
-                        f"Valid options are: {valid_align}"
-                    )
-
-                if vertical_alignment in ["start", "end", "center"]:
-                    block_proto.horizontal.align = getattr(
-                        BlockProto.Horizontal.Align,
-                        f"ALIGN_{vertical_alignment.upper()}",
-                    )
-                else:
-                    block_proto.horizontal.align = getattr(
-                        BlockProto.Horizontal.Align,
-                        f"{vertical_alignment.upper()}",
-                    )
-
-        return self.dg._block(block_proto)
-
-    @gather_metrics("container")
-    # This container follows closely the flexbox spec.
-    def container_align_justify(
-        self,
-        *,
-        height: int | None = None,
-        border: bool | None = None,
-        key: Key | None = None,
-        # TODO: Move this Literal definition to somewhere shared
-        gap: Literal["small", "medium", "large"] | None = None,
-        direction: Literal["vertical", "horizontal"] | None = None,
-        justify: Literal[
-            "start", "center", "end", "space_between", "space_around", "space_evenly"
-        ]
-        | None = None,
-        align: Literal["start", "end", "center", "stretch", "baseline"] | None = None,
-        wrap: bool | None = False,
-    ) -> DeltaGenerator:
-        key = to_key(key)
-        block_proto = BlockProto()
-        block_proto.allow_empty = False
-        block_proto.vertical.border = border or False
-
-        if height:
-            # Activate scrolling container behavior:
-            block_proto.allow_empty = True
-            block_proto.vertical.height = height
-            if border is None:
-                # If border is None, we activated the
-                # border as default setting for scrolling
-                # containers.
-                block_proto.vertical.border = True
-
-        if key:
-            # At the moment, the ID is only used for extracting the
-            # key on the frontend and setting it as CSS class.
-            # There are plans to use the ID for other container features
-            # in the future. This might require including more container
-            # parameters in the ID calculation.
-            block_proto.id = compute_and_register_element_id(
-                "container", user_key=key, form_id=None
+            block_proto.flex_container.direction = (
+                BlockProto.FlexContainer.Direction.HORIZONTAL
             )
 
-        if direction == "vertical":
-            # Large is the default to match the previous behavior in `StyledVerticalBlock`
-            block_proto.vertical.gap = gap if gap else "large"
-            block_proto.vertical.direction = BlockProto.Vertical.Direction.TOP_TO_BOTTOM
-            block_proto.vertical.wrap = wrap if wrap is not None else False
+            align = map_to_flex_terminology[vertical_alignment]
+            justify = map_to_flex_terminology[horizontal_alignment]
 
-            if justify is not None:
-                if justify in ["start", "end", "center"]:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"JUSTIFY_{justify.upper()}",
-                    )
-                else:
-                    block_proto.vertical.justify = getattr(
-                        BlockProto.Vertical.Justify,
-                        f"{justify.upper()}",
-                    )
-            if align is not None:
-                if align in ["start", "end", "center"]:
-                    block_proto.vertical.align = getattr(
-                        BlockProto.Vertical.Align,
-                        f"ALIGN_{align.upper()}",
-                    )
-                else:
-                    block_proto.vertical.align = getattr(
-                        BlockProto.Vertical.Align,
-                        f"{align.upper()}",
-                    )
-        elif direction == "horizontal":
-            block_proto.horizontal.gap = gap if gap else "small"
-            block_proto.horizontal.direction = (
-                BlockProto.Horizontal.Direction.START_TO_END
-            )
-            block_proto.horizontal.wrap = wrap if wrap is not None else False
-
-            if justify is not None:
-                if justify in ["start", "end", "center"]:
-                    block_proto.horizontal.justify = getattr(
-                        BlockProto.Horizontal.Justify,
-                        f"JUSTIFY_{justify.upper()}",
-                    )
-                else:
-                    block_proto.horizontal.justify = getattr(
-                        BlockProto.Horizontal.Justify,
-                        f"{justify.upper()}",
-                    )
-            if align is not None:
-                if align in ["start", "end", "center"]:
-                    block_proto.horizontal.align = getattr(
-                        BlockProto.Horizontal.Align,
-                        f"ALIGN_{align.upper()}",
-                    )
-                else:
-                    block_proto.horizontal.align = getattr(
-                        BlockProto.Horizontal.Align,
-                        f"{align.upper()}",
-                    )
+            add_justify_align_to_proto(align, justify, block_proto)
 
         return self.dg._block(block_proto)
 

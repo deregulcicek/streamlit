@@ -35,57 +35,40 @@ function translateGapWidth(gap: string, theme: EmotionTheme): string {
 }
 
 const getAlignItems = (
-  align: BlockProto.Horizontal.Align | BlockProto.Vertical.Align | null
+  align: BlockProto.FlexContainer.Align | undefined
 ): CSSProperties["alignItems"] => {
   switch (align) {
-    case BlockProto.Horizontal.Align.ALIGN_START:
-    case BlockProto.Vertical.Align.ALIGN_START:
+    case BlockProto.FlexContainer.Align.ALIGN_START:
       return "start"
-    case BlockProto.Horizontal.Align.ALIGN_CENTER:
-    case BlockProto.Vertical.Align.ALIGN_CENTER:
+    case BlockProto.FlexContainer.Align.ALIGN_CENTER:
       return "center"
-    case BlockProto.Horizontal.Align.ALIGN_END:
-    case BlockProto.Vertical.Align.ALIGN_END:
+    case BlockProto.FlexContainer.Align.ALIGN_END:
       return "end"
-    case BlockProto.Horizontal.Align.STRETCH:
-    case BlockProto.Vertical.Align.STRETCH:
+    case BlockProto.FlexContainer.Align.STRETCH:
       return "stretch"
-    case BlockProto.Horizontal.Align.BASELINE:
-    case BlockProto.Vertical.Align.BASELINE:
-      return "baseline"
-    case null:
+    case undefined:
       // This is the existing default behavior
-      return "stretch"
+      return "start"
     default:
       assertNever(align)
   }
 }
 
 const getJustifyContent = (
-  justify: BlockProto.Horizontal.Justify | null
+  justify: BlockProto.FlexContainer.Justify | undefined
 ): CSSProperties["justifyContent"] => {
   switch (justify) {
-    case BlockProto.Horizontal.Justify.JUSTIFY_START:
-    case BlockProto.Vertical.Justify.JUSTIFY_START:
+    case BlockProto.FlexContainer.Justify.JUSTIFY_START:
       return "start"
-    case BlockProto.Horizontal.Justify.JUSTIFY_CENTER:
-    case BlockProto.Vertical.Justify.JUSTIFY_CENTER:
+    case BlockProto.FlexContainer.Justify.JUSTIFY_CENTER:
       return "center"
-    case BlockProto.Horizontal.Justify.JUSTIFY_END:
-    case BlockProto.Vertical.Justify.JUSTIFY_END:
+    case BlockProto.FlexContainer.Justify.JUSTIFY_END:
       return "end"
-    case BlockProto.Horizontal.Justify.SPACE_AROUND:
-    case BlockProto.Vertical.Justify.SPACE_AROUND:
-      return "space-around"
-    case BlockProto.Horizontal.Justify.SPACE_BETWEEN:
-    case BlockProto.Vertical.Justify.SPACE_BETWEEN:
+    case BlockProto.FlexContainer.Justify.SPACE_BETWEEN:
       return "space-between"
-    case BlockProto.Horizontal.Justify.SPACE_EVENLY:
-    case BlockProto.Vertical.Justify.SPACE_EVENLY:
-      return "space-evenly"
-    case null:
+    case undefined:
       // This is the existing default behavior
-      return undefined
+      return "start"
     default:
       assertNever(justify)
   }
@@ -93,13 +76,10 @@ const getJustifyContent = (
 
 export interface StyledHorizontalBlockProps {
   gap: string
-  align: BlockProto.Horizontal.Align | null
-  justify: BlockProto.Horizontal.Justify | null
-  wrap: boolean
 }
 
 export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
-  ({ theme, gap, justify, align, wrap }) => {
+  ({ theme, gap }) => {
     const gapWidth = translateGapWidth(gap, theme)
 
     return {
@@ -109,9 +89,6 @@ export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
       display: "flex",
       flexGrow: 1,
       gap: gapWidth,
-      alignItems: getAlignItems(align),
-      justifyContent: getJustifyContent(justify),
-      flexWrap: wrap ? "wrap" : "nowrap",
     }
   }
 )
@@ -227,18 +204,12 @@ export const StyledColumn = styled.div<StyledColumnProps>(
 
 export interface StyledVerticalBlockProps {
   ref?: React.RefObject<any>
-  align: BlockProto.Vertical.Align | BlockProto.Horizontal.Align | null
-  justify: BlockProto.Vertical.Justify | BlockProto.Horizontal.Justify | null
-  wrap: boolean
-  gap: string | null
   width?: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
 }
 
 export const StyledVerticalBlock = styled.div<StyledVerticalBlockProps>(
-  ({ width, maxWidth, theme, align, justify, wrap, gap }) => {
-    const gapWidth = gap ? translateGapWidth(gap, theme) : theme.spacing.lg
-
+  ({ width, maxWidth, theme }) => {
     return {
       width,
       maxWidth,
@@ -246,10 +217,7 @@ export const StyledVerticalBlock = styled.div<StyledVerticalBlockProps>(
       display: "flex",
       flex: 1,
       flexDirection: "column",
-      gap: gapWidth,
-      alignItems: getAlignItems(align),
-      justifyContent: getJustifyContent(justify),
-      flexWrap: wrap ? "wrap" : "nowrap",
+      gap: theme.spacing.lg,
     }
   }
 )
@@ -278,4 +246,29 @@ export const StyledVerticalBlockBorderWrapper =
         overflow: "auto",
       }),
     })
+  )
+
+export interface StyledFlexContainerWrapperProps {
+  ref?: React.RefObject<any>
+  flexDirection: React.CSSProperties["flexDirection"]
+  align?: BlockProto.FlexContainer.Align
+  justify?: BlockProto.FlexContainer.Justify
+  wrap: boolean
+  gap?: string
+}
+
+export const StyledFlexContainerWrapper =
+  styled.div<StyledFlexContainerWrapperProps>(
+    ({ flexDirection, align, justify, wrap, gap, theme }) => {
+      const gapWidth = gap ? translateGapWidth(gap, theme) : theme.spacing.lg
+      return {
+        display: "flex",
+        flex: 1,
+        flexDirection: flexDirection,
+        alignItems: getAlignItems(align),
+        justifyContent: getJustifyContent(justify),
+        flexWrap: wrap ? "wrap" : "nowrap",
+        gap: gapWidth,
+      }
+    }
   )

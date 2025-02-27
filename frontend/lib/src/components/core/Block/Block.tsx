@@ -52,6 +52,7 @@ import {
 import ElementNodeRenderer from "./ElementNodeRenderer"
 import {
   StyledColumn,
+  StyledFlexContainerWrapper,
   StyledHorizontalBlock,
   StyledVerticalBlock,
   StyledVerticalBlockBorderWrapper,
@@ -205,43 +206,6 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return <Tabs {...tabsProps} />
   }
 
-  if (notNullOrUndefined(node.deltaBlock.horizontal?.direction)) {
-    return (
-      <FlexContextProvider
-        direction="row"
-        justify={node.deltaBlock.horizontal?.justify ?? null}
-        align={node.deltaBlock.horizontal?.align ?? null}
-      >
-        {child}
-      </FlexContextProvider>
-    )
-  }
-
-  if (notNullOrUndefined(node.deltaBlock.vertical?.direction)) {
-    return (
-      <FlexContextProvider
-        direction="column"
-        align={node.deltaBlock.vertical?.align ?? null}
-        justify={node.deltaBlock.vertical?.justify ?? null}
-      >
-        {child}
-      </FlexContextProvider>
-    )
-  }
-
-  if (
-    notNullOrUndefined(node.deltaBlock.vertical) ||
-    notNullOrUndefined(node.deltaBlock.horizontal)
-  ) {
-    // If we are creating a new container, we need to set the flex direction
-    // context to null to preserve existing measurement functionality.
-    return (
-      <FlexContextProvider direction={null} align={null} justify={null}>
-        {child}
-      </FlexContextProvider>
-    )
-  }
-
   return child
 }
 
@@ -343,14 +307,6 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
 
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined
-  const gap = props.node.deltaBlock.vertical?.gap ?? null
-  const align = props.node.deltaBlock.vertical?.align ?? null
-  const justify = props.node.deltaBlock.vertical?.justify ?? null
-  const wrap =
-    props.node.deltaBlock.vertical?.wrap ??
-    // "true" is the current behavior today and preserves it when there is no
-    // explicit flex value.
-    true
 
   const activateScrollToBottom =
     height &&
@@ -400,10 +356,6 @@ const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
     >
       <StyledVerticalBlockWrapper ref={wrapperElement}>
         <StyledVerticalBlock
-          gap={gap}
-          align={align}
-          justify={justify}
-          wrap={wrap}
           className={classNames(
             "stVerticalBlock",
             convertKeyToClassName(userKey)
@@ -423,16 +375,9 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   // The children are always columns, but this is not checked. We just trust the Python side to
   // do the right thing, then we ask ChildRenderer to handle it.
   const gap = props.node.deltaBlock.horizontal?.gap ?? ""
-  const align = props.node.deltaBlock.horizontal?.align ?? null
-  const justify = props.node.deltaBlock.horizontal?.justify ?? null
-  const wrap = props.node.deltaBlock.horizontal?.wrap ?? false
-
   return (
     <StyledHorizontalBlock
       gap={gap}
-      align={align}
-      justify={justify}
-      wrap={wrap}
       className="stHorizontalBlock"
       data-testid="stHorizontalBlock"
     >
@@ -441,8 +386,85 @@ const HorizontalBlock = (props: BlockPropsWithWidth): ReactElement => {
   )
 }
 
+const FlexContainerBlock = (props: BlockPropsWithWidth): ReactElement => {
+  const {
+    values: [calculatedWidth],
+    elementRef: wrapperElement,
+    forceRecalculate,
+  } = useResizeObserver(useMemo(() => ["width"], []))
+
+  const border = props.node.deltaBlock.flexContainer?.border ?? false
+  const height = props.node.deltaBlock.flexContainer?.height || undefined
+  const gap = props.node.deltaBlock.flexContainer?.gap ?? undefined
+  const align = props.node.deltaBlock.flexContainer?.align ?? undefined
+  const justify = props.node.deltaBlock.flexContainer?.justify ?? undefined
+  const wrap =
+    props.node.deltaBlock.flexContainer?.wrap ??
+    // "true" is the current behavior today and preserves it when there is no
+    // explicit flex value.
+    true
+  let flexDirection: React.CSSProperties["flexDirection"] | undefined
+  if (
+    props.node.deltaBlock.flexContainer?.direction ===
+    BlockProto.FlexContainer.Direction.HORIZONTAL
+  ) {
+    flexDirection = "row"
+  } else if (
+    props.node.deltaBlock.flexContainer?.direction ===
+    BlockProto.FlexContainer.Direction.VERTICAL
+  ) {
+    flexDirection = "column"
+  }
+
+  // Extract the user-specified key from the block ID (if provided):
+  const userKey = getKeyFromId(props.node.deltaBlock.id)
+  const styles = useLayoutStyles({
+    width: calculatedWidth,
+    element: undefined,
+  })
+
+  const propsWithCalculatedWidth = {
+    ...props,
+    width: styles.width,
+  }
+
+  // To apply a border, we need to wrap the StyledVerticalBlockWrapper again, otherwise the width
+  // calculation would not take the padding into consideration.
+  return (
+    <StyledVerticalBlockBorderWrapper
+      border={border}
+      height={height}
+      data-testid="stVerticalBlockBorderWrapper"
+      data-test-scroll-behavior="normal"
+    >
+      <StyledFlexContainerWrapper
+        ref={wrapperElement}
+        flexDirection={flexDirection}
+        align={align}
+        justify={justify}
+        gap={gap}
+        wrap={wrap}
+      >
+        <StyledVerticalBlock
+          className={classNames(
+            "stVerticalBlock",
+            convertKeyToClassName(userKey)
+          )}
+          data-testid="stVerticalBlock"
+          {...styles}
+        >
+          <ChildRenderer {...propsWithCalculatedWidth} />
+        </StyledVerticalBlock>
+      </StyledFlexContainerWrapper>
+    </StyledVerticalBlockBorderWrapper>
+  )
+}
+
 // A container block with one of two types of layouts: vertical and horizontal.
 function LayoutBlock(props: BlockPropsWithWidth): ReactElement {
+  if (props.node.deltaBlock.flexContainer) {
+    return <FlexContainerBlock {...props} />
+  }
   if (props.node.deltaBlock.horizontal) {
     return <HorizontalBlock {...props} />
   }
