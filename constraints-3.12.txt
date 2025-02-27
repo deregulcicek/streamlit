@@ -92,7 +92,7 @@ ruff==0.9.4
 seaborn==0.13.2
 SecretStorage==3.3.3
 semver==3.0.4
-setuptools==75.8.1
+setuptools==75.8.2
 six==1.17.0
 smmap==5.0.2
 sortedcontainers==2.4.0
