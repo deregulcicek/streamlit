@@ -37,7 +37,7 @@ import ChatMessage from "~lib/components/elements/ChatMessage"
 import Dialog from "~lib/components/elements/Dialog"
 import Expander from "~lib/components/elements/Expander"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
-import { useLayoutStyles } from "~lib/components/core/Flex/useLayoutStyles"
+import { useLayoutStyles } from "~lib/components/core/Layout/useLayoutStyles"
 import { FlexContextProvider } from "~lib/components/core/Flex/FlexContext"
 import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
@@ -420,7 +420,7 @@ const FlexContainerBlock = (props: BlockPropsWithWidth): ReactElement => {
   const userKey = getKeyFromId(props.node.deltaBlock.id)
   const styles = useLayoutStyles({
     width: calculatedWidth,
-    element: undefined,
+    element: props.node.deltaBlock.flexContainer,
   })
 
   const propsWithCalculatedWidth = {
@@ -438,23 +438,20 @@ const FlexContainerBlock = (props: BlockPropsWithWidth): ReactElement => {
       data-test-scroll-behavior="normal"
     >
       <StyledFlexContainerWrapper
+        className={classNames(
+          "stFlexContainer",
+          convertKeyToClassName(userKey)
+        )}
+        data-testid="stFlexContainer"
         ref={wrapperElement}
         flexDirection={flexDirection}
         align={align}
         justify={justify}
         gap={gap}
         wrap={wrap}
+        {...styles}
       >
-        <StyledVerticalBlock
-          className={classNames(
-            "stVerticalBlock",
-            convertKeyToClassName(userKey)
-          )}
-          data-testid="stVerticalBlock"
-          {...styles}
-        >
-          <ChildRenderer {...propsWithCalculatedWidth} />
-        </StyledVerticalBlock>
+        <ChildRenderer {...propsWithCalculatedWidth} />
       </StyledFlexContainerWrapper>
     </StyledVerticalBlockBorderWrapper>
   )

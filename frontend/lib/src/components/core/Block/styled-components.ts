@@ -255,15 +255,30 @@ export interface StyledFlexContainerWrapperProps {
   justify?: BlockProto.FlexContainer.Justify
   wrap: boolean
   gap?: string
+  flex?: React.CSSProperties["flex"]
+  width?: React.CSSProperties["width"]
+  maxWidth?: React.CSSProperties["maxWidth"]
 }
 
 export const StyledFlexContainerWrapper =
   styled.div<StyledFlexContainerWrapperProps>(
-    ({ flexDirection, align, justify, wrap, gap, theme }) => {
+    ({
+      flexDirection,
+      align,
+      justify,
+      wrap,
+      gap,
+      theme,
+      flex,
+      width,
+      maxWidth,
+    }) => {
       const gapWidth = gap ? translateGapWidth(gap, theme) : theme.spacing.lg
       return {
         display: "flex",
-        flex: 1,
+        width: width,
+        maxWidth: maxWidth,
+        flex: flex,
         flexDirection: flexDirection,
         alignItems: getAlignItems(align),
         justifyContent: getJustifyContent(justify),
