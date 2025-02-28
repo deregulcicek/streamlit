@@ -85,7 +85,7 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -107,7 +107,7 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -129,7 +129,7 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -220,10 +220,9 @@ class TextWidgetsMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
-        width : "stretch", "content", or int
+        width : "stretch" or int
             The width of the input. If "stretch", the element will expand to fill its parent container.
-            If "content", the element will be sized to fit its contents. If an integer, the element will have
-            that specific width in pixels. Defaults to "content".
+            If an integer, the element will have that specific width in pixels. Defaults to "stretch".
 
         scale : int or None
             An optional integer scale factor to apply to the element.
@@ -276,7 +275,7 @@ class TextWidgetsMixin:
         help: str | None = None,
         autocomplete: str | None = None,
         on_change: WidgetCallback | None = None,
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
@@ -393,7 +392,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
     ) -> str:
         pass
@@ -414,7 +413,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
     ) -> str | None:
         pass
@@ -435,7 +434,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
     ) -> str | None:
         r"""Display a multi-line text input widget.
@@ -514,10 +513,9 @@ class TextWidgetsMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
-        width : "stretch", "content", or int
+        width : "stretch" or int
             The width of the text area. If "stretch", the element will expand to fill its parent container.
-            If "content", the element will be sized to fit its contents. If an integer, the element will have
-            that specific width in pixels. Defaults to "content".
+            If an integer, the element will have that specific width in pixels. Defaults to "stretch".
 
         scale : int or None
             An optional integer scale factor to apply to the element.
@@ -588,7 +586,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
