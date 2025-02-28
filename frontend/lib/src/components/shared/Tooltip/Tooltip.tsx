@@ -19,7 +19,7 @@ import React, {
   ReactElement,
   ReactNode,
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from "react"
 
@@ -86,7 +86,7 @@ function Tooltip({
     setIsOpen(false)
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const parentElement = tooltipElement?.parentElement
     if (!parentElement) {
       return
