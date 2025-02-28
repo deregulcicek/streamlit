@@ -436,10 +436,8 @@ def NumberColumn(
           specifier, like ``"%d"`` to show a signed integer (e.g. "1234") or
           ``"%X"`` to show an unsigned hexidecimal integer (e.g. "4D2"). You
           can also add prefixes and suffixes. To show British pounds, use
-          ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see the
-          `Format specification
-          <https://www.npmjs.com/package/sprintf-js#format-specification>`_ for
-          ``sprint-js``.
+          ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see `sprint-js
+          <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.
 
         Formatting from ``column_config`` always takes precedence over
         formatting from ``pandas.Styler``. The formatting does not impact the
@@ -2040,10 +2038,8 @@ def ProgressColumn(
           specifier, like ``"%d"`` to show a signed integer (e.g. "1234") or
           ``"%X"`` to show an unsigned hexidecimal integer (e.g. "4D2"). You
           can also add prefixes and suffixes. To show British pounds, use
-          ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see the
-          `Format specification
-          <https://www.npmjs.com/package/sprintf-js#format-specification>`_ for
-          ``sprint-js``.
+          ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see `sprint-js
+          <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.
 
         Number formatting from ``column_config`` always takes precedence over
         number formatting from ``pandas.Styler``. The number formatting does
