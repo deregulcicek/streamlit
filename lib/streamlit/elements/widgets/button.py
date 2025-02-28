@@ -335,8 +335,18 @@ class ButtonMixin:
             including the Markdown directives described in the ``body``
             parameter of ``st.markdown``.
 
-        on_click : callable
-            An optional callback invoked when this button is clicked.
+        on_click : callable, "rerun", "ignore", or None
+            How the button should respond to user interaction. This controls
+            whether or not the button triggers a rerun and if a callback
+            function is called. This can be one of the following values:
+
+            - ``None`` (default): The user downloads the file and the app
+              reruns. No callback function is called.
+            - ``"ignore"``: The user downloads the file and the app doesn't
+              rerun. No callback funcation is called.
+            - ``"rerun"``: This is the same as ``on_click=None``.
+            - A ``callable``: The user downloads the file and Streamlit reruns
+              the app. The callable is called before the rest of the app.
 
         args : tuple
             An optional tuple of args to pass to the callback.
