@@ -221,7 +221,7 @@ class ContextProxy:
 
         Example
         -------
-        Access the user's timezone and format a datetime to display locally:
+        Access the user's timezone, and format a datetime to display locally:
 
         >>> import streamlit as st
         >>> from datetime import datetime, timezone
@@ -250,7 +250,7 @@ class ContextProxy:
 
         Example
         -------
-        Access the user's timezone offset and format a datetime to display locally:
+        Access the user's timezone offset, and format a datetime to display locally:
 
         >>> import streamlit as st
         >>> from datetime import datetime, timezone, timedelta

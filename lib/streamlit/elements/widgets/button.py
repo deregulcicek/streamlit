@@ -343,10 +343,10 @@ class ButtonMixin:
             - ``None`` (default): The user downloads the file and the app
               reruns. No callback function is called.
             - ``"ignore"``: The user downloads the file and the app doesn't
-              rerun. No callback funcation is called.
+              rerun. No callback function is called.
             - ``"rerun"``: This is the same as ``on_click=None``.
-            - A ``callable``: The user downloads the file and Streamlit reruns
-              the app. The callable is called before the rest of the app.
+            - A ``callable``: The user downloads the file and app reruns. The
+              callable is called before the rest of the app.
 
         args : tuple
             An optional tuple of args to pass to the callback.

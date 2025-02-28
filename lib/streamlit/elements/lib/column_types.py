@@ -2114,8 +2114,8 @@ def JsonColumn(
 ) -> ColumnConfig:
     """Configure a JSON column in ``st.dataframe`` or ``st.data_editor``.
 
-    Cells need to contain a JSON strings or JSON-compatible objects.
-    JSON columns are not editable at the moment. This command needs to be used in the
+    Cells need to contain JSON strings or JSON-compatible objects. JSON columns
+    are not editable at the moment. This command needs to be used in the
     ``column_config`` parameter of ``st.dataframe`` or ``st.data_editor``.
 
     Parameters
