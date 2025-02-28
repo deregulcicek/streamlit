@@ -240,6 +240,8 @@ export class App extends PureComponent<Props, State> {
 
   private readonly appNavigation: AppNavigation
 
+  private isInitializingConnectionManager: boolean = true
+
   public constructor(props: Props) {
     super(props)
 
@@ -403,6 +405,8 @@ export class App extends PureComponent<Props, State> {
   }
 
   initializeConnectionManager(): void {
+    this.isInitializingConnectionManager = true
+
     this.connectionManager = new ConnectionManager({
       getLastSessionId: () => this.sessionInfo.last?.sessionId,
       endpoints: this.endpoints,
@@ -443,6 +447,8 @@ export class App extends PureComponent<Props, State> {
         this.setLibConfig(libConfig)
       },
     })
+
+    this.isInitializingConnectionManager = false
   }
 
   componentDidMount(): void {
@@ -664,14 +670,21 @@ export class App extends PureComponent<Props, State> {
       }
     }
 
-    // We are using `flushSync` here because there is code that expects every
-    // state to be observed. With React batched updates, it is possible that
-    // multiple `connectionState` changes are applied in 1 render cycle, leading
-    // to the last state change being the only one observed. Utilizing
-    // `flushSync` ensures that we apply every state change.
-    flushSync(() => {
+    if (this.isInitializingConnectionManager) {
+      // If we use `flushSync` while the component is mounting, we will see a warning about
+      // "Warning: flushSync was called from inside a lifecycle method."
+      // The setState will be applied in the expected render cycle in this case.
       this.setState({ connectionState: newState })
-    })
+    } else {
+      // We are using `flushSync` here because there is code that expects every
+      // state to be observed. With React batched updates, it is possible that
+      // multiple `connectionState` changes are applied in 1 render cycle, leading
+      // to the last state change being the only one observed. Utilizing
+      // `flushSync` ensures that we apply every state change.
+      flushSync(() => {
+        this.setState({ connectionState: newState })
+      })
+    }
   }
 
   handleGitInfoChanged = (gitInfo: IGitInfo): void => {
