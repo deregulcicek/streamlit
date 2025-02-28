@@ -421,8 +421,7 @@ def NumberColumn(
         A format string controlling how numbers are displayed.
         This can be one of the following values:
 
-        - ``None`` (default): Inherit number formatting from the data, if
-          present. Otherwise, show the number unformatted.
+        - ``None`` (default): Streamlit infers the formatting from the data.
         - ``"plain"``: Show the full number without any formatting (e.g. "1234.567").
         - ``"localized"``: Show the number in the default locale format (e.g. "1,234.567").
         - ``"percent"``: Show the number as a percentage (e.g. "123456.70%").
@@ -2023,8 +2022,7 @@ def ProgressColumn(
         A format string controlling how the numbers are displayed.
         This can be one of the following values:
 
-        - ``None`` (default): Inherit number formatting from the data, if
-          present. Otherwise, show the number unformatted.
+        - ``None`` (default): Streamlit infers the formatting from the data.
         - ``"plain"``: Show the full number without any formatting (e.g. "1234.567").
         - ``"localized"``: Show the number in the default locale format (e.g. "1,234.567").
         - ``"percent"``: Show the number as a percentage (e.g. "123456.70%").

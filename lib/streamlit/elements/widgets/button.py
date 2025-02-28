@@ -340,13 +340,14 @@ class ButtonMixin:
             whether or not the button triggers a rerun and if a callback
             function is called. This can be one of the following values:
 
-            - ``None`` (default): The user downloads the file and the app
+            - ``"rerun"`` (default): The user downloads the file and the app
               reruns. No callback function is called.
             - ``"ignore"``: The user downloads the file and the app doesn't
               rerun. No callback function is called.
-            - ``"rerun"``: This is the same as ``on_click=None``.
             - A ``callable``: The user downloads the file and app reruns. The
               callable is called before the rest of the app.
+            - ``None``: This is same as ``on_click="rerun"``. This value exists
+              for backwards compatibility and shouldn't be used.
 
         args : tuple
             An optional tuple of args to pass to the callback.
