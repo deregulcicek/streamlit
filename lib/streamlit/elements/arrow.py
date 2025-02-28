@@ -331,10 +331,10 @@ class ArrowMixin:
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent
-            container. If ``use_container_width`` is ``False``, Streamlit
-            sets the dataframe's width according to ``width``. If
-            ``use_container_width`` is ``True`` (default), Streamlit sets the
-            width of the dataframe to match the width of the parent container.
+            container. If this is ``True`` (default), Streamlit sets the width
+            of the dataframe to match the width of the parent container. If
+            this is ``False``, Streamlit sets the dataframe's width according
+            to ``width``.
 
         hide_index : bool or None
             Whether to hide the index column(s). If ``hide_index`` is ``None``
