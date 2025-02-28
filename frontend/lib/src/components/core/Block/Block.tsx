@@ -436,6 +436,7 @@ const FlexContainerBlock = (props: BlockPropsWithWidth): ReactElement => {
       height={height}
       data-testid="stVerticalBlockBorderWrapper"
       data-test-scroll-behavior="normal"
+      {...styles}
     >
       <StyledFlexContainerWrapper
         className={classNames(
@@ -449,7 +450,6 @@ const FlexContainerBlock = (props: BlockPropsWithWidth): ReactElement => {
         justify={justify}
         gap={gap}
         wrap={wrap}
-        {...styles}
       >
         <ChildRenderer {...propsWithCalculatedWidth} />
       </StyledFlexContainerWrapper>

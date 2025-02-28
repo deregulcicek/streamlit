@@ -231,11 +231,13 @@ export const StyledVerticalBlockWrapper = styled.div({
 export interface StyledVerticalBlockBorderWrapperProps {
   border: boolean
   height?: number
+  width?: number
+  flex?: number
 }
 
 export const StyledVerticalBlockBorderWrapper =
   styled.div<StyledVerticalBlockBorderWrapperProps>(
-    ({ theme, border, height }) => ({
+    ({ theme, border, height, width, flex }) => ({
       ...(border && {
         border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
         borderRadius: theme.radii.default,
@@ -244,6 +246,12 @@ export const StyledVerticalBlockBorderWrapper =
       ...(height && {
         height: `${height}px`,
         overflow: "auto",
+      }),
+      ...(width && {
+        width: `${width}px`,
+      }),
+      ...(flex && {
+        flex: flex,
       }),
     })
   )
