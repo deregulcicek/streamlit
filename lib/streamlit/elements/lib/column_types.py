@@ -2114,7 +2114,7 @@ def JsonColumn(
 ) -> ColumnConfig:
     """Configure a JSON column in ``st.dataframe`` or ``st.data_editor``.
 
-    Cells need to contain a JSON string or JSON-compatible objects.
+    Cells need to contain a JSON strings or JSON-compatible objects.
     JSON columns are not editable at the moment. This command needs to be used in the
     ``column_config`` parameter of ``st.dataframe`` or ``st.data_editor``.
 
@@ -2135,8 +2135,12 @@ def JsonColumn(
         - ``"large"``: 400px wide
 
     help: str or None
-        An optional tooltip that gets displayed when hovering over the column
-        label. If this is ``None`` (default), no tooltip is displayed.
+        A tooltip that gets displayed when hovering over the column label. If
+        this is ``None`` (default), no tooltip is displayed.
+
+        The tooltip can optionally contain GitHub-flavored Markdown, including
+        the Markdown directives described in the ``body`` parameter of
+        ``st.markdown``.
 
     pinned: bool or None
         Whether the column is pinned. A pinned column will stay visible on the
