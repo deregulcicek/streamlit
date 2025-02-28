@@ -88,9 +88,9 @@ def navigation(
     """
     Configure the available pages in a multipage app.
 
-    Call ``st.navigation`` in your entrypoint file with one or more pages
-    defined by ``st.Page``. ``st.navigation`` returns the current page, which
-    can be executed using ``.run()`` method.
+    Call ``st.navigation`` in your entrypoint file to define the available
+    pages for your app. ``st.navigation`` returns the current page, which can
+    be executed using ``.run()`` method.
 
     When using ``st.navigation``, your entrypoint file (the file passed to
     ``streamlit run``) acts like a router or frame of common elements around
@@ -99,32 +99,38 @@ def navigation(
     the ``StreamlitPage`` object returned by ``st.navigation``.
 
     The set of available pages can be updated with each rerun for dynamic
-    navigation. By default, ``st.navigation`` draws the available pages in the
-    side navigation if there is more than one page. This behavior can be
-    changed using the ``position`` keyword argument.
+    navigation. By default, ``st.navigation`` displays the available pages in
+    the sidebar if there is more than one page. This behavior can be changed
+    using the ``position`` keyword argument.
 
     As soon as any session of your app executes the ``st.navigation`` command,
     your app will ignore the ``pages/`` directory (across all sessions).
 
     Parameters
     ----------
-    pages : list[StreamlitPage] or dict[str, list[StreamlitPage]]
+    pages : list[page-like], dict[str, list[page-like]]
         The available pages for the app.
+
+        To create a navigation menu with no sections or page groupings,
+        ``pages`` must be a list of page-like objects. Page-like objects are
+        anything that can be passed to ``st.Page``, or a ``StreamlitPage``
+        object returned by ``st.Page``.
 
         To create labeled sections or page groupings within the navigation
         menu, ``pages`` must be a dictionary. Each key is the label of a
-        section and each value is the list of ``StreamlitPage`` objects for
+        section and each value is the list of page-like objects for
         that section.
 
-        To create a navigation menu with no sections or page groupings,
-        ``pages`` must be a list of ``StreamlitPage`` objects.
-
-        Use ``st.Page`` to create ``StreamlitPage`` objects.
+        When you use a string or path as a page-like object, they are
+        internally passed to ``st.Page`` and converted to ``StreamlitPage``
+        objects. In this case, the page will have the default title, icon, and
+        path inferred from its path or filename. To customize these attributes
+        for your page, initialize your page with ``st.Page``.
 
     position : "sidebar" or "hidden"
-        The position of the navigation menu. If ``position`` is ``"sidebar"``
+        The position of the navigation menu. If this is ``"sidebar"``
         (default), the navigation widget appears at the top of the sidebar. If
-        ``position`` is ``"hidden"``, the navigation widget is not displayed.
+        this is ``"hidden"``, the navigation widget is not displayed.
 
         If there is only one page in ``pages``, the navigation will be hidden
         for any value of ``position``.
@@ -143,7 +149,8 @@ def navigation(
     Returns
     -------
     StreamlitPage
-        The current page selected by the user.
+        The current page selected by the user. To run the page, you must use
+        the ``.run()`` method on it.
 
     Examples
     --------
@@ -153,7 +160,10 @@ def navigation(
 
     **Example 1: Use a callable or Python file as a page**
 
-    You can declare pages from callables or file paths.
+    You can declare pages from callables or file paths. If you pass callables
+    or paths to ``st.navigation`` as a page-like objects, they are internally
+    converted to ``StreamlitPage`` objects using ``st.Page``. In this case, the
+    page titles, icons, and paths are inferred from the file or callable names.
 
     ``page_1.py`` (in the same directory as your entrypoint file):
 
@@ -168,19 +178,20 @@ def navigation(
     >>> def page_2():
     ...     st.title("Page 2")
     >>>
-    >>> pg = st.navigation([st.Page("page_1.py"), st.Page(page_2)])
+    >>> pg = st.navigation(["page_1.py", page_2])
     >>> pg.run()
 
     .. output::
         https://doc-navigation-example-1.streamlit.app/
         height: 200px
 
-    **Example 2: Group pages into sections**
+    **Example 2: Group pages into sections and customize them with ``st.Page``**
 
     You can use a dictionary to create sections within your navigation menu. In
     the following example, each page is similar to Page 1 in Example 1, and all
     pages are in the same directory. However, you can use Python files from
-    anywhere in your repository. For more information, see |st.Page|_.
+    anywhere in your repository. ``st.Page`` is used to give each page a custom
+    title. For more information, see |st.Page|_.
 
     Directory structure:
 
@@ -231,7 +242,7 @@ def navigation(
     >>> st.sidebar.selectbox("Foo", ["A", "B", "C"], key="foo")
     >>> st.sidebar.checkbox("Bar", key="bar")
     >>>
-    >>> pg = st.navigation([st.Page(page1), st.Page(page2)])
+    >>> pg = st.navigation([page1, page2])
     >>> pg.run()
 
     .. output::
