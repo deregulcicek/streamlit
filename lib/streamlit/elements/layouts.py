@@ -54,14 +54,12 @@ class LayoutsMixin:
             "left",
             "center",
             "right",
-            "stretch",
             "distribute",
         ] = "left",
         vertical_alignment: Literal[
             "top",
             "center",
             "bottom",
-            "stretch",
             "distribute",
         ] = "top",
         width: Literal["stretch", "content"] | int = "content",
@@ -212,10 +210,12 @@ class LayoutsMixin:
             "right": "end",
             "top": "start",
             "bottom": "end",
+            "distribute": "space_between",
+            "stretch": "stretch",
         }
 
-        valid_align = ["start", "center", "end", "stretch"]
-        valid_justify = ["start", "center", "end", "distribute"]
+        valid_align = ["start", "center", "end"]
+        valid_justify = ["start", "center", "end", "space_between"]
 
         def convert_align_to_proto(align):
             if align in ["start", "end", "center"]:
@@ -233,10 +233,10 @@ class LayoutsMixin:
 
         def add_justify_align_to_proto(align, justify, proto):
             if align in valid_align:
-                block_proto.flex_container.align = convert_align_to_proto(align)
+                proto.flex_container.align = convert_align_to_proto(align)
 
             if justify in valid_justify:
-                block_proto.flex_container.justify = convert_justify_to_proto(justify)
+                proto.flex_container.justify = convert_justify_to_proto(justify)
 
         if direction == "vertical":
             block_proto.flex_container.direction = (

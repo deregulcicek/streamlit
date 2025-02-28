@@ -252,8 +252,8 @@ function ChatInput({
     accept: getAccept(element.fileType),
   })
 
-  const { value: width, elementRef } =
-    useEvaluatedCssProperty("--st-block-width")
+  // const { value: width, elementRef } =
+  //   useEvaluatedCssProperty("--st-block-width")
 
   const getScrollHeight = (): number => {
     let scrollHeight = 0

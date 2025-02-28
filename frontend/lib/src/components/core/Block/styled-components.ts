@@ -248,7 +248,8 @@ export const StyledVerticalBlockBorderWrapper =
         overflow: "auto",
       }),
       ...(width && {
-        width: `${width}px`,
+        width: `${width}`,
+        overflowX: "auto",
       }),
       ...(flex && {
         flex: flex,
