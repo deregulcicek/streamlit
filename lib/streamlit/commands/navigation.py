@@ -113,7 +113,7 @@ def navigation(
 
         To create a navigation menu with no sections or page groupings,
         ``pages`` must be a list of page-like objects. Page-like objects are
-        anything that can be passed to ``st.Page``, or a ``StreamlitPage``
+        anything that can be passed to ``st.Page`` or a ``StreamlitPage``
         object returned by ``st.Page``.
 
         To create labeled sections or page groupings within the navigation
