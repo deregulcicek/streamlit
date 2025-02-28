@@ -49,7 +49,8 @@ class LayoutsMixin:
         key: Key | None = None,
         # TODO: Move this Literal definition to somewhere shared
         gap: Literal["small", "medium", "large"] = "small",
-        direction: Literal["vertical", "horizontal", "wrap"] = "vertical",
+        direction: Literal["vertical", "horizontal"] = "vertical",
+        wrap: bool = False,
         horizontal_alignment: Literal[
             "left",
             "center",
@@ -182,7 +183,7 @@ class LayoutsMixin:
         block_proto.flex_container.scale = scale
 
         block_proto.flex_container.gap = gap
-        block_proto.flex_container.wrap = True if direction == "wrap" else False
+        block_proto.flex_container.wrap = wrap
 
         if height:
             # Activate scrolling container behavior:
