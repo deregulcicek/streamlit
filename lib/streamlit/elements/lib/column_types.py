@@ -1580,7 +1580,7 @@ def DatetimeColumn(
         - ``None`` (default): Show the datetime in ``"YYYY-MM-DD HH:mm:ss"``
           format (e.g. "2025-03-04 20:00:00").
         - ``"localized"``: Show the datetime in the default locale format (e.g.
-          "Mar 4, 2025, 12:00:00 PM" in the USA Pacific timezone).
+          "Mar 4, 2025, 12:00:00 PM" in the America/Los_Angeles timezone).
         - ``"distance"``: Show the datetime in a relative format (e.g.
           "a few seconds ago").
         - ``"calendar"``: Show the datetime in a calendar format (e.g.
@@ -1744,7 +1744,7 @@ def TimeColumn(
         - ``None`` (default): Show the time in ``"HH:mm:ss"`` format (e.g.
           "20:00:00").
         - ``"localized"``: Show the time in the default locale format (e.g.
-          "12:00:00 PM" in the USA Pacific timezone).
+          "12:00:00 PM" in the America/Los_Angeles timezone).
         - ``"iso8601"``: Show the time in ISO 8601 format (e.g.
           "20:00:00.000Z").
         - A momentJS format string: Format the time with a string, like
@@ -1899,7 +1899,7 @@ def DateColumn(
         - ``None`` (default): Show the date in ``"YYYY-MM-DD"`` format (e.g.
           "2025-03-04").
         - ``"localized"``: Show the date in the default locale format (e.g.
-          "Mar 4, 2025" in the USA Pacific timezone).
+          "Mar 4, 2025" in the America/Los_Angeles timezone).
         - ``"distance"``: Show the date in a relative format (e.g.
           "a few seconds ago").
         - ``"iso8601"``: Show the date in ISO 8601 format (e.g.
