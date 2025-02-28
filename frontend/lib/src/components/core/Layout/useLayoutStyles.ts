@@ -131,10 +131,10 @@ export const useLayoutStyles = <T>({
       let validatedCommandWidth = validateWidth(commandWidth)
       // Without this, maxWidth: 100% stops the container overflow as well
       // so maybe we don't need this check.
-      validatedCommandWidth = checkAndFixOverflow(
-        validatedCommandWidth,
-        containerWidth
-      )
+      // validatedCommandWidth = checkAndFixOverflow(
+      //   validatedCommandWidth,
+      //   containerWidth
+      // )
 
       return {
         width: `${validatedCommandWidth}px`,
