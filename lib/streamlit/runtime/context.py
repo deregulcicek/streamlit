@@ -219,8 +219,8 @@ class ContextProxy:
     def timezone(self) -> str | None:
         """The read-only timezone of the user's browser.
 
-        Examples
-        --------
+        Example
+        -------
         Access the user's timezone and format a datetime to display locally:
 
         >>> import streamlit as st
@@ -248,8 +248,8 @@ class ContextProxy:
     def timezone_offset(self) -> int | None:
         """The read-only timezone offset of the user's browser.
 
-        Examples
-        --------
+        Example
+        -------
         Access the user's timezone offset and format a datetime to display locally:
 
         >>> import streamlit as st
