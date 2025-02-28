@@ -578,10 +578,11 @@ describe("truncateDecimals", () => {
   )
 })
 
-withTimezones(() => {
+withTimezones(timezone => {
   describe("formatMoment", () => {
     beforeAll(() => {
-      const d = new Date("2022-04-28T00:00:00Z")
+      // Set the system time to a fixed date in the respective timezone
+      const d = dayjs("2022-04-28T00:00:00").toDate()
       vi.useFakeTimers()
       vi.setSystemTime(d)
     })
@@ -623,11 +624,18 @@ withTimezones(() => {
         "April 27th, 2023 -02:30",
       ],
       // Distance:
-      ["distance", dayjs.utc("2022-04-10T20:20:30Z"), "17 days ago"],
-      ["distance", dayjs.utc("2020-04-10T20:20:30Z"), "2 years ago"],
-      ["distance", dayjs.utc("2022-04-27T23:59:59Z"), "a few seconds ago"],
-      ["distance", dayjs.utc("2022-04-20T00:00:00Z"), "8 days ago"],
-      ["distance", dayjs.utc("2022-05-27T23:59:59Z"), "in a month"],
+      // The distance format leverages dayjs's fromNow() method, which is
+      // interprets UTC as needing to be converted to local timezone.
+      // We set it explicitly to the timezone we want to test.
+      ["distance", dayjs.tz("2022-04-10T20:20:30Z", timezone), "17 days ago"],
+      ["distance", dayjs.tz("2020-04-10T20:20:30Z", timezone), "2 years ago"],
+      [
+        "distance",
+        dayjs.tz("2022-04-27T23:59:59Z", timezone),
+        "a few seconds ago",
+      ],
+      ["distance", dayjs.tz("2022-04-20T00:00:00Z", timezone), "8 days ago"],
+      ["distance", dayjs.tz("2022-05-27T23:59:59Z", timezone), "in a month"],
       // Calendar:
       ["calendar", dayjs.utc("2022-04-30T15:30:00Z"), "Saturday at 3:30 PM"],
       [
