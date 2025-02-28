@@ -27,6 +27,7 @@ import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
 import duration from "dayjs/plugin/duration"
 import advancedFormat from "dayjs/plugin/advancedFormat"
+import relativeTime from "dayjs/plugin/relativeTime"
 import numbro from "numbro"
 import { getLogger } from "loglevel"
 
@@ -53,6 +54,7 @@ dayjs.extend(timezone)
 dayjs.extend(duration)
 dayjs.extend(advancedFormat)
 dayjs.extend(quarterOfYear)
+dayjs.extend(relativeTime)
 
 /**
  * The frequency strings defined in pandas.
