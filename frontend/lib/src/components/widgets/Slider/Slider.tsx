@@ -28,6 +28,7 @@ import { StyleProps, Slider as UISlider } from "baseui/slider"
 import { useTheme } from "@emotion/react"
 import { sprintf } from "sprintf-js"
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
 
 import { Slider as SliderProto } from "@streamlit/protobuf"
 
@@ -53,6 +54,7 @@ import {
 } from "./styled-components"
 
 const DEBOUNCE_TIME_MS = 200
+dayjs.extend(utc)
 
 export interface Props {
   disabled: boolean
