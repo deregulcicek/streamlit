@@ -48,6 +48,8 @@ class HeadingMixin:
         *,  # keyword-only arguments:
         help: str | None = None,
         divider: Divider = False,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display text in header formatting.
 
@@ -84,6 +86,16 @@ class HeadingMixin:
             the following: blue, green, orange, red, violet, gray/grey, or
             rainbow.
 
+        width : "stretch", "content", or int
+            The width of the header. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int
+            The relative scaling factor for this element in a flex container.
+            The value determines how much space this element will take compared to other elements.
+            Defaults to 1, which gives all elements in a flex container the same relative size.
+
         Examples
         --------
         >>> import streamlit as st
@@ -109,6 +121,8 @@ class HeadingMixin:
                 anchor=anchor,
                 help=help,
                 divider=divider,
+                width=width,
+                scale=scale,
             ),
         )
 
@@ -120,6 +134,8 @@ class HeadingMixin:
         *,  # keyword-only arguments:
         help: str | None = None,
         divider: Divider = False,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display text in subheader formatting.
 
@@ -156,6 +172,16 @@ class HeadingMixin:
             the following: blue, green, orange, red, violet, gray/grey, or
             rainbow.
 
+        width : "stretch", "content", or int
+            The width of the subheader. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int
+            The relative scaling factor for this element in a flex container.
+            The value determines how much space this element will take compared to other elements.
+            Defaults to 1, which gives all elements in a flex container the same relative size.
+
         Examples
         --------
         >>> import streamlit as st
@@ -181,6 +207,8 @@ class HeadingMixin:
                 anchor=anchor,
                 help=help,
                 divider=divider,
+                width=width,
+                scale=scale,
             ),
         )
 
@@ -191,6 +219,8 @@ class HeadingMixin:
         anchor: Anchor = None,
         *,  # keyword-only arguments:
         help: str | None = None,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display text in title formatting.
 
@@ -222,6 +252,16 @@ class HeadingMixin:
             including the Markdown directives described in the ``body``
             parameter of ``st.markdown``.
 
+        width : "stretch", "content", or int
+            The width of the title. If "stretch", the element will expand to fill its parent container.
+            If "content", the element will be sized to fit its contents. If an integer, the element will have
+            that specific width in pixels. Defaults to "content".
+
+        scale : int
+            The relative scaling factor for this element in a flex container.
+            The value determines how much space this element will take compared to other elements.
+            Defaults to 1, which gives all elements in a flex container the same relative size.
+
         Examples
         --------
         >>> import streamlit as st
@@ -237,7 +277,12 @@ class HeadingMixin:
         return self.dg._enqueue(
             "heading",
             HeadingMixin._create_heading_proto(
-                tag=HeadingProtoTag.TITLE_TAG, body=body, anchor=anchor, help=help
+                tag=HeadingProtoTag.TITLE_TAG,
+                body=body,
+                anchor=anchor,
+                help=help,
+                width=width,
+                scale=scale,
             ),
         )
 
@@ -274,6 +319,8 @@ class HeadingMixin:
         anchor: Anchor = None,
         help: str | None = None,
         divider: Divider = False,
+        width: Literal["stretch", "content"] | int = "content",
+        scale: int = 1,
     ) -> HeadingProto:
         proto = HeadingProto()
         proto.tag = tag.value
@@ -299,4 +346,9 @@ class HeadingMixin:
 
         if help:
             proto.help = help
+
+        # Add width and scale properties
+        proto.width = str(width)
+        proto.scale = scale
+
         return proto

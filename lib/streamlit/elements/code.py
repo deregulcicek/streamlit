@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from streamlit.proto.Code_pb2 import Code as CodeProto
 from streamlit.runtime.metrics_util import gather_metrics
@@ -35,6 +35,8 @@ class CodeMixin:
         line_numbers: bool = False,
         wrap_lines: bool = False,
         height: int | None = None,
+        width: Literal["stretch"] | int = "stretch",
+        scale: int = 1,
     ) -> DeltaGenerator:
         """Display a code block with optional syntax highlighting.
 
@@ -66,6 +68,16 @@ class CodeMixin:
             is ``None`` (default), Streamlit sets the element's height to fit
             its content. Vertical scrolling within the element is enabled when
             the height does not accomodate all lines.
+
+        width : "stretch" or int
+            The width of the code block. If "stretch" (default), the element will
+            expand to fill its parent container. If an integer, the element
+            will have that specific width in pixels.
+
+        scale : int
+            The relative scaling factor for this element in a flex container.
+            The value determines how much space this element will take compared
+            to other elements. Defaults to 1.
 
         Examples
         --------
@@ -106,6 +118,10 @@ class CodeMixin:
         code_proto.wrap_lines = wrap_lines
         if height:
             code_proto.height = height
+
+        code_proto.width = str(width)
+        code_proto.scale = scale
+
         return self.dg._enqueue("code", code_proto)
 
     @property

@@ -29,4 +29,6 @@ message Heading {
     string help = 4;
     bool hide_anchor = 5;
     string divider = 6;
+    string width = 7;
+    int32 scale = 8;
 }

@@ -30,4 +30,10 @@ message Code {
   bool wrap_lines = 4;
 
   uint32 height = 5;
+
+  // Width of the code block. Can be "stretch" or a pixel value as a string.
+  string width = 6;
+
+  // Scale factor for the code block in flex layouts
+  int32 scale = 7;
 }

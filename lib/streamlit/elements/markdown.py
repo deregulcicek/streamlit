@@ -155,7 +155,7 @@ class MarkdownMixin:
         body: SupportsStr,
         language: str | None = "python",
         *,  # keyword-only arguments:
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
     ) -> DeltaGenerator:
         """Display a code block with optional syntax highlighting.
@@ -175,10 +175,9 @@ class MarkdownMixin:
 
             https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/master/AVAILABLE_LANGUAGES_PRISM.MD
 
-        width : "stretch", "content", or int
+        width : "stretch" or int
             The width of the code block. If "stretch", the element will expand to fill its parent container.
-            If "content", the element will be sized to fit its contents. If an integer, the element will have
-            that specific width in pixels. Defaults to "content".
+            If an integer, the element will have that specific width in pixels. Defaults to "stretch".
 
         scale : int or None
             An optional integer scale factor to apply to the element.
@@ -346,7 +345,7 @@ class MarkdownMixin:
     def divider(
         self,
         *,  # keyword-only arguments:
-        width: Literal["stretch", "content"] | int = "content",
+        width: Literal["stretch"] | int = "stretch",
         scale: int = 1,
     ) -> DeltaGenerator:
         """Display a horizontal rule.
@@ -357,10 +356,9 @@ class MarkdownMixin:
 
         Parameters
         ----------
-        width : "stretch", "content", or int
+        width : "stretch" or int
             The width of the divider. If "stretch", the element will expand to fill its parent container.
-            If "content", the element will be sized to fit its contents. If an integer, the element will have
-            that specific width in pixels. Defaults to "content".
+            If an integer, the element will have that specific width in pixels. Defaults to "stretch".
 
         scale : int or None
             An optional integer scale factor to apply to the element.
