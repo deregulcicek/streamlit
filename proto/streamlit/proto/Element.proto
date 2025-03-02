@@ -57,6 +57,7 @@ import "streamlit/proto/PlotlyChart.proto";
 import "streamlit/proto/Components.proto";
 import "streamlit/proto/Progress.proto";
 import "streamlit/proto/Snow.proto";
+import "streamlit/proto/Space.proto";
 import "streamlit/proto/Spinner.proto";
 import "streamlit/proto/Radio.proto";
 import "streamlit/proto/Selectbox.proto";
@@ -121,6 +122,7 @@ message Element {
     Skeleton skeleton = 52;
     Slider slider = 21;
     Snow snow = 46;
+    Space space = 57;
     Spinner spinner = 44;
     Text text = 1;
     TextArea text_area = 22;
@@ -132,7 +134,7 @@ message Element {
     Video video = 14;
     Heading heading = 47;
     Code code = 48;
-    // Next ID: 57
+    // Next ID: 58
   }
 
   reserved 9;

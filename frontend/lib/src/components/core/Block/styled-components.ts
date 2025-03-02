@@ -99,14 +99,16 @@ export interface StyledElementContainerProps {
   width: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
   elementType: string
+  marginLeft?: React.CSSProperties["marginLeft"]
 }
 
 const GLOBAL_ELEMENTS = ["balloons", "snow"]
 export const StyledElementContainer = styled.div<StyledElementContainerProps>(
-  ({ theme, isStale, width, elementType, maxWidth, flex }) => ({
+  ({ theme, isStale, width, elementType, maxWidth, flex, marginLeft }) => ({
     width,
     maxWidth,
     flex,
+    marginLeft,
     // Allows to have absolutely-positioned nodes inside app elements, like
     // floating buttons.
     position: "relative",

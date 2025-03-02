@@ -99,6 +99,7 @@ import {
   shouldComponentBeEnabled,
 } from "./utils"
 import { StyledElementContainerLayoutWrapper } from "./StyledElementContainerLayoutWrapper"
+import Space from "~lib/components/elements/Space/Space"
 
 // Lazy-load elements.
 const Audio = React.lazy(() => import("~lib/components/elements/Audio"))
@@ -390,6 +391,9 @@ const RawElementNodeRenderer = (
         props.isStale,
         <Snow scriptRunId={props.scriptRunId} />
       )
+
+    case "space":
+      return <Space scriptRunId={props.scriptRunId} />
 
     case "spinner":
       return (

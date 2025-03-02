@@ -26,6 +26,7 @@ export type UseLayoutStylesArgs<T> = {
         useContainerWidth?: boolean | null
         flex?: string
         scale?: number
+        floatLeft?: boolean
       })
     | undefined
 }
@@ -38,6 +39,7 @@ export type UseLayoutStylesShape = {
   maxWidth?: React.CSSProperties["maxWidth"]
   flex?: React.CSSProperties["flex"]
   height?: React.CSSProperties["height"]
+  marginLeft?: React.CSSProperties["marginLeft"]
 }
 
 const validateWidth = (
@@ -112,6 +114,12 @@ export const useLayoutStyles = <T>({
     if (!element) {
       return {
         width: containerWidth,
+      }
+    }
+
+    if (element.floatLeft) {
+      return {
+        marginLeft: "auto",
       }
     }
 
