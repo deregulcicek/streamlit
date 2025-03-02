@@ -154,9 +154,9 @@ def navigation(
 
     Examples
     --------
-    The following examples show possible entrypoint files, which is the file
-    you pass to ``streamlit run``. Your entrypoint file manages your app's
-    navigation and serves as a router between pages.
+    The following examples show different possible entrypoint files, each named
+    ``streamlit_app.py``. An entrypoint file is passed to ``streamlit run``. It
+    manages your app's navigation and serves as a router between pages.
 
     **Example 1: Use a callable or Python file as a page**
 
@@ -171,7 +171,7 @@ def navigation(
     >>>
     >>> st.title("Page 1")
 
-    Your entrypoint file:
+    ``streamlit_app.py``:
 
     >>> import streamlit as st
     >>>
@@ -229,6 +229,8 @@ def navigation(
     Call widget functions in your entrypoint file when you want a widget to be
     stateful across pages. Assign keys to your common widgets and access their
     values through Session State within your pages.
+
+    ``streamlit_app.py``:
 
     >>> import streamlit as st
     >>>
