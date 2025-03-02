@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
+import { FlexContext } from "../Flex/FlexContext"
 
 export type UseLayoutStylesArgs<T> = {
   width: React.CSSProperties["width"] | undefined
   element:
     | (T & {
         width?: number
+        height?: number
         useContainerWidth?: boolean | null
         flex?: string
         scale?: number
@@ -35,11 +37,15 @@ export type UseLayoutStylesShape = {
   width: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]
   flex?: React.CSSProperties["flex"]
+  height?: React.CSSProperties["height"]
 }
 
 const validateWidth = (
-  width: React.CSSProperties["width"] | undefined
-): React.CSSProperties["width"] => {
+  width:
+    | React.CSSProperties["width"]
+    | React.CSSProperties["height"]
+    | undefined
+): React.CSSProperties["width"] | React.CSSProperties["height"] => {
   if (typeof width === "number") {
     if (width === 0) {
       // An element with no width should be treated as if it has no width set
@@ -88,7 +94,14 @@ export const useLayoutStyles = <T>({
    * The width set from the `st.<command>`
    */
   const commandWidth = element?.width
+  const commandHeight = element?.height
   const useContainerWidth = element?.useContainerWidth
+  const flexContext = useContext(FlexContext)
+
+  let direction
+  if (flexContext) {
+    direction = flexContext.direction
+  }
 
   // Note: Consider rounding the width to the nearest pixel so we don't have
   // subpixel widths, which leads to blurriness on screen
@@ -129,17 +142,24 @@ export const useLayoutStyles = <T>({
 
     if (Number.isInteger(Number(commandWidth))) {
       let validatedCommandWidth = validateWidth(commandWidth)
-      // Without this, maxWidth: 100% stops the container overflow as well
-      // so maybe we don't need this check.
+      // This causes some issues with width on containers and doesn't seem to make
+      // Sense in a situation where there is more than one element in a row.
       // validatedCommandWidth = checkAndFixOverflow(
       //   validatedCommandWidth,
       //   containerWidth
       // )
 
-      return {
-        width: `${validatedCommandWidth}px`,
-        maxWidth: "100%",
-        flex: `0 0 ${validatedCommandWidth}px`,
+      if (direction && direction === "row") {
+        return {
+          width: `${validatedCommandWidth}px`,
+          maxWidth: "100%",
+          flex: `0 0 ${validatedCommandWidth}px`,
+        }
+      } else {
+        return {
+          width: `${validatedCommandWidth}px`,
+          maxWidth: "100%",
+        }
       }
     }
 
@@ -157,19 +177,6 @@ export const useLayoutStyles = <T>({
         maxWidth: "100%",
       }
     }
-
-    // commandWidth should be "content" if we reach here.
-
-    // This is commented out because we will ignore scale
-    // when the width is "content"
-
-    // if (element.flex) {
-    //   return {
-    //     width: "auto",
-    //     maxWidth: "100%",
-    //     flex: element.flex
-    //   }
-    // }
 
     return {
       width: "auto",

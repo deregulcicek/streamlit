@@ -206,6 +206,34 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     return <Tabs {...tabsProps} />
   }
 
+  if (notNullOrUndefined(node.deltaBlock.flexContainer?.direction)) {
+    let direction
+    if (
+      node.deltaBlock.flexContainer.direction ==
+      BlockProto.FlexContainer.Direction.VERTICAL
+    ) {
+      direction = "column"
+    } else if (
+      node.deltaBlock.flexContainer.direction ==
+      BlockProto.FlexContainer.Direction.HORIZONTAL
+    ) {
+      direction = "row"
+    }
+    return (
+      <FlexContextProvider
+        direction={direction}
+        // horizontalAlignment={
+        //   node.deltaBlock.flexContainer?.align ?? null
+        // }
+        // verticalAlignment={
+        //   node.deltaBlock.flexContainer?.verticalAlignment ?? null
+        // }
+      >
+        {child}
+      </FlexContextProvider>
+    )
+  }
+
   return child
 }
 

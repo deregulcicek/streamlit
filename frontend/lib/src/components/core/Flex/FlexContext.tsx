@@ -19,9 +19,9 @@ import React, { createContext, FC, PropsWithChildren, useMemo } from "react"
 import { Block as BlockProto } from "@streamlit/protobuf"
 
 export interface IFlexContext {
-  direction: "row" | "column" | null
-  align: BlockProto.Horizontal.Align | BlockProto.Vertical.Align | null
-  justify: BlockProto.Vertical.Justify | BlockProto.Vertical.Justify | null
+  direction: string | undefined
+  // align: BlockProto.Horizontal.Align | BlockProto.Vertical.Align | null
+  // justify: BlockProto.Vertical.Justify | BlockProto.Vertical.Justify | null
 }
 
 export const FlexContext = createContext<IFlexContext | null>(null)
@@ -48,16 +48,16 @@ export const FlexContext = createContext<IFlexContext | null>(null)
 export const FlexContextProvider: FC<PropsWithChildren<IFlexContext>> = ({
   children,
   direction,
-  align,
-  justify,
+  // align,
+  // justify,
 }) => {
   const value = useMemo<IFlexContext>(() => {
     return {
       direction,
-      align,
-      justify,
+      // align,
+      // justify,
     }
-  }, [direction, align, justify])
+  }, [direction])
 
   return <FlexContext.Provider value={value}>{children}</FlexContext.Provider>
 }
