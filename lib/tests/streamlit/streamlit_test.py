@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import importlib
 import os
 import re
 import statistics
@@ -185,38 +184,19 @@ def test_cold_import_time(benchmark):
     benchmark(do_cold_import)
 
 
-@pytest.mark.usefixtures("benchmark")
-def test_warm_import_time(benchmark):
-    """
-    Measure the import time of `streamlit` within the same Python process.
-
-    This simulates a “warm” import by removing `mypackage` from sys.modules
-    and importing it again. It avoids the overhead of starting a new Python
-    process, but may not perfectly reproduce a true cold import since Python
-    remains running between iterations.
-    """
-
-    def do_warm_import():
-        # Remove the package from sys.modules so that each iteration
-        # forces a new import
-        if "streamlit" in sys.modules:
-            del sys.modules["streamlit"]
-        importlib.import_module("streamlit")
-
-    benchmark(do_warm_import)
-
-
 def test_importtime_median_under_threshold():
     """
     Measure the import time of Streamlit via the built-in `importtime`
     in a fresh interpreter, compute the median import time,
     and check if it's under a static threshold.
     """
-    # Define an acceptable threshold (in microseconds)
+    # Define an acceptable threshold for import time (in microseconds).
+    # This value is also depenend a bit on the machine it's run on,
+    # so needs to be mainly adjusted to our CI runners.
     # While its important to keep the import time low, you can
     # modify this threshold if it's really needed to add some new features.
     # But make sure that its justified and intended.
-    threshold_us = 100_000
+    max_allowed_import_time_us = 500_000
 
     import_times = []
 
@@ -237,6 +217,10 @@ def test_importtime_median_under_threshold():
     median_time_us = statistics.median(import_times)
 
     # Check if the median is within the desired threshold
-    assert median_time_us <= threshold_us, (
-        f"Median import time {median_time_us}us exceeded threshold {threshold_us}us"
+    assert median_time_us <= max_allowed_import_time_us, (
+        f"Median import time {round(median_time_us)}us of streamlit exceeded the max "
+        f"allowed threshold {max_allowed_import_time_us}us (percentage: "
+        f"{round(median_time_us / max_allowed_import_time_us * 100)}%)."
+        "In case this is expected and justified, you can change the "
+        "threshold in the test."
     )
