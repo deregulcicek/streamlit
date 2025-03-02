@@ -49,6 +49,7 @@ select = [
   "UP",     # pyupgrade
   "W",      # pycodestyle warnings
   "S324",   # Check usage of insecure hashlib functions
+  "RUF",
 ]
 ignore = [
   "B008",    # Checks for function calls in default function arguments.
@@ -61,7 +62,8 @@ ignore = [
   "PYI051",  # Checks for redundant unions between a Literal and a builtin supertype of that Literal.
   "UP031",   # Checks for printf-style string formatting, and offers to replace it with str.format calls.
   "PLC0208", # Checks for iterations over set literals.
-  "G004",    # Checks for usage of f-strings in logging messages
+  "G004",    # Checks for usage of f-strings in logging messages.
+  "RUF010"   # Checks for explicit type conversion within f-strings.
 ]
 # Do not lint files in tests, scripts, and vendor directory:
 exclude = [
