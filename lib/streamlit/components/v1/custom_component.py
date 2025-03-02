@@ -189,7 +189,7 @@ And if you're using Streamlit Cloud, add "pyarrow" to your requirements.txt."""
                 )
             element.component_instance.id = computed_id
 
-            def deserialize_component(ui_value, widget_id=""):
+            def deserialize_component(ui_value, widget_id=""):  # noqa: ARG001
                 # ui_value is an object from json, an ArrowTable proto, or a bytearray
                 return ui_value
 

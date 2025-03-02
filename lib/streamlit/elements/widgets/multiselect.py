@@ -73,7 +73,7 @@ class MultiSelectSerde(Generic[T]):
     def deserialize(
         self,
         ui_value: list[int] | None,
-        widget_id: str = "",
+        widget_id: str = "",  # noqa: ARG002
     ) -> list[T]:
         current_value: list[int] = (
             ui_value if ui_value is not None else self.default_value

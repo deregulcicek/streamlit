@@ -70,7 +70,7 @@ class NumberInputSerde:
         return v
 
     def deserialize(
-        self, ui_value: Number | None, widget_id: str = ""
+        self, ui_value: Number | None, widget_id: str = ""  # noqa: ARG002
     ) -> Number | None:
         val: Number | None = ui_value if ui_value is not None else self.value
 

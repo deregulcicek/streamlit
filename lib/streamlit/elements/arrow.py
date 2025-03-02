@@ -160,7 +160,7 @@ class DataframeState(TypedDict, total=False):
 class DataframeSelectionSerde:
     """DataframeSelectionSerde is used to serialize and deserialize the dataframe selection state."""
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> DataframeState:
+    def deserialize(self, ui_value: str | None, widget_id: str = "") -> DataframeState:  # noqa: ARG002
         empty_selection_state: DataframeState = {
             "selection": {
                 "rows": [],

@@ -155,7 +155,7 @@ class SliderSerde:
     single_value: bool
     orig_tz: tzinfo | None
 
-    def deserialize(self, ui_value: list[float] | None, widget_id: str = ""):
+    def deserialize(self, ui_value: list[float] | None, widget_id: str = ""):  # noqa: ARG002
         if ui_value is not None:
             val: Any = ui_value
         else:

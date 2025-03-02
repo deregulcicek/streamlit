@@ -137,7 +137,7 @@ class EditingState(TypedDict, total=False):
 class DataEditorSerde:
     """DataEditorSerde is used to serialize and deserialize the data editor state."""
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> EditingState:
+    def deserialize(self, ui_value: str | None, widget_id: str = "") -> EditingState:  # noqa: ARG002
         data_editor_state: EditingState = (
             {
                 "edited_rows": {},

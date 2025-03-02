@@ -19,7 +19,7 @@ from e2e_playwright.conftest import ImageCompareFunction
 
 def test_disconnected_states(app: Page, assert_snapshot: ImageCompareFunction):
     # Abort all requests to simulate runtime shutdown
-    app.route("**", lambda route, request: route.abort())
+    app.route("**", lambda route, request: route.abort())  # noqa: ARG005
 
     expect(app.get_by_test_id("stButton").locator("button")).not_to_have_attribute(
         "disabled", ""

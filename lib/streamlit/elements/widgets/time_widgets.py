@@ -263,7 +263,7 @@ class _DateInputValues:
 class TimeInputSerde:
     value: time | None
 
-    def deserialize(self, ui_value: str | None, widget_id: Any = "") -> time | None:
+    def deserialize(self, ui_value: str | None, widget_id: Any = "") -> time | None:  # noqa: ARG002
         return (
             datetime.strptime(ui_value, "%H:%M").time()
             if ui_value is not None
@@ -285,7 +285,7 @@ class DateInputSerde:
     def deserialize(
         self,
         ui_value: Any,
-        widget_id: str = "",
+        widget_id: str = "",  # noqa: ARG002
     ) -> DateWidgetReturn:
         return_value: Sequence[date] | None
         if ui_value is not None:

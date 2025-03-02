@@ -194,7 +194,7 @@ class ChatInputSerde:
     def deserialize(
         self,
         ui_value: ChatInputValueProto | None,
-        widget_id: str = "",
+        widget_id: str = "",  # noqa: ARG002
     ) -> str | ChatInputValue | None:
         if ui_value is None or not ui_value.HasField("data"):
             return None

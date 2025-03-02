@@ -99,7 +99,7 @@ class FileUploaderSerde:
     accept_multiple_files: bool
 
     def deserialize(
-        self, ui_value: FileUploaderStateProto | None, widget_id: str
+        self, ui_value: FileUploaderStateProto | None, widget_id: str  # noqa: ARG002
     ) -> SomeUploadedFiles:
         upload_files = _get_upload_files(ui_value)
 

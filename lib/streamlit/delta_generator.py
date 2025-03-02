@@ -423,7 +423,6 @@ class DeltaGenerator(
         delta_type: str,
         element_proto: Message,
         add_rows_metadata: AddRowsMetadata | None = None,
-        user_key: str | None = None,
     ) -> DeltaGenerator:
         """Create NewElement delta, fill it, and enqueue it.
 

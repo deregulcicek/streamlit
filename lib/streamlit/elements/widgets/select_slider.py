@@ -83,7 +83,7 @@ class SelectSliderSerde(Generic[T]):
     def deserialize(
         self,
         ui_value: list[int] | None,
-        widget_id: str = "",
+        widget_id: str = "",  # noqa: ARG002
     ) -> T | tuple[T, T]:
         if not ui_value:
             # Widget has not been used; fallback to the original value,

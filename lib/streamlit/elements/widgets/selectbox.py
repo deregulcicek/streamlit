@@ -69,7 +69,7 @@ class SelectboxSerde(Generic[T]):
     def deserialize(
         self,
         ui_value: int | None,
-        widget_id: str = "",
+        widget_id: str = "",  # noqa: ARG002
     ) -> T | None:
         idx = ui_value if ui_value is not None else self.index
         return self.options[idx] if idx is not None and len(self.options) > 0 else None

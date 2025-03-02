@@ -29,6 +29,7 @@ docstring-code-line-length = "dynamic"
 
 [lint]
 select = [
+  "ARG",    # Warns about unused arguments.
   "B",      # flake8-bugbear
   "C4",     # Helps you write better list/set/dict comprehensions.
   "E",      # pycodestyle errors
@@ -47,8 +48,8 @@ select = [
   "TCH",    # Move type only imports to type-checking condition.
   "TID",    # Helps you write tidier imports.
   "UP",     # pyupgrade
-  "W",      # pycodestyle warnings
-  "S324",   # Check usage of insecure hashlib functions
+  "W",      # pycodestyle warnings.
+  "S324",   # Check usage of insecure hashlib functions.
 ]
 ignore = [
   "B008",    # Checks for function calls in default function arguments.
@@ -73,6 +74,7 @@ exclude = [
 [lint.per-file-ignores]
 "e2e_playwright/**" = ["T20", "B018"]
 "lib/streamlit/__init__.py" = ["E402", "PLC0414"]
+"lib/tests/**" = ["ARG"]
 
 [lint.flake8-tidy-imports]
 # Disallow all relative imports.
@@ -84,3 +86,7 @@ known-first-party = ["streamlit", "shared", "tests", "e2e_playwright"]
 [lint.flake8-comprehensions]
 # Allow dict calls that make use of keyword arguments (e.g., dict(a=1, b=2)).
 allow-dict-calls-with-keyword-arguments = true
+
+[lint.flake8-unused-arguments]
+# Allow unused variadic arguments, like *args and **kwargs.
+ignore-variadic-names = true

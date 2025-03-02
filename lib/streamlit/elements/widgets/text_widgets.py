@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 class TextInputSerde:
     value: str | None
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> str | None:
+    def deserialize(self, ui_value: str | None, widget_id: str = "") -> str | None:  # noqa: ARG002
         return ui_value if ui_value is not None else self.value
 
     def serialize(self, v: str | None) -> str | None:
@@ -66,7 +66,7 @@ class TextInputSerde:
 class TextAreaSerde:
     value: str | None
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> str | None:
+    def deserialize(self, ui_value: str | None, widget_id: str = "") -> str | None:  # noqa: ARG002
         return ui_value if ui_value is not None else self.value
 
     def serialize(self, v: str | None) -> str | None:
