@@ -307,20 +307,31 @@ class ButtonMixin:
             .. |st.markdown| replace:: ``st.markdown``
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
 
-        data : str or bytes or file
-            The contents of the file to be downloaded. See example below for
-            caching techniques to avoid recomputing this data unnecessarily.
+        data : str, bytes, or file
+            The contents of the file to be downloaded.
+
+            To prevent unncecessary recomputation, use caching when converting
+            your data for download. For more information, see the Example 1
+            below.
 
         file_name: str
             An optional string to use as the name of the file to be downloaded,
-            such as 'my_file.csv'. If not specified, the name will be
+            such as ``"my_file.csv"``. If not specified, the name will be
             automatically generated.
 
         mime : str or None
-            The MIME type of the data. If None, defaults to "text/plain"
-            (if data is of type *str* or is a textual *file*) or
-            "application/octet-stream" (if data is of type *bytes* or is a
-            binary *file*).
+            The MIME type of the data. If this is ``None`` (default), Streamlit
+            sets the MIME type depending on the value of ``data`` as follows:
+
+            - If ``data`` is a string or textual file (i.e. ``str`` or
+              ``io.TextIOWrapper`` object), Streamlit uses the "text/plain"
+              MIME type.
+            - If ``data`` is a binary file or bytes (i.e. ``bytes``,
+              ``io.BytesIO``, ``io.BufferedReader``, or ``io.RawIOBase``
+              object), Streamlit uses the "application/octet-stream" MIME type.
+
+            For more information about MIME types, see
+            https://www.iana.org/assignments/media-types/media-types.xhtml.
 
         key : str or int
             An optional string or integer to use as the unique key for the widget.
@@ -404,45 +415,93 @@ class ButtonMixin:
 
         Examples
         --------
-        Download a large DataFrame as a CSV:
+        **Example 1: Download a dataframe as a CSV file**
+
+        When working with a large dataframe, it's recommended to fetch your
+        data with a cached function. When working with a download button, it's
+        similarly recommended to convert your data into a downloadable format
+        with a cached function. Caching ensures that the app reruns
+        effeciently.
 
         >>> import streamlit as st
+        >>> import pandas as pd
+        >>> import numpy as np
         >>>
         >>> @st.cache_data
-        ... def convert_df(df):
-        ...     # IMPORTANT: Cache the conversion to prevent computation on every rerun
-        ...     return df.to_csv().encode("utf-8")
+        >>> def get_data():
+        >>>     df = pd.DataFrame(
+        ...         np.random.randn(50, 20), columns=("col %d" % i for i in range(20))
+        ...     )
+        >>>     return df
         >>>
-        >>> csv = convert_df(my_large_df)
+        >>> @st.cache_data
+        >>> def convert_for_download(df):
+        >>>     return df.to_csv().encode("utf-8")
+        >>>
+        >>> df = get_data()
+        >>> csv = convert_for_download(df)
         >>>
         >>> st.download_button(
-        ...     label="Download data as CSV",
+        ...     label="Download CSV",
         ...     data=csv,
-        ...     file_name="large_df.csv",
+        ...     file_name="data.csv",
         ...     mime="text/csv",
+        ...     icon=":material/download:",
         ... )
 
-        Download a string as a file:
+        .. output::
+           https://doc-download-button-csv.streamlit.app/
+           height: 200px
+
+        **Example 2: Download a string as a text file**
+
+        You can pass a string to the ``data`` argument and Streamlit will
+        automatically use the "text/plain" MIME type. You can also set
+        ``on_click="ignore"`` to prevent the app from rerunning when the user
+        clicks the download button. This turns the download button into a
+        frontend-only element instead of a widget.
+
+        .. important::
+           Even when you prevent your download button from triggering a rerun,
+           if another widget contains an unsubmitted value when the user clicks
+           the download button, the app will rerun.
+
+           The file download initiates on the frontend immediately when the
+           user clicks the download button. In general, avoid having another
+           widget directly changing the data in your download button. In the
+           example below, if you type in the text area and immediately click
+           the download button before submitting your change, your download
+           will not include the change.
 
         >>> import streamlit as st
+        >>> import time
         >>>
-        >>> text_contents = '''This is some text'''
-        >>> st.download_button("Download some text", text_contents)
-
-        Download a binary file:
-
-        >>> import streamlit as st
+        >>> message = st.text_area("Message", value="Lorem ipsum.\nStreamlit is cool.")
+        >>> time.sleep(.5) # Simulate some other code running
         >>>
-        >>> binary_contents = b"example content"
-        >>> # Defaults to "application/octet-stream"
-        >>> st.download_button("Download binary file", binary_contents)
+        >>> st.download_button(
+        ...     label="Download text",
+        ...     data=message,
+        ...     file_name="message.txt",
+        ...     on_click="ignore",
+        ... )
 
-        Download an image:
+        .. output::
+           https://doc-download-button-text.streamlit.app/
+           height: 250px
+
+        **Example 3: Download a file**
+
+        Use a context manager to open and read a local file on your Streamlit
+        server. Pass the ``io.BufferedReader`` object directly to ``data``.
+        Remember to specify the MIME type if you don't want the default
+        type of ``"application/octet-stream"`` for generic binary data. In the
+        example below, the MIME type is set to ``"image/png"`` for a PNG file.
 
         >>> import streamlit as st
         >>>
         >>> with open("flower.png", "rb") as file:
-        ...     btn = st.download_button(
+        ...     st.download_button(
         ...         label="Download image",
         ...         data=file,
         ...         file_name="flower.png",
@@ -450,8 +509,8 @@ class ButtonMixin:
         ...     )
 
         .. output::
-           https://doc-download-buton.streamlit.app/
-           height: 335px
+           https://doc-download-button-file.streamlit.app/
+           height: 200px
 
         """
         ctx = get_script_run_ctx()
