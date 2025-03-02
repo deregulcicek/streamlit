@@ -92,6 +92,48 @@ function headerDecorationVisible(): boolean {
   return coloredLineExists
 }
 
+// Store scroll positions
+let savedScrollPositions: { [key: string]: number } = {}
+
+// Save the scroll position of all scrollable containers
+function saveScrollPositions(): void {
+  savedScrollPositions = {}
+
+  // Save main content area scroll position
+  const mainElement = document.querySelector(".stMain")
+  if (mainElement) {
+    savedScrollPositions.mainContent = mainElement.scrollTop
+  }
+
+  // Save any other scrollable containers if needed
+  const otherScrollableElements = document.querySelectorAll(".block-container")
+  otherScrollableElements.forEach((el, index) => {
+    if (el instanceof HTMLElement) {
+      savedScrollPositions[`scrollable_${index}`] = el.scrollTop
+    }
+  })
+}
+
+// Restore scroll positions of all saved elements
+function restoreScrollPositions(): void {
+  // Restore main content area
+  const mainElement = document.querySelector(".stMain")
+  if (mainElement && savedScrollPositions.mainContent !== undefined) {
+    mainElement.scrollTop = savedScrollPositions.mainContent
+  }
+
+  // Restore any other scrollable containers
+  const otherScrollableElements = document.querySelectorAll(".block-container")
+  otherScrollableElements.forEach((el, index) => {
+    if (
+      el instanceof HTMLElement &&
+      savedScrollPositions[`scrollable_${index}`] !== undefined
+    ) {
+      el.scrollTop = savedScrollPositions[`scrollable_${index}`]
+    }
+  })
+}
+
 const Sidebar: React.FC<SidebarProps> = ({
   appLogo,
   endpoints,
@@ -159,10 +201,31 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [])
 
+  // Save scroll position before resize starts
+  const onResizeStart = useCallback((_e: any, _direction: any, _ref: any) => {
+    saveScrollPositions()
+  }, [])
+
+  // Restore scroll position during resize to prevent jumping
+  const onResize = useCallback(
+    (_e: any, _direction: any, _ref: any, _d: any) => {
+      // Use requestAnimationFrame to avoid excessive scrolling
+      window.requestAnimationFrame(() => {
+        restoreScrollPositions()
+      })
+    },
+    []
+  )
+
   const onResizeStop = useCallback(
     (_e: any, _direction: any, _ref: any, d: any) => {
       const newWidth = parseInt(sidebarWidth, 10) + d.width
       initializeSidebarWidth(newWidth)
+
+      // Ensure scroll position is restored after resize stops
+      window.requestAnimationFrame(() => {
+        restoreScrollPositions()
+      })
     },
     [initializeSidebarWidth, sidebarWidth]
   )
@@ -209,15 +272,31 @@ const Sidebar: React.FC<SidebarProps> = ({
   function resetSidebarWidth(event: any): void {
     // Double clicking on the resize handle resets sidebar to default width
     if (event.detail === 2) {
+      // Save scroll position before reset
+      saveScrollPositions()
+
       setSidebarWidth(MIN_WIDTH)
       if (localStorageAvailable()) {
         window.localStorage.setItem("sidebarWidth", MIN_WIDTH)
       }
+
+      // Restore scroll position after reset
+      window.requestAnimationFrame(() => {
+        restoreScrollPositions()
+      })
     }
   }
 
   const toggleCollapse = useCallback(() => {
+    // Save scroll position before toggling
+    saveScrollPositions()
+
     setCollapsedSidebar(!collapsedSidebar)
+
+    // Restore scroll position after toggling
+    window.requestAnimationFrame(() => {
+      restoreScrollPositions()
+    })
   }, [collapsedSidebar])
 
   function renderLogo(collapsed: boolean): ReactElement {
@@ -303,6 +382,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           height: "auto",
         }}
         as={StyledSidebar}
+        onResizeStart={onResizeStart}
+        onResize={onResize}
         onResizeStop={onResizeStop}
         // Props part of StyledSidebar, but not Resizable component
         // @ts-expect-error
