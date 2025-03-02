@@ -75,7 +75,7 @@ ignore = [
   "D401",    # Checks for docstring to start with imperative mood.
   "D202",    # Checks for no-blank line after docstring.
 ]
-# Do not lint files in tests, scripts, and vendor directory:
+# Do not lint files in scripts, vendor, and github directory:
 exclude = [
   "lib/streamlit/vendor/**",
   "scripts/**",
@@ -83,8 +83,8 @@ exclude = [
 ]
 
 [lint.per-file-ignores]
-"e2e_playwright/**" = ["T20", "B018"]
-"lib/streamlit/__init__.py" = ["E402", "PLC0414", "D"]
+"e2e_playwright/**" = ["T20", "B018", "D"]
+"lib/streamlit/__init__.py" = ["E402", "PLC0414"]
 "lib/tests/**" = ["D"]
 
 [lint.flake8-tidy-imports]
