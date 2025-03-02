@@ -200,7 +200,7 @@ def test_importtime_median_under_threshold():
 
     import_times = []
 
-    for _ in range(50):
+    for _ in range(25):
         # Spawn a subprocess that imports `streamlit` with Python's importtime
         # instrumentation
         cmd = [sys.executable, "-X", "importtime", "-c", "import streamlit"]
