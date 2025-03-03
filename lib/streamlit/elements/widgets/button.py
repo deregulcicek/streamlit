@@ -455,36 +455,41 @@ class ButtonMixin:
 
         **Example 2: Download a string as a text file**
 
-        You can pass a string to the ``data`` argument and Streamlit will
-        automatically use the "text/plain" MIME type. You can also set
-        ``on_click="ignore"`` to prevent the app from rerunning when the user
-        clicks the download button. This turns the download button into a
-        frontend-only element instead of a widget.
+        If you pass a string to the ``data`` argument, Streamlit will
+        automatically use the "text/plain" MIME type.
+
+        When you have a widget (like a text area) affecting the value of your
+        download, it's recommended to use another button to prepare the
+        download. In this case, use ``on_click="ignore"`` in your download
+        button to prevent the download button from rerunning your app. This
+        turns the download button into a frontend-only element that can be
+        nested in another button.
+
+        Without a preparation button, a user can type something into the text
+        area and immediately click the download button. Because a download is
+        initiated concurrently with the app rerun, this can create a race-like
+        condition where the user doesn't see the updated data in their
+        download.
 
         .. important::
            Even when you prevent your download button from triggering a rerun,
-           if another widget contains an unsubmitted value when the user clicks
-           the download button, the app will rerun.
-
-           The file download initiates on the frontend immediately when the
-           user clicks the download button. In general, avoid having another
-           widget directly changing the data in your download button. In the
-           example below, if you type in the text area and immediately click
-           the download button before submitting your change, your download
-           will not include the change.
+           another widget with a pending change can still trigger a rerun. For
+           example, if a text area has a pending change when a user clicks a
+           download button, the text area will trigger a rerun.
 
         >>> import streamlit as st
-        >>> import time
         >>>
         >>> message = st.text_area("Message", value="Lorem ipsum.\nStreamlit is cool.")
-        >>> time.sleep(.5) # Simulate some other code running
         >>>
-        >>> st.download_button(
-        ...     label="Download text",
-        ...     data=message,
-        ...     file_name="message.txt",
-        ...     on_click="ignore",
-        ... )
+        >>> if st.button("Prepare download"):
+        >>>     st.download_button(
+        ...         label="Download text",
+        ...         data=message,
+        ...         file_name="message.txt",
+        ...         on_click="ignore",
+        ...         type="primary",
+        ...         icon=":material/download:",
+        ...     )
 
         .. output::
            https://doc-download-button-text.streamlit.app/
