@@ -30,6 +30,7 @@ from blinker import Signal
 import streamlit as st
 import streamlit.watcher.path_watcher
 from streamlit import runtime
+from streamlit.errors import StreamlitSecretNotFoundError
 from streamlit.logger import get_logger
 
 _LOGGER: Final = get_logger(__name__)
@@ -252,24 +253,13 @@ class Secrets(Mapping[str, Any]):
             import toml
 
             secrets.update(toml.loads(secrets_file_str))
-        except TypeError as ex:
+        except (TypeError, toml.TomlDecodeError) as ex:
             msg = (
                 secret_error_messages_singleton.get_error_parsing_file_at_path_message(
                     path, ex
                 )
             )
-            raise TypeError(msg) from ex
-        except toml.TomlDecodeError as ex:
-            msg = (
-                secret_error_messages_singleton.get_error_parsing_file_at_path_message(
-                    path, ex
-                )
-            )
-            # The TomlDecodeError constructor requires 3 arguments: message, doc, and pos
-            # Extract doc and pos from the original exception
-            doc = ex.doc if hasattr(ex, "doc") else ""
-            pos = ex.pos if hasattr(ex, "pos") else 0
-            raise toml.TomlDecodeError(msg, doc, pos) from ex
+            raise StreamlitSecretNotFoundError(msg)
 
         return secrets, found_secrets_file
 
@@ -328,7 +318,7 @@ class Secrets(Mapping[str, Any]):
         error_msg = secret_error_messages_singleton.get_invalid_secret_path_message(
             path
         )
-        raise ValueError(error_msg)
+        raise StreamlitSecretNotFoundError(error_msg)
 
     def _parse(self) -> Mapping[str, Any]:
         """Parse our secrets.toml files if they're not already parsed.
@@ -342,7 +332,7 @@ class Secrets(Mapping[str, Any]):
 
         Raises
         ------
-        FileNotFoundError
+            StreamlitSecretNotFoundError
             Raised if secrets.toml doesn't exist.
 
         """
@@ -371,7 +361,7 @@ class Secrets(Mapping[str, Any]):
                         file_paths
                     )
                 )
-                raise FileNotFoundError(error_msg)
+                raise StreamlitSecretNotFoundError(error_msg)
 
             for k, v in secrets.items():
                 self._maybe_set_environment_variable(k, v)
