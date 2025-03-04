@@ -270,12 +270,12 @@ def _apply_cell_edits(
                 # The edited cell is part of the index
                 # TODO(lukasmasuch): To support multi-index in the future:
                 # use a tuple of values here instead of a single value
-                df.index.values[row_pos] = _parse_value(
+                df.index.to_numpy()[row_pos] = _parse_value(
                     value, dataframe_schema[INDEX_IDENTIFIER]
                 )
             else:
                 col_pos = df.columns.get_loc(col_name)
-                df.iat[row_pos, col_pos] = _parse_value(
+                df.iloc[row_pos, col_pos] = _parse_value(
                     value, dataframe_schema[col_name]
                 )
 
@@ -352,7 +352,7 @@ def _apply_row_deletions(df: pd.DataFrame, deleted_rows: list[int]) -> None:
         A list of row numbers to delete.
     """
     # Drop rows based in numeric row positions
-    df.drop(df.index[deleted_rows], inplace=True)
+    df.drop(df.index[deleted_rows], inplace=True)  # noqa: PD002
 
 
 def _apply_dataframe_edits(
@@ -439,7 +439,7 @@ def _fix_column_headers(data_df: pd.DataFrame) -> None:
         # to avoid issues with editing:
         data_df.rename(
             columns={column: str(column) for column in data_df.columns},
-            inplace=True,
+            inplace=True,  # noqa: PD002
         )
 
 
@@ -636,10 +636,10 @@ class DataEditorMixin:
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent
-            container. If ``use_container_width`` is ``False``, Streamlit
-            sets the data editor's width according to ``width``. If
-            ``use_container_width`` is ``True`` (default), Streamlit sets the
-            width of the data editor to match the width of the parent container.
+            container. If this is ``True`` (default), Streamlit sets the width
+            of the data editor to match the width of the parent container. If
+            this is ``False``, Streamlit sets the data editor's width according
+            to ``width``.
 
         hide_index : bool or None
             Whether to hide the index column(s). If ``hide_index`` is ``None``
@@ -697,7 +697,8 @@ class DataEditorMixin:
 
         row_height : int or None
             The height of each row in the data editor in pixels. If ``row_height``
-            is ``None`` (default), Streamlit will use a default row height.
+            is ``None`` (default), Streamlit will use a default row height,
+            which fits one line of text.
 
         Returns
         -------
