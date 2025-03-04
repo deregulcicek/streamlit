@@ -395,6 +395,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.baseFontSize",
                 "theme.baseRadius",
                 "theme.font",
+                "theme.headingFont",
                 "theme.codeFont",
                 "theme.fontFaces",
                 "theme.borderColor",
