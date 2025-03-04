@@ -271,7 +271,7 @@ class ContextProxy:
         return ctx.context_info.timezone_offset
 
     @property
-    @gather_metrics("context.headers")
+    @gather_metrics("context.locale")
     def locale(self) -> str | None:
         """The locale of the user browser, read-only"""
         ctx = get_script_run_ctx()
