@@ -363,8 +363,6 @@ describe("createTheme", () => {
       new CustomThemeConfig({
         base: CustomThemeConfig.BaseTheme.DARK,
         primaryColor: "blue",
-        headingFont: "serif",
-        bodyFont: "serif",
       })
     )
 
@@ -384,8 +382,6 @@ describe("createTheme", () => {
       new CustomThemeConfig({
         backgroundColor: "black",
         base: CustomThemeConfig.BaseTheme.LIGHT,
-        headingFont: "serif",
-        bodyFont: "serif",
       })
     )
 
