@@ -76,6 +76,9 @@ def configure_snowflake_dark_theme():
     os.environ["STREAMLIT_THEME_FONT"] = (
         "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
     )
+    os.environ["STREAMLIT_THEME_HEADING_FONT"] = (
+        "bold Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
+    )
     os.environ["STREAMLIT_THEME_CODE_FONT"] = (
         '"Monaspace Argon", Menlo, Monaco, Consolas, "Courier New", monospace'
     )
