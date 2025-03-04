@@ -280,12 +280,16 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "red",
       secondaryBackgroundColor: "blue",
+      headingFont: "serif",
       bodyFont: "serif",
     })
     const customTheme = createTheme(CUSTOM_THEME_NAME, customThemeConfig)
     expect(customTheme.name).toBe(CUSTOM_THEME_NAME)
     expect(customTheme.emotion.colors.primary).toBe("red")
     expect(customTheme.emotion.colors.secondaryBg).toBe("blue")
+    expect(customTheme.emotion.genericFonts.headingFont).toBe(
+      lightTheme.emotion.fonts.serif
+    )
     expect(customTheme.emotion.genericFonts.bodyFont).toBe(
       lightTheme.emotion.fonts.serif
     )
@@ -299,6 +303,7 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "red",
       secondaryBackgroundColor: "blue",
+      headingFont: "serif",
       bodyFont: "serif",
     })
     const customTheme = createTheme(
@@ -311,6 +316,9 @@ describe("createTheme", () => {
     expect(customTheme.name).toBe(CUSTOM_THEME_NAME)
     expect(customTheme.emotion.colors.primary).toBe("red")
     expect(customTheme.emotion.colors.secondaryBg).toBe("blue")
+    expect(customTheme.emotion.genericFonts.headingFont).toBe(
+      darkTheme.emotion.fonts.serif
+    )
     expect(customTheme.emotion.genericFonts.bodyFont).toBe(
       darkTheme.emotion.fonts.serif
     )
@@ -326,6 +334,7 @@ describe("createTheme", () => {
     const customThemeConfig = new CustomThemeConfig({
       primaryColor: "eee",
       secondaryBackgroundColor: "fc9231",
+      headingFont: "serif",
       bodyFont: "serif",
     })
     const customTheme = createTheme(
@@ -336,6 +345,9 @@ describe("createTheme", () => {
     expect(customTheme.name).toBe(CUSTOM_THEME_NAME)
     expect(customTheme.emotion.colors.primary).toBe("#eee")
     expect(customTheme.emotion.colors.secondaryBg).toBe("#fc9231")
+    expect(customTheme.emotion.genericFonts.headingFont).toBe(
+      customTheme.emotion.fonts.serif
+    )
     expect(customTheme.emotion.genericFonts.bodyFont).toBe(
       customTheme.emotion.fonts.serif
     )
@@ -351,6 +363,8 @@ describe("createTheme", () => {
       new CustomThemeConfig({
         base: CustomThemeConfig.BaseTheme.DARK,
         primaryColor: "blue",
+        headingFont: "serif",
+        bodyFont: "serif",
       })
     )
 
@@ -370,6 +384,8 @@ describe("createTheme", () => {
       new CustomThemeConfig({
         backgroundColor: "black",
         base: CustomThemeConfig.BaseTheme.LIGHT,
+        headingFont: "serif",
+        bodyFont: "serif",
       })
     )
 
@@ -571,6 +587,7 @@ describe("isColor", () => {
 describe("createEmotionTheme", () => {
   it("sets to light when matchMedia does not match dark", () => {
     const themeInput: Partial<CustomThemeConfig> = {
+      headingFont: "monospace",
       bodyFont: "monospace",
       codeFont: "monospace",
       primaryColor: "red",
@@ -585,8 +602,8 @@ describe("createEmotionTheme", () => {
     expect(theme.colors.bgColor).toBe("pink")
     expect(theme.colors.secondaryBg).toBe("blue")
     expect(theme.colors.bodyText).toBe("orange")
-    expect(theme.genericFonts.bodyFont).toBe(theme.fonts.monospace)
     expect(theme.genericFonts.headingFont).toBe(theme.fonts.monospace)
+    expect(theme.genericFonts.bodyFont).toBe(theme.fonts.monospace)
     expect(theme.genericFonts.codeFont).toBe(theme.fonts.monospace)
   })
 
@@ -601,11 +618,11 @@ describe("createEmotionTheme", () => {
     expect(theme.colors.bgColor).toBe(baseTheme.emotion.colors.bgColor)
     expect(theme.colors.secondaryBg).toBe(baseTheme.emotion.colors.secondaryBg)
     expect(theme.colors.bodyText).toBe(baseTheme.emotion.colors.bodyText)
-    expect(theme.genericFonts.bodyFont).toBe(
-      baseTheme.emotion.genericFonts.bodyFont
-    )
     expect(theme.genericFonts.headingFont).toBe(
       baseTheme.emotion.genericFonts.headingFont
+    )
+    expect(theme.genericFonts.bodyFont).toBe(
+      baseTheme.emotion.genericFonts.bodyFont
     )
     expect(theme.genericFonts.codeFont).toBe(
       baseTheme.emotion.genericFonts.codeFont

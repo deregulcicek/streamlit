@@ -947,6 +947,11 @@ def _populate_theme_msg(msg: CustomThemeConfig) -> None:
         else:
             msg.base = base_map[base]
 
+    # Handle heading font if specified
+    heading_font = theme_opts["headingFont"]
+    if heading_font:
+        msg.heading_font = heading_font
+
     # Since the font field uses the deprecated enum, we need to put the font
     # config into the body_font field instead:
     body_font = theme_opts["font"]
