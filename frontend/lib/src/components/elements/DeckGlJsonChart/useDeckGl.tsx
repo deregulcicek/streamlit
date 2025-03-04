@@ -60,7 +60,7 @@ type UseDeckGlShape = {
   setSelection: React.Dispatch<
     React.SetStateAction<ValueWithSource<DeckGlElementState> | null>
   >
-  viewState: Record<string, unknown>
+  viewState: Record<string, unknown> | null
   width: number | string
 }
 
@@ -181,11 +181,9 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     fragmentId,
   })
 
-  const [viewState, setViewState] = useState<Record<string, unknown>>({
-    bearing: 0,
-    pitch: 0,
-    zoom: 11,
-  })
+  const [viewState, setViewState] = useState<Record<string, unknown> | null>(
+    null
+  )
 
   const { height, width } = useStWidthHeight({
     element,
@@ -193,13 +191,14 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     shouldUseContainerWidth,
     container: { height: propsHeight, width: propsWidth },
     heightFallback:
-      (viewState.initialViewState as { height: number } | undefined)?.height ||
-      theme.sizes.defaultMapHeight,
+      (viewState?.initialViewState as { height: number } | undefined)
+        ?.height || theme.sizes.defaultMapHeight,
   })
 
-  const [initialViewState, setInitialViewState] = useState<
-    Record<string, unknown>
-  >({})
+  const [initialViewState, setInitialViewState] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
 
   /**
    * Our proto for selectionMode is an array in order to support future-looking
@@ -350,7 +349,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
       const diff = Object.keys(deck.initialViewState).reduce(
         (diff, key): any => {
           // @ts-expect-error
-          if (deck.initialViewState[key] === initialViewState[key]) {
+          if (deck.initialViewState[key] === initialViewState?.[key]) {
             return diff
           }
 
@@ -363,14 +362,8 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
         {}
       )
 
-      // Note: `flushSync` is required since we are interfacing with a 3rd party
-      // library that is handling updates to its own canvas element. This is an
-      // expected usage of `flushSync`:
-      // https://react.dev/reference/react-dom/flushSync#flushing-updates-for-third-party-integrations
-      flushSync(() => {
-        setViewState({ ...viewState, ...diff })
-        setInitialViewState(deck.initialViewState)
-      })
+      setViewState(existing => ({ ...existing, ...diff }))
+      setInitialViewState(deck.initialViewState)
     }
   }, [deck.initialViewState, initialViewState, viewState])
 
@@ -395,13 +388,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
 
   const onViewStateChange = useCallback(
     ({ viewState }: ViewStateChangeParameters) => {
-      // Note: `flushSync` is required since we are interfacing with a 3rd party
-      // library that is handling updates to its own canvas element. This is an
-      // expected usage of `flushSync`:
-      // https://react.dev/reference/react-dom/flushSync#flushing-updates-for-third-party-integrations
-      flushSync(() => {
-        setViewState(viewState)
-      })
+      setViewState(viewState)
     },
     [setViewState]
   )
