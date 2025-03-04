@@ -1013,18 +1013,19 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                 {
                     "backgroundColor": None,
                     "base": None,
+                    "baseFontSize": None,
+                    "baseRadius": None,
                     "borderColor": None,
                     "codeFont": None,
                     "font": None,
                     "fontFaces": None,
+                    "headingFont": None,
                     "linkColor": None,
                     "primaryColor": None,
-                    "baseRadius": None,
                     "secondaryBackgroundColor": None,
                     "showBorderAroundInputs": None,
-                    "textColor": None,
-                    "baseFontSize": None,
                     "showSidebarSeparator": None,
+                    "textColor": None,
                 }
             )
         )
@@ -1107,7 +1108,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.custom_theme.show_sidebar_separator is True
         # The value from `theme.font` will be placed in body_font since
         # font uses a deprecated enum:
-        assert new_session_msg.custom_theme.body_font == "Inter Bold"
+        assert new_session_msg.custom_theme.heading_font == "Inter Bold"
         assert new_session_msg.custom_theme.body_font == "Inter"
         assert new_session_msg.custom_theme.code_font == "Monaspace Argon"
         assert list(new_session_msg.custom_theme.font_faces) == [
