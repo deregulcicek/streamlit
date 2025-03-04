@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import rerun_app
+from e2e_playwright.shared.app_utils import (
+    click_button,
+    click_toggle,
+    fill_number_input,
+)
 
 
 def test_forward_msg_cache_receives_msg(app: Page):
@@ -23,3 +29,42 @@ def test_forward_msg_cache_receives_msg(app: Page):
     expect(app.get_by_role("dialog")).not_to_be_visible()
 
     app.expect_request("**/_stcore/message/")
+
+
+def _rerun_app(app: Page, times: int):
+    for _ in range(times):
+        click_button(app, "Re-run")
+
+
+@pytest.mark.performance
+def test_simulate_large_data_usage(app: Page):
+    # Rerun app a couple of times:
+    _rerun_app(app, 10)
+
+    # Show dataframe:
+    click_toggle(app, "Show dataframes")
+    # Rerun app a couple of times:
+    _rerun_app(app, 10)
+
+    # # Set 50k rows:
+    fill_number_input(app, "Number of rows", 50000)
+
+    # Rerun app a couple of times:
+    _rerun_app(app, 10)
+
+    # # Show more text messages:
+    fill_number_input(app, "Number of small messages", 100)
+
+    # Rerun app a couple of times:
+    _rerun_app(app, 10)
+
+
+@pytest.mark.performance
+def test_simulate_many_small_messages(app: Page):
+    # Show 150 unique texts with 50kb each:
+    fill_number_input(app, "Number of small messages", 150)
+    _rerun_app(app, 10)
+
+    # Reduce the size of every message to 15KB:
+    fill_number_input(app, "Message KB size", 15)
+    _rerun_app(app, 10)
