@@ -109,5 +109,6 @@ def test_snowflake_dark_theme(
     # creating flakiness:
     app.wait_for_timeout(5000)
     expect_font(app, "Inter")
+    expect_font(app, "bold Inter")
     expect_font(app, "Monaspace Argon")
     assert_snapshot(app, name="snowflake_dark_theme")

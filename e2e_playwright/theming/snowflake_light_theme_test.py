@@ -109,6 +109,6 @@ def test_snowflake_light_theme(
     # creating flakiness:
     app.wait_for_timeout(5000)
     expect_font(app, "Inter")
-    expect_font(app, "Inter Bold")
+    expect_font(app, "bold Inter")
     expect_font(app, "Monaspace Argon")
     assert_snapshot(app, name="snowflake_light_theme")
