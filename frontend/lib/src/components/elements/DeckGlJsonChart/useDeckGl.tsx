@@ -21,7 +21,6 @@ import { PickingInfo, ViewStateChangeParameters } from "@deck.gl/core"
 import { TooltipContent } from "@deck.gl/core/dist/lib/tooltip"
 import isEqual from "lodash/isEqual"
 import { parseToRgba } from "color2k"
-import { flushSync } from "react-dom"
 
 import { DeckGlJsonChart as DeckGlJsonChartProto } from "@streamlit/protobuf"
 
