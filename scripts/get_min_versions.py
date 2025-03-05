@@ -20,6 +20,12 @@
 import pkg_resources
 
 package = pkg_resources.working_set.find(pkg_resources.Requirement.parse("streamlit"))
+if package is None:
+    package = pkg_resources.working_set.find(
+        pkg_resources.Requirement.parse("streamlit-nightly")
+    )
+if package is None:
+    raise ValueError("streamlit package not found")
 
 oldest_dependencies = []
 
