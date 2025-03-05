@@ -25,7 +25,7 @@ if package is None:
         pkg_resources.Requirement.parse("streamlit-nightly")
     )
 if package is None:
-    raise ValueError("streamlit package not found")
+    raise ValueError("streamlit/streamlit-nightly packages not found")
 
 oldest_dependencies = []
 
