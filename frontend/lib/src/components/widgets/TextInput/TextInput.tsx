@@ -43,10 +43,15 @@ import {
 } from "~lib/components/widgets/BaseWidget"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
+import { DynamicIcon } from "~lib/components/shared/Icon"
 import { isInForm, labelVisibilityProtoValueToEnum } from "~lib/util/utils"
 import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
-import { StyledTextInput } from "./styled-components"
+import {
+  StyledTextInput,
+  StyledInputContainer,
+  StyledInputIconContainer,
+} from "./styled-components"
 
 export interface Props {
   disabled: boolean
@@ -173,61 +178,73 @@ function TextInput({
           </StyledWidgetLabelHelp>
         )}
       </WidgetLabel>
-      <UIInput
-        value={uiValue ?? ""}
-        placeholder={placeholder}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        onChange={onChange}
-        onKeyPress={onKeyPress}
-        aria-label={element.label}
-        disabled={disabled}
-        id={id}
-        type={getTypeString(element)}
-        autoComplete={element.autocomplete}
-        overrides={{
-          Input: {
-            style: {
-              // Issue: https://github.com/streamlit/streamlit/issues/2495
-              // The input won't shrink in Firefox,
-              // unless the line below is provided.
-              // See https://stackoverflow.com/a/33811151
-              minWidth: 0,
-              "::placeholder": {
-                opacity: "0.7",
-              },
-              lineHeight: theme.lineHeights.inputWidget,
-              // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-              paddingRight: theme.spacing.sm,
-              paddingLeft: theme.spacing.sm,
-              paddingBottom: theme.spacing.sm,
-              paddingTop: theme.spacing.sm,
-            },
-          },
-          Root: {
-            props: {
-              "data-testid": "stTextInputRootElement",
-            },
-            style: {
-              height: theme.sizes.minElementHeight,
-              // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-              borderLeftWidth: theme.sizes.borderWidth,
-              borderRightWidth: theme.sizes.borderWidth,
-              borderTopWidth: theme.sizes.borderWidth,
-              borderBottomWidth: theme.sizes.borderWidth,
-            },
-          },
-        }}
-      />
-      {shouldShowInstructions && (
-        <InputInstructions
-          dirty={dirty}
+      <StyledInputContainer
+        className={focused ? "focused" : ""}
+        data-testid="stTextInputContainer"
+      >
+        {element.icon && (
+          <StyledInputIconContainer>
+            <DynamicIcon size={"base"} iconValue={element.icon} />
+          </StyledInputIconContainer>
+        )}
+        <UIInput
           value={uiValue ?? ""}
-          maxLength={element.maxChars}
-          inForm={isInForm({ formId: element.formId })}
-          allowEnterToSubmit={allowEnterToSubmit}
+          placeholder={placeholder}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          aria-label={element.label}
+          disabled={disabled}
+          id={id}
+          type={getTypeString(element)}
+          autoComplete={element.autocomplete}
+          overrides={{
+            Input: {
+              style: {
+                // Issue: https://github.com/streamlit/streamlit/issues/2495
+                // The input won't shrink in Firefox,
+                // unless the line below is provided.
+                // See https://stackoverflow.com/a/33811151
+                minWidth: 0,
+                "::placeholder": {
+                  opacity: "0.7",
+                },
+                lineHeight: theme.lineHeights.inputWidget,
+                // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
+                paddingRight: theme.spacing.sm,
+                paddingLeft: theme.spacing.sm,
+                paddingBottom: theme.spacing.sm,
+                paddingTop: theme.spacing.sm,
+              },
+            },
+            Root: {
+              props: {
+                "data-testid": "stTextInputRootElement",
+              },
+              style: {
+                height: theme.sizes.minElementHeight,
+                // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
+                borderLeftWidth: 0,
+                borderRightWidth: 0,
+                borderTopWidth: 0,
+                borderBottomWidth: 0,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+              },
+            },
+          }}
         />
-      )}
+        {shouldShowInstructions && (
+          <InputInstructions
+            dirty={dirty}
+            value={uiValue ?? ""}
+            maxLength={element.maxChars}
+            inForm={isInForm({ formId: element.formId })}
+            allowEnterToSubmit={allowEnterToSubmit}
+          />
+        )}
+      </StyledInputContainer>
     </StyledTextInput>
   )
 }

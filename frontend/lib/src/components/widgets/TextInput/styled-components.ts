@@ -19,3 +19,43 @@ import styled from "@emotion/styled"
 export const StyledTextInput = styled.div`
   position: relative;
 `
+
+export const StyledInputContainer = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "nowrap",
+  alignItems: "center",
+  height: theme.sizes.minElementHeight,
+  // Mimic the baseweb's borders here, so we can apply the focus style
+  // to the entire container and not only the input itself
+  borderWidth: theme.sizes.borderWidth,
+  borderStyle: "solid",
+  borderColor: theme.colors.widgetBorderColor ?? theme.colors.secondaryBg,
+  transitionDuration: "200ms",
+  transitionProperty: "border",
+  transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.4, 1)",
+  borderRadius: theme.radii.default,
+  overflow: "hidden", // Fix rounded corner being overlayed with corner of internal input.
+
+  "&.focused": {
+    borderColor: theme.colors.primary,
+  },
+
+  input: {
+    MozAppearance: "textfield",
+    "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button": {
+      WebkitAppearance: "none",
+      margin: theme.spacing.none,
+    },
+  },
+}))
+
+export const StyledInputIconContainer = styled.div(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "auto",
+  height: "100%",
+  padding: "0 0.5rem 0 0.5rem",
+  backgroundColor: theme.colors.secondaryBg,
+}))

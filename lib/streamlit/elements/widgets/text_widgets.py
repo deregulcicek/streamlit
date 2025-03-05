@@ -42,6 +42,7 @@ from streamlit.runtime.state import (
     get_session_state,
     register_widget,
 )
+from streamlit.string_util import validate_icon_or_emoji
 from streamlit.type_util import (
     SupportsStr,
 )
@@ -91,6 +92,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str:
         pass
 
@@ -111,6 +113,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str | None:
         pass
 
@@ -131,6 +134,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str | None:
         r"""Display a single-line text input widget.
 
@@ -214,6 +218,23 @@ class TextWidgetsMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        icon : str or None
+            An optional emoji or icon to display next to the button label. If ``icon``
+            is ``None`` (default), no icon is displayed. If ``icon`` is a
+            string, the following options are valid:
+
+            - A single-character emoji. For example, you can set ``icon="🚨"``
+              or ``icon="🔥"``. Emoji short codes are not supported.
+
+            - An icon from the Material Symbols library (rounded style) in the
+              format ``":material/icon_name:"`` where "icon_name" is the name
+              of the icon in snake case.
+
+              For example, ``icon=":material/thumb_up:"`` will display the
+              Thumb Up icon. Find additional icons in the `Material Symbols \
+              <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
+              font library.
+
         Returns
         -------
         str or None
@@ -247,6 +268,7 @@ class TextWidgetsMixin:
             placeholder=placeholder,
             disabled=disabled,
             label_visibility=label_visibility,
+            icon=icon,
             ctx=ctx,
         )
 
@@ -266,6 +288,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
         key = to_key(key)
@@ -327,6 +350,9 @@ class TextWidgetsMixin:
                 "'%s' is not a valid text_input type. Valid types are 'default' and 'password'."
                 % type
             )
+
+        if icon is not None:
+            text_input_proto.icon = validate_icon_or_emoji(icon)
 
         # Marshall the autocomplete param. If unspecified, this will be
         # set to "new-password" for password inputs.
