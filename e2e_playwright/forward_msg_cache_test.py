@@ -37,33 +37,35 @@ def _rerun_app(app: Page, times: int):
 
 
 @pytest.mark.performance
+@pytest.mark.repeat(2)
 def test_simulate_large_data_usage_performance(app: Page):
     # Rerun app a couple of times:
-    _rerun_app(app, 10)
+    _rerun_app(app, 5)
 
     # Show dataframe:
     click_toggle(app, "Show dataframes")
     # Rerun app a couple of times:
-    _rerun_app(app, 10)
+    _rerun_app(app, 5)
 
     # # Set 50k rows:
     fill_number_input(app, "Number of rows", 50000)
 
     # Rerun app a couple of times:
-    _rerun_app(app, 10)
+    _rerun_app(app, 5)
 
     # # Show more text messages:
     fill_number_input(app, "Number of small messages", 100)
 
     # Rerun app a couple of times:
-    _rerun_app(app, 10)
+    _rerun_app(app, 5)
 
 
 @pytest.mark.performance
+@pytest.mark.repeat(2)
 def test_simulate_many_small_messages_performance(app: Page):
     # Show 150 unique texts with 50kb each:
     fill_number_input(app, "Number of small messages", 150)
-    _rerun_app(app, 10)
+    _rerun_app(app, 5)
 
     # Reduce the size of every message to 15KB:
     fill_number_input(app, "Message KB size", 15)
