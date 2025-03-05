@@ -46,6 +46,16 @@ export const StyledInputContainer = styled.div(({ theme }) => ({
   },
 }))
 
+export const StyledInputIconContainer = styled.div(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "auto",
+  height: "100%",
+  padding: "0 0.5rem 0 0.5rem",
+  backgroundColor: theme.colors.secondaryBg,
+}))
+
 export const StyledInputControls = styled.div({
   display: "flex",
   flexDirection: "row",

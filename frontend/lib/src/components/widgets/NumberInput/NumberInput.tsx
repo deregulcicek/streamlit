@@ -41,7 +41,7 @@ import { useFormClearHelper } from "~lib/components/widgets/Form"
 import { Source, WidgetStateManager } from "~lib/WidgetStateManager"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
-import Icon from "~lib/components/shared/Icon"
+import Icon, { DynamicIcon } from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
 import {
   StyledWidgetLabelHelp,
@@ -61,6 +61,7 @@ import {
   StyledInputContainer,
   StyledInputControl,
   StyledInputControls,
+  StyledInputIconContainer,
   StyledInstructionsContainer,
 } from "./styled-components"
 
@@ -85,6 +86,7 @@ const NumberInput: React.FC<Props> = ({
     formId: elementFormId,
     default: elementDefault,
     format: elementFormat,
+    icon: elementIcon,
   } = element
   const min = element.hasMin ? element.min : -Infinity
   const max = element.hasMax ? element.max : +Infinity
@@ -302,6 +304,10 @@ const NumberInput: React.FC<Props> = ({
     [dirty, value, commitValue, widgetMgr, elementFormId, fragmentId]
   )
 
+  const isMaterialIcon = elementIcon?.startsWith(":material")
+  // Material icons need to be larger to render similar size of emojis, emojis need addtl margin
+  const dynamicIconSize = isMaterialIcon ? "lg" : "base"
+
   return (
     <div
       className="stNumberInput"
@@ -329,6 +335,11 @@ const NumberInput: React.FC<Props> = ({
         className={isFocused ? "focused" : ""}
         data-testid="stNumberInputContainer"
       >
+        {elementIcon && (
+          <StyledInputIconContainer>
+            <DynamicIcon size={dynamicIconSize} iconValue={elementIcon} />
+          </StyledInputIconContainer>
+        )}
         <UIInput
           type="number"
           inputRef={inputRef}
@@ -412,6 +423,7 @@ const NumberInput: React.FC<Props> = ({
           }}
         />
         {/* We only want to show the increment/decrement controls when there is sufficient room to display the value and these controls. */}
+        {/* TODO: Readjust breakpoint for icon */}
         {width > theme.breakpoints.hideNumberInputControls && (
           <StyledInputControls>
             <StyledInputControl
