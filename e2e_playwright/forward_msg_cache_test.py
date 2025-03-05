@@ -57,7 +57,7 @@ def test_simulate_large_data_usage_performance(app: Page):
     fill_number_input(app, "Number of small messages", 100)
 
     # Rerun app a couple of times:
-    _rerun_app(app, 5)
+    _rerun_app(app, 10)
 
 
 @pytest.mark.performance
