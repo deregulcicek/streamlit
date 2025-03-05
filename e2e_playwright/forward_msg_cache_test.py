@@ -37,7 +37,7 @@ def _rerun_app(app: Page, times: int):
 
 
 @pytest.mark.performance
-def test_simulate_large_data_usage(app: Page):
+def test_simulate_large_data_usage_performance(app: Page):
     # Rerun app a couple of times:
     _rerun_app(app, 10)
 
@@ -60,7 +60,7 @@ def test_simulate_large_data_usage(app: Page):
 
 
 @pytest.mark.performance
-def test_simulate_many_small_messages(app: Page):
+def test_simulate_many_small_messages_performance(app: Page):
     # Show 150 unique texts with 50kb each:
     fill_number_input(app, "Number of small messages", 150)
     _rerun_app(app, 10)
