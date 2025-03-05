@@ -29,7 +29,7 @@ if package is None:
 
 oldest_dependencies = []
 
-for requirement in package.requires():  # type: ignore
+for requirement in package.requires():
     dependency = requirement.project_name
     if requirement.extras:
         dependency += "[" + ",".join(requirement.extras) + "]"
